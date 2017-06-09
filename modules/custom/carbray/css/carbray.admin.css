@@ -1,0 +1,9 @@
+/*
+ * Styles for global admin theme overrides.
+ */
+.toolbar-menu .menu-item {
+  background-color: #f5f5f2;
+}
+#toolbar-administration .toolbar-menu .menu-item a {
+  color: #434343;
+}

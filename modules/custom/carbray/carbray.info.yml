@@ -1,0 +1,4 @@
+name: Carbray
+type: module
+description: General utility module for Carbray.
+core: 8.x

@@ -1,0 +1,79 @@
+<?php
+
+/**
+ * @file
+ * General functionality utilities for Carbray.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
+
+
+/**
+ * Implements hook_form_alter().
+ */
+function carbray_form_alter(&$form, FormStateInterface $form_state) {
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function carbray_form_user_login_form_alter(&$form, FormStateInterface $form_state) {
+
+  // Add our custom handler to redirect after login.
+  $form['#submit'][] = '_carbray_user_login_redirecter';
+}
+
+/**
+ * Form submission handler for user_login_form().
+ *
+ * Redirects the user based on role to various dashboards after logging in.
+ */
+function _carbray_user_login_redirecter(&$form, FormStateInterface $form_state) {
+
+  $current_user = \Drupal::currentUser();
+  $roles = $current_user->getRoles();
+
+  // If user with only 1 role and it is authenticated:
+  if (in_array('authenticated', $roles) && count($roles) == 1) {
+
+  }
+  elseif (in_array('worker', $roles)) {
+    $url = Url::fromUri('entity:node/2');
+  }
+  elseif (in_array('carbray_administrator', $roles)) {
+    $url = Url::fromUri('entity:node/3');
+  }
+
+  $form_state->setRedirectUrl($url);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Remove the password field when admin is creating an account.
+ */
+function carbray_form_user_register_form_alter(&$form, FormStateInterface $form_state) {
+  if ($form['administer_users']['#value']) {
+    // Set default status value to blocked user.
+    // @todo: need a quick and easy way to allow admin to activate users and trigger an email to invite them to setup their password.
+    // @todo: need to disable most of user fields for end user, not to allow them to change field values (other than password through front end, etc.)
+    $form['account']['status']['#default_value'] = 0;
+
+    $form['account']['pass']['#access'] = FALSE;
+    $form['account']['pass']['#value']['pass1'] = user_password();
+    $form['account']['pass']['#value']['pass2'] = $form['account']['pass']['#value']['pass1'];
+  }
+}
+
+/**
+ * Implements hook_page_attachments().
+ *
+ * Adds the carbray.global-styles library to the page to solve admin theme styling
+ * without having to resort to create a custom subtheme.
+ *
+ * @param array $attachments
+ */
+function carbray_page_attachments(array &$attachments) {
+  $attachments['#attached']['library'][] = 'carbray/carbray.global-styles';
+}

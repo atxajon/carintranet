@@ -1,0 +1,25 @@
+id: users_migration
+migration_tags: null
+migration_group: null
+label: 'User migration from CSV'
+source:
+  plugin: csv
+  path: /Applications/MAMP/htdocs/carbray/sites/default/files/users_migrate.csv
+  header_row_count: 1
+  keys:
+    - ID
+process:
+  name: name
+  mail: email
+  field_nombre: Nombre
+  field_apellido: Apellido
+  field_telefonos: Telefono
+  field_faxes: Fax
+  field_direccion: Direccion
+  field_identificacion: Identificacion
+
+destination:
+  plugin: 'entity:user'
+migration_dependencies:
+  required: {  }
+  optional: {  }

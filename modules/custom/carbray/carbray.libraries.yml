@@ -1,0 +1,4 @@
+carbray.global-styles:
+  css:
+    theme:
+      css/carbray.admin.css: {}
