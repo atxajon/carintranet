@@ -1,0 +1,32 @@
+<?php
+/**
+ * @file
+ * Bootstrap sub-theme.
+ *
+ * Place your custom PHP code in this file.
+ */
+
+function carbray_theme_preprocess_page(&$variables) {
+  $current_path = \Drupal::service('path.current')->getPath();
+
+  // Front page log ing and user/password page lose all header vars except alert messages.
+  if ($current_path == '/user/password' || $variables['is_front']) {
+    // The header var only prints alert messages, the rest is unset.
+    unset($variables['page']['header']['carbray_theme_breadcrumbs']);
+    unset($variables['page']['header']['carbray_theme_local_actions']);
+    unset($variables['page']['header']['carbray_theme_local_tasks']);
+    unset($variables['page']['header']['carbray_theme_page_title']);
+  }
+}
+
+function carbray_theme_preprocess_region(&$variables) {
+  $current_path = \Drupal::service('path.current')->getPath();
+
+  if ($current_path == '/user/password' || $variables['is_front']) {
+    if ($variables['elements']['#region'] == 'header') {
+      // Header region displays alert messages when form submitted errors;
+      // Let's bootstrap center it to match content_classes.
+      $variables['attributes']['class'][] = 'col-sm-4 col-sm-offset-4';
+    }
+  }
+}

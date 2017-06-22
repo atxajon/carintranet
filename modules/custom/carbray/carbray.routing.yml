@@ -1,0 +1,14 @@
+carbray.add_user_form:
+  path: '/crear-cliente'
+  defaults:
+    _title: 'Crear cliente nuevo'
+    _form: '\Drupal\carbray\Form\NewClientForm'
+  requirements:
+    _permission: 'access content'
+carbray.add_expediente_form:
+  path: '/crear-expediente'
+  defaults:
+    _title: 'Crear nuevo expediente'
+    _form: '\Drupal\carbray\Form\NewExpedienteForm'
+  requirements:
+    _permission: 'access content'

@@ -1,0 +1,10 @@
+carbray.add_new_client:
+  title: 'Nuevo cliente'
+  description: 'Crear nuevo cliente'
+  route_name: carbray.add_user_form
+  menu_name: worker-menu
+carbray.add_new_expediente:
+  title: 'Nuevo expediente'
+  description: 'Crear nuevo expediente'
+  route_name: carbray.add_expediente_form
+  menu_name: worker-menu

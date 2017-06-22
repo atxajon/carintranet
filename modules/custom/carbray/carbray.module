@@ -7,12 +7,39 @@
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
+use Drupal\Core\Link;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
+
+/**
+ * Implements hook_theme().
+ */
+function carbray_theme($existing, $type, $theme, $path) {
+  return [
+    'carbray_progress_bar' => [
+      'variables' => [
+        'message' => NULL,
+        'animate' => NULL,
+        'objetivo_cifra' => NULL,
+        'facturado' => NULL,
+        'percent' => NULL,
+        'label' => NULL
+      ],
+    ],
+  ];
+}
 
 /**
  * Implements hook_form_alter().
  */
 function carbray_form_alter(&$form, FormStateInterface $form_state) {
+  // @todo: hide display name field from user edit form.
+  switch ($form['#id']) {
+    case 'views-exposed-form-clientes-por-fase-page-1':
+      break;
+  }
 }
 
 /**
@@ -20,8 +47,22 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
  */
 function carbray_form_user_login_form_alter(&$form, FormStateInterface $form_state) {
 
+  // Adds a 'forgot your password' link to the form.
+  $url = Url::fromRoute('user.pass');
+  $new_pwd_link = Link::fromTextAndUrl(t('Forgot your password?'), $url);
+  $form['actions']['submit']['#field_suffix'] = $new_pwd_link;
+
   // Add our custom handler to redirect after login.
+  // @todo: not only redirect on login! redirect also when accesing front path and user is authenticated, otherwise the form keeps showing! user should be taken to their landing path!
   $form['#submit'][] = '_carbray_user_login_redirecter';
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function carbray_form_user_pass_alter(&$form, FormStateInterface $form_state) {
+  $form['actions']['submit']['#value'] = t('Send instructions by email');
+  $form['actions']['submit']['#attributes'] = array('class' => array('btn-primary'));
 }
 
 /**
@@ -30,21 +71,7 @@ function carbray_form_user_login_form_alter(&$form, FormStateInterface $form_sta
  * Redirects the user based on role to various dashboards after logging in.
  */
 function _carbray_user_login_redirecter(&$form, FormStateInterface $form_state) {
-
-  $current_user = \Drupal::currentUser();
-  $roles = $current_user->getRoles();
-
-  // If user with only 1 role and it is authenticated:
-  if (in_array('authenticated', $roles) && count($roles) == 1) {
-
-  }
-  elseif (in_array('worker', $roles)) {
-    $url = Url::fromUri('entity:node/2');
-  }
-  elseif (in_array('carbray_administrator', $roles)) {
-    $url = Url::fromUri('entity:node/3');
-  }
-
+  $url = _carbray_redirecter();
   $form_state->setRedirectUrl($url);
 }
 
@@ -76,4 +103,59 @@ function carbray_form_user_register_form_alter(&$form, FormStateInterface $form_
  */
 function carbray_page_attachments(array &$attachments) {
   $attachments['#attached']['library'][] = 'carbray/carbray.global-styles';
+}
+
+/**
+ * Implements template_preprocess_page().
+ *
+ * @param $variables
+ */
+function carbray_preprocess_page(&$variables) {
+
+  // Redirect logged in user accessing front page.
+  if ($variables['is_front'] && $variables['logged_in']) {
+    $url = _carbray_redirecter();
+    $response = new RedirectResponse($url, 302);
+    $response->send();
+  }
+}
+
+function _carbray_redirecter() {
+  $current_user = \Drupal::currentUser();
+  $roles = $current_user->getRoles();
+  // If user with only 1 role and it is authenticated:
+  if (in_array('authenticated', $roles) && count($roles) == 1) {
+
+  }
+  elseif (in_array('worker', $roles)) {
+    $url = Url::fromUri('entity:node/2');
+  }
+  elseif (in_array('carbray_administrator', $roles)) {
+    $url = Url::fromUri('entity:node/3');
+  }
+  else {
+    $url = Url::fromUri('entity:node/3');
+  }
+  return $url;
+}
+
+/**
+ * Implements hook_entity_view_alter().
+ *
+ * @param EntityInterface $entity
+ */
+function carbray_entity_view_alter(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display) {
+  // Entities not meant to be accessed/viewable on front end.
+  $entities_to_redirect = array(
+    'objetivos',
+    'expediente',
+    'factura',
+  );
+  if (in_array($entity->bundle(), $entities_to_redirect)) {
+    $url = Url::fromRoute('views_ui.add', [], ['absolute' => TRUE]);
+    drupal_set_message(t('You have been redirected because...'), 'status', TRUE);
+//    $response = new RedirectResponse($url->getRouteName());
+    $response = new RedirectResponse('/worker');
+    $response->send();
+  }
 }

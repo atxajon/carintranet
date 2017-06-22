@@ -9,7 +9,7 @@ source:
   keys:
     - ID
 process:
-  name: name
+  name: email
   mail: email
   field_nombre: Nombre
   field_apellido: Apellido

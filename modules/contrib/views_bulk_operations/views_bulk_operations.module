@@ -1,0 +1,19 @@
+<?php
+
+/**
+ * @file
+ * Allows operations to be performed on items selected in a view.
+ */
+
+/**
+ * Implements hook_views_data_alter().
+ */
+function views_bulk_operations_views_data_alter(&$data) {
+  $data['views']['views_bulk_operations_bulk_form'] = [
+    'title' => t('Views bulk operations'),
+    'help' => t('Process entities returned by the view with Views Bulk Operations\' actions.'),
+    'field' => [
+      'id' => 'views_bulk_operations_bulk_form',
+    ],
+  ];
+}
