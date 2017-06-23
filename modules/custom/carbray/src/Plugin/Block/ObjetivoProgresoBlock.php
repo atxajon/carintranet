@@ -20,7 +20,6 @@ class ObjetivoProgresoBlock extends BlockBase {
    * {@inheritdoc}
    */
   public function build() {
-    // @todo: create a theme function to wrap returned build array.
     // Get current objetivo.
 //    $objetivo_nids = \Drupal::entityQuery('node')
 //        ->condition('type','objetivos')
@@ -49,13 +48,11 @@ class ObjetivoProgresoBlock extends BlockBase {
         ->condition('type', 'expediente')
         ->condition('field_expediente_cliente', $user_of_worker);
       $expedientes = $query->execute();
-      // If client has expedientes loop through them and look at their factura costs.
+      // If client has expedientes loop through them and look at their referenced factura costs.
       if ($expedientes) {
         foreach($expedientes as $expediente) {
-          $expediente_node = Node::load($expediente);
-          $referenced_factura = $expediente_node->get('field_expediente_factura')->getValue();
-          $sql = "SELECT field_cifra_factura_value FROM node__field_cifra_factura WHERE entity_id = :factura_nid;";
-          $factura_cifra = $db->query($sql, array(':factura_nid' => $referenced_factura[0]['target_id']))->fetchField(0);
+          $sql = "SELECT field_cifra_factura_value FROM node__field_cifra_factura c INNER JOIN node__field_factura_expediente e ON c.entity_id = e.entity_id WHERE e.field_factura_expediente_target_id = :expediente_nid;";
+          $factura_cifra = $db->query($sql, array(':expediente_nid' => $expediente))->fetchField(0);
           $total_facturas += $factura_cifra;
         }
       }
@@ -64,10 +61,13 @@ class ObjetivoProgresoBlock extends BlockBase {
     $total_facturas = 3000.12;
     $total_facturas = (float)$total_facturas;
     $percent = $total_facturas / $objetivo_cifra * 100;
+    // Don't let percent exceed 100% when objetivo is achieved.
+    $percent = ($percent > 100) ? 100 : $percent;
 
     return array(
       '#theme' => 'carbray_progress_bar',
       '#animate' => FALSE,
+      '#large' => TRUE,
       '#percent' => $percent,
       '#objetivo_cifra' => $objetivo_cifra,
       '#facturado' => $total_facturas,

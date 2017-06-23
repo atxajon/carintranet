@@ -32,7 +32,7 @@ function carbray_theme_preprocess_region(&$variables) {
 }
 
 /**
- * Implementes template_preprocess_form_element_label().
+ * Implements template_preprocess_form_element_label().
  *
  * @param $variables
  */

@@ -27,6 +27,9 @@
     {% if animate %}
         {% set classes = classes|merge(['progress-striped', 'active']) %}
     {% endif %}
+    {% if large %}
+        {% set classes = classes|merge(['progress-large']) %}
+    {% endif %}
 
     <div{{ attributes.addClass(classes) }}>
         <div class="progress-bar" role="progressbar" style="width: {{ percent }}%" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ percent }}">

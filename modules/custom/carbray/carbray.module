@@ -22,6 +22,7 @@ function carbray_theme($existing, $type, $theme, $path) {
       'variables' => [
         'message' => NULL,
         'animate' => NULL,
+        'large' => FALSE,
         'objetivo_cifra' => NULL,
         'facturado' => NULL,
         'percent' => NULL,

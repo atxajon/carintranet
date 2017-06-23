@@ -6,6 +6,13 @@ body {
   right: 15px;
   color: black;
 }
+.progress.progress-large {
+  height: 30px;
+}
+.progress-large .progress-bar {
+  line-height: 30px;
+  font-size: 16px;
+}
 .path-frontpage .user-login-form {
   margin-top: 200px;
 }
