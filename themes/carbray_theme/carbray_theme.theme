@@ -30,3 +30,17 @@ function carbray_theme_preprocess_region(&$variables) {
     }
   }
 }
+
+/**
+ * Implementes template_preprocess_form_element_label().
+ *
+ * @param $variables
+ */
+function carbray_theme_preprocess_form_element_label(&$variables) {
+  $id = isset($variables['element']['#id']) ? $variables['element']['#id'] : '';
+  $form_id = isset($variables['element']['#form_id']) ? $variables['element']['#form_id'] : '';
+  // Hide login form labels.
+  if ($form_id == 'user_login_form' && ($id == 'edit-name' OR $id == 'edit-pass')) {
+    $variables['title_display'] = 'invisible';
+  }
+}

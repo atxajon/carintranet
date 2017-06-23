@@ -6,6 +6,9 @@ body {
   right: 15px;
   color: black;
 }
+.path-frontpage .user-login-form {
+  margin-top: 200px;
+}
 
 /*!
  * Start Bootstrap - SB Admin 2 v3.3.7+1 (http://startbootstrap.com/template-overviews/sb-admin-2)
