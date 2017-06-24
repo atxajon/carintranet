@@ -44,3 +44,6 @@ function carbray_theme_preprocess_form_element_label(&$variables) {
     $variables['title_display'] = 'invisible';
   }
 }
+
+function carbray_theme_preprocess_block(&$variables) {
+}
