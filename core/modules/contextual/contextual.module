@@ -64,7 +64,7 @@ function contextual_page_attachments(array &$page) {
     return;
   }
 
-  $page['#attached']['library'][] = 'contextual/carbray.global-styles';
+  $page['#attached']['library'][] = 'contextual/drupal.contextual-links';
 }
 
 /**
