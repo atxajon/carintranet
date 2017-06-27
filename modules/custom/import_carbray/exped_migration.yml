@@ -34,13 +34,20 @@ source:
       descripcion: 'Expediente notas'
 process:
   title: title
-  field_expediente_fecha_alta: fecha_alta
+  field_expediente_fecha_alta:
+    plugin: format_date
+    from_format: 'd/m/Y'
+    to_format: 'Y-m-d'
+    source: fecha_alta
   field_expediente_responsable: responsable
   field_expediente_cliente: cliente
   body: descripcion
   type:
     plugin: default_value
     default_value: expediente
+  uid:
+    plugin: default_value
+    default_value: 1
 
 destination:
   plugin: entity:node

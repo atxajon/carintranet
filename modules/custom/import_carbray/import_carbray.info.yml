@@ -1,0 +1,4 @@
+name: Import Carbray
+type: module
+description: Deals with importing from CSV.
+core: 8.x
