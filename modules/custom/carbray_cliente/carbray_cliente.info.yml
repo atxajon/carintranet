@@ -1,0 +1,4 @@
+name: Carbray cliente
+type: module
+description: Does general processing for Carbray clients user page.
+core: 8.x

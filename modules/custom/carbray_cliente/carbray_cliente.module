@@ -1,0 +1,119 @@
+<?php
+
+/**
+ * @file
+ * Provides functionality needed for Carbray clients.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Routing;
+use Drupal\user\Entity\User;
+
+/**
+ * Implements hook_theme().
+ */
+function carbray_cliente_theme($existing, $type, $theme, $path) {
+  return [
+    'cliente_expediente' => [
+      'variables' => [
+        'expedientes' => NULL,
+        'client_name' => NULL,
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_entity_extra_field_info().
+ */
+function carbray_cliente_entity_extra_field_info() {
+  $extra = array();
+  $extra['user']['user']['display']['cliente_expediente'] = array(
+    'label' => t('Cliente expedientes'),
+    'description' => t('Muestra los expedientes del cliente.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  return $extra;
+}
+
+/**
+ * Implements hook_entity_view_mode_alter().
+ *
+ * @param $view_mode
+ * @param EntityInterface $entity
+ * @param $context
+ */
+function carbray_cliente_entity_view_mode_alter(&$view_mode, EntityInterface $entity, $context) {
+  // Change view mode to 'cliente' if the user we are viewing is not a carbray internal admin user.
+  if ($entity->getEntityTypeId() == 'user') {
+    $path = \Drupal::request()->getpathInfo();
+    $arg = explode('/', $path);
+    $uid = end($arg);
+    if (!is_numeric($uid)) {
+      return;
+    }
+
+    $user = User::load($uid);
+    $roles = $user->getRoles();
+    // If user with only 1 role and it is authenticated:
+    if (in_array('authenticated', $roles) && count($roles) == 1) {
+      $view_mode = 'cliente';
+    }
+  }
+}
+
+/**
+ * Implements hook_user_view().
+ */
+function carbray_cliente_user_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  if ($view_mode === 'cliente') {
+    $uid = $entity->id();
+    if ($display->getComponent('cliente_expediente')) {
+      $expediente_nids = get_cliente_expedientes($uid);
+      $expedientes = get_expedientes_data($expediente_nids);
+      $user = User::load($uid);
+      $nombre = $user->get('field_nombre')->value;
+      $apellido = $user->get('field_apellido')->value;
+      $client_name = ucfirst($nombre) . ' ' . ucfirst($apellido);
+      $build['cliente_expediente'] = [
+        '#theme' => 'cliente_expediente',
+        '#expedientes' => $expedientes,
+        '#client_name' => $client_name,
+      ];
+    }
+  }
+}
+
+/**
+ * Helper function to obtain expedientes for the given user uid.
+ *
+ * @param string $uid
+ */
+function get_cliente_expedientes($uid) {
+  $bundle = 'expediente';
+  $query = \Drupal::entityQuery('node');
+  $query->condition('status', 1);
+  $query->condition('type', $bundle);
+  $query->condition('field_expediente_cliente', $uid);
+  $expediente_nids = $query->execute();
+  return $expediente_nids;
+}
+
+/**
+ * Helper function to obtain all expedientes data from the nids.
+ *
+ * @param array $expediente_nids
+ */
+function get_expedientes_data($expediente_nids) {
+  $db = \Drupal::database();
+  $expedientes = [];
+  foreach ($expediente_nids as $expediente_nid) {
+    $sql = "SELECT title, field_expediente_fecha_alta_value FROM node_field_data nfd INNER JOIN node__field_expediente_fecha_alta fa ON nfd.nid = fa.entity_id WHERE nfd.nid = :expediente_nid";
+    $data = $db->query($sql, array(':expediente_nid' => $expediente_nid))
+      ->fetchAllKeyed();
+    $expedientes[] = $data;
+  }
+  return $expedientes;
+}
