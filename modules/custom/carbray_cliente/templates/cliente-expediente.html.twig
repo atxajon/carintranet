@@ -1,12 +1,14 @@
-<h3>Expedientes de {{ client_name }}</h3>
-<div class="cliente-expedientes-container">
+<div class="jumbotron">
+  <h3>Expedientes de {{ client_name }}</h3>
+  <div class="cliente-expedientes-container">
     {% if expedientes is not empty %}
-        <ul>
+      <ul>
         {% for expediente in expedientes %}
-            <li class="cliente-expedientes-element" >
-                {{ expediente.title }}, {{ expediente.fecha_alta }}
-            </li>
+          <li class="cliente-expedientes-element">
+            <a href="{{ expediente.link }}">{{ expediente.title }}</a>, {{ expediente.fecha_alta }}
+          </li>
         {% endfor %}
-        </ul>
+      </ul>
     {% endif %}
+  </div>
 </div>

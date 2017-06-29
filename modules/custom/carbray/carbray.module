@@ -146,14 +146,11 @@ function _carbray_redirecter() {
 
 /**
  * Implements hook_entity_view_alter().
- *
- * @param EntityInterface $entity
  */
 function carbray_entity_view_alter(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display) {
   // Entities not meant to be accessed/viewable on front end.
   $entities_to_redirect = array(
     'objetivos',
-    'expediente',
     'factura',
   );
   if (in_array($entity->bundle(), $entities_to_redirect)) {

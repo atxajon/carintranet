@@ -71,7 +71,7 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
   if ($view_mode === 'cliente') {
     $uid = $entity->id();
     if ($display->getComponent('cliente_expediente')) {
-      $expediente_nids = get_cliente_expedientes($uid);
+      $expediente_nids = get_cliente_expediente_nids($uid);
       $expedientes = get_expedientes_data($expediente_nids);
       $user = User::load($uid);
       $nombre = $user->get('field_nombre')->value;
@@ -91,7 +91,7 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
  *
  * @param string $uid
  */
-function get_cliente_expedientes($uid) {
+function get_cliente_expediente_nids($uid) {
   $bundle = 'expediente';
   $query = \Drupal::entityQuery('node');
   $query->condition('status', 1);
@@ -113,6 +113,9 @@ function get_expedientes_data($expediente_nids) {
     $sql = "SELECT title, field_expediente_fecha_alta_value as fecha_alta FROM node_field_data nfd INNER JOIN node__field_expediente_fecha_alta fa ON nfd.nid = fa.entity_id WHERE nfd.nid = :expediente_nid";
     $data = $db->query($sql, array(':expediente_nid' => $expediente_nid))
       ->fetchAssoc();
+    $alias = \Drupal::service('path.alias_manager')
+      ->getAliasByPath('/node/' . $expediente_nid);
+    $data['link'] = $alias;
     $expedientes[] = $data;
   }
   return $expedientes;
