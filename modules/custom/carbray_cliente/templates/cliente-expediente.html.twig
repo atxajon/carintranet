@@ -2,13 +2,22 @@
   <h3>Expedientes de {{ client_name }}</h3>
   <div class="cliente-expedientes-container">
     {% if expedientes is not empty %}
-      <ul>
+      <table class="table">
+        <thead>
+          <th>Numero expediente</th>
+          <th>Fecha alta</th>
+        </thead>
+        <tbody>
         {% for expediente in expedientes %}
-          <li class="cliente-expedientes-element">
-            <a href="{{ expediente.link }}">{{ expediente.title }}</a>, {{ expediente.fecha_alta }}
-          </li>
+          <tr>
+            <td><a href="{{ expediente.link }}">{{ expediente.title }}</a></td>
+            <td>{{ expediente.fecha_alta }}</td>
+          </tr>
         {% endfor %}
-      </ul>
+        </tbody>
+      </table>
+      <br/>
+      <a href="{{ path('carbray.add_expediente_form', {'cliente': uid }) }}">Crear nuevo expediente para {{ client_name }}</a>
     {% else %}
       <p>{{ 'El cliente todavia no tiene expedientes.'|trans }} <a href="{{ path('carbray.add_expediente_form', {'cliente': uid }) }}">Crear expediente para {{ client_name }}</a></p>
     {% endif %}

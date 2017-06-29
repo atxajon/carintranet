@@ -112,7 +112,7 @@ function get_expedientes_data($expediente_nids) {
   $db = \Drupal::database();
   $expedientes = [];
   foreach ($expediente_nids as $expediente_nid) {
-    $sql = "SELECT title, field_expediente_fecha_alta_value as fecha_alta FROM node_field_data nfd INNER JOIN node__field_expediente_fecha_alta fa ON nfd.nid = fa.entity_id WHERE nfd.nid = :expediente_nid";
+    $sql = "SELECT title, DATE_FORMAT(field_expediente_fecha_alta_value, '%d-%m-%Y') as fecha_alta FROM node_field_data nfd INNER JOIN node__field_expediente_fecha_alta fa ON nfd.nid = fa.entity_id WHERE nfd.nid = :expediente_nid";
     $data = $db->query($sql, array(':expediente_nid' => $expediente_nid))
       ->fetchAssoc();
     $alias = \Drupal::service('path.alias_manager')

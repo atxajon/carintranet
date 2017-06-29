@@ -7,6 +7,8 @@ namespace Drupal\carbray\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
+use Drupal\user\Entity\User;
+
 
 /**
  * NewExpedienteForm form.
@@ -28,6 +30,14 @@ class NewExpedienteForm extends FormBase {
       '#title' => 'Numero expediente',
       '#size' => '20',
     );
+
+    // Get cliente uid from url query string.
+//    $path = \Drupal::request()->query->get('cliente');
+    $qs = \Drupal::request()->query->all();
+    if ($qs) {
+      $user = User::load($qs['cliente']);
+    }
+
     $form['cliente'] = array(
       '#title' => 'Cliente',
       '#description' => t('Busca el cliente tecleando su email'),
@@ -37,6 +47,7 @@ class NewExpedienteForm extends FormBase {
       '#selection_settings' => [
         'include_anonymous' => FALSE,
       ],
+      '#default_value' => (isset($user)) ? $user : '',
     );
 
     $form['factura'] = array(
