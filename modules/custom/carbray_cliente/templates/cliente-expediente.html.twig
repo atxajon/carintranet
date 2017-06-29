@@ -1,11 +1,10 @@
 <h3>Expedientes de {{ client_name }}</h3>
-<div class="container cliente-expedientes-container">
+<div class="cliente-expedientes-container">
     {% if expedientes is not empty %}
         <ul>
-        {% for key, expediente in expedientes %}
-            {{ dump(expediente) }}
-            <li class="container cliente-expedientes-element" >
-                {{ key }}
+        {% for expediente in expedientes %}
+            <li class="cliente-expedientes-element" >
+                {{ expediente.title }}, {{ expediente.fecha_alta }}
             </li>
         {% endfor %}
         </ul>
