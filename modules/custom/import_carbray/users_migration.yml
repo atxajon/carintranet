@@ -4,7 +4,7 @@ migration_group: null
 label: 'User migration from CSV'
 source:
   plugin: csv
-  path: /Applications/MAMP/htdocs/carbray/sites/default/files/users_migrate.csv
+  path: public://csv_imports/users_migrate.csv
   header_row_count: 1
   keys:
     - ID

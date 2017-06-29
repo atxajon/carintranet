@@ -3,8 +3,7 @@ label: Import expedientes
 
 source:
   plugin: csv
-  # Full path to the file.
-  path: '/Applications/MAMP/htdocs/carbray/sites/default/files/expedientes_migrate.csv'
+  path: public://csv_imports/expedientes_migrate.csv
   # Column delimiter. Comma (,) by default.
   delimiter: ','
   # Field enclosure. Double quotation marks (") by default.

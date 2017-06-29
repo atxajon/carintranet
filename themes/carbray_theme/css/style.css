@@ -17,6 +17,9 @@ ul {
   margin: 0;
   padding: 0;
 }
+.jumbotron.jumbotron-sm {
+  padding: 30px;
+}
 .progress-bar-max-value {
   position: absolute;
   right: 15px;

@@ -19,6 +19,7 @@ function carbray_cliente_theme($existing, $type, $theme, $path) {
       'variables' => [
         'expedientes' => NULL,
         'client_name' => NULL,
+        'uid' => NULL,
       ],
     ],
   ];
@@ -81,6 +82,7 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
         '#theme' => 'cliente_expediente',
         '#expedientes' => $expedientes,
         '#client_name' => $client_name,
+        '#uid' => $uid,
       ];
     }
   }
