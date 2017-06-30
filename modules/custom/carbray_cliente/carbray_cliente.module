@@ -81,6 +81,21 @@ function carbray_cliente_entity_view_mode_alter(&$view_mode, EntityInterface $en
 }
 
 /**
+ * Implements hook_theme_suggestions_user_alter().
+ *
+ *   An array of alternate, more specific names for template files or theme
+ *   functions.
+ */
+function carbray_cliente_theme_suggestions_user_alter(&$suggestions, $vars, $hook) {
+
+  // Define the view mode.
+  $mode = $vars['elements']['#view_mode'];
+
+  // Create a theme hook suggestion which has the view mode name in it.
+  $suggestions[] = 'user__' . $mode;
+}
+
+/**
  * Implements hook_user_view().
  */
 function carbray_cliente_user_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {

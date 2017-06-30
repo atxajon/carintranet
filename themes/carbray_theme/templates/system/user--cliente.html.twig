@@ -22,12 +22,12 @@
   {% if content %}
     <div class="row">
       <div class="col-sm-4">
-        <div class="panel panel-default">
+        <div class="panel panel-default cliente-info">
           <div class="panel-heading">
             {{ 'Informacion del cliente'|trans }}
           </div>
           <div class="panel-body">
-            {{ content.field_nombre }}
+            {{ content.field_nombre}}
             {{ content.field_apellido }}
             {{ content.field_email }}
             {{ content.field_telefono }}
@@ -45,6 +45,7 @@
           <div class="panel-body">
             {{ content.field_fecha_alta }}
             {{ content.field_fase }}
+            {{ content.field_user_estado_de_captacion }}
           </div>
         </div>
       </div>
@@ -60,8 +61,16 @@
         </div>
       </div>
     </div>
-    {{ content.field_notas }}
-    {{ content.anadir_nota }}
+    <div class="cliente-notas panel panel-default">
+      <div class="panel-heading">
+        {{ content.field_notas['#title'] }}
+      </div>
+      <div class="panel-body">
+        {{ content.field_notas }}
+        {{ content.anadir_nota }}
+      </div>
+    </div>
+    {{ content.cliente_expediente }}
     {#{{- content -}}#}
   {% endif %}
 </article>

@@ -25,8 +25,31 @@ ul {
 .jumbotron.jumbotron-sm {
   padding: 30px;
 }
+.cliente-info .field--label {
+  min-width: 6em;
+}
 .field--name-field-notas .field--item {
   margin-bottom: 20px;
+  position: relative;
+  padding: 1em 1.5em;
+  color: #fff;
+  background: #97C02F;
+  overflow: hidden;
+}
+.field--name-field-notas .field--item:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-width: 0 16px 16px 0;
+  border-style: solid;
+  border-color: #fff #fff #658E15 #658E15;
+  background: #658E15;
+  -webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.3), -1px 1px 1px rgba(0,0,0,0.2);
+  -moz-box-shadow: 0 1px 1px rgba(0,0,0,0.3), -1px 1px 1px rgba(0,0,0,0.2);
+  box-shadow: 0 1px 1px rgba(0,0,0,0.3), -1px 1px 1px rgba(0,0,0,0.2);
+  /* Firefox 3.0 damage limitation */
+  display: block; width: 0;
 }
 /* End of user page styles*/
 
