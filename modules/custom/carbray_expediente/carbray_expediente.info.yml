@@ -1,0 +1,4 @@
+name: Carbray expediente
+type: module
+description: Does general processing for Carbray expedientes node page.
+core: 8.x

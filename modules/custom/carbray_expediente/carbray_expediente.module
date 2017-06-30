@@ -1,0 +1,85 @@
+<?php
+
+/**
+ * @file
+ * Provides functionality needed for Carbray expedientes.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Routing;
+use Drupal\user\Entity\User;
+use Drupal\node\Entity\Node;
+use Drupal\Core\Entity\Plugin\DataType\EntityAdapter;
+
+/**
+ * Implements hook_theme().
+ */
+function carbray_expediente_theme($existing, $type, $theme, $path) {
+  return [
+    'info_cliente' => [
+      'variables' => [
+        'cliente' => NULL,
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_entity_extra_field_info().
+ */
+function carbray_expediente_entity_extra_field_info() {
+  // Defines extra pseudo fields for display only purposes.
+  // Exposes them to the user manage display ui.
+  $extra = array();
+  $extra['node']['expediente']['display']['info_cliente'] = array(
+    'label' => t('Info cliente'),
+    'description' => t('Muestra la informacion del cliente.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  return $extra;
+}
+
+/**
+ * Implements hook_entity_view().
+ */
+function carbray_expediente_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  $nid = $entity->id();
+  $type = $entity->bundle();
+  if ($type != 'expediente') {
+    return;
+  }
+
+  if ($display->getComponent('info_cliente')) {
+    $expediente_node = Node::load($nid);
+    $client_of_expediente = $expediente_node->field_expediente_cliente->getValue();
+    $client_uid_of_expediente = $client_of_expediente[0]['target_id'];
+    if ($client_uid_of_expediente) {
+      $client = User::load($client_uid_of_expediente);
+      $nombre = $client->get('field_nombre')->value;
+      $apellido = $client->get('field_apellido')->value;
+      $client_name = ucfirst($nombre) . ' ' . ucfirst($apellido);
+      $build['cliente_expediente'] = [
+        '#theme' => 'info_cliente',
+        '#cliente' => $client_name,
+      ];
+    }
+
+  }
+}
+
+/**
+ * Helper function to obtain user info for a given expediente.
+ *
+ * @param string $expediente_nid
+ */
+function get_cliente_for_expediente($expediente_nid) {
+  $bundle = 'expediente';
+  $query = \Drupal::entityQuery('node');
+  $query->condition('status', 1);
+  $query->condition('type', $bundle);
+  $query->condition('field_expediente_cliente', $expediente_nid);
+  $expediente_nids = $query->execute();
+  return $expediente_nids;
+}
