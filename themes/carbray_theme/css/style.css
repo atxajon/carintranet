@@ -17,9 +17,20 @@ ul {
   margin: 0;
   padding: 0;
 }
+.row {
+  margin-bottom: 20px;
+}
+
+/* User page styles*/
 .jumbotron.jumbotron-sm {
   padding: 30px;
 }
+.field--name-field-notas .field--item {
+  margin-bottom: 20px;
+}
+/* End of user page styles*/
+
+
 .progress-bar-max-value {
   position: absolute;
   right: 15px;

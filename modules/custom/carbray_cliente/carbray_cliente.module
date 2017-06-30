@@ -22,6 +22,14 @@ function carbray_cliente_theme($existing, $type, $theme, $path) {
         'uid' => NULL,
       ],
     ],
+    'button_modal' => [
+      'variables' => [
+        'button_text' => NULL,
+        'unique_id' => NULL,
+        'modal_title' => NULL,
+        'modal_content' => NULL,
+      ],
+    ],
   ];
 }
 
@@ -29,12 +37,19 @@ function carbray_cliente_theme($existing, $type, $theme, $path) {
  * Implements hook_entity_extra_field_info().
  */
 function carbray_cliente_entity_extra_field_info() {
+  // Defines extra pseudo fields for display only purposes.
+  // Exposes them to the user manage display ui.
   $extra = array();
   $extra['user']['user']['display']['cliente_expediente'] = array(
     'label' => t('Cliente expedientes'),
     'description' => t('Muestra los expedientes del cliente.'),
     'weight' => 100,
     'visible' => TRUE,
+  );
+  $extra['user']['user']['display']['anadir_nota'] = array(
+    'label' => t('Añadir nota'),
+    'description' => t('Boton para crear una nueva nota.'),
+    'weight' => 100,
   );
   return $extra;
 }
@@ -83,6 +98,15 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
         '#expedientes' => $expedientes,
         '#client_name' => $client_name,
         '#uid' => $uid,
+      ];
+    }
+    if ($display->getComponent('anadir_nota')) {
+      $build['anadir_nota'] = [
+        '#theme' => 'button_modal',
+        '#unique_id' => 'anadir-nota-uid-' . $uid,
+        '#button_text' => 'Añadir nota',
+        '#modal_title' => t('Nueva nota'),
+        '#modal_content' => $client_name,
       ];
     }
   }

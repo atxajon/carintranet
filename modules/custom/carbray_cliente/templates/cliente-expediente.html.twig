@@ -2,14 +2,14 @@
   <h3>Expedientes de {{ client_name }}</h3>
   <div class="cliente-expedientes-container">
     {% if expedientes is not empty %}
-      <table class="table">
+      <table class="table table-striped">
         <thead>
           <th>Numero expediente</th>
           <th>Fecha alta</th>
         </thead>
         <tbody>
         {% for expediente in expedientes %}
-          <tr>
+          <tr class="{% if loop.index is odd %}odd{% else %}even{% endif %}">
             <td><a href="{{ expediente.link }}">{{ expediente.title }}</a></td>
             <td>{{ expediente.fecha_alta }}</td>
           </tr>
