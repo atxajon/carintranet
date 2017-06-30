@@ -101,12 +101,13 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
       ];
     }
     if ($display->getComponent('anadir_nota')) {
+      $form = \Drupal::formBuilder()->getForm('Drupal\carbray_cliente\Form\NewNotaForm');
       $build['anadir_nota'] = [
         '#theme' => 'button_modal',
         '#unique_id' => 'anadir-nota-uid-' . $uid,
         '#button_text' => 'Añadir nota',
         '#modal_title' => t('Nueva nota'),
-        '#modal_content' => $client_name,
+        '#modal_content' => $form,
       ];
     }
   }
