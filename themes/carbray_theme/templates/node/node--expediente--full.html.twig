@@ -85,7 +85,6 @@
   {% endif %}
   {{ title_suffix }}
 
-
   <div{{ content_attributes.addClass('content') }}>
     <div class="row">
       <div class="col-sm-4">
@@ -94,25 +93,24 @@
             {{ 'Informacion del cliente'|trans }}
           </div>
           <div class="panel-body">
-            {{ content.info_cliente }}
-            col sm 4
+            {{ content.cliente_expediente }}
           </div>
         </div>
       </div>
       <div class="col-sm-8">
         <div class="panel panel-default">
           <div class="panel-heading">
-            {{ 'Informacion del cliente'|trans }}
+            {{ 'Informacion del expediente'|trans }}
           </div>
           <div class="panel-body">
-            {{ content.title }}
-            col sm 8
+            {{ label }}
+            {{ content.field_expediente_fecha_alta }}
           </div>
         </div>
       </div>
-
     </div>
-    {{ content }}
+    {{ content.field_expediente_responsable }}
+    {{ content.field_expediente_tematica }}
+    {{ content.body }}
   </div>
-
 </article>

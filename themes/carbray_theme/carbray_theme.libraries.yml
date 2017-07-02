@@ -3,3 +3,5 @@ carbray_styles:
   css:
     base:
       css/style.css: {}
+  js:
+    js/theme-js.js: {}
