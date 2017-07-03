@@ -1,10 +1,10 @@
 carbray.add_new_client:
   title: 'Nuevo cliente'
-  description: 'Crear nuevo cliente'
+  description: 'glyphicon glyphicon-user'
   route_name: carbray.add_user_form
   menu_name: worker-menu
 carbray.add_new_expediente:
   title: 'Nuevo expediente'
-  description: 'Crear nuevo expediente'
+  description: 'glyphicon glyphicon-plus-sign'
   route_name: carbray.add_expediente_form
   menu_name: worker-menu
