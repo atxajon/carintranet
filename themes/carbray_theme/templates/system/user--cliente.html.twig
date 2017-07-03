@@ -63,7 +63,7 @@
     </div>
     <div class="cliente-notas panel panel-default">
       <div class="panel-heading">
-        {{ content.field_notas['#title'] }}
+        {{ 'Notas'|trans }}
       </div>
       <div class="panel-body">
         {{ content.field_notas }}
@@ -71,6 +71,5 @@
       </div>
     </div>
     {{ content.cliente_expediente }}
-    {#{{- content -}}#}
   {% endif %}
 </article>

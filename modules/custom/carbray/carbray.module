@@ -11,6 +11,8 @@ use Drupal\Core\Link;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Drupal\user\Entity\User;
+use Drupal\user\Entity\Role;
 
 
 /**
@@ -39,6 +41,30 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
   // @todo: hide display name field from user edit form.
   switch ($form['#id']) {
     case 'views-exposed-form-clientes-por-fase-page-1':
+      break;
+
+    case 'user-form':
+      // If editing an internal user/carbray admin, unset non relevant fields.
+      $current_path = \Drupal::service('path.current')->getPath();
+      $path_args = explode('/', $current_path);
+      $uid = 0;
+      foreach ($path_args as $path_arg) {
+        if (is_numeric($path_arg)) {
+          $uid = $path_arg;
+        }
+      }
+      $user = User::load($uid);
+      $roles = $user->getRoles();
+      if (in_array('worker', $roles) || in_array('carbray_administrator', $roles)) {
+        unset($form['field_fase']);
+        unset($form['field_captador']);
+        unset($form['field_responsable']);
+        unset($form['field_fecha_alta']);
+        unset($form['field_identificacion']);
+        unset($form['field_notas']);
+        unset($form['field_email']);
+        unset($form['field_user_estado_de_captacion']);
+      }
       break;
   }
 }

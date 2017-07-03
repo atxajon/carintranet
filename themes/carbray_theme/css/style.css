@@ -143,6 +143,9 @@ ul {
   /* Firefox 3.0 damage limitation */
   display: block; width: 0;
 }
+#new-nota .form-item-nota {
+  margin-bottom: 20px;
+}
 /* End of user page styles*/
 
 
