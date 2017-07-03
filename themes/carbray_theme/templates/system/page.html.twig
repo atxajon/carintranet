@@ -1,7 +1,9 @@
 {#
 /**
  * @file
- * Default theme implementation to display a single page.
+ * Carbray theme implementation to display a single page.
+ * Displays a fixed left sidebar and a main column general layout. Not bootstrapified (e.g not following the grid).
+ * Inspired on http://themesdesign.in/admiry/blue/index.html
  *
  * The doctype, html, head and body tags are not in this template. Instead they
  * can be found in the html.html.twig template in this directory.
@@ -60,14 +62,12 @@
 {# Main #}
 {% block main %}
   <div role="main" class="main-container js-quickedit-main-content">
-
-
     <div class="row-offcanvas row-offcanvas-left">
-
       {# Sidebar First #}
       {% if page.sidebar_first %}
         {% block sidebar_first %}
           <aside id="sidebar" class="sidebar-offcanvas" role="complementary">
+            {{ page.navigation }}
             {{ page.sidebar_first }}
           </aside>
         {% endblock %}
@@ -97,7 +97,6 @@
                       <span class="icon-bar"></span>
                     </button>
                   {% endif %}
-                  {{ page.navigation }}
                 </div>
 
                 {# Navigation (collapsible) #}

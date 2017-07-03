@@ -29,6 +29,10 @@ function carbray_theme_preprocess_region(&$variables) {
       $variables['attributes']['class'][] = 'col-sm-4 col-sm-offset-4';
     }
   }
+
+  if ($variables['elements']['#region'] == 'navigation') {
+    $variables['attributes']['class'][] = 'clearfix';
+  }
 }
 
 /**

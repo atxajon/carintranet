@@ -1,5 +1,6 @@
 body {
   margin-bottom: 50px;
+  margin-top: 0;
   background-color: #fafafa;
 }
 @font-face {
@@ -37,11 +38,18 @@ ul {
   margin-left: 240px;
   overflow: hidden;
 }
-
 #sidebar li {
   border: 0 #f2f2f2 solid;
   border-bottom-width: 1px;
 }
+#sidebar .nav a {
+  padding: 17px 25px;
+  color: #707070;
+}
+#sidebar .is-active {
+  color: #1d1e3a;
+}
+
 
 /* collapsed sidebar styles */
 @media screen and (max-width: 767px) {
@@ -97,7 +105,7 @@ ul {
     position: fixed;
   }
   #main-col {
-    padding: 0 40px;
+    padding: 20px 40px 0;
   }
 }
 
