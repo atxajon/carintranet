@@ -149,6 +149,9 @@ ul {
 /* End of user page styles*/
 
 
+.progress {
+  background: #ddd;
+}
 .progress-bar-max-value {
   position: absolute;
   right: 15px;
