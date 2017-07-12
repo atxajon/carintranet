@@ -9,14 +9,10 @@ source:
   keys:
     - ID
 process:
-  name: email
-  mail: email
+  name: Nombre
+  mail: Mails
   field_nombre: Nombre
-  field_apellido: Apellido
-  field_telefonos: Telefono
-  field_faxes: Fax
-  field_direccion: Direccion
-  field_identificacion: Identificacion
+  field_telefono: Telefonos
 
 destination:
   plugin: 'entity:user'
