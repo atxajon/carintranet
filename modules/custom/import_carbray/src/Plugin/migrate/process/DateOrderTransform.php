@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\import_cabray\Plugin\migrate\process;
+namespace Drupal\import_carbray\Plugin\migrate\process;
 
 use Drupal\migrate\Row;
 use Drupal\migrate\MigrateExecutableInterface;

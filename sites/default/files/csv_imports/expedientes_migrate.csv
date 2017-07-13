@@ -1,3 +1,4 @@
-ID,expediente,fecha_alta,responsable,cliente,descripcion
-1,CI-2017/106,25/06/2016,2,21,Obtencion de residenciaaaa
-2,CI-2017-102,20/05/2016,2,22,Constitucion SL en Donostia
+id,Expediente,Fecha Alta,Responsable,Cliente Principal,Descripcion,
+1,CI-2017/120,29/06/2017,14,ZUBAIR,CONSTITUCION DE SL EN BARCELONA,
+2,CI-2017/121,29/06/2017,14,ZIANE,Franquicia KONO PIZZA,
+3,CI-2017/122,29/06/2017,21,ZIANE,Obtencion NIF Sociedad Extranjera,

@@ -22,15 +22,15 @@ source:
     0:
       id: 'Unique Id'
     1:
-      title: 'Title'
+      title: 'Expediente'
     2:
-      fecha_alta: 'Fecha alta'
+      fecha_alta: 'Fecha Alta'
     3:
       responsable: 'Responsable'
     4:
-      cliente: 'Cliente'
+      cliente: 'Cliente Principal'
     5:
-      descripcion: 'Expediente notas'
+      descripcion: 'Descripcion'
 process:
   title: title
   field_expediente_fecha_alta:
@@ -39,7 +39,9 @@ process:
     to_format: 'Y-m-d'
     source: fecha_alta
   field_expediente_responsable: responsable
-  field_expediente_cliente: cliente
+  field_expediente_cliente:
+      plugin: uid_lookup
+      source: cliente
   body: descripcion
   type:
     plugin: default_value
