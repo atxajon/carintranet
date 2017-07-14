@@ -91,6 +91,7 @@ function carbray_form_user_login_form_alter(&$form, FormStateInterface $form_sta
  * Implements hook_form_FORM_ID_alter().
  */
 function carbray_form_user_pass_alter(&$form, FormStateInterface $form_state) {
+  $form['#prefix'] = t('<h2>Request new password</h2>');
   $form['actions']['submit']['#value'] = t('Send instructions by email');
   $form['actions']['submit']['#attributes'] = array('class' => array('btn-primary'));
 }

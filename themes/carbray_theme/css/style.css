@@ -164,7 +164,8 @@ ul {
   line-height: 30px;
   font-size: 16px;
 }
-.path-frontpage .region-content {
+.path-frontpage .region-content,
+.path-user .region-content {
   margin-top: 100px;
 }
 .region-content .block {

@@ -29,7 +29,7 @@ function carbray_theme_preprocess_region(&$variables) {
     if ($variables['elements']['#region'] == 'header') {
       // Header region displays alert messages when form submitted errors;
       // Let's bootstrap center it to match content_classes.
-      $variables['attributes']['class'][] = 'col-sm-4 col-sm-offset-4';
+      $variables['attributes']['class'][] = 'col-sm-3 col-sm-offset-4';
     }
   }
 
