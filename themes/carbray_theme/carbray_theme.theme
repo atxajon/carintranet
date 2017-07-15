@@ -94,3 +94,13 @@ function carbray_theme_preprocess_page_title(&$variables) {
 
 function carbray_theme_preprocess_block(&$variables) {
 }
+
+/**
+ * Implements hook_preprocess_user().
+ */
+function carbray_theme_preprocess_user(&$variables) {
+  // Adds 'mail' var to user.html.twig.
+  /** @var User $account */
+  $account = $variables['elements']['#user'];
+  $variables['mail'] = $account->get('mail')->value;
+}
