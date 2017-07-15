@@ -8,6 +8,22 @@
 
 use Drupal\user\Entity\User;
 
+/**
+ * Implements hook_preprocess_html().
+ */
+function carbray_theme_preprocess_html(&$variables) {
+  // Look at the url collect args to display them as body class.
+  $current_path = \Drupal::service('path.current')->getPath();
+  $path_args = explode('/', $current_path);
+  $path_string = 'path';
+  foreach ($path_args as $path_arg) {
+    $path_string .= $path_arg;
+    if ($path_arg != end($path_args)) {
+      $path_string .= '-';
+    }
+  }
+  $variables['attributes']['class'][] = $path_string;
+}
 
 function carbray_theme_preprocess_page(&$variables) {
   $current_path = \Drupal::service('path.current')->getPath();
