@@ -72,9 +72,19 @@ function carbray_theme_preprocess_form_element_label(&$variables) {
  * Implements hook_preprocess_page_title().
  */
 function carbray_theme_preprocess_page_title(&$variables) {
+  $current_path = \Drupal::service('path.current')->getPath();
+
+  if ($current_path == '/node/2' || $current_path == '/node/3') {
+    // Landing page for abogados. Replace page title with logged in user nombre + apellido.
+    $user = User::load(\Drupal::currentUser()->id());
+    $nombre = $user->get('field_nombre')->value;
+    $apellido = $user->get('field_apellido')->value;
+    $variables['title'] = $nombre . ' ' . $apellido;
+    return;
+  }
+
   // Logged in user accessing user/%uid page gets page title
   // rewritten from username to field_nombre, mail.
-  $current_path = \Drupal::service('path.current')->getPath();
   $path_args = explode('/', $current_path);
   $uid = 0;
   foreach ($path_args as $path_arg) {
