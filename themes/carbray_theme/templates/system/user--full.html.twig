@@ -1,0 +1,40 @@
+{#
+/**
+ * @file
+ * Default theme implementation to present all user data.
+ *
+ * This template is used when viewing a carbray admin's page i.e a user with 'worker' or 'carbray admin' role.
+ *
+ * Available variables:
+ * - content: A list of content items. Use 'content' to print all content, or
+ *   print a subset such as 'content.field_example'. Fields attached to a user
+ *   such as 'user_picture' are available as 'content.user_picture'.
+ * - attributes: HTML attributes for the container element.
+ * - user: A Drupal User entity.
+ *
+ * @see template_preprocess_user()
+ *
+ * @ingroup themeable
+ */
+#}
+<article{{ attributes }}>
+  {% if content %}
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="panel panel-default cliente-info">
+          <div class="panel-heading">
+            {{ 'Informacion del trabajador de Carbray'|trans }}
+          </div>
+          <div class="panel-body">
+            {{ content.field_nombre}}
+            {{ content.field_apellido }}
+            {{ content.field_email }}
+            {{ content.user_role }}
+            {{ content.field_telefono }}
+            {{ content.field_pais }}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</article>

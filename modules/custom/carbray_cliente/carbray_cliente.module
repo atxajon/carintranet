@@ -51,6 +51,12 @@ function carbray_cliente_entity_extra_field_info() {
     'description' => t('Boton para crear una nueva nota.'),
     'weight' => 100,
   );
+  $extra['user']['user']['display']['user_role'] = array(
+    'label' => t('User role'),
+    'description' => t('Muestra el rol del usuario.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
   return $extra;
 }
 
@@ -99,6 +105,7 @@ function carbray_cliente_theme_suggestions_user_alter(&$suggestions, $vars, $hoo
  * Implements hook_user_view().
  */
 function carbray_cliente_user_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  // Viewing a client page.
   if ($view_mode === 'cliente') {
     $uid = $entity->id();
     if ($display->getComponent('cliente_expediente')) {
@@ -116,7 +123,8 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
       ];
     }
     if ($display->getComponent('anadir_nota')) {
-      $form = \Drupal::formBuilder()->getForm('Drupal\carbray_cliente\Form\NewNotaForm');
+      $form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray_cliente\Form\NewNotaForm');
       $build['anadir_nota'] = [
         '#theme' => 'button_modal',
         '#unique_id' => 'anadir-nota-uid-' . $uid,
@@ -124,6 +132,32 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
         '#modal_title' => t('Nueva nota'),
         '#modal_content' => $form,
       ];
+    }
+  }
+  // Viewing a carbray admin/worker.
+  if ($view_mode === 'full') {
+    if ($display->getComponent('user_role')) {
+      // Look at the url (e.g user/9) and display its role on page.
+      $current_path = \Drupal::service('path.current')->getPath();
+      $path_args = explode('/', $current_path);
+      $uid = 0;
+      foreach ($path_args as $path_arg) {
+        if (is_numeric($path_arg)) {
+          $uid = $path_arg;
+        }
+      }
+      $user = User::load($uid);
+      $roles = $user->getRoles();
+      if (in_array('worker', $roles)) {
+        $build['user_role'] = array(
+          '#markup' => '<div class="field--label">Rol</div><div class="field--item">Abogado</div>',
+        );
+      }
+      elseif (in_array('carbray_administrator', $roles)) {
+        $build['user_role'] = array(
+          '#markup' => '<div class="field--label">Rol</div><div class="field--item">Administrador</div>',
+        );
+      }
     }
   }
 }
