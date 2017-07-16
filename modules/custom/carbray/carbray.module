@@ -187,3 +187,36 @@ function carbray_entity_view_alter(array &$build, EntityInterface $entity, Entit
     $response->send();
   }
 }
+
+/**
+ * Implements hook_menu_local_tasks_alter().
+ * @param $data
+ * @param $route_name
+ */
+function carbray_menu_local_tasks_alter(&$data, $route_name) {
+  // Users with worker role must not see 'view / edit' local task tabs when browsing other worker and carbray admin users at e.g /user/13.
+  $routes = ['entity.user.canonical'];
+  if (in_array($route_name, $routes)) {
+    // Get logged in user's role.
+    $current_user = \Drupal::currentUser();
+    $current_user_uid = $current_user->id();
+    $roles = $current_user->getRoles();
+    if (in_array('worker', $roles)) {
+      // Get user uid from url arg.
+      $current_path = \Drupal::service('path.current')->getPath();
+      $path_args = explode('/', $current_path);
+      $uid = 0;
+      foreach ($path_args as $path_arg) {
+        if (is_numeric($path_arg)) {
+          $uid = $path_arg;
+        }
+      }
+      // If currently logged in worker's uid and url's %uid do not match unset tabs.
+      if ($uid != $current_user_uid) {
+        foreach ($data['tabs'][0] as $key => $value) {
+          unset($data['tabs'][0][$key]);
+        }
+      }
+    }
+  }
+}
