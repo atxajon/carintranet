@@ -46,15 +46,15 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
       // If editing an internal user/carbray admin, unset non relevant fields.
       $current_path = \Drupal::service('path.current')->getPath();
       $path_args = explode('/', $current_path);
-      $uid = 0;
+      $form_owner_uid = 0;
       foreach ($path_args as $path_arg) {
         if (is_numeric($path_arg)) {
-          $uid = $path_arg;
+          $form_owner_uid = $path_arg;
         }
       }
-      $user = User::load($uid);
-      $roles = $user->getRoles();
-      if (in_array('worker', $roles) || in_array('carbray_administrator', $roles)) {
+      $form_owner_user = User::load($form_owner_uid);
+      $form_owner_roles = $form_owner_user->getRoles();
+      if (in_array('worker', $form_owner_roles) || in_array('carbray_administrator', $form_owner_roles)) {
         unset($form['field_fase']);
         unset($form['field_captador']);
         unset($form['field_responsable']);
@@ -64,6 +64,19 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
         unset($form['field_email']);
         unset($form['field_user_estado_de_captacion']);
       }
+
+      // A user of role Worker (uid 16) can't edit another user Worker/Carbray admin by guessing url (user/18/edit).
+      $current_user = \Drupal::currentUser();
+      $current_user_roles = $current_user->getRoles();
+      // @todo: can carbray admins edit Workers? if they cant, add to following line extra OR test for carbray_administrator.
+      if (in_array('worker', $current_user_roles)) {
+        if ($form_owner_uid != $current_user->id()) {
+          if (in_array('carbray_administrator', $form_owner_roles) || in_array('worker', $form_owner_roles)) {
+            throw new \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException();
+          }
+        }
+      }
+
       break;
   }
 }
@@ -180,6 +193,7 @@ function carbray_entity_view_alter(array &$build, EntityInterface $entity, Entit
     'factura',
   );
   if (in_array($entity->bundle(), $entities_to_redirect)) {
+    // @todo: tidy up this, is it needed??
     $url = Url::fromRoute('views_ui.add', [], ['absolute' => TRUE]);
     drupal_set_message(t('You have been redirected because...'), 'status', TRUE);
 //    $response = new RedirectResponse($url->getRouteName());
