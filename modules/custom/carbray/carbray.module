@@ -44,6 +44,8 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
 
     case 'user-form':
       // If editing an internal user/carbray admin, unset non relevant fields.
+      $is_internal_user = FALSE;
+      $is_user_resetting_pwd = FALSE;
       $current_path = \Drupal::service('path.current')->getPath();
       $path_args = explode('/', $current_path);
       $form_owner_uid = 0;
@@ -55,14 +57,16 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
       $form_owner_user = User::load($form_owner_uid);
       $form_owner_roles = $form_owner_user->getRoles();
       if (in_array('worker', $form_owner_roles) || in_array('carbray_administrator', $form_owner_roles)) {
-        unset($form['field_fase']);
-        unset($form['field_captador']);
-        unset($form['field_responsable']);
-        unset($form['field_fecha_alta']);
-        unset($form['field_identificacion']);
-        unset($form['field_notas']);
-        unset($form['field_email']);
-        unset($form['field_user_estado_de_captacion']);
+        $is_internal_user = TRUE;
+      }
+
+      // An internal user must not see/populate clients related fields. A user resetting pwd does must not see anything else than password reset box.
+      $pass_token = \Drupal::request()->query->get('pass-reset-token');
+      if ($pass_token) {
+        $is_user_resetting_pwd = TRUE;
+      }
+      if ($is_internal_user || $is_user_resetting_pwd) {
+        $form = _hide_user_form_fields($form, $is_user_resetting_pwd);
       }
 
       // A user of role Worker (uid 16) can't edit another user Worker/Carbray admin by guessing url (user/18/edit).
@@ -109,6 +113,23 @@ function carbray_form_user_pass_alter(&$form, FormStateInterface $form_state) {
   $form['actions']['submit']['#attributes'] = array('class' => array('btn-primary'));
 }
 
+/**
+ * Handles hiding fields on user form.
+ * @param $form
+ * @param bool $is_user_reset
+ * @return mixed
+ */
+function _hide_user_form_fields($form, $is_user_reset = FALSE) {
+  unset($form['field_fase']);
+  unset($form['field_captador']);
+  unset($form['field_responsable']);
+  unset($form['field_fecha_alta']);
+  unset($form['field_identificacion']);
+  unset($form['field_notas']);
+  unset($form['field_email']);
+  unset($form['field_user_estado_de_captacion']);
+  return $form;
+}
 /**
  * Form submission handler for user_login_form().
  *
@@ -189,7 +210,7 @@ function _carbray_redirecter() {
 function carbray_entity_view_alter(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display) {
   // Entities not meant to be accessed/viewable on front end.
   $entities_to_redirect = array(
-    'objetivos',
+//    'objetivos',
     'factura',
   );
   if (in_array($entity->bundle(), $entities_to_redirect)) {
