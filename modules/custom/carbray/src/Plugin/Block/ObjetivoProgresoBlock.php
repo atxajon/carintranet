@@ -20,27 +20,29 @@ class ObjetivoProgresoBlock extends BlockBase {
    * {@inheritdoc}
    */
   public function build() {
-    // Get current objetivo.
-//    $objetivo_nids = \Drupal::entityQuery('node')
-//        ->condition('type','objetivos')
-//        ->condition('status', 1)
-//        ->execute();
-//    $objetivo_nodes =  Node::loadMultiple($objetivo_nids);
-
-    // @todo: replace hardcoded val with dynamic selection of valid and active Objetivo.
-    $objetivo_node = Node::load(6);
-    $objetivo_cifra = $objetivo_node->get('field_objetivo_cifra')->value;
-    $objetivo_cifra = (float)$objetivo_cifra;
-
-    // Get total facturas for clients whose admin is viewing this.
-    // Get first the uid of currently logged in user.
-    $logged_in_worker_uid = \Drupal::currentUser()->id();
-    // Then get clients he's responsable of.
-    $users_of_worker = \Drupal::entityQuery('user')
-        ->condition('field_responsable', $logged_in_worker_uid)
-        ->execute();
-    $total_facturas = 0;
     $db = \Drupal::database();
+    $logged_in_worker_uid = \Drupal::currentUser()->id();
+    
+    // Get current objetivo for worker.
+    // @todo this code is working for when only 1 objetivo assigned currently for a user;
+    // need to test it when more are added; perhaps validate node submission when there is an existing objetivo for a user to alert admin on node creation??
+    $now = date('Y-m-d H:i:s');
+    $sql = "SELECT field_objetivo_cifra_value
+            FROM node__field_objetivo_cifra c
+            INNER JOIN node__field_objetivo_trabajador t on c.entity_id = t.entity_id
+            INNER JOIN node__field_objetivo_fecha_inicio fe on c.entity_id = fe.entity_id
+            INNER JOIN node__field_objetivo_fecha_final ff on c.entity_id = ff.entity_id
+            WHERE t.field_objetivo_trabajador_target_id = :uid
+            AND field_objetivo_fecha_inicio_value < :now
+            AND field_objetivo_fecha_final_value > :now";
+    $objetivo_cifra = $db->query($sql, array(':uid' => $logged_in_worker_uid, ':now' => $now))->fetchField();
+
+    // Get total facturas for clients whose admin is the logged in user viewing this.
+    // First get clients he's responsable of.
+    $users_of_worker = \Drupal::entityQuery('user')
+      ->condition('field_responsable', $logged_in_worker_uid)
+      ->execute();
+    $total_facturas = 0;
     foreach($users_of_worker as $user_of_worker) {
       // Get client's expediente to work out his bill cost.
       $query = \Drupal::entityQuery('node')
@@ -63,6 +65,8 @@ class ObjetivoProgresoBlock extends BlockBase {
     $percent = $total_facturas / $objetivo_cifra * 100;
     // Don't let percent exceed 100% when objetivo is achieved.
     $percent = ($percent > 100) ? 100 : $percent;
+
+    // @todo: Get current objetivo for departamento.
 
     return array(
       '#theme' => 'carbray_progress_bar',
