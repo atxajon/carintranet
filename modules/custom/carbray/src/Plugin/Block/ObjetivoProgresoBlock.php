@@ -22,7 +22,7 @@ class ObjetivoProgresoBlock extends BlockBase {
   public function build() {
     $db = \Drupal::database();
     $logged_in_worker_uid = \Drupal::currentUser()->id();
-    
+
     // Get current objetivo for worker.
     // @todo this code is working for when only 1 objetivo assigned currently for a user;
     // need to test it when more are added; perhaps validate node submission when there is an existing objetivo for a user to alert admin on node creation??
