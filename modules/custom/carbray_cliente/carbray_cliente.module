@@ -191,6 +191,7 @@ function get_expedientes_data($expediente_nids) {
       ->fetchAssoc();
     $alias = \Drupal::service('path.alias_manager')
       ->getAliasByPath('/node/' . $expediente_nid);
+    kint($alias);
     $data['link'] = $alias;
     $expedientes[] = $data;
   }

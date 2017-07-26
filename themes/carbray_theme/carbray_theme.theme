@@ -87,20 +87,23 @@ function carbray_theme_preprocess_page_title(&$variables) {
 
   // Logged in user accessing user/%uid page gets page title
   // rewritten from username to field_nombre, mail.
-  $path_args = explode('/', $current_path);
-  $uid = 0;
-  foreach ($path_args as $path_arg) {
-    if (is_numeric($path_arg)) {
-      $uid = $path_arg;
+  if (\Drupal::currentUser()->isAuthenticated()) {
+    $path_args = explode('/', $current_path);
+    $uid = 0;
+    foreach ($path_args as $path_arg) {
+      if (is_numeric($path_arg)) {
+        $uid = $path_arg;
+      }
+    }
+    $user = ($uid) ? User::load($uid) : \Drupal::currentUser();
+
+    if (in_array('user', $path_args) && $user->isAuthenticated()) {
+      $nombre = $user->get('field_nombre')->value;
+      $mail = $user->get('mail')->value;
+      $variables['title'] = $nombre . ', ' . $mail;
     }
   }
-  $user = ($uid) ? User::load($uid) : \Drupal::currentUser();
 
-  if (in_array('user', $path_args) && $user->isAuthenticated()) {
-    $nombre = $user->get('field_nombre')->value;
-    $mail = $user->get('mail')->value;
-    $variables['title'] = $nombre . ', ' . $mail;
-  }
 
 }
 
