@@ -7,6 +7,8 @@
  */
 
 use Drupal\user\Entity\User;
+use Drupal\Core\Url;
+use Drupal\Core\Link;
 
 /**
  * Implements hook_preprocess_html().
@@ -125,32 +127,45 @@ function carbray_theme_preprocess_taxonomy_term(&$variables) {
 
   // Terms of taxonomy 'departamento' display workers' data tagged with it.
   if ($type === 'departamento') {
-    $sql = "SELECT user__field_nombre.field_nombre_value AS nombre, user__field_apellido.field_apellido_value AS apellido, field_objetivo_trabajador_users_field_data.nid AS field_objetivo_trabajador_users_field_data_nid, taxonomy_term_field_data_user__field_departamento.tid AS taxonomy_term_field_data_user__field_departamento_tid
-FROM
-{users_field_data} users_field_data
-LEFT JOIN {node__field_objetivo_trabajador} node__field_objetivo_trabajador ON users_field_data.uid = node__field_objetivo_trabajador.field_objetivo_trabajador_target_id AND node__field_objetivo_trabajador.deleted = '0'
-LEFT JOIN {node_field_data} field_objetivo_trabajador_users_field_data ON node__field_objetivo_trabajador.entity_id = field_objetivo_trabajador_users_field_data.nid
-LEFT JOIN {user__field_departamento} user__field_departamento ON users_field_data.uid = user__field_departamento.entity_id AND (user__field_departamento.deleted = '0' AND user__field_departamento.langcode = users_field_data.langcode)
-LEFT JOIN {taxonomy_term_field_data} taxonomy_term_field_data_user__field_departamento ON user__field_departamento.field_departamento_target_id = taxonomy_term_field_data_user__field_departamento.tid
-INNER JOIN {user__roles} user__roles ON users_field_data.uid = user__roles.entity_id
-LEFT JOIN {user__field_nombre} user__field_nombre ON users_field_data.uid = user__field_nombre.entity_id AND (user__field_nombre.deleted = '0' AND user__field_nombre.langcode = users_field_data.langcode)
-LEFT JOIN {user__field_apellido} user__field_apellido ON users_field_data.uid = user__field_apellido.entity_id AND (user__field_apellido.deleted = '0' AND user__field_apellido.langcode = users_field_data.langcode)
-WHERE (((user__roles.roles_target_id IN('worker', 'carbray_administrator'))) AND ((taxonomy_term_field_data_user__field_departamento.tid = :tid ))) AND (users_field_data.status = '1')
-ORDER BY apellido ASC";
+    $sql = "SELECT user__field_nombre.field_nombre_value AS nombre,
+                  user__field_apellido.field_apellido_value AS apellido,
+                  mail,
+                  users_field_data.uid,
+                  nfd.nid AS field_objetivo_trabajador_users_field_data_nid,
+                  taxonomy_term_field_data_user__field_departamento.tid AS departamento_tid,
+                  field_objetivo_cifra_value
+            FROM {users_field_data} users_field_data
+            LEFT JOIN {node__field_objetivo_trabajador} node__field_objetivo_trabajador ON users_field_data.uid = node__field_objetivo_trabajador.field_objetivo_trabajador_target_id AND node__field_objetivo_trabajador.deleted = '0'
+            LEFT JOIN {node_field_data} nfd ON node__field_objetivo_trabajador.entity_id = nfd.nid
+            LEFT JOIN {user__field_departamento} user__field_departamento ON users_field_data.uid = user__field_departamento.entity_id AND (user__field_departamento.deleted = '0' AND user__field_departamento.langcode = users_field_data.langcode)
+            LEFT JOIN {taxonomy_term_field_data} taxonomy_term_field_data_user__field_departamento ON user__field_departamento.field_departamento_target_id = taxonomy_term_field_data_user__field_departamento.tid
+            INNER JOIN {user__roles} user__roles ON users_field_data.uid = user__roles.entity_id
+            LEFT JOIN {user__field_nombre} user__field_nombre ON users_field_data.uid = user__field_nombre.entity_id AND (user__field_nombre.deleted = '0' AND user__field_nombre.langcode = users_field_data.langcode)
+            LEFT JOIN {user__field_apellido} user__field_apellido ON users_field_data.uid = user__field_apellido.entity_id AND (user__field_apellido.deleted = '0' AND user__field_apellido.langcode = users_field_data.langcode)
+            LEFT JOIN {node__field_objetivo_cifra} oc ON nfd.nid = oc.entity_id
+            WHERE (((user__roles.roles_target_id IN('worker', 'carbray_administrator')))
+            AND ((taxonomy_term_field_data_user__field_departamento.tid = :tid )))
+            AND (users_field_data.status = '1')
+            ORDER BY apellido ASC";
 
     $db = \Drupal::database();
     $trabajadores = $db->query($sql, array(':tid' => $tid))->fetchAll();
     $rows = array();
     foreach ($trabajadores as $trabajador) {
+      $url = Url::fromRoute('entity.user.canonical', array('user' => $trabajador->uid));
+      $user_link = Link::fromTextAndUrl($trabajador->nombre . ' ' . $trabajador->apellido, $url);
+
       $rows[] = array(
-        $trabajador->nombre,
-        $trabajador->apellido,
+        $user_link,
+        $trabajador->mail,
+        $trabajador->field_objetivo_cifra_value,
       );
     }
 
     $header = array(
       'Nombre',
-      'Apellido',
+      'Email',
+      'Objetivo actual individual',
     );
     $build = array(
       '#type' => 'table',
@@ -158,6 +173,8 @@ ORDER BY apellido ASC";
       '#rows' => $rows,
     );
     $variables['trabajadores'] = $build;
+
+    // @todo: Also display departamento objetivos progress bar.
   }
 
 }
