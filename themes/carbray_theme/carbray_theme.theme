@@ -121,7 +121,8 @@ function carbray_theme_preprocess_user(&$variables) {
 }
 
 /**
- * Implements template_preprocess_taxonomy_term()
+ * Implements template_preprocess_taxonomy_term().
+ * @todo: move all this to a module??
  */
 function carbray_theme_preprocess_taxonomy_term(&$variables) {
   $db = \Drupal::database();
@@ -129,8 +130,9 @@ function carbray_theme_preprocess_taxonomy_term(&$variables) {
   $tid = $term->id();
   $type = $term->bundle();
 
-  // Terms of taxonomy 'departamento' display workers' data tagged with it.
+
   if ($type === 'departamento') {
+    // Terms of taxonomy 'departamento' display table of its workers.
     $sql = "SELECT user__field_nombre.field_nombre_value AS nombre,
                   user__field_apellido.field_apellido_value AS apellido,
                   mail,
@@ -177,7 +179,32 @@ function carbray_theme_preprocess_taxonomy_term(&$variables) {
     );
     $variables['trabajadores'] = $build;
 
-    // @todo: Also display departamento objetivos progress bar.
+    // Display drodpown to navigate to other Departamentos.
+    $sql = "SELECT tid FROM taxonomy_term_field_data WHERE vid= 'departamento' AND tid != :current_tid";
+    $departamentos_tids = $db->query($sql, array(':current_tid' => $tid))->fetchCol();
+
+    $departamento_terms = \Drupal::entityTypeManager()
+              ->getStorage('taxonomy_term')
+              ->loadMultiple($departamentos_tids);
+
+    foreach ($departamento_terms as $departamento_term) {
+      $departamento_title = $departamento_term->name->value;
+      $url = Url::fromRoute('entity.taxonomy_term.canonical', array('taxonomy_term' => $departamento_term->id()));
+      $departamento_link = Link::fromTextAndUrl($departamento_title, $url);
+      // @todo: on select clicked go to!
+      $options[$departamento_term->id()] = $departamento_term->name->value;
+    }
+
+    $select_list = array(
+      '#type' => 'select',
+      '#options' => $options,
+    );
+
+    $variables['otros_departamentos'] = $select_list;
+
+
+
+    // Display objetivo progress bar(s).
     $now = date('Y-m-d H:i:s');
     // @todo move all this repeated logic also happening on ObjetivoProgressoBlock.php,
     // to a class or callback and reuse.
