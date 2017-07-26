@@ -28,9 +28,12 @@
 <div{{ attributes }}>
   {{ title_prefix }}
   {% if not page %}
-    <h2><a href="{{ url }}">{{ name }}</a></h2>
+    <h2><a href="{{ url }}">{{ name|raw }}</a></h2>
   {% endif %}
   {{ title_suffix }}
   {{ content }}
+  <h4>Trabajadores en departamento {{ name }}</h4>
   {{ trabajadores }}
+  <h4>Objetivos</h4>
+  {{ objetivo }}
 </div>

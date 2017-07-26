@@ -121,6 +121,7 @@ function carbray_theme_preprocess_user(&$variables) {
  * Implements template_preprocess_taxonomy_term()
  */
 function carbray_theme_preprocess_taxonomy_term(&$variables) {
+  $db = \Drupal::database();
   $term = $variables['elements']['#taxonomy_term'];
   $tid = $term->id();
   $type = $term->bundle();
@@ -148,7 +149,6 @@ function carbray_theme_preprocess_taxonomy_term(&$variables) {
             AND (users_field_data.status = '1')
             ORDER BY apellido ASC";
 
-    $db = \Drupal::database();
     $trabajadores = $db->query($sql, array(':tid' => $tid))->fetchAll();
     $rows = array();
     foreach ($trabajadores as $trabajador) {
@@ -175,6 +175,36 @@ function carbray_theme_preprocess_taxonomy_term(&$variables) {
     $variables['trabajadores'] = $build;
 
     // @todo: Also display departamento objetivos progress bar.
+    $now = date('Y-m-d H:i:s');
+    // @todo move all this repeated logic also happening on ObjetivoProgressoBlock.php,
+    // to a class or callback and reuse.
+    $sql = "SELECT field_objetivo_cifra_value
+            FROM node__field_objetivo_cifra c
+            INNER JOIN node__field_objetivo_departamento d on c.entity_id = d.entity_id
+            INNER JOIN node__field_objetivo_fecha_inicio fe on c.entity_id = fe.entity_id
+            INNER JOIN node__field_objetivo_fecha_final ff on c.entity_id = ff.entity_id
+            WHERE d.field_objetivo_departamento_target_id = :tid
+            AND field_objetivo_fecha_inicio_value < :now
+            AND field_objetivo_fecha_final_value > :now";
+    $objetivo_cifra = $db->query($sql, array(':tid' => $tid, ':now' => $now))->fetchField();
+
+    // @todo: remove hardcoded!
+    $total_facturas = 3000.12;
+    $total_facturas = (float)$total_facturas;
+    $percent = $total_facturas / $objetivo_cifra * 100;
+    // Don't let percent exceed 100% when objetivo is achieved.
+    $percent = ($percent > 100) ? 100 : $percent;
+
+    $build = array(
+      '#theme' => 'carbray_progress_bar',
+      '#animate' => FALSE,
+      '#large' => TRUE,
+      '#percent' => $percent,
+      '#objetivo_cifra' => $objetivo_cifra,
+      '#facturado' => $total_facturas,
+    );
+    $variables['objetivo'] = $build;
+
   }
 
 }
