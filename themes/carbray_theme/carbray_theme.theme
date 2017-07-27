@@ -180,27 +180,9 @@ function carbray_theme_preprocess_taxonomy_term(&$variables) {
     $variables['trabajadores'] = $build;
 
     // Display drodpown to navigate to other Departamentos.
-    $sql = "SELECT tid FROM taxonomy_term_field_data WHERE vid= 'departamento' AND tid != :current_tid";
-    $departamentos_tids = $db->query($sql, array(':current_tid' => $tid))->fetchCol();
+    $form = \Drupal::formBuilder()->getForm('Drupal\carbray\Form\NavigateDepartamentosForm');
 
-    $departamento_terms = \Drupal::entityTypeManager()
-              ->getStorage('taxonomy_term')
-              ->loadMultiple($departamentos_tids);
-
-    foreach ($departamento_terms as $departamento_term) {
-      $departamento_title = $departamento_term->name->value;
-      $url = Url::fromRoute('entity.taxonomy_term.canonical', array('taxonomy_term' => $departamento_term->id()));
-      $departamento_link = Link::fromTextAndUrl($departamento_title, $url);
-      // @todo: on select clicked go to!
-      $options[$departamento_term->id()] = $departamento_term->name->value;
-    }
-
-    $select_list = array(
-      '#type' => 'select',
-      '#options' => $options,
-    );
-
-    $variables['otros_departamentos'] = $select_list;
+    $variables['otros_departamentos'] = $form;
 
 
 
@@ -218,23 +200,26 @@ function carbray_theme_preprocess_taxonomy_term(&$variables) {
             AND field_objetivo_fecha_final_value > :now";
     $objetivo_cifra = $db->query($sql, array(':tid' => $tid, ':now' => $now))->fetchField();
 
-    // @todo: remove hardcoded!
-    $total_facturas = 3000.12;
-    $total_facturas = (float)$total_facturas;
-    $percent = $total_facturas / $objetivo_cifra * 100;
-    // Don't let percent exceed 100% when objetivo is achieved.
-    $percent = ($percent > 100) ? 100 : $percent;
+    if (!$objetivo_cifra) {
+      $variables['objetivo'] = 'No hay objetivo creado todavia.';
+    }
+    else {
+      // @todo: remove hardcoded!
+      $total_facturas = 3000.12;
+      $total_facturas = (float)$total_facturas;
+      $percent = $total_facturas / $objetivo_cifra * 100;
+      // Don't let percent exceed 100% when objetivo is achieved.
+      $percent = ($percent > 100) ? 100 : $percent;
 
-    $build = array(
-      '#theme' => 'carbray_progress_bar',
-      '#animate' => FALSE,
-      '#large' => TRUE,
-      '#percent' => $percent,
-      '#objetivo_cifra' => $objetivo_cifra,
-      '#facturado' => $total_facturas,
-    );
-    $variables['objetivo'] = $build;
-
+      $build = array(
+        '#theme' => 'carbray_progress_bar',
+        '#animate' => FALSE,
+        '#large' => TRUE,
+        '#percent' => $percent,
+        '#objetivo_cifra' => $objetivo_cifra,
+        '#facturado' => $total_facturas,
+      );
+      $variables['objetivo'] = $build;
+    }
   }
-
 }

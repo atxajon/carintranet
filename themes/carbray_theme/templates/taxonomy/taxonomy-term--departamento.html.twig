@@ -1,7 +1,7 @@
 {#
 /**
  * @file
- * Default theme implementation to display a taxonomy term.
+ * Theme implementation to display a taxonomy term of departamento.
  *
  * Available variables:
  * - url: URL of the current term.
@@ -31,11 +31,18 @@
     <h2><a href="{{ url }}">{{ name|raw }}</a></h2>
   {% endif %}
   {{ title_suffix }}
-  {{ content }}
-  <h4>Trabajadores en departamento {{ name }}</h4>
-  {{ trabajadores }}
-  <h4>Objetivos</h4>
-  {{ objetivo }}
-  <h4>Otros departamentos</h4>
-  {{ otros_departamentos }}
+  <div class="row">
+    <div class="col-sm-3 col-lg-2">
+      <h4>Otros departamentos</h4>
+      {{ otros_departamentos }}
+    </div>
+    <div class="col-sm-9 col-lg-10">
+      {{ content }}
+      <h4>Trabajadores en departamento {{ name }}</h4>
+      {{ trabajadores }}
+      <h4>Objetivos</h4>
+      {{ objetivo }}
+    </div>
+  </div>
+
 </div>
