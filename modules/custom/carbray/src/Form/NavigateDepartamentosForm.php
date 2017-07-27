@@ -22,14 +22,10 @@ class NavigateDepartamentosForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state) {
-
-
+  public function buildForm(array $form, FormStateInterface $form_state, $tid = NULL) {
     $db = \Drupal::database();
-    // @todo: remove hardcoded and obtain it as parameter.
-    $tid = 38;
 
-    // Display drodpown to navigate to other Departamentos.
+    // Query for all other departmaentos but current tid's one.
     $sql = "SELECT tid FROM taxonomy_term_field_data WHERE vid= 'departamento' AND tid != :current_tid";
     $departamentos_tids = $db->query($sql, array(':current_tid' => $tid))->fetchCol();
 

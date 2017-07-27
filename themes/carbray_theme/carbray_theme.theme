@@ -180,7 +180,7 @@ function carbray_theme_preprocess_taxonomy_term(&$variables) {
     $variables['trabajadores'] = $build;
 
     // Display drodpown to navigate to other Departamentos.
-    $form = \Drupal::formBuilder()->getForm('Drupal\carbray\Form\NavigateDepartamentosForm');
+    $form = \Drupal::formBuilder()->getForm('Drupal\carbray\Form\NavigateDepartamentosForm', $tid);
 
     $variables['otros_departamentos'] = $form;
 
