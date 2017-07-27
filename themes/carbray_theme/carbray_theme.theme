@@ -223,3 +223,18 @@ function carbray_theme_preprocess_taxonomy_term(&$variables) {
     }
   }
 }
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ */
+function carbray_theme_theme_suggestions_field_alter(&$suggestions, $vars, $hook) {
+  $element = $vars['element'];
+  // List all the fields that will need to output content without div wrappers.
+  $nowrapper_fields = array(
+    'name',
+  );
+  if (in_array($element['#field_name'], $nowrapper_fields)) {
+    $suggestions[] = 'field' . '__' . 'nowrapper';
+  }
+
+}
