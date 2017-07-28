@@ -8,6 +8,7 @@
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Link;
+use Drupal\taxonomy\Entity\Term;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -81,6 +82,75 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
         }
       }
 
+      break;
+    case 'node-objetivos-form':
+    case 'node-objetivos-edit-form':
+      // Hide Objetivo title field.
+      $form['title']['#access'] = FALSE;
+      // Add custom validate handler.
+      $form['#validate'][] = 'either_trabajador_or_departamento';
+      break;
+  }
+}
+
+/**
+ * Custom validate handler to ensure only trabajador or departamento are filled in by admin BUT NOT BOTH.
+ */
+function either_trabajador_or_departamento(array &$form, FormStateInterface $form_state) {
+  $trabajador_uid = $form_state->getValue('field_objetivo_trabajador');
+  $trabajador_uid = $trabajador_uid[0]['target_id'];
+
+  $departamento_tid = $form_state->getValue('field_objetivo_departamento');
+  $departamento_tid = $departamento_tid[0]['target_id'];
+
+  // User filled in both departamento and trabajador fields: throw error.
+  if ($trabajador_uid && $departamento_tid) {
+    $form_state->setErrorByName('field_objetivo_trabajador', t('Has rellenado el objetivo para un trabajador y departamento al mismo tiempo; un objetivo solo puede ser para uno u otro, rellena un campo y otro pero no ambos.'));
+  }
+}
+
+
+/**
+ * Implements hook_node_presave().
+ */
+function carbray_node_presave(Drupal\Core\Entity\EntityInterface $node) {
+  switch ($node->getType()) {
+    case 'objetivos':
+      /**
+       * Dynamically populate objetivo title based on entered node fields.
+       */
+      $trabajador_uid = $node->get('field_objetivo_trabajador')->getValue();
+      $trabajador_uid = ($trabajador_uid) ? $trabajador_uid[0]['target_id'] : $trabajador_uid;
+
+      $departamento_tid = $node->get('field_objetivo_departamento')
+        ->getValue();
+      $departamento_tid = ($departamento_tid) ? $departamento_tid[0]['target_id'] : $departamento_tid;
+
+      $fecha_inicio = $node->get('field_objetivo_fecha_inicio')->value;
+      $f1 = strtotime($fecha_inicio);
+      $format = "d-M-Y";
+      $formatted_fecha_inicio = date($format, $f1);
+
+      $fecha_final = $node->get('field_objetivo_fecha_final')->value;
+      $f2 = strtotime($fecha_final);
+      $formatted_fecha_final = date($format, $f2);
+
+      $collected_title = '';
+      if ($trabajador_uid) {
+        $account = User::load($trabajador_uid);
+        $nombre = $account->get('field_nombre')->value;
+        $apellido = $account->get('field_apellido')->value;
+        $collected_title .= $nombre . ' ' . $apellido;
+      }
+      if ($departamento_tid) {
+        $term = Term::load($departamento_tid);
+        $departamento_nombre = $term->get('name')->value;
+        $collected_title .= $departamento_nombre;
+      }
+
+      $collected_title .= ' de ' . $formatted_fecha_inicio . ' a ' . $formatted_fecha_final;
+
+      $node->title = $collected_title;
       break;
   }
 }

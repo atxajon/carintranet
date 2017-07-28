@@ -201,7 +201,7 @@ function carbray_theme_preprocess_taxonomy_term(&$variables) {
     $objetivo_cifra = $db->query($sql, array(':tid' => $tid, ':now' => $now))->fetchField();
 
     if (!$objetivo_cifra) {
-      $variables['objetivo'] = 'No hay objetivo creado todavia.';
+      $variables['objetivo'] = t('Este departamento no tiene objetivo actual creado todavia.');
     }
     else {
       // @todo: remove hardcoded!
@@ -236,5 +236,4 @@ function carbray_theme_theme_suggestions_field_alter(&$suggestions, $vars, $hook
   if (in_array($element['#field_name'], $nowrapper_fields)) {
     $suggestions[] = 'field' . '__' . 'nowrapper';
   }
-
 }
