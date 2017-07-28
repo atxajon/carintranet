@@ -89,6 +89,7 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
       $form['title']['#access'] = FALSE;
       // Add custom validate handler.
       $form['#validate'][] = 'either_trabajador_or_departamento';
+      // @todo add another handler to deal with already existing in current timeframe objetivos for this entity.
       break;
   }
 }
@@ -108,7 +109,6 @@ function either_trabajador_or_departamento(array &$form, FormStateInterface $for
     $form_state->setErrorByName('field_objetivo_trabajador', t('Has rellenado el objetivo para un trabajador y departamento al mismo tiempo; un objetivo solo puede ser para uno u otro, rellena un campo y otro pero no ambos.'));
   }
 }
-
 
 /**
  * Implements hook_node_presave().
