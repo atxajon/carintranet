@@ -3,7 +3,6 @@
 namespace Drupal\carbray\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
-use Drupal\node\Entity\Node;
 
 /**
  * Provides an Objetivos progreso Block.

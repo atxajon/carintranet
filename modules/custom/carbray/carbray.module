@@ -13,6 +13,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\user\Entity\User;
+use Drupal\carbray\ProgressBar;
 
 
 /**
@@ -323,5 +324,55 @@ function carbray_menu_local_tasks_alter(&$data, $route_name) {
         }
       }
     }
+  }
+}
+
+/**
+ * Implements template_preprocess_node().
+ *
+ * @param $variables
+ */
+function carbray_preprocess_node(&$variables) {
+  $node = $variables['elements']['#node'];
+  $nid = $node->id();
+  // Landing pages for Carbray workers/administrators add ProgressBar element.
+  if ($nid == '2' || $nid == '3') {
+
+    $logged_in_worker_uid = \Drupal::currentUser()->id();
+
+    $progress = new ProgressBar('user');
+    $progress->getTrabajadorObjetivo($logged_in_worker_uid);
+    if (!$progress->cifra) {
+      $variables['objetivo'] = t('Este trabajador no tiene objetivo actual creado todavia.');
+    }
+    else {
+      // @todo: remove hardcoded!
+      $total_facturas = 3000.12;
+      $total_facturas = (float)$total_facturas;
+      $percent = $total_facturas / $progress->cifra * 100;
+      // Don't let percent exceed 100% when objetivo is achieved.
+      $percent = ($percent > 100) ? 100 : $percent;
+
+      $build = array(
+        '#theme' => 'carbray_progress_bar',
+        '#animate' => FALSE,
+        '#large' => TRUE,
+        '#percent' => $percent,
+        '#objetivo_cifra' => $progress->cifra,
+        '#facturado' => $total_facturas,
+      );
+
+      $fi = strtotime($progress->fecha_inicio);
+      $format = "d-M-Y";
+      $formatted_fecha_inicio = date($format, $fi);
+
+      $ff = strtotime($progress->fecha_final);
+      $formatted_fecha_final = date($format, $ff);
+
+      $variables['titulo_objetivo'] = 'Objetivo de ' . $formatted_fecha_inicio . ' a ' . $formatted_fecha_final;
+      $variables['objetivo'] = $build;
+
+    }
+
   }
 }

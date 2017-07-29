@@ -9,6 +9,7 @@
 use Drupal\user\Entity\User;
 use Drupal\Core\Url;
 use Drupal\Core\Link;
+use Drupal\carbray\ProgressBar;
 
 /**
  * Implements hook_preprocess_html().
@@ -185,27 +186,16 @@ function carbray_theme_preprocess_taxonomy_term(&$variables) {
     $variables['otros_departamentos'] = $form;
 
     // Display objetivo progress bar.
-    $now = date('Y-m-d H:i:s');
-    // @todo move all this repeated logic also happening on ObjetivoProgressoBlock.php,
-    // to a class or callback and reuse.
-    $sql = "SELECT field_objetivo_cifra_value as cifra, fe.field_objetivo_fecha_inicio_value as fecha_inicio, ff.field_objetivo_fecha_final_value as fecha_final
-            FROM node__field_objetivo_cifra c
-            INNER JOIN node__field_objetivo_departamento d on c.entity_id = d.entity_id
-            INNER JOIN node__field_objetivo_fecha_inicio fe on c.entity_id = fe.entity_id
-            INNER JOIN node__field_objetivo_fecha_final ff on c.entity_id = ff.entity_id
-            WHERE d.field_objetivo_departamento_target_id = :tid
-            AND field_objetivo_fecha_inicio_value < :now
-            AND field_objetivo_fecha_final_value > :now";
-    $objetivo = $db->query($sql, array(':tid' => $tid, ':now' => $now))->fetchAll();
-
-    if (!$objetivo) {
+    $progress = new ProgressBar('term');
+    $progress->getDepartamentoObjetivo($tid);
+    if (!$progress->cifra) {
       $variables['objetivo'] = t('Este departamento no tiene objetivo actual creado todavia.');
     }
     else {
       // @todo: remove hardcoded!
       $total_facturas = 3000.12;
       $total_facturas = (float)$total_facturas;
-      $percent = $total_facturas / $objetivo[0]->cifra * 100;
+      $percent = $total_facturas / $progress->cifra * 100;
       // Don't let percent exceed 100% when objetivo is achieved.
       $percent = ($percent > 100) ? 100 : $percent;
 
@@ -214,15 +204,15 @@ function carbray_theme_preprocess_taxonomy_term(&$variables) {
         '#animate' => FALSE,
         '#large' => TRUE,
         '#percent' => $percent,
-        '#objetivo_cifra' => $objetivo[0]->cifra,
+        '#objetivo_cifra' => $progress->cifra,
         '#facturado' => $total_facturas,
       );
 
-      $fi = strtotime($objetivo[0]->fecha_inicio);
+      $fi = strtotime($progress->fecha_inicio);
       $format = "d-M-Y";
       $formatted_fecha_inicio = date($format, $fi);
 
-      $ff = strtotime($objetivo[0]->fecha_final);
+      $ff = strtotime($progress->fecha_final);
       $formatted_fecha_final = date($format, $ff);
 
       $variables['titulo_objetivo'] = 'Objetivo de ' . $formatted_fecha_inicio . ' a ' . $formatted_fecha_final;
