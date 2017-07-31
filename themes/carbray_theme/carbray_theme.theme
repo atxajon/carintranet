@@ -192,31 +192,8 @@ function carbray_theme_preprocess_taxonomy_term(&$variables) {
       $variables['objetivo'] = t('Este departamento no tiene objetivo actual creado todavia.');
     }
     else {
-      // @todo: remove hardcoded!
-      $total_facturas = 3000.12;
-      $total_facturas = (float)$total_facturas;
-      $percent = $total_facturas / $progress->cifra * 100;
-      // Don't let percent exceed 100% when objetivo is achieved.
-      $percent = ($percent > 100) ? 100 : $percent;
-
-      $build = array(
-        '#theme' => 'carbray_progress_bar',
-        '#animate' => FALSE,
-        '#large' => TRUE,
-        '#percent' => $percent,
-        '#objetivo_cifra' => $progress->cifra,
-        '#facturado' => $total_facturas,
-      );
-
-      $fi = strtotime($progress->fecha_inicio);
-      $format = "d-M-Y";
-      $formatted_fecha_inicio = date($format, $fi);
-
-      $ff = strtotime($progress->fecha_final);
-      $formatted_fecha_final = date($format, $ff);
-
-      $variables['titulo_objetivo'] = 'Objetivo de ' . $formatted_fecha_inicio . ' a ' . $formatted_fecha_final;
-      $variables['objetivo'] = $build;
+      $variables['titulo_objetivo'] = 'Objetivo de ' . $progress->fecha_inicio . ' a ' . $progress->fecha_final;
+      $variables['objetivo'] = $progress->buildArray();
     }
   }
 }
