@@ -109,3 +109,14 @@ $settings['skip_permissions_hardening'] = TRUE;
 $settings['twig_debug'] = TRUE;
 
 $settings['class_loader_auto_detect'] = FALSE;
+
+$databases['default']['default'] = array (
+  'database' => 'carbray',
+  'username' => 'root',
+  'password' => 'root',
+  'prefix' => '',
+  'host' => 'localhost',
+  'port' => '3306',
+  'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',
+  'driver' => 'mysql',
+);
