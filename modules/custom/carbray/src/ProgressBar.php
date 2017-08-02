@@ -47,9 +47,9 @@ ff.field_objetivo_fecha_final_value as fecha_final
             AND field_objetivo_fecha_final_value > :now";
     $objetivo = $this->db->query($sql, array(':uid' => $uid, ':now' => $this->now))->fetchAll();
 
-    $this->cifra = $objetivo[0]->cifra;
-    $this->fecha_inicio = $this->formatDate($objetivo[0]->fecha_inicio);
-    $this->fecha_final = $this->formatDate($objetivo[0]->fecha_final);
+    $this->cifra = ($objetivo) ? $objetivo[0]->cifra : '';
+    $this->fecha_inicio = ($objetivo) ? $this->formatDate($objetivo[0]->fecha_inicio) : '';
+    $this->fecha_final = ($objetivo) ? $this->formatDate($objetivo[0]->fecha_final) : '';
   }
 
   /**
