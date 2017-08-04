@@ -26,6 +26,7 @@ class NewClientForm extends FormBase {
     $entityManager = \Drupal::service('entity_field.manager');
     $fields = $entityManager->getFieldStorageDefinitions('user');
     $options = options_allowed_values($fields['field_fase']);
+    $form['#attributes']['class'][] = 'block';
 
     $form['fase'] = array(
       '#type' => 'select',

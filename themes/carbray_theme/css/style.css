@@ -32,6 +32,9 @@ ul {
   margin: 0;
   padding: 0;
 }
+.logo .center-block {
+  max-width: 160px;
+}
 .dashboard-heading {
   padding-left: 15px;
 }
@@ -188,4 +191,21 @@ ul {
   border-radius: .25rem;
   margin-bottom: 20px;
   padding: 10px 20px;
+}
+
+.form-item-field-user-estado-de-captacion-target-id,
+.form-item-field-user-estado-de-captacion-target-id .control-label,
+.form-item-field-user-estado-de-captacion-target-id select {
+  margin-bottom: 10px;
+}
+.form-inline .form-item-items-per-page {
+  margin-bottom: 10px;
+  display: block;
+}
+
+@media screen and (min-width: 992px) {
+  .carbray-new-client .form-item,
+  .carbray-new-expediente .form-item {
+    width: 40%;
+  }
 }
