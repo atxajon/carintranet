@@ -20,7 +20,7 @@ class GestionarTrabajadoresBlock extends BlockBase {
    */
   public function build() {
 
-    $results = db_query('SELECT field_nombre_value as nombre, field_apellido_value as apellido, mail, field_departamento_target_id as tid FROM users_field_data ufd INNER JOIN user__roles ur ON ufd.uid = ur. entity_id LEFT JOIN user__field_nombre n on n.entity_id = ufd.uid LEFT JOIN user__field_apellido a on a.entity_id = ufd.uid LEFT JOIN user__field_departamento d on d.entity_id = ufd.uid LEFT JOIN node__field_objetivo_trabajador ot on ot.field_objetivo_trabajador_target_id = ufd.uid')->fetchAll();
+    $results = db_query('SELECT field_nombre_value as nombre, field_apellido_value as apellido, mail, field_departamento_target_id as tid FROM users_field_data ufd INNER JOIN user__roles ur ON ufd.uid = ur. entity_id LEFT JOIN user__field_nombre n on n.entity_id = ufd.uid LEFT JOIN user__field_apellido a on a.entity_id = ufd.uid LEFT JOIN user__field_departamento d on d.entity_id = ufd.uid LEFT JOIN node__field_objetivo_trabajador ot on ot.field_objetivo_trabajador_target_id = ufd.uid WHERE ufd.status = 1')->fetchAll();
     foreach ($results as $result) {
       if ($result->tid) {
         $departamento_term = \Drupal::entityTypeManager()
