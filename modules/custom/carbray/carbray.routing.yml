@@ -12,3 +12,10 @@ carbray.add_expediente_form:
     _form: '\Drupal\carbray\Form\NewExpedienteForm'
   requirements:
     _permission: 'access content'
+carbray.add_objetivo_form:
+  path: '/crear-objetivo'
+  defaults:
+    _title: 'Crear nuevo objetivo'
+    _form: '\Drupal\carbray\Form\NewObjetivoForm'
+  requirements:
+    _permission: 'access content'

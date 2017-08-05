@@ -58,10 +58,7 @@ class NewClientForm extends FormBase {
 
     // @todo: añadir campo identificacion.
 
-    $db = \Drupal::database();
-    $sql = 'SELECT uid, mail FROM users_field_data ufd INNER JOIN user__roles ur ON ufd.uid = ur. entity_id';
-    $internal_users = $db->query($sql)->fetchAllKeyed();
-
+    $internal_users = get_carbray_workers();
     $form['captador'] = array(
       '#type' => 'select',
       '#title' => 'Captador',

@@ -8,3 +8,8 @@ carbray.add_new_expediente:
   description: 'glyphicon glyphicon-plus-sign'
   route_name: carbray.add_expediente_form
   menu_name: worker-menu
+carbray.add_new_objetivo:
+  title: 'Nuevo objetivo'
+  description: 'glyphicon glyphicon-plus-sign'
+  route_name: carbray.add_objetivo_form
+  menu_name: worker-menu
