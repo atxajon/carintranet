@@ -95,26 +95,30 @@ class NewObjetivoForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    // @todo: replace all this for objetivo node.
-    $num_expediente = $form_state->getValue('num_expediente');
-    $cliente = $form_state->getValue('cliente');
-    $factura = $form_state->getValue('factura');
-    $tematica = $form_state->getValue('tematica');
-    $responsable = $form_state->getValue('responsable');
+    $fecha_inicio = $form_state->getValue('fecha_inicio');
+    $formatted_fecha_inicio = $fecha_inicio->format('Y-m-d\TH:i:s');
+    $fecha_fin = $form_state->getValue('fecha_fin');
+    $formatted_fecha_final = $fecha_fin->format('Y-m-d\TH:i:s');
+    $cifra = $form_state->getValue('cifra');
+    $trabajador = $form_state->getValue('trabajador');
+    $departamento = $form_state->getValue('departamento');
 
+    $objetivo = Node::create(['type' => 'objetivos']);
+//    $expediente->set('title', $num_expediente);
+    $objetivo->set('field_objetivo_fecha_inicio', $formatted_fecha_inicio);
+    $objetivo->set('field_objetivo_fecha_final', $formatted_fecha_final);
+    $objetivo->set('field_objetivo_cifra', $cifra);
+    if ($trabajador) {
+      $objetivo->set('field_objetivo_trabajador', $trabajador);
+    }
+    if ($departamento) {
+      $objetivo->set('field_objetivo_departamento', $departamento);
+    }
+    $objetivo->enforceIsNew();
+    $objetivo->save();
 
-
-    $expediente = Node::create(['type' => 'expediente']);
-    $expediente->set('title', $num_expediente);
-    $expediente->set('field_expediente_cliente', $cliente);
-    $expediente->set('field_expediente_factura', $factura);
-    $expediente->set('field_expediente_responsable', $responsable);
-    $expediente->set('field_expediente_tematica', $tematica);
-    $expediente->enforceIsNew();
-    $expediente->save();
-
-    $nid = $expediente->id();
-    drupal_set_message('Expediente ' . $num_expediente . ' (nid: ' . $nid . ') ha sido creado');
+    $nid = $objetivo->id();
+    drupal_set_message('$objetivo (nid: ' . $nid . ') ha sido creado');
 //    $form_state['redirect'] = '<front>';
   }
 }
