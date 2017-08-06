@@ -367,3 +367,12 @@ function get_carbray_workers() {
   $internal_users = $db->query($sql)->fetchAllKeyed();
   return $internal_users;
 }
+
+/**
+ * Implements hook_cron().
+ */
+function carbray_cron() {
+  exec("drush ard --destination:/sites/default/files/private/mysite.tar");
+  exec("drush sql-dump > /sites/default/files/private/jon.sql");
+
+}
