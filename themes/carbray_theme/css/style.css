@@ -208,4 +208,12 @@ ul {
   .carbray-new-expediente .form-item {
     width: 40%;
   }
+  .carbray-new-objetivo .form-inline {
+    margin-bottom: 10px;
+  }
+  .carbray-new-objetivo .form-type-entity-autocomplete,
+  .carbray-new-objetivo .select-wrapper {
+    width: 40%;
+    display: block;
+  }
 }

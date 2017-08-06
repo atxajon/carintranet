@@ -49,7 +49,7 @@ class NewObjetivoForm extends FormBase {
 //    $path = \Drupal::request()->query->get('cliente');
     $qs = \Drupal::request()->query->all();
     if ($qs) {
-      $user = User::load($qs['cliente']);
+      $user = User::load($qs['uid']);
     }
 
     $form['trabajador'] = array(
@@ -68,13 +68,15 @@ class NewObjetivoForm extends FormBase {
     foreach ($departamento_terms as $term) {
       $term_data[$term->tid] = $term->name;
     }
-    $form['departamento'] = array(
-      '#title' => 'Objetivo departamento',
-      '#description' => t('Asigna el objetivo a un departamento; busca el departamento tecleando su nombre'),
-      '#type' => 'select',
-      '#empty_option' => ' - Selecciona departamento - ',
-      '#options' => $term_data,
-    );
+    if (!$qs) {
+      $form['departamento'] = array(
+        '#title' => 'Objetivo departamento',
+        '#description' => t('Asigna el objetivo a un departamento; busca el departamento tecleando su nombre'),
+        '#type' => 'select',
+        '#empty_option' => ' - Selecciona departamento - ',
+        '#options' => $term_data,
+      );
+    }
 
     $form['submit'] = array(
       '#type' => 'submit',
