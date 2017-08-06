@@ -51,6 +51,10 @@ class GestionarTrabajadoresBlock extends BlockBase {
         $objetivo = number_format($objetivo, 2, ',', '.') . '€';
       }
 
+      // Make worker name surname into a link.
+      $url = Url::fromRoute('entity.user.canonical', ['user' => $result->uid]);
+      $worker = Link::fromTextAndUrl($result->nombre . ' ' . $result->apellido, $url);
+
       if ($result->role == 'carbray_administrator') {
         $result->role = 'Administrador';
       }
@@ -58,7 +62,7 @@ class GestionarTrabajadoresBlock extends BlockBase {
         $result->role = 'Trabajador';
       }
       $rows[] = array(
-        $result->nombre . ' ' . $result->apellido,
+        $worker,
         $result->mail,
         ($result->tid) ? $departamento_term->name->value : '',
         $objetivo,
