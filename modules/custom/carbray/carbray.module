@@ -372,7 +372,7 @@ function get_carbray_workers() {
  * Implements hook_cron().
  */
 function carbray_cron() {
-  exec("drush ard --destination:/sites/default/files/private/mysite.tar");
-  exec("drush sql-dump > /sites/default/files/private/jon.sql");
+  exec("drush ard --destination:/sites/default/files/mysite.tar");
+  exec("drush sql-dump > /sites/default/files/jon.sql");
 
 }
