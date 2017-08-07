@@ -77,6 +77,7 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
       if ($is_user_resetting_pwd) {
         // Hide everything but pwd reset!
         $form = _hide_everything_but_pwd($form);
+        $form['#submit'][] = '_carbray_user_login_redirecter';
       }
 
       // A user of role Worker (uid 16) can't edit another user Worker/Carbray admin by guessing url (user/18/edit).
