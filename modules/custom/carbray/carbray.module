@@ -111,7 +111,6 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
     case 'user-pass-reset':
       $form['#attributes']['class'][] = 'block';
       break;
-
   }
 }
 

@@ -68,6 +68,10 @@ ul {
   color: #1d1e3a;
 }
 
+.btn-default {
+  background-color: #337ab7;
+  border-color: #2e6da4;
+}
 /* collapsed sidebar styles */
 @media screen and (max-width: 767px) {
   .row-offcanvas-left {
@@ -208,12 +212,23 @@ ul {
   .carbray-new-expediente .form-item {
     width: 40%;
   }
+
   .carbray-new-objetivo .form-inline {
     margin-bottom: 10px;
   }
+
   .carbray-new-objetivo .form-type-entity-autocomplete,
   .carbray-new-objetivo .select-wrapper {
     width: 40%;
     display: block;
+  }
+
+  #block-views-block-clientes-por-fase-block-4 .form-inline .form-group {
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  #block-views-block-clientes-por-fase-block-4 .form-inline .control-label {
+    width: 120px;
   }
 }
