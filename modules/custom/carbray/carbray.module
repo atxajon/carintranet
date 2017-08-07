@@ -203,14 +203,14 @@ function carbray_form_user_pass_alter(&$form, FormStateInterface $form_state) {
  * @return mixed
  */
 function _hide_user_form_fields($form, $is_user_reset = FALSE) {
-  unset($form['field_fase']);
-  unset($form['field_captador']);
-  unset($form['field_responsable']);
-  unset($form['field_fecha_alta']);
-  unset($form['field_identificacion']);
-  unset($form['field_notas']);
-  unset($form['field_email']);
-  unset($form['field_user_estado_de_captacion']);
+  $form['field_fase']['#access'] = FALSE;
+  $form['field_captador']['#access'] = FALSE;
+  $form['field_responsable']['#access'] = FALSE;
+  $form['field_fecha_alta']['#access'] = FALSE;
+  $form['field_identificacion']['#access'] = FALSE;
+  $form['field_notas']['#access'] = FALSE;
+  $form['field_email']['#access'] = FALSE;
+  $form['field_user_estado_de_captacion']['#access'] = FALSE;
   return $form;
 }
 
@@ -220,21 +220,21 @@ function _hide_user_form_fields($form, $is_user_reset = FALSE) {
  * @return mixed
  */
 function _hide_everything_but_pwd($form) {
-  unset($form['field_nombre']);
-  unset($form['field_apellido']);
-  unset($form['field_departamento']);
-  unset($form['field_direccion']);
-  unset($form['field_fax']);
-  unset($form['field_fecha_alta']);
-  unset($form['field_pais']);
-  unset($form['field_telefono']);
-  unset($form['account']['status']);
-  unset($form['account']['name']);
-  unset($form['account']['mail']);
-  unset($form['account']['roles']);
-  unset($form['account']['notify']);
-  unset($form['language']);
-  unset($form['timezone']);
+  $form['field_nombre']['#access'] = FALSE;
+  $form['field_apellido']['#access'] = FALSE;
+  $form['field_departamento']['#access'] = FALSE;
+  $form['field_direccion']['#access'] = FALSE;
+  $form['field_fax']['#access'] = FALSE;
+  $form['field_fecha_alta']['#access'] = FALSE;
+  $form['field_pais']['#access'] = FALSE;
+  $form['field_telefono']['#access'] = FALSE;
+  $form['account']['status']['#access'] = FALSE;
+  $form['account']['name']['#access'] = FALSE;
+  $form['account']['mail']['#access'] = FALSE;
+  $form['account']['roles']['#access'] = FALSE;
+  $form['account']['notify']['#access'] = FALSE;
+  $form['language']['#access'] = FALSE;
+  $form['timezone']['#access'] = FALSE;
   return $form;
 }
 /**
