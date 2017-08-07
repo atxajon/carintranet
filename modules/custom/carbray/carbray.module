@@ -39,7 +39,6 @@ function carbray_theme($existing, $type, $theme, $path) {
  * Implements hook_form_alter().
  */
 function carbray_form_alter(&$form, FormStateInterface $form_state) {
-  // @todo: hide display name field from user edit form.
   switch ($form['#id']) {
     case 'views-exposed-form-clientes-por-fase-page-1':
       $form['actions']['submit']['#attributes']['class'][] = 'btn-primary';
@@ -47,6 +46,9 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
       break;
 
     case 'user-form':
+      // Hide display name field from user edit form.
+      $form['account']['name']['#access'] = FALSE;
+
       // If editing an internal user/carbray admin, unset non relevant fields.
       $is_internal_user = FALSE;
       $is_user_resetting_pwd = FALSE;
@@ -77,7 +79,12 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
       if ($is_user_resetting_pwd) {
         // Hide everything but pwd reset!
         $form = _hide_everything_but_pwd($form);
-        $form['#submit'][] = '_carbray_user_login_redirecter';
+        // Add submit handler that redirects after pwd save to the right landing page based on user role.
+        foreach (array_keys($form['actions']) as $action) {
+          if ($action != 'preview' && isset($form['actions'][$action]['#type']) && $form['actions'][$action]['#type'] === 'submit') {
+            $form['actions']['submit']['#submit'][] = '_carbray_user_login_redirecter';
+          }
+        }
       }
 
       // A user of role Worker (uid 16) can't edit another user Worker/Carbray admin by guessing url (user/18/edit).
@@ -230,12 +237,9 @@ function _hide_everything_but_pwd($form) {
   $form['field_pais']['#access'] = FALSE;
   $form['field_telefono']['#access'] = FALSE;
   $form['account']['status']['#access'] = FALSE;
-  $form['account']['name']['#access'] = FALSE;
   $form['account']['mail']['#access'] = FALSE;
   $form['account']['roles']['#access'] = FALSE;
   $form['account']['notify']['#access'] = FALSE;
-  $form['language']['#access'] = FALSE;
-  $form['timezone']['#access'] = FALSE;
   return $form;
 }
 /**
