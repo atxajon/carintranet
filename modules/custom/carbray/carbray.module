@@ -42,15 +42,8 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
   // @todo: hide display name field from user edit form.
   switch ($form['#id']) {
     case 'views-exposed-form-clientes-por-fase-page-1':
-
-
-
       $form['actions']['submit']['#attributes']['class'][] = 'btn-primary';
 //      $form['#attributes']['class'][] = 'block';
-
-
-
-
       break;
 
     case 'user-form':
@@ -79,6 +72,12 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
       if ($is_internal_user || $is_user_resetting_pwd) {
         $form = _hide_user_form_fields($form, $is_user_resetting_pwd);
       }
+      // If user lands on profile form after requesting new pwd and
+      // clicking on one time login link...
+      if ($is_user_resetting_pwd) {
+        // Hide everything but pwd reset!
+        $form = _hide_everything_but_pwd($form);
+      }
 
       // A user of role Worker (uid 16) can't edit another user Worker/Carbray admin by guessing url (user/18/edit).
       $current_user = \Drupal::currentUser();
@@ -101,6 +100,10 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
       $form['#validate'][] = 'either_trabajador_or_departamento';
       // @todo add another handler to deal with already existing in current timeframe objetivos for this entity.
       break;
+    case 'user-pass-reset':
+      $form['#attributes']['class'][] = 'block';
+      break;
+
   }
 }
 
@@ -208,6 +211,30 @@ function _hide_user_form_fields($form, $is_user_reset = FALSE) {
   unset($form['field_notas']);
   unset($form['field_email']);
   unset($form['field_user_estado_de_captacion']);
+  return $form;
+}
+
+/**
+ * Hides all but pwd reset fields on user form.
+ * @param $form
+ * @return mixed
+ */
+function _hide_everything_but_pwd($form) {
+  unset($form['field_nombre']);
+  unset($form['field_apellido']);
+  unset($form['field_departamento']);
+  unset($form['field_direccion']);
+  unset($form['field_fax']);
+  unset($form['field_fecha_alta']);
+  unset($form['field_pais']);
+  unset($form['field_telefono']);
+  unset($form['account']['status']);
+  unset($form['account']['name']);
+  unset($form['account']['mail']);
+  unset($form['account']['roles']);
+  unset($form['account']['notify']);
+  unset($form['language']);
+  unset($form['timezone']);
   return $form;
 }
 /**
@@ -366,13 +393,4 @@ function get_carbray_workers() {
   $sql = 'SELECT uid, mail FROM users_field_data ufd INNER JOIN user__roles ur ON ufd.uid = ur. entity_id WHERE uid != 1';
   $internal_users = $db->query($sql)->fetchAllKeyed();
   return $internal_users;
-}
-
-/**
- * Implements hook_cron().
- */
-function carbray_cron() {
-  exec("drush ard --destination:/sites/default/files/mysite.tar");
-  exec("drush sql-dump > /sites/default/files/jon.sql");
-
 }
