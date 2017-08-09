@@ -49,6 +49,11 @@ class NewClientForm extends FormBase {
       '#title' => 'Email',
       '#size' => '20',
     );
+    $form['telefono'] = array(
+      '#type' => 'textfield',
+      '#title' => 'Telefono',
+      '#size' => '20',
+    );
     $countries = \Drupal::service('country_manager')->getList();
     $form['pais'] = array(
       '#type' => 'select',
@@ -98,6 +103,7 @@ class NewClientForm extends FormBase {
     $nombre = $form_state->getValue('nombre');
     $apellido = $form_state->getValue('apellido');
     $email = $form_state->getValue('email');
+    $telefono = $form_state->getValue('telefono');
     $pais = $form_state->getValue('pais');
     $fase = $form_state->getValue('fase');
     $captador = $form_state->getValue('captador');
@@ -116,6 +122,7 @@ class NewClientForm extends FormBase {
     $user->enforceIsNew();
     $user->set('field_fase', $fase);
     $user->set('field_pais', $pais);
+    $user->set('field_telefono', $telefono);
     $user->set('field_nombre', $nombre);
     $user->set('field_apellido', $apellido);
     $user->set('field_captador', $captador);
@@ -134,7 +141,7 @@ class NewClientForm extends FormBase {
     $user->save();
 
     $uid = $user->id();
-    drupal_set_message('Cliente con uid: ' . $uid . ' ha sido creado');
+    drupal_set_message('Cliente ' . $nombre . ' ' . $apellido . ' con uid: ' . $uid . ' ha sido creado');
 //    $form_state['redirect'] = '<front>';
   }
 }
