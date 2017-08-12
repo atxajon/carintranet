@@ -134,6 +134,10 @@ ul {
 .row {
   margin-bottom: 20px;
 }
+.ui-datepicker,
+#ui-datepicker-div {
+  z-index: 10 !important;
+}
 
 /* User page styles*/
 .jumbotron.jumbotron-sm {
@@ -233,5 +237,13 @@ ul {
   #block-views-block-clientes-por-fase-block-4 .form-inline .control-label,
   #block-views-block-clientes-por-fase-block-5 .form-inline .control-label {
     width: 120px;
+  }
+  #block-views-block-clientes-por-fase-block-5 .form-item-field-user-estado-de-captacion-target-id .select-wrapper {
+    width: 100%;
+    display: inline;
+  }
+
+  #block-views-block-clientes-por-fase-block-5 .form-item-field-user-estado-de-captacion-target-id .form-select {
+    width: 240px;
   }
 }
