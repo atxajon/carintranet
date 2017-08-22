@@ -335,6 +335,24 @@ function carbray_entity_view_alter(array &$build, EntityInterface $entity, Entit
 }
 
 /**
+ * Implements template_preprocess_views_view_field().
+ */
+function carbray_preprocess_views_view_field(&$variables) {
+  // Options to target the field you're after; from https://www.drupal.org/node/2593515#comment-10569248
+  // 1) get the field name : $variables['field']->realField
+  // 2) get the field value : $variables['field']->getValue($variables['row'])
+  // 3) get the field classes in the view : $variables['field']->elementClasses()
+  $user = $variables['row']->_entity;
+  $uid = $user->id();
+  $field = $variables['field']->realField;
+  $field_class = $variables['field']->elementClasses();
+  if ($field == 'field_user_estado_de_captacion_target_id' && $field_class == 'estado-captacion') {
+    $form = \Drupal::formBuilder()->getForm('Drupal\carbray\Form\AssignEstadoCaptacion', $uid);
+    $variables['output'] = $form;
+  }
+}
+
+/**
  * Implements hook_menu_local_tasks_alter().
  * @param $data
  * @param $route_name
