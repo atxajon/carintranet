@@ -25,7 +25,7 @@ class AssignEstadoCaptacion extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state, $uid = NULL) {
     $db = \Drupal::database();
 
-    // Query for all other departmaentos but current tid's one.
+    // Query for all estados de captaction terms.
     $sql = "SELECT tid FROM taxonomy_term_field_data WHERE vid= 'estado_de_captacion'";
     $estados_tids = $db->query($sql)->fetchCol();
 
@@ -37,6 +37,9 @@ class AssignEstadoCaptacion extends FormBase {
       $options[$estado_term->id()] = $estado_term->name->value;
     }
 
+    // Get this user's estado de captacion.
+    $sql = "SELECT field_user_estado_de_captacion_target_id FROM user__field_user_estado_de_captacion WHERE entity_id = :uid";
+    $default_estado = $db->query($sql, array(':uid' => $uid))->fetchCol();
 
     $form['cliente_uid'] = array(
       '#type' => 'hidden',
@@ -49,6 +52,9 @@ class AssignEstadoCaptacion extends FormBase {
       '#options' => $options,
       '#multiple' => TRUE,
     );
+    if ($default_estado) {
+      $form['estado']['#default_value'] = $default_estado;
+    }
 
     $form['submit'] = array(
       '#type' => 'submit',
