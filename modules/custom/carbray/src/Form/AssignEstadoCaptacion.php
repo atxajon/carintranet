@@ -38,11 +38,10 @@ class AssignEstadoCaptacion extends FormBase {
     }
 
 
-    $form['uid'] = array(
+    $form['cliente_uid'] = array(
       '#type' => 'hidden',
       '#value' => $uid,
     );
-
     $form['estado'] = array(
       '#type' => 'select',
       '#title' => 'Estado captacion',
@@ -54,7 +53,7 @@ class AssignEstadoCaptacion extends FormBase {
     $form['submit'] = array(
       '#type' => 'submit',
       '#value' => 'Asignar estado',
-      '#attributes' => array('class' => array('btn-success')),
+      '#attributes' => array('class' => array('btn-success', 'btn-xs')),
     );
     return $form;
   }
@@ -70,16 +69,21 @@ class AssignEstadoCaptacion extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
 
-    // @todo: $uid is always 2074??!!
-    $uid = $form_state->getValue('uid');
+    // @todo: following should work but always return first uid on the page;
+    // Needed to resort to using raw and unrecommended getUserInput...
+    // $uid = $form_state->getValue('cliente_uid');
+    $user_input = $form_state->getUserInput();
+    $uid = $user_input['cliente_uid'];
     $estado = $form_state->getValue('estado');
 
     $user = \Drupal\user\Entity\User::load($uid);
-
     $user->set('field_user_estado_de_captacion', $estado);
-
     $user->save();
 
-    drupal_set_message('Cliente con uid: ' . $uid . ' ha sido asignado nuevo estado de captacion');
+    $nombre = $user->get('field_nombre')->value;
+    $apellido = $user->get('field_apellido')->value;
+    $nombre_apellido = $nombre . ' ' . $apellido;
+
+    drupal_set_message('Cliente ' . $nombre_apellido . ' con uid: ' . $uid . ' ha sido asignado nuevo estado de captacion');
   }
 }
