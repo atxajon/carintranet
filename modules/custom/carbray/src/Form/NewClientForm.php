@@ -39,11 +39,13 @@ class NewClientForm extends FormBase {
       '#type' => 'textfield',
       '#title' => 'Nombre',
       '#size' => '20',
+      '#required' => TRUE,
     );
     $form['apellido'] = array(
       '#type' => 'textfield',
       '#title' => 'Apellido',
       '#size' => '20',
+      '#required' => TRUE,
     );
     $form['email'] = array(
       '#type' => 'textfield',
@@ -70,7 +72,6 @@ class NewClientForm extends FormBase {
     $form['captador'] = array(
       '#type' => 'checkboxes',
       '#title' => 'Captador',
-      '#empty_option' => ' - Selecciona captador - ',
       '#options' => $internal_users,
       '#default_value' => array($current_user_uid),
       '#multiple' => TRUE,
@@ -99,11 +100,20 @@ class NewClientForm extends FormBase {
     $nombre = $form_state->getValue('nombre');
     $apellido = $form_state->getValue('apellido');
     $email = $form_state->getValue('email');
+    // If no email for a client populate it with nombre + apellido + placeholder.
+    $email = ($email) ? $email : 'sin_email@' . $nombre . '_' . $apellido . '.com';
     $telefono = $form_state->getValue('telefono');
     $pais = $form_state->getValue('pais');
-    $fase = $form_state->getValue('fase');
     $captador = $form_state->getValue('captador');
-    $responsable = $form_state->getValue('responsable');
+    // $captador strangely adds uid 0 for every non selected captador checkbox;
+    // let's clean those up.
+    $selected_captador = array();
+    foreach ($captador as $captador_id => $value) {
+      if ($value == 0) {
+        continue;
+      }
+      $selected_captador[$captador_id] = $value;
+    }
 
     $user = \Drupal\user\Entity\User::create();
 
@@ -116,19 +126,17 @@ class NewClientForm extends FormBase {
 
     // Optionals.
     $user->enforceIsNew();
-    $user->set('field_fase', $fase);
     $user->set('field_pais', $pais);
     $user->set('field_telefono', $telefono);
     $user->set('field_nombre', $nombre);
     $user->set('field_apellido', $apellido);
-    $user->set('field_captador', $captador);
-    $user->set('field_responsable', $responsable);
+    $user->set('field_captador', $selected_captador);
 
     // Let's keep the user as Blocked by default, until internal admin activates it.
     // $user->activate();
 
     // More optionals to be considered...
-    // $user->set("init", $details->mail);
+     $user->set('init', $email);
     // $user->set("langcode", $lang);
     // $user->set("preferred_langcode", $lang);
     // $user->set("preferred_admin_langcode", $lang);
@@ -138,7 +146,6 @@ class NewClientForm extends FormBase {
 
     $uid = $user->id();
     drupal_set_message('Cliente ' . $nombre . ' ' . $apellido . ' con uid: ' . $uid . ' ha sido creado');
-    $url = _carbray_redirecter();
-    $form_state->setRedirectUrl($url);
+    $form_state->setRedirectUrl(_carbray_redirecter());
   }
 }
