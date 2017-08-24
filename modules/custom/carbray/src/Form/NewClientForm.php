@@ -27,11 +27,12 @@ class NewClientForm extends FormBase {
     $fields = $entityManager->getFieldStorageDefinitions('user');
     $options = options_allowed_values($fields['field_fase']);
     $form['#attributes']['class'][] = 'block';
-
     $form['fase'] = array(
       '#type' => 'select',
       '#title' => 'Fase',
       '#options' => $options,
+      '#default_value' => array('captacion'),
+      '#disabled' => TRUE,
     );
 
     $form['nombre'] = array(
@@ -61,22 +62,17 @@ class NewClientForm extends FormBase {
       '#options' => $countries,
     );
 
-    // @todo: añadir campo identificacion.
+    // @todo: añadir campo identificacion??
 
     $internal_users = get_carbray_workers();
+    $current_user = \Drupal::currentUser();
+    $current_user_uid = $current_user->id();
     $form['captador'] = array(
-      '#type' => 'select',
+      '#type' => 'checkboxes',
       '#title' => 'Captador',
       '#empty_option' => ' - Selecciona captador - ',
       '#options' => $internal_users,
-      '#multiple' => TRUE,
-    );
-
-    $form['responsable'] = array(
-      '#type' => 'select',
-      '#title' => 'Responsable',
-      '#empty_option' => ' - Selecciona responsables - ',
-      '#options' => $internal_users,
+      '#default_value' => array($current_user_uid),
       '#multiple' => TRUE,
     );
 
@@ -142,6 +138,7 @@ class NewClientForm extends FormBase {
 
     $uid = $user->id();
     drupal_set_message('Cliente ' . $nombre . ' ' . $apellido . ' con uid: ' . $uid . ' ha sido creado');
-//    $form_state['redirect'] = '<front>';
+    $url = _carbray_redirecter();
+    $form_state->setRedirectUrl($url);
   }
 }

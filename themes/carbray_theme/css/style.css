@@ -220,6 +220,23 @@ ul {
   .carbray-new-expediente .form-item {
     width: 40%;
   }
+  .carbray-new-client .form-item.fieldgroup {
+    width: 75%;
+  }
+  #edit-captador--wrapper legend {
+    border: none;
+    margin-bottom: 10px;
+  }
+  #edit-captador--wrapper .fieldset-legend {
+    font-size: 14px;
+    line-height: 1.42857143;
+    font-weight: bold;
+  }
+  .carbray-new-client .form-checkboxes .form-item {
+    float: left;
+    margin: 0 20px 20px 0;
+    width: 210px;
+  }
 
   .carbray-new-objetivo .form-inline {
     margin-bottom: 10px;
