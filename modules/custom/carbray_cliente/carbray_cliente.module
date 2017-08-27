@@ -132,6 +132,11 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
     }
   }
   elseif ($view_mode === 'cliente_produccion') {
+    if ($display->getComponent('assign_estado_captacion')) {
+      $form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray\Form\AssignEstadoCaptacion', $uid);
+      $build['assign_estado_captacion'] = $form;
+    }
     if ($display->getComponent('cliente_expediente')) {
       $expediente_nids = get_cliente_expediente_nids($uid);
       $expedientes = get_expedientes_data($expediente_nids);
