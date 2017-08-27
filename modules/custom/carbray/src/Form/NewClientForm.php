@@ -23,18 +23,7 @@ class NewClientForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $entityManager = \Drupal::service('entity_field.manager');
-    $fields = $entityManager->getFieldStorageDefinitions('user');
-    $options = options_allowed_values($fields['field_fase']);
     $form['#attributes']['class'][] = 'block';
-    $form['fase'] = array(
-      '#type' => 'select',
-      '#title' => 'Fase',
-      '#options' => $options,
-      '#default_value' => array('captacion'),
-      '#disabled' => TRUE,
-    );
-
     $form['nombre'] = array(
       '#type' => 'textfield',
       '#title' => 'Nombre',

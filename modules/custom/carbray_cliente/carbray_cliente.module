@@ -81,7 +81,8 @@ function carbray_cliente_entity_view_mode_alter(&$view_mode, EntityInterface $en
     $roles = $user->getRoles();
     // If user with only 1 role and it is authenticated:
     if (in_array('authenticated', $roles) && count($roles) == 1) {
-      $view_mode = 'cliente';
+      $fase = get_cliente_fase($uid);
+      $view_mode = 'cliente_' . $fase;
     }
   }
 }
@@ -94,10 +95,9 @@ function carbray_cliente_entity_view_mode_alter(&$view_mode, EntityInterface $en
  */
 function carbray_cliente_theme_suggestions_user_alter(&$suggestions, $vars, $hook) {
 
-  // Define the view mode.
   $mode = $vars['elements']['#view_mode'];
 
-  // Create a theme hook suggestion which has the view mode name in it.
+  // Create a user theme hook suggestion based on the field_fase value.
   $suggestions[] = 'user__' . $mode;
 }
 
@@ -105,9 +105,22 @@ function carbray_cliente_theme_suggestions_user_alter(&$suggestions, $vars, $hoo
  * Implements hook_user_view().
  */
 function carbray_cliente_user_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
-  // Viewing a client page.
-  if ($view_mode === 'cliente') {
-    $uid = $entity->id();
+  $uid = $entity->id();
+  // Viewing a client on captacion page.
+  if ($view_mode === 'cliente_captacion') {
+    if ($display->getComponent('anadir_nota')) {
+      $form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray_cliente\Form\NewNotaForm');
+      $build['anadir_nota'] = [
+        '#theme' => 'button_modal',
+        '#unique_id' => 'anadir-nota-uid-' . $uid,
+        '#button_text' => 'Añadir nota',
+        '#modal_title' => t('Nueva nota'),
+        '#modal_content' => $form,
+      ];
+    }
+  }
+  elseif ($view_mode === 'cliente_produccion') {
     if ($display->getComponent('cliente_expediente')) {
       $expediente_nids = get_cliente_expediente_nids($uid);
       $expedientes = get_expedientes_data($expediente_nids);
@@ -122,20 +135,10 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
         '#uid' => $uid,
       ];
     }
-    if ($display->getComponent('anadir_nota')) {
-      $form = \Drupal::formBuilder()
-        ->getForm('Drupal\carbray_cliente\Form\NewNotaForm');
-      $build['anadir_nota'] = [
-        '#theme' => 'button_modal',
-        '#unique_id' => 'anadir-nota-uid-' . $uid,
-        '#button_text' => 'Añadir nota',
-        '#modal_title' => t('Nueva nota'),
-        '#modal_content' => $form,
-      ];
-    }
+
   }
   // Viewing a carbray admin/worker.
-  if ($view_mode === 'full') {
+  elseif ($view_mode === 'full') {
     if ($display->getComponent('user_role')) {
       // Look at the url (e.g user/9) and display its role on page.
       $current_path = \Drupal::service('path.current')->getPath();
@@ -160,6 +163,17 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
       }
     }
   }
+}
+
+/**
+ * Get cliente fase.
+ */
+function get_cliente_fase($uid) {
+  $db = \Drupal::database();
+  $sql = "SELECT field_fase_value FROM user__field_fase WHERE entity_id = :uid";
+  $fase_string = $db->query($sql, array(':uid' => $uid))
+    ->fetchField();
+  return $fase_string;
 }
 
 /**

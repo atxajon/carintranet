@@ -32,9 +32,6 @@ ul {
   margin: 0;
   padding: 0;
 }
-.view-content ul {
-  list-style: disc;
-}
 .logo .center-block {
   max-width: 160px;
 }
