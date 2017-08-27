@@ -47,10 +47,9 @@ class AssignEstadoCaptacion extends FormBase {
     );
     $form['estado'] = array(
       '#type' => 'select',
-      '#title' => 'Estado captacion',
+      '#title' => 'Cambiar estado',
       '#empty_option' => ' - Selecciona estado captacion - ',
       '#options' => $options,
-      '#multiple' => TRUE,
     );
     if ($default_estado) {
       $form['estado']['#default_value'] = $default_estado;
@@ -58,8 +57,8 @@ class AssignEstadoCaptacion extends FormBase {
 
     $form['submit'] = array(
       '#type' => 'submit',
-      '#value' => 'Asignar estado',
-      '#attributes' => array('class' => array('btn-success', 'btn-xs')),
+      '#value' => 'Asignar como nuevo estado',
+      '#attributes' => array('class' => array('btn-warning', 'btn-xs')),
     );
     return $form;
   }

@@ -57,6 +57,12 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['user']['user']['display']['assign_estado_captacion'] = array(
+    'label' => t('Assign estado de captacion to client'),
+    'description' => t('Estado de captacion.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
   return $extra;
 }
 
@@ -118,6 +124,11 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
         '#modal_title' => t('Nueva nota'),
         '#modal_content' => $form,
       ];
+    }
+    if ($display->getComponent('assign_estado_captacion')) {
+      $form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray\Form\AssignEstadoCaptacion', $uid);
+      $build['assign_estado_captacion'] = $form;
     }
   }
   elseif ($view_mode === 'cliente_produccion') {
