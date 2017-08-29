@@ -192,6 +192,14 @@ function get_cliente_fase($uid) {
   return $fase_string;
 }
 
+function get_cliente_nombre($uid) {
+  $db = \Drupal::database();
+  $sql = "SELECT name FROM users_field_data WHERE uid = :uid";
+  $name = $db->query($sql, array(':uid' => $uid))
+    ->fetchField();
+  return $name;
+}
+
 /**
  * Helper function to obtain expedientes for the given user uid.
  *
