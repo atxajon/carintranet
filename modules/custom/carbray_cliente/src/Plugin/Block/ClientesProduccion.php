@@ -5,7 +5,6 @@ namespace Drupal\carbray_cliente\Plugin\Block;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Url;
 use Drupal\Core\Link;
-use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Render\Markup;
 
 /**
@@ -37,8 +36,6 @@ LEFT JOIN user__field_pais p ON p.entity_id = ufd.uid
 LEFT JOIN user__field_fase f ON f.entity_id = ufd.uid
 WHERE (f.field_fase_value = 'produccion') AND ((c.field_captador_target_id = :logged_in_uid) OR (r.field_responsable_target_id = :logged_in_uid))";
 
-    // GROUP BY uid, mail, field_nombre_value, field_apellido_value, field_captador_target_id,r.field_responsable_target_id, fa.field_fecha_alta_value, field_telefono_value, field_pais_value
-
     $clientes_produccion = db_query($sql, array(':logged_in_uid' => $logged_in_uid))->fetchAll();
 
     $already_in_list = array();
@@ -52,7 +49,12 @@ WHERE (f.field_fase_value = 'produccion') AND ((c.field_captador_target_id = :lo
         $url = Url::fromRoute('entity.user.canonical', array('user' => $cliente_produccion->uid));
         $user_link = Link::fromTextAndUrl($nombre_apellido, $url);
 
-        $contacto = $cliente_produccion->mail . '<br>' . $cliente_produccion->field_telefono_value . '<br>' . $cliente_produccion->field_pais_value;
+        // Build contacto column.
+        $mail = ($cliente_produccion->mail) ? $cliente_produccion->mail . '<br>' : '';
+        $telefono = ($cliente_produccion->field_telefono_value) ? $cliente_produccion->field_telefono_value . '<br>' : '';
+        $pais = ($cliente_produccion->field_pais_value) ? $cliente_produccion->field_pais_value : '';
+        $contacto = $mail . $telefono . $pais;
+        $contacto_markup = Markup::create($contacto);
 
         /**
          * A client can have multiple captadores assigned;
@@ -85,20 +87,45 @@ WHERE entity_id = :cliente_uid AND field_captador_target_id != :captador";
         }
         // Step 4:
         $captador_markup = Markup::create($captador_link_string);
-        
+
         // Print responsable name with link with target _blank.
-        $responsable_link = '';
         if ($cliente_produccion->field_responsable_target_id) {
           $responsable = get_cliente_nombre($cliente_produccion->field_responsable_target_id);
           $responsable_link = Link::fromTextAndUrl($responsable, Url::fromRoute('entity.user.canonical', array('user' => $cliente_produccion->field_captador_target_id), array('attributes' => array('target' => '_blank'))));
+          $responsable_link_string = $responsable_link->toString()->getGeneratedLink();
+          // Does this client have more responsables? add them.
+          $sql = "SELECT field_responsable_target_id
+FROM user__field_responsable
+WHERE entity_id = :cliente_uid AND field_responsable_target_id != :responsable";
+          $responsables_extra = db_query($sql, array(
+              ':cliente_uid' => $cliente_produccion->uid,
+              ':responsable' => $cliente_produccion->field_responsable_target_id
+            ))->fetchAll();
+          if ($responsables_extra) {
+            foreach ($responsables_extra as $responsable_extra) {
+              $responsable_extra_name = get_cliente_nombre($responsable_extra->field_responsable_target_id);
+              $responsable_extra_link = Link::fromTextAndUrl($responsable_extra_name, Url::fromRoute('entity.user.canonical', array('user' => $responsable_extra->field_responsable_target_id), array('attributes' => array('target' => '_blank'))));
+              // Step 3:
+              $responsable_link_string .= '<br>' . $responsable_extra_link->toString()
+                  ->getGeneratedLink();
+            }
+          }
+        }
+        $responsable_markup = Markup::create($responsable_link_string);
+
+        // Convert datetime.
+        $new_date_format = '';
+        if ($cliente_produccion->field_fecha_alta_value) {
+          $timestamp = strtotime($cliente_produccion->field_fecha_alta_value);
+          $new_date_format = date('d-M-Y', $timestamp);
         }
 
         $rows[] = array(
           $user_link,
           $captador_markup,
-          $responsable_link,
-          $cliente_produccion->field_fecha_alta_value,
-          $contacto,
+          $responsable_markup,
+          $new_date_format,
+          $contacto_markup,
         );
       }
     }

@@ -104,7 +104,7 @@ class NewClientForm extends FormBase {
       $selected_captador[$captador_id] = $value;
     }
 
-    $user = \Drupal\user\Entity\User::create();
+    $user = User::create();
 
     // Mandatory settings.
     $user->setPassword(user_password());
