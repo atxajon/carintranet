@@ -201,6 +201,19 @@ function get_cliente_nombre($uid) {
 }
 
 /**
+ * Gets clientes uids where a given worker has them as captador OR responsable.
+ */
+function get_my_clients($uid) {
+  $query = \Drupal::entityQuery('user');
+  $query->condition('field_captador', $uid);
+  $group = $query->orConditionGroup()
+    ->condition('field_captador', $uid)
+    ->condition('field_responsable', $uid);
+  $clientes_uids = $query->condition($group)->execute();
+  return $clientes_uids;
+}
+
+/**
  * Helper function to obtain expedientes for the given user uid.
  *
  * @param string $uid
