@@ -212,10 +212,20 @@ function get_my_clients($uid, $fase = '') {
   if ($fase) {
     $query->condition('field_fase', $fase);
   }
-  $group = $query->orConditionGroup()
-    ->condition('field_captador', $uid)
-    ->condition('field_responsable', $uid);
-  $clientes_uids = $query->condition($group)->execute();
+  // Querying users in fase captacion: get clients where I am captador, order by estado captacion.
+  if ($fase && $fase == 'captacion') {
+    $query->condition('field_captador', $uid);
+    $query->sort('field_user_estado_de_captacion','ASC');
+    $clientes_uids = $query->execute();
+  }
+  // Otherwise get clients where I am captador OR I am responsable, default sorting (most recent uid first).
+  else {
+    $group = $query->orConditionGroup()
+      ->condition('field_captador', $uid)
+      ->condition('field_responsable', $uid);
+    $clientes_uids = $query->condition($group)->execute();
+  }
+
   return $clientes_uids;
 }
 
