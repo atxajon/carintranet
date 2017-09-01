@@ -17,6 +17,9 @@
  * @ingroup themeable
  */
 #}
+
+{% set has_mail = mail|render %}
+
 <article{{ attributes }}>
   {% if content %}
     <div class="row">
@@ -28,11 +31,14 @@
           <div class="panel-body">
             {{ content.field_nombre}}
             {{ content.field_apellido }}
-            <div class="field--label">Email: </div><div class="field--item">{{ mail }}</div>
+            {% if has_mail is not empty %}
+              <div class="field"><div class="field--label">Email </div><div class="field--item">{{ mail }}</div></div>
+            {% endif %}
             {{ content.field_telefono }}
             {{ content.field_direccion }}
             {{ content.field_pais }}
             {{ content.field_fax }}
+            {{ content.create_propuesta }}
           </div>
         </div>
       </div>

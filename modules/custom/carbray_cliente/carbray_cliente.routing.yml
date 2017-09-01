@@ -1,0 +1,8 @@
+carbray_cliente.new_propuesta:
+  path: '/crear-propuesta'
+  defaults:
+    _form: '\Drupal\carbray_cliente\Form\NewPropuesta'
+    _title: 'Crear Propuesta'
+  requirements:
+    _access: 'TRUE'
+

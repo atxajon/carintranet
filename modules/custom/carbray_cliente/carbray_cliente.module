@@ -67,6 +67,12 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['user']['user']['display']['create_propuesta'] = array(
+    'label' => t('Create propuesta for client'),
+    'description' => t('Crear propuesta.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
   return $extra;
 }
 
@@ -133,6 +139,11 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
       $form = \Drupal::formBuilder()
         ->getForm('Drupal\carbray\Form\AssignEstadoCaptacion', $uid);
       $build['assign_estado_captacion'] = $form;
+    }
+    if ($display->getComponent('create_propuesta')) {
+      $form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray_cliente\Form\PropuestaPlantillaRef', $uid);
+      $build['create_propuesta'] = $form;
     }
   }
   elseif ($view_mode === 'cliente_produccion') {
