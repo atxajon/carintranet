@@ -7,6 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 use \Drupal\node\Entity\Node;
 use Drupal\Component\Plugin\Exception;
 use Drupal\Core\Url;
+use Drupal\user\Entity\User;
 
 
 /**
@@ -49,6 +50,14 @@ class NewPropuesta extends FormBase {
       '#value' => $cliente_uid,
     ];
 
+    $user = User::load($cliente_uid);
+    $form['cliente_name'] = [
+      '#type' => 'textfield',
+      '#title' => t('Propuesta para cliente:'),
+      '#default_value' => $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value,
+      '#disabled' => TRUE,
+    ];
+
     $form['propuesta_plantilla_nid'] = [
       '#type' => 'hidden',
       '#value' => $propuesta_plantilla_nid,
@@ -84,6 +93,7 @@ class NewPropuesta extends FormBase {
       'title' => $title,
       'type' => 'propuesta',
       'field_propuesta_precio' => $precio,
+      'field_propuesta_cliente' => $cliente_uid,
       'field_propuesta_plantilla' => $propuesta_plantilla_nid,
     ])->save();
 
