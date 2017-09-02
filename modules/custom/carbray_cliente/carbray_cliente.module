@@ -12,6 +12,7 @@ use Drupal\user\Entity\User;
 use Drupal\Core\Url;
 use Drupal\Core\Link;
 use Drupal\Core\Render\Markup;
+use Drupal\node\Entity\Node;
 
 
 /**
@@ -67,9 +68,9 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
-  $extra['user']['user']['display']['create_propuesta'] = array(
-    'label' => t('Create propuesta for client'),
-    'description' => t('Crear propuesta.'),
+  $extra['user']['user']['display']['propuesta'] = array(
+    'label' => t('Client propuesta'),
+    'description' => t('Shows clients propuesta or a form to create one if not a propuesta yet.'),
     'weight' => 100,
     'visible' => TRUE,
   );
@@ -135,15 +136,39 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
         '#modal_content' => $form,
       ];
     }
+
     if ($display->getComponent('assign_estado_captacion')) {
       $form = \Drupal::formBuilder()
         ->getForm('Drupal\carbray\Form\AssignEstadoCaptacion', $uid);
       $build['assign_estado_captacion'] = $form;
     }
-    if ($display->getComponent('create_propuesta')) {
-      $form = \Drupal::formBuilder()
-        ->getForm('Drupal\carbray_cliente\Form\PropuestaPlantillaRef', $uid);
-      $build['create_propuesta'] = $form;
+
+    if ($display->getComponent('propuesta')) {
+      // Is the client's estado de captacion on estado '1'?
+      $user = User::Load($uid);
+      $estado_term = $user->field_user_estado_de_captacion->entity;
+      $estados_tids_that_show_propuesta = array(43, 44, 45, 46);
+      if (!in_array($estado_term->id(), $estados_tids_that_show_propuesta)) {
+        return;
+      }
+
+      // Client is on estado captacion '1'; deal with propuestas.
+      // Has the client a propuesta yet? show it.
+      if ($propuesta = get_client_propuesta($uid)) {
+        $propuesta_node = Node::load(current($propuesta));
+        $propuesta_title = $propuesta_node->getTitle();
+        $url = Url::fromRoute('entity.node.canonical', array('node' => $propuesta_node->id()));
+        $propuesta_link = Link::fromTextAndUrl($propuesta_title, $url);
+        $build['propuesta'] = $propuesta_link->toRenderable();
+        $build['propuesta']['#prefix'] = '<div class="field"><div class="field--label">Propuesta</div><div class="field--item">';
+        $build['propuesta']['#suffix'] = '</div></div>';
+      }
+      else {
+        // Else show form to create one.
+        $form = \Drupal::formBuilder()
+          ->getForm('Drupal\carbray_cliente\Form\PropuestaPlantillaRef', $uid);
+        $build['propuesta'] = $form;
+      }
     }
   }
   elseif ($view_mode === 'cliente_produccion') {
@@ -238,6 +263,21 @@ function get_my_clients($uid, $fase = '') {
   }
 
   return $clientes_uids;
+}
+
+function get_client_propuesta($uid) {
+  $query = \Drupal::entityQuery('node');
+  $query->condition('status', 1);
+  $query->condition('type', 'propuesta');
+  $query->condition('field_propuesta_cliente', $uid);
+  $propuesta_nid = $query->execute();
+  return $propuesta_nid;
+}
+
+function get_client_estado_captacion($uid) {
+  $query = \Drupal::entityQuery('user');
+  $query->condition('field_propuesta_cliente', $uid);
+  return $query->execute();
 }
 
 function print_cliente_link($cliente) {
