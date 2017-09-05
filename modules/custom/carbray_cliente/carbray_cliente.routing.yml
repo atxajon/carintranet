@@ -6,3 +6,11 @@ carbray_cliente.new_propuesta:
   requirements:
     _access: 'TRUE'
 
+
+carbray_cliente.propuesta_to_doc:
+  path: '/node/{nid}/doc'
+  defaults:
+    _controller: '\Drupal\carbray_cliente\Controller\PropuestaToDoc::getPropuestaNode'
+    _title: 'Propuesta en doc'
+  requirements:
+    _permission: 'access content'
