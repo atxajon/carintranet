@@ -240,7 +240,13 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         '#type' => 'link',
         '#url' => $url,
         '#title' => t('Descargar propuesta'),
-        '#attributes' => array('target' => '_blank'),
+        '#attributes' => array(
+          'target' => '_blank',
+          'class' => array(
+            'btn',
+            'btn-primary',
+          ),
+        ),
       ];
 
       // @todo: theme node view so that spacing and labels etc are right!!
