@@ -74,6 +74,12 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['node']['propuesta']['display']['link_to_download'] = array(
+    'label' => t('Link to download propuesta in doc'),
+    'description' => t('Shows a link that allows admin to download the propuesta as a doc file.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
   return $extra;
 }
 
@@ -219,6 +225,32 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
       }
     }
   }
+}
+
+/**
+ * Implements hook_node_view().
+ */
+function carbray_cliente_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  if ($entity->bundle() == 'propuesta') {
+    if ($display->getComponent('link_to_download')) {
+      $nid = $entity->id();
+      $url = Url::fromRoute('carbray_cliente.propuesta_to_doc', array('nid' => $nid));
+
+      $build['link_to_download'] = [
+        '#type' => 'link',
+        '#url' => $url,
+        '#title' => t('Descargar propuesta'),
+        '#attributes' => array('target' => '_blank'),
+      ];
+
+      // @todo: theme node view so that spacing and labels etc are right!!
+
+      // @todo: decide on the propuesta node default titling...
+
+      // @todo: add link for admin to view/manage existing propuestas.
+    }
+  }
+
 }
 
 /**
