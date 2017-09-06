@@ -251,7 +251,6 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
 
       // @todo: theme node view so that spacing and labels etc are right!!
 
-      // @todo: decide on the propuesta node default titling...
 
       // @todo: add link for admin to view/manage existing propuestas.
     }

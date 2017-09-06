@@ -86,9 +86,11 @@ class NewPropuesta extends FormBase {
     $precio = $form_state->getValue('precio');
     $propuesta_plantilla_nid = $form_state->getValue('propuesta_plantilla_nid');
     $cliente_uid = $form_state->getValue('cliente_uid');
+    $user = User::load($cliente_uid);
+    $now = date('d-m-Y', time());
 
     // Create a node of type Propuesta with submitted values.
-    $title = 'Propuesta para uid: ' . $cliente_uid . ' y plantilla nid: ' . $propuesta_plantilla_nid;
+    $title = 'Propuesta para ' . $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value . ' creada el ' . $now;
     Node::create([
       'title' => $title,
       'type' => 'propuesta',

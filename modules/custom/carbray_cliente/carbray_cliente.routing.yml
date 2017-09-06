@@ -4,7 +4,7 @@ carbray_cliente.new_propuesta:
     _form: '\Drupal\carbray_cliente\Form\NewPropuesta'
     _title: 'Crear Propuesta'
   requirements:
-    _access: 'TRUE'
+    _permission: 'access content'
 
 
 carbray_cliente.propuesta_to_doc:
