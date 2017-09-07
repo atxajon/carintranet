@@ -410,9 +410,19 @@ function carbray_preprocess_node(&$variables) {
   }
 }
 
-function get_carbray_workers() {
+/**
+ * @param bool $just_active
+ *    Flags whether the query should bring results only for active users.
+ * @return mixed
+ */
+function get_carbray_workers($just_active = FALSE) {
   $db = \Drupal::database();
-  $sql = 'SELECT uid, mail FROM users_field_data ufd INNER JOIN user__roles ur ON ufd.uid = ur. entity_id WHERE uid != 1';
-  $internal_users = $db->query($sql)->fetchAllKeyed();
-  return $internal_users;
+  $query = $db->select('users_field_data', 'ufd');
+  $query->fields('ufd', ['uid', 'mail']);
+  $query->join('user__roles');
+  if ($just_active) {
+    $query->condition('status', 1);
+  }
+  $query->condition('uid', array(0, 1), 'NOT IN');
+  return $query->execute()->fetchAllKeyed();
 }

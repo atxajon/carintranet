@@ -55,7 +55,7 @@ class NewClientForm extends FormBase {
 
     // @todo: añadir campo identificacion??
 
-    $internal_users = get_carbray_workers();
+    $internal_users = get_carbray_workers(TRUE);
     $current_user = \Drupal::currentUser();
     $current_user_uid = $current_user->id();
     $form['captador'] = array(

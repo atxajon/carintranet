@@ -62,7 +62,7 @@ class NewExpedienteForm extends FormBase {
       ),
     );
 
-    $internal_users = get_carbray_workers();
+    $internal_users = get_carbray_workers(TRUE);
     $form['responsable'] = array(
       '#title' => 'Captador',
       '#type' => 'select',
