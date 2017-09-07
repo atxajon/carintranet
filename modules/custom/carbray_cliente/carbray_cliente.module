@@ -74,6 +74,12 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['user']['user']['display']['toggle_status'] = array(
+    'label' => t('User status change form'),
+    'description' => t('Shows a form that allows an admin to activate or block a user.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
   $extra['node']['propuesta']['display']['link_to_download'] = array(
     'label' => t('Link to download propuesta in doc'),
     'description' => t('Shows a link that allows admin to download the propuesta as a doc file.'),
@@ -223,6 +229,11 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
           '#markup' => '<div class="field--label">Rol</div><div class="field--item">Administrador</div>',
         );
       }
+    }
+    if ($display->getComponent('toggle_status')) {
+      $form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray\Form\ToggleUserStatus', $uid);
+      $build['toggle_status'] = $form;
     }
   }
 }
