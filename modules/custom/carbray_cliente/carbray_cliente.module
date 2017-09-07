@@ -231,9 +231,14 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
       }
     }
     if ($display->getComponent('toggle_status')) {
-      $form = \Drupal::formBuilder()
-        ->getForm('Drupal\carbray\Form\ToggleUserStatus', $uid);
-      $build['toggle_status'] = $form;
+      // Show toggle status form only to admins.
+      $current_user = \Drupal::currentUser();
+      $roles = $current_user->getRoles();
+      if (in_array('carbray_administrator', $roles) || in_array('administrator', $roles)) {
+        $form = \Drupal::formBuilder()
+          ->getForm('Drupal\carbray\Form\ToggleUserStatus', $uid);
+        $build['toggle_status'] = $form;
+      }
     }
   }
 }
