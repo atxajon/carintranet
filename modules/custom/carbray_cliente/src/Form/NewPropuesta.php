@@ -36,20 +36,9 @@ class NewPropuesta extends FormBase {
     catch (Exception $e) {
       \Drupal::logger('carbray_cliente')->error($e->getMessage());
     }
-    $form['precio'] = [
-      '#type' => 'textfield',
-      '#title' => t('Precio'),
-      '#default_value' => $prop_plantilla_precio,
-      '#required' => TRUE,
-    ];
 
     // Retrieve uid from query string. It'll be used to populate propuesta-user reference.
     $cliente_uid = \Drupal::request()->query->get('uid');
-    $form['cliente_uid'] = [
-      '#type' => 'hidden',
-      '#value' => $cliente_uid,
-    ];
-
     $user = User::load($cliente_uid);
     $form['cliente_name'] = [
       '#type' => 'textfield',
@@ -57,6 +46,29 @@ class NewPropuesta extends FormBase {
       '#default_value' => $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value,
       '#disabled' => TRUE,
     ];
+
+    $form['precio'] = [
+      '#type' => 'textfield',
+      '#title' => t('Precio'),
+      '#default_value' => $prop_plantilla_precio,
+      '#required' => TRUE,
+    ];
+
+    $form['cliente_uid'] = [
+      '#type' => 'hidden',
+      '#value' => $cliente_uid,
+    ];
+
+    $internal_users = get_carbray_workers(TRUE);
+    $current_user = \Drupal::currentUser();
+    $current_user_uid = $current_user->id();
+    $form['equipo'] = array(
+      '#type' => 'checkboxes',
+      '#title' => 'Equipo',
+      '#options' => $internal_users,
+      '#default_value' => array($current_user_uid),
+      '#multiple' => TRUE,
+    );
 
     $form['propuesta_plantilla_nid'] = [
       '#type' => 'hidden',
@@ -86,6 +98,17 @@ class NewPropuesta extends FormBase {
     $precio = $form_state->getValue('precio');
     $propuesta_plantilla_nid = $form_state->getValue('propuesta_plantilla_nid');
     $cliente_uid = $form_state->getValue('cliente_uid');
+    $equipo_members = $form_state->getValue('equipo');
+    // $equipo_members strangely adds uid 0 for every non selected captador checkbox;
+    // let's clean those up.
+    $selected_equipo = array();
+    foreach ($equipo_members as $member_id => $value) {
+      if ($value == 0) {
+        continue;
+      }
+      $selected_equipo[$member_id] = $value;
+    }
+
     $user = User::load($cliente_uid);
     $now = date('d-m-Y', time());
 
@@ -97,6 +120,7 @@ class NewPropuesta extends FormBase {
       'field_propuesta_precio' => $precio,
       'field_propuesta_cliente' => $cliente_uid,
       'field_propuesta_plantilla' => $propuesta_plantilla_nid,
+      'field_propuesta_equipo' => $selected_equipo,
     ])->save();
 
     // Handle redirect to user page.
