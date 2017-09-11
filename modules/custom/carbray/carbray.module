@@ -426,3 +426,9 @@ function get_carbray_workers($just_active = FALSE) {
   $query->condition('uid', array(0, 1), 'NOT IN');
   return $query->execute()->fetchAllKeyed();
 }
+
+function carbray_node_view(array &$build, \Drupal\Core\Entity\EntityInterface $entity, \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display, $view_mode) {
+  if ($entity->bundle() == 'propuesta') {
+    $build['#attached']['library'][] =  'carbray/carbray.propuesta-styles';
+  }
+}

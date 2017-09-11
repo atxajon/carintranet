@@ -32,6 +32,7 @@ class NewPropuesta extends FormBase {
     try {
       $prop_plantilla_node = Node::load($propuesta_plantilla_nid);
       $prop_plantilla_precio = $prop_plantilla_node->get('field_plantilla_propuesta_precio')->value;
+      $prop_plantilla_body = $prop_plantilla_node->get('body')->value;
     }
     catch (Exception $e) {
       \Drupal::logger('carbray_cliente')->error($e->getMessage());
@@ -45,6 +46,13 @@ class NewPropuesta extends FormBase {
       '#title' => t('Propuesta para cliente:'),
       '#default_value' => $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value,
       '#disabled' => TRUE,
+    ];
+
+    $form['body'] = [
+      '#type' => 'text_format',
+      '#title' => t('Body'),
+      '#default_value' => $prop_plantilla_body,
+      '#required' => TRUE,
     ];
 
     $form['precio'] = [
@@ -96,6 +104,7 @@ class NewPropuesta extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
 
     $precio = $form_state->getValue('precio');
+    $body = $form_state->getValue('body');
     $propuesta_plantilla_nid = $form_state->getValue('propuesta_plantilla_nid');
     $cliente_uid = $form_state->getValue('cliente_uid');
     $equipo_members = $form_state->getValue('equipo');
@@ -117,6 +126,7 @@ class NewPropuesta extends FormBase {
     Node::create([
       'title' => $title,
       'type' => 'propuesta',
+      'body' => $body,
       'field_propuesta_precio' => $precio,
       'field_propuesta_cliente' => $cliente_uid,
       'field_propuesta_plantilla' => $propuesta_plantilla_nid,

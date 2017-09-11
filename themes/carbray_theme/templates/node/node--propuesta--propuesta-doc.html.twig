@@ -1,0 +1,40 @@
+{#Tpl for view mode propuesta_doc, used at /node/1695/doc#}
+
+{%
+  set classes = [
+    node.bundle|clean_class,
+    node.isPromoted() ? 'is-promoted',
+    node.isSticky() ? 'is-sticky',
+    not node.isPublished() ? 'is-unpublished',
+    view_mode ? view_mode|clean_class,
+    'clearfix',
+  ]
+%}
+
+{% set precio_var = content.field_propuesta_precio[0]['#title'] %}
+{% set date = node.createdtime|format_date('short') %}
+{% set client_name = content.field_propuesta_cliente[0]['#title'] %}
+<div class="text-center">
+  <img src="/sites/default/files/logo-transparente-carbray.png" alt=""/>
+</div>
+<div class="text-center blue-bg">
+  <h3 class="uppercase">Services & Fee Proposal</h3>
+  <h3 class="uppercase">{{ client_name }}</h3>
+</div>
+<div class="text-center">
+  {{ date }}
+</div>
+
+<div class="italics">
+  <h5 class="underlined">FOR THE ATTENTION OF {{ client_name }}</h5>
+  <br>
+  <br>
+  <div class="pull-right float-right">
+    <div class="uppercase">(Private & Confidential)</div>
+  </div>
+  <div class="clearfix">Dear {{ client_name }},</div>
+  <article{{ attributes.addClass(classes) }}>
+    {{ content.preprocessed_body }}
+  </article>
+</div>
+

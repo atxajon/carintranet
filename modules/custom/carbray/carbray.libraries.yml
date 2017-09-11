@@ -2,3 +2,8 @@ carbray.global-styles:
   css:
     theme:
       css/carbray.admin.css: {}
+
+carbray.propuesta-styles:
+  css:
+    theme:
+      css/carbray.propuesta.css: {}

@@ -11,21 +11,18 @@ class PropuestaToDoc extends ControllerBase {
 
   /**
    * Getpropuestanode.
-   *
-   * @return string
-   *   Return Hello string.
    */
   public function getPropuestaNode($nid) {
 
     $entity_type = 'node';
-    $view_mode = 'full';
+    $view_mode = 'propuesta_doc';
 
     $view_builder = \Drupal::entityTypeManager()->getViewBuilder($entity_type);
     $storage = \Drupal::entityTypeManager()->getStorage($entity_type);
     $node = $storage->load($nid);
     $build = $view_builder->view($node, $view_mode);
     $output = render($build);
-    $filename = 'propuesta-' . $nid . '.doc';
+    $filename = 'propuesta-' . $nid . '.docx';
 //    $c_type = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 //    $c_type = 'application/vnd.msword';
     $c_type = 'application/msword';
@@ -38,6 +35,7 @@ class PropuestaToDoc extends ControllerBase {
         )
       )
     ];
+
 //    $render_array['#attached']['http_header'] = [
 //      ['Content-Type', 'application/vnd.msword'],
 //      ['content-disposition', 'attachment;filename=' . $filename],
