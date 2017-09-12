@@ -1,4 +1,3 @@
-{#Tpl for view mode propuesta_doc, used at /node/1695/doc#}
 
 {%
   set classes = [
@@ -10,7 +9,7 @@
     'clearfix',
   ]
 %}
-
+{{ content.link_to_download }}
 {% set precio_var = content.field_propuesta_precio[0]['#title'] %}
 {% set date = node.createdtime|date("d F Y") %}
 {% set client_name = content.client_name %}
@@ -37,4 +36,3 @@
     {{ content.preprocessed_body }}
   </article>
 </div>
-

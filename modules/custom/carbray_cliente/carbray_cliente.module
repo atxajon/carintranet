@@ -92,6 +92,12 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['node']['propuesta']['display']['client_name'] = array(
+    'label' => t('Client name surname'),
+    'description' => t('Client name and surname.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
   return $extra;
 }
 
@@ -271,26 +277,34 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         ),
       ];
     }
-    if ($view_mode == 'propuesta_doc') {
-      if ($display->getComponent('preprocessed_body')) {
-        // Define a var 'preprocess_body' that contains the body field with the [precio] and [workteam] tokens replaced.
-        $precio = $entity->get('field_propuesta_precio')->value;
-        $equipo_workers = $entity->get('field_propuesta_equipo')->getValue();
-        $entity_manager = \Drupal::entityTypeManager();
-        $nombre_apellido = '';
-        foreach ($equipo_workers as $worker) {
-          $worker_data = $entity_manager->getStorage('user')->load($worker['target_id']);
-          $nombre_apellido .= $worker_data->field_nombre->value . ' ' . $worker_data->field_apellido->value . '<br>';
-        }
-        $body = $entity->get('body')->value;
-        $body = str_replace('[PRECIO]', $precio, $body);
-        $body = str_replace('[WORKTEAM]', $nombre_apellido, $body);
-        $build['preprocessed_body'] = [
-          '#markup' => $body,
-        ];
-
-        // @todo: add link for admin to view/manage existing propuestas.
+    if ($display->getComponent('preprocessed_body')) {
+      // Define a var 'preprocess_body' that contains the body field with the [precio] and [workteam] tokens replaced.
+      $precio = $entity->get('field_propuesta_precio')->value;
+      $equipo_workers = $entity->get('field_propuesta_equipo')->getValue();
+      $entity_manager = \Drupal::entityTypeManager();
+      $nombre_apellido = '';
+      foreach ($equipo_workers as $worker) {
+        $worker_data = $entity_manager->getStorage('user')
+          ->load($worker['target_id']);
+        $nombre_apellido .= $worker_data->field_nombre->value . ' ' . $worker_data->field_apellido->value . '<br>';
       }
+      $body = $entity->get('body')->value;
+      $body = str_replace('[PRECIO]', $precio, $body);
+      $body = str_replace('[WORKTEAM]', $nombre_apellido, $body);
+      $build['preprocessed_body'] = [
+        '#markup' => $body,
+      ];
+
+      // @todo: add link for admin to view/manage existing propuestas.
+    }
+    if ($display->getComponent('client_name')) {
+      $cliente_uid = $entity->get('field_propuesta_cliente')->getValue();
+      $user = User::load($cliente_uid[0]['target_id']);
+      $cliente_nombre = $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value;
+      $build['client_name'] = [
+        '#markup' => $cliente_nombre,
+      ];
+
     }
   }
 
