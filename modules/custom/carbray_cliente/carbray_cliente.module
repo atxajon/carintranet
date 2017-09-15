@@ -282,15 +282,21 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
       $precio = $entity->get('field_propuesta_precio')->value;
       $equipo_workers = $entity->get('field_propuesta_equipo')->getValue();
       $entity_manager = \Drupal::entityTypeManager();
-      $nombre_apellido = '';
+      $trabajador_nombre_apellido = '';
       foreach ($equipo_workers as $worker) {
         $worker_data = $entity_manager->getStorage('user')
           ->load($worker['target_id']);
-        $nombre_apellido .= $worker_data->field_nombre->value . ' ' . $worker_data->field_apellido->value . '<br>';
+        $trabajador_nombre_apellido .= $worker_data->field_nombre->value . ' ' . $worker_data->field_apellido->value . '<br>';
       }
       $body = $entity->get('body')->value;
+
+      $cliente_uid = $entity->get('field_propuesta_cliente')->getValue();
+      $user = User::load($cliente_uid[0]['target_id']);
+      $cliente_nombre = $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value;
+
+      $body = str_replace('[NOMBRE]', $cliente_nombre, $body);
       $body = str_replace('[PRECIO]', $precio, $body);
-      $body = str_replace('[WORKTEAM]', $nombre_apellido, $body);
+      $body = str_replace('[WORKTEAM]', $trabajador_nombre_apellido, $body);
       $build['preprocessed_body'] = [
         '#markup' => $body,
       ];

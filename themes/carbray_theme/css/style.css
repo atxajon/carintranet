@@ -222,6 +222,10 @@ ul {
   .new-propuesta .form-item {
     width: 40%;
   }
+  .new-propuesta .js-text-format-wrapper,
+  .new-propuesta .js-text-format-wrapper .form-type-textarea {
+    width: auto;
+  }
   .carbray-new-client .form-item.fieldgroup,
   .new-propuesta .form-item.fieldgroup {
     width: 78%;

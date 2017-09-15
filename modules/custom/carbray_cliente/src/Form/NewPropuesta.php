@@ -27,6 +27,8 @@ class NewPropuesta extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+    $form['#attributes']['class'][] = 'block';
+
     // Retrieve propuesta plantilla nid from query string, then load Node to use its content as default values for form elements.
     $propuesta_plantilla_nid = \Drupal::request()->query->get('prop_plantilla');
     try {
@@ -59,7 +61,6 @@ class NewPropuesta extends FormBase {
       '#type' => 'textfield',
       '#title' => t('Precio'),
       '#default_value' => $prop_plantilla_precio,
-      '#required' => TRUE,
     ];
 
     $form['cliente_uid'] = [

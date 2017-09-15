@@ -28,12 +28,12 @@ class PropuestaToDoc extends ControllerBase {
     $c_type = 'application/msword';
     $render_array = [
       '#markup' => $output,
-      '#attached' => array(
-        'http_header' => array(
-          array('Content-Type',  $c_type),
-          array('content-disposition',  "attachment;filename=$filename"),
-        )
-      )
+//      '#attached' => array(
+//        'http_header' => array(
+//          array('Content-Type',  $c_type),
+//          array('content-disposition',  "attachment;filename=$filename"),
+//        )
+//      )
     ];
 
 //    $render_array['#attached']['http_header'] = [
