@@ -44,4 +44,29 @@ class PropuestaToDoc extends ControllerBase {
     return $render_array;
   }
 
+  public function getPropuestaNodeToPdf($nid) {
+    $entity_type = 'node';
+    $view_mode = 'propuesta_doc';
+
+    $view_builder = \Drupal::entityTypeManager()->getViewBuilder($entity_type);
+    $storage = \Drupal::entityTypeManager()->getStorage($entity_type);
+    $node = $storage->load($nid);
+    $build = $view_builder->view($node, $view_mode);
+    $output = render($build);
+    //$output = '<h1>test</h1>';
+    $filename = 'propuesta-' . $nid . '.pdf';
+    $c_type = 'application/pdf';
+    $render_array = [
+      '#markup' => $output,
+      '#attached' => array(
+        'http_header' => array(
+          array('Content-Type', $c_type),
+          array('content-disposition',  "inline;filename=$filename"),
+        )
+      )
+    ];
+
+    return $render_array;
+  }
+
 }

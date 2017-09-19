@@ -14,3 +14,11 @@ carbray_cliente.propuesta_to_doc:
     _title: 'Propuesta en doc'
   requirements:
     _permission: 'access content'
+
+carbray_cliente.propuesta_to_pdf:
+  path: '/node/{nid}/pdf'
+  defaults:
+    _controller: '\Drupal\carbray_cliente\Controller\PropuestaToDoc::getPropuestaNodeToPdf'
+    _title: 'Propuesta en pdf'
+  requirements:
+    _permission: 'access content'

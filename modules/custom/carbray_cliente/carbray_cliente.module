@@ -86,6 +86,12 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['node']['propuesta']['display']['link_to_pdf'] = array(
+    'label' => t('Link to download propuesta in pdf'),
+    'description' => t('Shows a link that allows admin to download the propuesta as a pdf file.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
   $extra['node']['propuesta']['display']['preprocessed_body'] = array(
     'label' => t('Preprocessed body'),
     'description' => t('Contains propuesta body with embedded variable token replacements.'),
@@ -267,9 +273,26 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
       $build['link_to_download'] = [
         '#type' => 'link',
         '#url' => $url,
-        '#title' => t('Descargar propuesta'),
+        '#title' => t('Descargar propuesta doc'),
         '#attributes' => array(
           'target' => '_blank',
+          'class' => array(
+            'btn',
+            'btn-primary',
+          ),
+        ),
+      ];
+    }
+    if ($display->getComponent('link_to_pdf')) {
+      $nid = $entity->id();
+      $url = Url::fromRoute('carbray_cliente.propuesta_to_pdf', array('nid' => $nid));
+
+      $build['link_to_pdf'] = [
+        '#type' => 'link',
+        '#url' => $url,
+        '#title' => t('Descargar propuesta pdf'),
+        '#attributes' => array(
+//          'target' => '_blank',
           'class' => array(
             'btn',
             'btn-primary',
