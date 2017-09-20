@@ -436,6 +436,6 @@ function get_carbray_workers($just_active = FALSE) {
 
 function carbray_node_view(array &$build, \Drupal\Core\Entity\EntityInterface $entity, \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display, $view_mode) {
   if ($entity->bundle() == 'propuesta') {
-    $build['#attached']['library'][] =  'carbray/carbray.propuesta-styles';
+    //$build['#attached']['library'][] =  'carbray/carbray.propuesta-styles';
   }
 }

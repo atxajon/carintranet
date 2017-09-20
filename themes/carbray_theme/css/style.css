@@ -210,10 +210,33 @@ ul {
 .form-item-field-user-estado-de-captacion-target-id .control-label,
 .form-item-field-user-estado-de-captacion-target-id select {
   margin-bottom: 10px;
+  padding: 20px;
 }
 .form-inline .form-item-items-per-page {
   margin-bottom: 10px;
   display: block;
+}
+
+/* Styles for propuesta full node view, not pdf view mode! */
+.page-node-type-propuesta .region-content {
+  background: white;
+}
+.blue-bg {
+  background: blue;
+  padding: 15px;
+  margin-bottom: 40px;
+}
+.white {
+  color: white;
+}
+.capitalize {
+  text-transform: uppercase;
+}
+.italics {
+  font-style: italic;
+}
+.underlined {
+  text-decoration: underline;
 }
 
 @media screen and (min-width: 992px) {

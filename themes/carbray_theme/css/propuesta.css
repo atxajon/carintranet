@@ -1,13 +1,39 @@
+/* This gets loaded on pdf view mode, not full node view. */
 body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14px;
   line-height: 1.42857143;
   color: #333;
+  background: white;
 }
+
 .text-center {
   text-align: center;
 }
 
 .pull-right {
   float: right;
+}
+.blue-bg {
+  background: blue;
+  padding: 15px;
+  margin-bottom: 40px;
+}
+.capitalize {
+  text-transform: uppercase;
+}
+.italics {
+  font-style: italic;
+}
+.underlined {
+  text-decoration: underline;
+}
+.white {
+  color: white;
+}
+.float-right {
+  float: right;
+}
+.clearfix {
+  clear: both;
 }
