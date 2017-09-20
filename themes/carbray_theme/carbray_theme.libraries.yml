@@ -5,3 +5,8 @@ carbray_styles:
       css/style.css: {}
   js:
     js/theme-js.js: {}
+
+propuesta-styles:
+  css:
+    theme:
+      css/propuesta.css: {}

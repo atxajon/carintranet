@@ -21,3 +21,8 @@ regions:
 
 libraries:
   - carbray_theme/carbray_styles
+
+entity_print:
+ node:
+   # Adds propuesta css library to the Propuesta bundle on the Node entity.
+   propuesta: carbray_theme/propuesta-styles
