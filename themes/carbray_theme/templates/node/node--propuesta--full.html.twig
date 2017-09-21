@@ -12,6 +12,9 @@
 {% set client_name = content.client_name %}
 {% set date = node.createdtime|date("d F Y") %}
 
+{{ content.entity_print_view_pdf }}
+{{ content.link_to_download }}
+
 <div class="clearfix text-center">
   <img src="/themes/carbray_theme/img/logo_carbray.jpg" alt=""/>
 </div>
