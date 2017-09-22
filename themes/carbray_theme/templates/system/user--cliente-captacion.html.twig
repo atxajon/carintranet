@@ -17,9 +17,7 @@
  * @ingroup themeable
  */
 #}
-
 {% set has_mail = mail|render %}
-
 <article{{ attributes }}>
   {% if content %}
     <div class="row">
@@ -38,7 +36,7 @@
             {{ content.field_direccion }}
             {{ content.field_pais }}
             {{ content.field_fax }}
-            {{ content.propuesta }}
+            {{ content.take_action }}
           </div>
         </div>
       </div>
