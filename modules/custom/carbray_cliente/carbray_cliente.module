@@ -217,12 +217,17 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
         ];
       }
       elseif (in_array($estado_term->id(), $estados_tids_that_show_expediente)) {
-        // Client is on estado captacion '2'; deal with facturas.
-        // Show button to create a factura.
+        // Client is on estado captacion '3'; deal with expedientes.
+        // Show button to create a expediente.
+        $options = array(
+          'query' => array(
+            'uid' => $uid,
+          ),
+        );
         $build['take_action']['expediente'] = [
           '#type'      => 'link',
           '#title'     => 'Crear Expediente',
-          '#url'       => Url::fromRoute('carbray.add_expediente_form'),
+          '#url'       => Url::fromRoute('carbray.add_expediente_form', [], $options),
           '#attributes' => [
             'class' => ['btn', 'btn-primary', 'btn-sm']
           ]

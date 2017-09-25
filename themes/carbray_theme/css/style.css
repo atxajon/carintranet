@@ -250,7 +250,8 @@ ul {
     width: auto;
   }
   .carbray-new-client .form-item.fieldgroup,
-  .new-propuesta .form-item.fieldgroup {
+  .new-propuesta .form-item.fieldgroup,
+  .carbray-new-expediente .form-item.fieldgroup {
     width: 78%;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -260,16 +261,19 @@ ul {
     margin-bottom: 20px;
   }
   .carbray-new-client .fieldgroup .form-checkboxes,
-  .new-propuesta .fieldgroup .form-checkboxes {
+  .new-propuesta .fieldgroup .form-checkboxes,
+  .carbray-new-expediente .fieldgroup .form-checkboxes {
     padding: 0 10px;
   }
   #edit-captador--wrapper legend,
-  #edit-equipo--wrapper legend {
+  #edit-equipo--wrapper legend,
+  #edit-responsable--wrapper legend {
     border: none;
     margin-bottom: 10px;
   }
   #edit-captador--wrapper .fieldset-legend,
-  #edit-equipo--wrapper .fieldset-legend {
+  #edit-equipo--wrapper .fieldset-legend,
+  #edit-responsable--wrapper .fieldset-legend {
     font-size: 14px;
     line-height: 1.42857143;
     font-weight: bold;
@@ -277,7 +281,8 @@ ul {
     top: -15px;
   }
   .carbray-new-client .form-checkboxes .form-item,
-  .new-propuesta .form-checkboxes .form-item {
+  .new-propuesta .form-checkboxes .form-item,
+  .carbray-new-expediente .form-checkboxes .form-item {
     float: left;
     margin: 0 20px 20px 0;
     width: 210px;

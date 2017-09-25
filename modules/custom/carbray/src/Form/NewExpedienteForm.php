@@ -26,53 +26,37 @@ class NewExpedienteForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form['#attributes']['class'][] = 'block';
-    $form['num_expediente'] = array(
-      '#type' => 'textfield',
-      '#title' => 'Numero expediente',
-      '#size' => '20',
-    );
 
     // Get cliente uid from url query string.
-//    $path = \Drupal::request()->query->get('cliente');
-    $qs = \Drupal::request()->query->all();
-    if ($qs) {
-      $user = User::load($qs['cliente']);
-    }
+    $uid = \Drupal::request()->query->get('uid');
 
     $form['cliente'] = array(
-      '#title' => 'Cliente',
-      '#description' => t('Busca el cliente tecleando su email'),
-      '#type' => 'entity_autocomplete',
-      '#target_type' => 'user',
-      '#selection_handler' => 'default',
-      '#selection_settings' => [
-        'include_anonymous' => TRUE,
-      ],
-      '#default_value' => (isset($user)) ? $user : '',
+      '#type' => 'hidden',
+      '#default_value' => (isset($uid)) ? $uid : '',
     );
 
-    $form['factura'] = array(
-      '#title' => 'Factura',
-      '#description' => t('Busca la factura tecleando su titulo'),
-      '#type' => 'entity_autocomplete',
-      '#target_type' => 'node',
-      '#selection_handler' => 'default',
-      '#selection_settings' => array(
-        'target_bundles' => array('factura'),
-      ),
-    );
+//    $form['factura'] = array(
+//      '#title' => 'Factura',
+//      '#description' => t('Busca la factura tecleando su titulo'),
+//      '#type' => 'entity_autocomplete',
+//      '#target_type' => 'node',
+//      '#selection_handler' => 'default',
+//      '#selection_settings' => array(
+//        'target_bundles' => array('factura'),
+//      ),
+//    );
 
     $internal_users = get_carbray_workers(TRUE);
     $form['responsable'] = array(
       '#title' => 'Captador',
-      '#type' => 'select',
+      '#type' => 'checkboxes',
       '#empty_option' => ' - Selecciona captador - ',
       '#options' => $internal_users,
       '#multiple' => TRUE,
     );
 
-    $tematica_terms =\Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('tematicas');
-    foreach ($tematica_terms as $term) {
+    $tematica_parent_terms =\Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('tematicas', 0, 1);
+    foreach ($tematica_parent_terms as $term) {
       $term_data[$term->tid] = $term->name;
     }
     $form['tematica'] = array(
@@ -80,24 +64,65 @@ class NewExpedienteForm extends FormBase {
       '#type' => 'select',
       '#empty_option' => ' - Selecciona tematica - ',
       '#options' => $term_data,
+      '#ajax' => array(
+        'callback' => '::serviciosCallback',
+        'wrapper' => 'servicios-wrapper',
+        // Effect when replacing content. Options: 'none' (default), 'slide', 'fade'.
+        'effect' => 'fade',
+        // Javascript event to trigger Ajax. Currently for: 'onchange'.
+        'event' => 'change',
+        'progress' => array(
+          // Graphic shown to indicate ajax. Options: 'throbber' (default), 'bar'.
+          'type' => 'throbber',
+          // Message to show along progress graphic. Default: 'Please wait...'.
+          'message' => 'Cargando servicios asociados...',
+        ),
+      ),
     );
 
+    $form['servicios_wrapper'] = [
+      '#type' => 'container',
+      '#attributes' => ['id' => 'servicios-wrapper', 'class' => array('form-item')],
+    ];
 
-//    $form['captador'] = array(
-//      '#type' => 'select',
-//      '#title' => 'Captador',
-//      '#empty_option' => ' - Selecciona captador - ',
-//      '#options' => $internal_users,
-//      '#multiple' => TRUE,
-//    );
 
     $form['submit'] = array(
       '#type' => 'submit',
       '#value' => 'Crear expediente',
-      '#attributes' => array('class' => array('btn-success')),
+      '#attributes' => array('class' => array('btn-primary')),
     );
 
     return $form;
+  }
+
+  /**
+   * Implements callback for Ajax event on tematica selection.
+   *
+   * @param array $form
+   *   Form render array.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Current state of form.
+   *
+   * @return array
+   *   Color selection section of the form.
+   */
+  public function serviciosCallback(array &$form, FormStateInterface $form_state) {
+    $tematica_tid = $form_state->getValue('tematica');
+
+    // Get child terms of currently selected parent $tematica_tid.
+    $tematica_child_terms =\Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('tematicas', $tematica_tid, 1);
+
+    foreach ($tematica_child_terms as $term) {
+      $term_data[$term->tid] = $term->name;
+    }
+
+    $form['servicios_wrapper']['servicios'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Servicios'),
+      '#options' => $term_data,
+    ];
+
+    return $form['servicios_wrapper'];
   }
 
   /**
