@@ -25,6 +25,9 @@ class NewExpedienteForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+    // Disable caching on this form.
+    $form_state->setCached(FALSE);
+
     $form['#attributes']['class'][] = 'block';
 
     // Get cliente uid from url query string.
@@ -53,6 +56,7 @@ class NewExpedienteForm extends FormBase {
       '#empty_option' => ' - Selecciona captador - ',
       '#options' => $internal_users,
       '#multiple' => TRUE,
+      '#required' => TRUE,
     );
 
     $tematica_parent_terms =\Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('tematicas', 0, 1);
@@ -67,22 +71,28 @@ class NewExpedienteForm extends FormBase {
       '#ajax' => array(
         'callback' => '::serviciosCallback',
         'wrapper' => 'servicios-wrapper',
-        // Effect when replacing content. Options: 'none' (default), 'slide', 'fade'.
         'effect' => 'fade',
-        // Javascript event to trigger Ajax. Currently for: 'onchange'.
         'event' => 'change',
         'progress' => array(
-          // Graphic shown to indicate ajax. Options: 'throbber' (default), 'bar'.
           'type' => 'throbber',
-          // Message to show along progress graphic. Default: 'Please wait...'.
           'message' => 'Cargando servicios asociados...',
         ),
       ),
     );
 
+    $tematica = $form_state->getValue('tematica');
+    $servicios_options = ($tematica) ? get_servicios_for_tematica($tematica) : '';
+
     $form['servicios_wrapper'] = [
       '#type' => 'container',
-      '#attributes' => ['id' => 'servicios-wrapper', 'class' => array('form-item')],
+      '#attributes' => ['id' => 'servicios-wrapper'],
+    ];
+
+    $form['servicios_wrapper']['servicios'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Servicios'),
+      '#options' => $servicios_options,
+      '#sufix' => '<br><br>',
     ];
 
 
@@ -91,7 +101,6 @@ class NewExpedienteForm extends FormBase {
       '#value' => 'Crear expediente',
       '#attributes' => array('class' => array('btn-primary')),
     );
-
     return $form;
   }
 
@@ -106,22 +115,8 @@ class NewExpedienteForm extends FormBase {
    * @return array
    *   Color selection section of the form.
    */
-  public function serviciosCallback(array &$form, FormStateInterface $form_state) {
-    $tematica_tid = $form_state->getValue('tematica');
-
-    // Get child terms of currently selected parent $tematica_tid.
-    $tematica_child_terms =\Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('tematicas', $tematica_tid, 1);
-
-    foreach ($tematica_child_terms as $term) {
-      $term_data[$term->tid] = $term->name;
-    }
-
-    $form['servicios_wrapper']['servicios'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Servicios'),
-      '#options' => $term_data,
-    ];
-
+  public function serviciosCallback(array &$form, FormStateInterface &$form_state) {
+    $form_state->setRebuild(TRUE);
     return $form['servicios_wrapper'];
   }
 
@@ -136,25 +131,34 @@ class NewExpedienteForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
 
-    $num_expediente = $form_state->getValue('num_expediente');
+    $num_expediente = rand(5, 15);
     $cliente = $form_state->getValue('cliente');
-    $factura = $form_state->getValue('factura');
-    $tematica = $form_state->getValue('tematica');
+//    $factura = $form_state->getValue('factura');
+    $values = $form_state->getValues();
     $responsable = $form_state->getValue('responsable');
 
+    // $responsable strangely adds uid 0 for every non selected responsable checkbox;
+    // let's clean those up.
+    $selected_responsable = array();
+    foreach ($responsable as $responsable_id => $value) {
+      if ($value == 0) {
+        continue;
+      }
+      $selected_responsable[$responsable_id] = $value;
+    }
 
 
     $expediente = Node::create(['type' => 'expediente']);
     $expediente->set('title', $num_expediente);
     $expediente->set('field_expediente_cliente', $cliente);
-    $expediente->set('field_expediente_factura', $factura);
-    $expediente->set('field_expediente_responsable', $responsable);
-    $expediente->set('field_expediente_tematica', $tematica);
+//    $expediente->set('field_expediente_factura', $factura);
+    $expediente->set('field_expediente_responsable', $selected_responsable);
+    $expediente->set('field_expediente_tematica', $values['servicios']);
     $expediente->enforceIsNew();
     $expediente->save();
 
-    $nid = $expediente->id();
-    drupal_set_message('Expediente ' . $num_expediente . ' (nid: ' . $nid . ') ha sido creado');
+//    $nid = $expediente->id();
+    drupal_set_message('Expediente ' . $num_expediente . ' ha sido creado');
 //    $form_state['redirect'] = '<front>';
   }
 }

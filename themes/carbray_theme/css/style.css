@@ -260,6 +260,9 @@ ul {
     margin-top: 25px;
     margin-bottom: 20px;
   }
+  #servicios-wrapper {
+    margin-bottom: 20px;
+  }
   .carbray-new-client .fieldgroup .form-checkboxes,
   .new-propuesta .fieldgroup .form-checkboxes,
   .carbray-new-expediente .fieldgroup .form-checkboxes {
