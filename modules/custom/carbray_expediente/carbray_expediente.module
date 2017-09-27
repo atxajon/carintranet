@@ -81,6 +81,7 @@ function get_expedientes_for_cliente($uid) {
   $query->condition('status', 1);
   $query->condition('type', $bundle);
   $query->condition('field_expediente_cliente', $uid);
+  $query->sort('created', 'DESC');
   $expediente_nids = $query->execute();
   return $expediente_nids;
 }
@@ -98,7 +99,7 @@ function assign_expediente_title($tematica_tid) {
   $term = Term::load($tematica_tid);
   $tematica_nombre = $term->get('name')->value;
   $tematica_inicial = get_tematica_inicial($tematica_nombre);
-  $expediente_title = $tematica_inicial . '-' . date('Y') . '-';
+  $expediente_title = $tematica_inicial . '-' . date('Y') . '/';
 
   $servicios = get_children_of_parent_term($tematica_tid, 'tematicas');
   $servicios_tids = [];
