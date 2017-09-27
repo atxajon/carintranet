@@ -445,3 +445,10 @@ function get_children_of_parent_term($tid, $taxonomy) {
   $child_terms =\Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree($taxonomy, $tid, 1);
   return $child_terms;
 }
+
+/**
+ * Helper function to get the node title without loading the whole node object.
+ */
+function get_node_title($nid) {
+  return db_query('SELECT title FROM node_field_data WHERE nid = :nid', array(':nid' => $nid))->fetchField();
+}

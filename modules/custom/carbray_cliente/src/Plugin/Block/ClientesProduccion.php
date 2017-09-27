@@ -33,12 +33,16 @@ class ClientesProduccion extends BlockBase {
         $new_date_format = date('d-M-Y', $timestamp);
       }
 
+      $expedientes = get_expedientes_for_cliente($cliente->id());
+      $expedientes_nids = array_values($expedientes);
+
       $rows[] = array(
         print_cliente_link($cliente),
         print_cliente_captadores_responsables($captadores),
         print_cliente_captadores_responsables($responsables),
         $new_date_format,
         print_cliente_contacto($cliente),
+        print_cliente_expedientes($expedientes_nids),
       );
     }
 
@@ -48,6 +52,7 @@ class ClientesProduccion extends BlockBase {
       'Responsable',
       'Fecha alta',
       'Contacto',
+      'Expedientes',
     );
     $build = array(
       '#type' => 'table',

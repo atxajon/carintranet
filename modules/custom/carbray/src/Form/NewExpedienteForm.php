@@ -172,8 +172,10 @@ class NewExpedienteForm extends FormBase {
     $expediente->save();
 
     // @todo: assign new estado de captacion of client to transition it to produccion.
-
     $user = User::load($cliente);
+    $user->set('field_fase', 'produccion');
+    $user->save();
+
     drupal_set_message('Expediente ' . $num_expediente . ' para cliente ' . $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value . ' ha sido creado');
     $form_state->setRedirectUrl(_carbray_redirecter());
   }

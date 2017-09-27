@@ -71,16 +71,16 @@ function carbray_expediente_node_view(array &$build, EntityInterface $entity, En
 }
 
 /**
- * Helper function to obtain user info for a given expediente.
+ * Helper function to obtain expedientes for a given user.
  *
  * @param string $expediente_nid
  */
-function get_cliente_for_expediente($expediente_nid) {
+function get_expedientes_for_cliente($uid) {
   $bundle = 'expediente';
   $query = \Drupal::entityQuery('node');
   $query->condition('status', 1);
   $query->condition('type', $bundle);
-  $query->condition('field_expediente_cliente', $expediente_nid);
+  $query->condition('field_expediente_cliente', $uid);
   $expediente_nids = $query->execute();
   return $expediente_nids;
 }

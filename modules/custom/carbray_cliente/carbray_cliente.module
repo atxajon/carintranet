@@ -478,6 +478,23 @@ function print_cliente_captadores_responsables($workers) {
   return $worker_markup;
 }
 
+function print_cliente_expedientes($expediente_nids) {
+  if (!$expediente_nids) {
+    return;
+  }
+
+  $expediente_link_string = '';
+  foreach ($expediente_nids as $expediente_nid) {
+    $title = get_node_title($expediente_nid);
+    $expediente_link = Link::fromTextAndUrl($title, Url::fromRoute('entity.node.canonical', ['node' => $expediente_nid], array('attributes' => array('target' => '_blank'))));
+    $expediente_link_string .= $expediente_link->toString()
+        ->getGeneratedLink() . '<br>';
+  }
+  $expediente_markup = Markup::create($expediente_link_string);
+  return $expediente_markup;
+
+}
+
 
 /**
  * Helper function to obtain expedientes for the given user uid.
