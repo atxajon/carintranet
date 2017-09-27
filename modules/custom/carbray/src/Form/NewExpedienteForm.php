@@ -78,21 +78,34 @@ class NewExpedienteForm extends FormBase {
           'message' => 'Cargando servicios asociados...',
         ),
       ),
+      '#required' => TRUE,
     );
 
-    $tematica = $form_state->getValue('tematica');
-    $servicios_options = ($tematica) ? get_servicios_for_tematica($tematica) : '';
+    $tematica_tid = $form_state->getValue('tematica');
+    $servicios = ($tematica_tid) ? get_children_of_parent_term($tematica_tid, 'tematicas') : '';
+
+    $servicios_options = [];
+    if ($servicios) {
+      foreach ($servicios as $servicio) {
+        $servicios_options[$servicio->tid] = $servicio->name;
+      }
+    }
 
     $form['servicios_wrapper'] = [
       '#type' => 'container',
       '#attributes' => ['id' => 'servicios-wrapper'],
+      '#states' => array(
+        'visible' => array(
+          ':input[name="tematica"]' => array('filled' => TRUE),
+        ),
+      ),
     ];
 
     $form['servicios_wrapper']['servicios'] = [
       '#type' => 'select',
       '#title' => $this->t('Servicios'),
       '#options' => $servicios_options,
-      '#sufix' => '<br><br>',
+      '#required' => TRUE,
     ];
 
 
@@ -131,7 +144,8 @@ class NewExpedienteForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
 
-    $num_expediente = rand(5, 15);
+    $tematica_tid = $form_state->getValue('tematica');
+    $num_expediente = assign_expediente_title($tematica_tid);
     $cliente = $form_state->getValue('cliente');
 //    $factura = $form_state->getValue('factura');
     $values = $form_state->getValues();
@@ -147,7 +161,7 @@ class NewExpedienteForm extends FormBase {
       $selected_responsable[$responsable_id] = $value;
     }
 
-
+    // Create expediente node.
     $expediente = Node::create(['type' => 'expediente']);
     $expediente->set('title', $num_expediente);
     $expediente->set('field_expediente_cliente', $cliente);
@@ -157,8 +171,10 @@ class NewExpedienteForm extends FormBase {
     $expediente->enforceIsNew();
     $expediente->save();
 
-//    $nid = $expediente->id();
-    drupal_set_message('Expediente ' . $num_expediente . ' ha sido creado');
-//    $form_state['redirect'] = '<front>';
+    // @todo: assign new estado de captacion of client to transition it to produccion.
+
+    $user = User::load($cliente);
+    drupal_set_message('Expediente ' . $num_expediente . ' para cliente ' . $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value . ' ha sido creado');
+    $form_state->setRedirectUrl(_carbray_redirecter());
   }
 }

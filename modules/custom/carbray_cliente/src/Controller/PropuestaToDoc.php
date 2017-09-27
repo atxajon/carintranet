@@ -53,7 +53,6 @@ class PropuestaToDoc extends ControllerBase {
     $node = $storage->load($nid);
     $build = $view_builder->view($node, $view_mode);
     $output = render($build);
-    //$output = '<h1>test</h1>';
     $filename = 'propuesta-' . $nid . '.pdf';
     $c_type = 'application/pdf';
     $render_array = [

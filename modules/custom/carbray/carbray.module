@@ -440,13 +440,8 @@ function carbray_node_view(array &$build, \Drupal\Core\Entity\EntityInterface $e
   }
 }
 
-function get_servicios_for_tematica($tematica_tid) {
-  // Get child terms of currently selected parent $tematica_tid.
-  $tematica_child_terms =\Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('tematicas', $tematica_tid, 1);
-
-  foreach ($tematica_child_terms as $term) {
-    $term_data[$term->tid] = $term->name;
-  }
-
-  return $term_data;
+function get_children_of_parent_term($tid, $taxonomy) {
+  // Get child terms of currently selected parent $tid.
+  $child_terms =\Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree($taxonomy, $tid, 1);
+  return $child_terms;
 }

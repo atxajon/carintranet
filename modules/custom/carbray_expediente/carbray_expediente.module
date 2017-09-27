@@ -10,7 +10,8 @@ use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Routing;
 use Drupal\user\Entity\User;
 use Drupal\node\Entity\Node;
-use Drupal\Core\Entity\Plugin\DataType\EntityAdapter;
+use Drupal\taxonomy\Entity\Term;
+
 
 /**
  * Implements hook_theme().
@@ -82,4 +83,86 @@ function get_cliente_for_expediente($expediente_nid) {
   $query->condition('field_expediente_cliente', $expediente_nid);
   $expediente_nids = $query->execute();
   return $expediente_nids;
+}
+
+/**
+ * Prepares expediente node title to follow nomenclatura of expdientes:
+ *  INICIAL-AÑO-NÚMERO CORRELATIVO
+ *  Ejemplo: C-2017-1
+ *
+ * @param $tematica_tid
+ * @return string
+ */
+function assign_expediente_title($tematica_tid) {
+  // Let's get the count of expedientes for current year and tematica.
+  $term = Term::load($tematica_tid);
+  $tematica_nombre = $term->get('name')->value;
+  $tematica_inicial = get_tematica_inicial($tematica_nombre);
+  $expediente_title = $tematica_inicial . '-' . date('Y') . '-';
+
+  $servicios = get_children_of_parent_term($tematica_tid, 'tematicas');
+  $servicios_tids = [];
+  foreach ($servicios as $servicio) {
+    $servicios_tids[] = $servicio->tid;
+  }
+
+  $count = count_expedientes_for_current_year_and_tematica($servicios_tids);
+  $new_count = (int)$count + 1;
+
+  $expediente_title .= $new_count;
+  return $expediente_title;
+}
+
+/**
+ * Converts tematica term name into Carbray iniciales:
+ *  Corporate: C
+ *  Real Estate: RE
+ *  Laboral: L
+ *  Fiscal: F
+ *  Familia: FA
+ *  Inmigración: I
+ *  Litigation Civil: LC
+ * @param $tematica_nombre
+ */
+function get_tematica_inicial($tematica_nombre) {
+  $inicial = '';
+  switch ($tematica_nombre) {
+    case 'Corporate':
+      $inicial = 'c';
+      break;
+    case 'Real Estate':
+      $inicial = 're';
+      break;
+    case 'Laboral':
+      $inicial = 'l';
+      break;
+    case 'Fiscal':
+      $inicial = 'f';
+      break;
+    case 'Familia':
+      $inicial = 'fa';
+      break;
+    case 'Inmigracion':
+      $inicial = 'i';
+      break;
+    case 'Litigacion civil':
+      $inicial = 'lc';
+      break;
+  }
+
+  return strtoupper($inicial);
+}
+
+function count_expedientes_for_current_year_and_tematica($servicios_tids) {
+  $current_year = date('Y');
+  $year_beginning_timestamp = strtotime($current_year . "-01-01");
+
+  $query = \Drupal::database()->select('node__field_expediente_tematica', 't');
+  $query->leftJoin('node_field_data', 'nfd', 'nfd.nid = t.entity_id');
+  $query->addExpression('COUNT(*)');
+  $query->condition('field_expediente_tematica_target_id', $servicios_tids, 'IN');
+  $query->condition('created', $year_beginning_timestamp, ">=");
+  $count = $query->execute()->fetchField();
+
+  return $count;
 }
