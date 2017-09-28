@@ -51,9 +51,9 @@ class NewExpedienteForm extends FormBase {
 
     $internal_users = get_carbray_workers(TRUE);
     $form['responsable'] = array(
-      '#title' => 'Captador',
+      '#title' => 'Responsable',
       '#type' => 'checkboxes',
-      '#empty_option' => ' - Selecciona captador - ',
+      '#empty_option' => ' - Selecciona responsable - ',
       '#options' => $internal_users,
       '#multiple' => TRUE,
       '#required' => TRUE,

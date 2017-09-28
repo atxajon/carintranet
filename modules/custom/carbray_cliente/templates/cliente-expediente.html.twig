@@ -17,7 +17,7 @@
         </tbody>
       </table>
       <br/>
-      <a href="{{ path('carbray.add_expediente_form', {'cliente': uid }) }}">Crear nuevo expediente para {{ client_name }}</a>
+      <a href="{{ path('carbray.add_expediente_form', {'uid': uid }) }}">Crear nuevo expediente para {{ client_name }}</a>
     {% else %}
       <p>{{ 'El cliente todavia no tiene expedientes.'|trans }} <a href="{{ path('carbray.add_expediente_form', {'cliente': uid }) }}">Crear expediente para {{ client_name }}</a></p>
     {% endif %}
