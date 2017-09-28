@@ -66,6 +66,17 @@ class NewClientForm extends FormBase {
       '#multiple' => TRUE,
     );
 
+    $entityManager = \Drupal::service('entity_field.manager');
+    $fields = $entityManager->getFieldStorageDefinitions('user', 'user');
+    $options = options_allowed_values($fields['field_procedencia']);
+//    $options = FieldConfig::loadByName('user', 'user', 'field_procedencia')->getSetting('allowed_values');
+    $form['procedencia'] = array(
+      '#type' => 'select',
+      '#title' => 'Procedencia',
+      '#options' => $options,
+      '#empty_option' => ' - Selecciona tematica - ',
+    );
+
     $form['submit'] = array(
       '#type' => 'submit',
       '#value' => 'Crear cliente',
@@ -93,6 +104,7 @@ class NewClientForm extends FormBase {
     $email = ($email) ? $email : 'sin_email@' . $nombre . '_' . $apellido . '.com';
     $telefono = $form_state->getValue('telefono');
     $pais = $form_state->getValue('pais');
+    $procedencia = $form_state->getValue('procedencia');
     $captador = $form_state->getValue('captador');
     // $captador strangely adds uid 0 for every non selected captador checkbox;
     // let's clean those up.
@@ -119,6 +131,7 @@ class NewClientForm extends FormBase {
     $user->set('field_telefono', $telefono);
     $user->set('field_nombre', $nombre);
     $user->set('field_apellido', $apellido);
+    $user->set('field_procedencia', $procedencia);
     $user->set('field_captador', $selected_captador);
 
     // Let's keep the user as Blocked by default, until internal admin activates it.
