@@ -7,6 +7,8 @@ namespace Drupal\carbray\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\user\Entity\User;
+use Drupal\node\Entity\Node;
+
 
 /**
  * NewClientForm form.
@@ -132,7 +134,7 @@ class NewClientForm extends FormBase {
     $user->set('field_nombre', $nombre);
     $user->set('field_apellido', $apellido);
     $user->set('field_procedencia', $procedencia);
-    $user->set('field_captador', $selected_captador);
+//    $user->set('field_captador', $selected_captador);
 
     // Let's keep the user as Blocked by default, until internal admin activates it.
     // $user->activate();
@@ -145,8 +147,19 @@ class NewClientForm extends FormBase {
     // $user->set("timezone", 'Pacific/Wallis');
 
     $user->save();
-
     $uid = $user->id();
+
+
+    // Create a Captacion for the new client.
+    $now = date('d-m-Y', time());
+    $title = $now . ' cliente: ' . $nombre . ' ' . $apellido;
+    $captacion = Node::create(['type' => 'captacion']);
+    $captacion->set('title', $title);
+    $captacion->set('field_captacion_cliente', $uid);
+    $captacion->set('field_captacion_captador', $selected_captador);
+    $captacion->enforceIsNew();
+    $captacion->save();
+
     drupal_set_message('Cliente ' . $nombre . ' ' . $apellido . ' con uid: ' . $uid . ' ha sido creado');
     $form_state->setRedirectUrl(_carbray_redirecter());
   }
