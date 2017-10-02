@@ -7,6 +7,8 @@ namespace Drupal\carbray\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\user\Entity\User;
+use Drupal\node\Entity\Node;
+
 
 /**
  * NewClientForm form.
@@ -22,7 +24,7 @@ class AssignEstadoCaptacion extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, $uid = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, $nid = NULL) {
     $db = \Drupal::database();
 
     // Query for all estados de captaction terms.
@@ -38,12 +40,12 @@ class AssignEstadoCaptacion extends FormBase {
     }
 
     // Get this user's estado de captacion.
-    $sql = "SELECT field_user_estado_de_captacion_target_id FROM user__field_user_estado_de_captacion WHERE entity_id = :uid";
-    $default_estado = $db->query($sql, array(':uid' => $uid))->fetchCol();
+    $sql = "SELECT field_captacion_estado_captacion_target_id FROM node__field_captacion_estado_captacion WHERE entity_id = :nid";
+    $default_estado = $db->query($sql, array(':nid' => $nid))->fetchCol();
 
-    $form['cliente_uid'] = array(
+    $form['captacion_nid'] = array(
       '#type' => 'hidden',
-      '#value' => $uid,
+      '#value' => $nid,
     );
     $form['estado'] = array(
       '#type' => 'select',
@@ -76,19 +78,14 @@ class AssignEstadoCaptacion extends FormBase {
 
     // @todo: following should work but always return first uid on the page;
     // Needed to resort to using raw and unrecommended getUserInput...
-    // $uid = $form_state->getValue('cliente_uid');
     $user_input = $form_state->getUserInput();
-    $uid = $user_input['cliente_uid'];
+    $nid = $user_input['captacion_nid'];
     $estado = $form_state->getValue('estado');
 
-    $user = \Drupal\user\Entity\User::load($uid);
-    $user->set('field_user_estado_de_captacion', $estado);
-    $user->save();
+    $captacion = Node::load($nid);
+    $captacion->set('field_captacion_estado_captacion', $estado);
+    $captacion->save();
 
-    $nombre = $user->get('field_nombre')->value;
-    $apellido = $user->get('field_apellido')->value;
-    $nombre_apellido = $nombre . ' ' . $apellido;
-
-    drupal_set_message('Cliente ' . $nombre_apellido . ' con uid: ' . $uid . ' ha sido asignado nuevo estado de captacion');
+    drupal_set_message('Captacion con nid: ' . $nid . ' ha sido asignado nuevo estado de captacion');
   }
 }

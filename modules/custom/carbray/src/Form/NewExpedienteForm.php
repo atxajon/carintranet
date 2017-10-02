@@ -30,12 +30,17 @@ class NewExpedienteForm extends FormBase {
 
     $form['#attributes']['class'][] = 'block';
 
-    // Get cliente uid from url query string.
+    // Get Captacion nid from url query string.
+    $captacion_nid = \Drupal::request()->query->get('nid');
     $uid = \Drupal::request()->query->get('uid');
 
     $form['cliente'] = array(
       '#type' => 'hidden',
       '#default_value' => (isset($uid)) ? $uid : '',
+    );
+    $form['captacion'] = array(
+      '#type' => 'hidden',
+      '#default_value' => (isset($captacion_nid)) ? $captacion_nid : '',
     );
 
 //    $form['factura'] = array(
@@ -146,7 +151,8 @@ class NewExpedienteForm extends FormBase {
 
     $tematica_tid = $form_state->getValue('tematica');
     $num_expediente = assign_expediente_title($tematica_tid);
-    $cliente = $form_state->getValue('cliente');
+    $captacion = $form_state->getValue('captacion');
+    $uid = $form_state->getValue('cliente');
 //    $factura = $form_state->getValue('factura');
     $values = $form_state->getValues();
     $responsable = $form_state->getValue('responsable');
@@ -164,19 +170,16 @@ class NewExpedienteForm extends FormBase {
     // Create expediente node.
     $expediente = Node::create(['type' => 'expediente']);
     $expediente->set('title', $num_expediente);
-    $expediente->set('field_expediente_cliente', $cliente);
+    $expediente->set('field_expediente_captacion', $captacion);
 //    $expediente->set('field_expediente_factura', $factura);
     $expediente->set('field_expediente_responsable', $selected_responsable);
     $expediente->set('field_expediente_tematica', $values['servicios']);
     $expediente->enforceIsNew();
     $expediente->save();
 
-    // @todo: assign new estado de captacion of client to transition it to produccion.
-    $user = User::load($cliente);
-    $user->set('field_fase', 'produccion');
-    $user->save();
+    $user = User::Load($uid);
 
-    drupal_set_message('Expediente ' . $num_expediente . ' para cliente ' . $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value . ' ha sido creado');
+    drupal_set_message('Expediente ' . $num_expediente . ' para captacion del cliente ' . $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value . ' ha sido creado');
     $form_state->setRedirectUrl(_carbray_redirecter());
   }
 }

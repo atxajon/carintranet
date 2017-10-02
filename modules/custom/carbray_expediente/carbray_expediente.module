@@ -54,33 +54,34 @@ function carbray_expediente_node_view(array &$build, EntityInterface $entity, En
 
   if ($display->getComponent('info_cliente')) {
     $expediente_node = Node::load($nid);
-    $client_of_expediente = $expediente_node->field_expediente_cliente->getValue();
-    $client_uid_of_expediente = $client_of_expediente[0]['target_id'];
-    if ($client_uid_of_expediente) {
-      $client = User::load($client_uid_of_expediente);
-      $nombre = $client->get('field_nombre')->value;
-      $apellido = $client->get('field_apellido')->value;
-      $client_name = ucfirst($nombre) . ' ' . ucfirst($apellido);
-      $build['cliente_expediente'] = [
-        '#theme' => 'info_cliente',
-        '#cliente' => $client_name,
-      ];
-    }
+    $captacion_of_expediente = $expediente_node->field_expediente_captacion->getValue();
+    $captacion_nid_of_expediente = $captacion_of_expediente[0]['target_id'];
+//    if ($captacion_nid_of_expediente) {
+//      $captacion = Node::load($captacion_nid_of_expediente);
+//      $client = User::load($captacion->field_captacion_cliente);
+//      $nombre = $client->get('field_nombre')->value;
+//      $apellido = $client->get('field_apellido')->value;
+//      $client_name = ucfirst($nombre) . ' ' . ucfirst($apellido);
+//      $build['cliente_expediente'] = [
+//        '#theme' => 'info_cliente',
+//        '#cliente' => $client_name,
+//      ];
+//    }
 
   }
 }
 
 /**
- * Helper function to obtain expedientes for a given user.
+ * Helper function to obtain expedientes for a given Captacion.
  *
  * @param string $expediente_nid
  */
-function get_expedientes_for_cliente($uid) {
+function get_expedientes_for_captacion($captacion_nid) {
   $bundle = 'expediente';
   $query = \Drupal::entityQuery('node');
   $query->condition('status', 1);
   $query->condition('type', $bundle);
-  $query->condition('field_expediente_cliente', $uid);
+  $query->condition('field_expediente_captacion', $captacion_nid);
   $query->sort('created', 'DESC');
   $expediente_nids = $query->execute();
   return $expediente_nids;

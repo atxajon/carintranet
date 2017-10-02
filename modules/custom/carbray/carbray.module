@@ -217,7 +217,6 @@ function carbray_form_user_pass_alter(&$form, FormStateInterface $form_state) {
  * @return mixed
  */
 function _hide_user_form_fields($form, $is_user_reset = FALSE) {
-  $form['field_fase']['#access'] = FALSE;
   $form['field_captador']['#access'] = FALSE;
   $form['field_responsable']['#access'] = FALSE;
   $form['field_fecha_alta']['#access'] = FALSE;
