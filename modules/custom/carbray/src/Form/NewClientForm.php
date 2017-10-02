@@ -152,7 +152,7 @@ class NewClientForm extends FormBase {
 
     // Create a Captacion for the new client.
     $now = date('d-m-Y', time());
-    $title = $now . ' cliente: ' . $nombre . ' ' . $apellido;
+    $title = 'Captacion ' . $now . ' para cliente: ' . $nombre . ' ' . $apellido;
     $captacion = Node::create(['type' => 'captacion']);
     $captacion->set('title', $title);
     $captacion->set('field_captacion_cliente', $uid);

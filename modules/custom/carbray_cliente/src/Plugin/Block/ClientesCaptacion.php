@@ -43,8 +43,7 @@ class ClientesCaptacion extends BlockBase {
       }
 
       $rows[] = array(
-        // @todo: this needs to link to the ficha captacion node page.
-        print_cliente_link($cliente_data),
+        print_captacion_link($cliente_data, $cliente->captacion_nid),
         print_cliente_captadores_responsables($captacion_data->get('field_captacion_captador')->getValue()),
         $estado_nombre,
         $new_date_format,

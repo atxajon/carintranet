@@ -1,0 +1,63 @@
+{#
+/**
+ * @file
+ * Theme override to display a node of type Captacion.
+ *
+#}
+{%
+  set classes = [
+    node.bundle|clean_class,
+    node.isPromoted() ? 'is-promoted',
+    node.isSticky() ? 'is-sticky',
+    not node.isPublished() ? 'is-unpublished',
+    view_mode ? view_mode|clean_class,
+    'clearfix',
+  ]
+%}
+<article{{ attributes.addClass(classes) }}>
+
+  {{ title_prefix }}
+  {% if not page %}
+    <h2{{ title_attributes }}>
+      <a href="{{ url }}" rel="bookmark">{{ label }}</a>
+    </h2>
+  {% endif %}
+  {{ title_suffix }}
+
+  <div{{ content_attributes.addClass('content') }}>
+    <div class="row">
+      <div class="col-sm-4">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            {{ 'Informacion del cliente'|trans }}
+          </div>
+          <div class="panel-body">
+            <div class="field"><div class="field--label">Nombre</div><div class="field--item">{{ content.client_name }}</div></div>
+            {{ content.field_captacion_cliente }}
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            {{ 'Estado de la captacion'|trans }}
+          </div>
+          <div class="panel-body">
+            {{ content.field_captacion_estado_captacion }}
+            {{ content.assign_estado_captacion }}
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            {{ 'Informacion de la captacion'|trans }}
+          </div>
+          <div class="panel-body">
+            {{ content.field_captacion_captador }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>

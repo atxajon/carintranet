@@ -62,7 +62,7 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
-  $extra['user']['user']['display']['assign_estado_captacion'] = array(
+  $extra['node']['captacion']['display']['assign_estado_captacion'] = array(
     'label' => t('Assign estado de captacion to client'),
     'description' => t('Estado de captacion.'),
     'weight' => 100,
@@ -99,6 +99,12 @@ function carbray_cliente_entity_extra_field_info() {
     'visible' => TRUE,
   );
   $extra['node']['propuesta']['display']['client_name'] = array(
+    'label' => t('Client name surname'),
+    'description' => t('Client name and surname.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['captacion']['display']['client_name'] = array(
     'label' => t('Client name surname'),
     'description' => t('Client name and surname.'),
     'weight' => 100,
@@ -164,13 +170,6 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
         '#modal_title' => t('Nueva nota'),
         '#modal_content' => $form,
       ];
-    }
-
-    if ($display->getComponent('assign_estado_captacion')) {
-      $captacion_nid = get_cliente_captacion($uid);
-      $form = \Drupal::formBuilder()
-        ->getForm('Drupal\carbray\Form\AssignEstadoCaptacion', $captacion_nid[0]->nid);
-      $build['assign_estado_captacion'] = $form;
     }
 
     if ($display->getComponent('take_action')) {
@@ -241,12 +240,6 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
     }
   }
   elseif ($view_mode === 'cliente_produccion') {
-    if ($display->getComponent('assign_estado_captacion')) {
-      $captacion_nid = get_cliente_captacion($uid);
-      $form = \Drupal::formBuilder()
-        ->getForm('Drupal\carbray\Form\AssignEstadoCaptacion', $captacion_nid[0]->nid);
-      $build['assign_estado_captacion'] = $form;
-    }
     if ($display->getComponent('cliente_expediente')) {
       $expediente_nids = get_cliente_expediente_nids($uid);
       $expedientes = get_expedientes_data($expediente_nids);
@@ -375,6 +368,24 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
       ];
     }
   }
+
+  if ($entity->bundle() == 'captacion') {
+    $nid = $entity->id();
+    if ($display->getComponent('assign_estado_captacion')) {
+      $form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray\Form\AssignEstadoCaptacion', $nid);
+      $build['assign_estado_captacion'] = $form;
+    }
+    if ($display->getComponent('client_name')) {
+      $captacion_node = Node::load($nid);
+      $cliente_uid = $captacion_node->get('field_captacion_cliente')->getValue();
+      $user = User::load($cliente_uid[0]['target_id']);
+      $cliente_nombre = $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value;
+      $build['client_name'] = [
+        '#markup' => $cliente_nombre,
+      ];
+    }
+  }
 }
 
 function get_cliente_nombre($uid) {
@@ -430,6 +441,16 @@ function print_cliente_link($cliente) {
   $apellido = $cliente->get('field_apellido')->value;
   $nombre_apellido = $nombre . ' ' . $apellido;
   $url = Url::fromRoute('entity.user.canonical', array('user' => $cliente->id()));
+  $user_link = Link::fromTextAndUrl($nombre_apellido, $url);
+  return $user_link;
+}
+
+function print_captacion_link($cliente, $captacion_nid) {
+  // Build column 'Nombre': link to user page with nombre and apellido as text.
+  $nombre = $cliente->get('field_nombre')->value;
+  $apellido = $cliente->get('field_apellido')->value;
+  $nombre_apellido = $nombre . ' ' . $apellido;
+  $url = Url::fromRoute('entity.node.canonical', array('node' => $captacion_nid));
   $user_link = Link::fromTextAndUrl($nombre_apellido, $url);
   return $user_link;
 }
@@ -529,6 +550,18 @@ function get_expedientes_data($expediente_nids) {
  * @param $uid
  */
 function get_cliente_captacion($uid) {
+  $db = \Drupal::database();
+  $sql = "SELECT nid FROM node_field_data nfd INNER JOIN node__field_captacion_cliente cc ON nfd.nid = cc.entity_id WHERE cc.field_captacion_cliente_target_id = :uid";
+  $data = $db->query($sql, array(':uid' => $uid))->fetchAll();
+  return $data;
+}
+
+/**
+ * Given a captacion nid return its User uid.
+ *
+ * @param $uid
+ */
+function get_captacion_cliente($nid) {
   $db = \Drupal::database();
   $sql = "SELECT nid FROM node_field_data nfd INNER JOIN node__field_captacion_cliente cc ON nfd.nid = cc.entity_id WHERE cc.field_captacion_cliente_target_id = :uid";
   $data = $db->query($sql, array(':uid' => $uid))->fetchAll();
