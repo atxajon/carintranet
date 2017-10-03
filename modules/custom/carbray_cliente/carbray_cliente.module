@@ -140,7 +140,7 @@ function carbray_cliente_entity_view_mode_alter(&$view_mode, EntityInterface $en
     $roles = $user->getRoles();
     // If user with only 1 role and it is authenticated:
     if (in_array('authenticated', $roles) && count($roles) == 1) {
-      $view_mode = 'cliente_captacion';
+      $view_mode = 'cliente';
     }
   }
 }
@@ -165,7 +165,7 @@ function carbray_cliente_theme_suggestions_user_alter(&$suggestions, $vars, $hoo
 function carbray_cliente_user_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
   $uid = $entity->id();
   // Viewing a client on captacion page.
-  if ($view_mode === 'cliente_captacion') {
+  if ($view_mode === 'cliente') {
     if ($display->getComponent('anadir_nota')) {
       $form = \Drupal::formBuilder()
         ->getForm('Drupal\carbray_cliente\Form\NewNotaForm');
@@ -176,73 +176,6 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
         '#modal_title' => t('Nueva nota'),
         '#modal_content' => $form,
       ];
-    }
-
-    if ($display->getComponent('take_action')) {
-      // Is the client's estado de captacion on estado '1'?
-      $user = User::Load($uid);
-
-      // Has the client a propuesta yet? show it.
-      $has_propuesta = FALSE;
-      if ($propuesta = get_client_propuesta($uid)) {
-        $propuesta_node = Node::load(current($propuesta));
-        $propuesta_title = $propuesta_node->getTitle();
-        $url = Url::fromRoute('entity.node.canonical', array('node' => $propuesta_node->id()));
-        $propuesta_link = Link::fromTextAndUrl($propuesta_title, $url);
-        $build['take_action']['propuesta'] = $propuesta_link->toRenderable();
-        $build['take_action']['propuesta']['#prefix'] = '<div class="field"><div class="field--label">Propuesta</div><div class="field--item">';
-        $build['take_action']['propuesta']['#suffix'] = '</div></div>';
-        $has_propuesta = TRUE;
-      }
-
-      $estado_term = $user->field_user_estado_de_captacion->entity;
-      $estados_tids_that_show_propuesta = array(43, 44, 45, 46);
-      $estados_tids_that_show_factura = array(47, 48, 49, 50, 51);
-      $estados_tids_that_show_expediente = array(52, 53, 54, 55);
-
-      if (in_array($estado_term->id(), $estados_tids_that_show_propuesta)) {
-        // Client is on estado captacion '1'; deal with propuestas.
-        // If does not have a propuesta show button to create one.
-        if (!$has_propuesta) {
-          $form = \Drupal::formBuilder()
-            ->getForm('Drupal\carbray_cliente\Form\PropuestaPlantillaRef', $uid);
-          $build['take_action'] = $form;
-        }
-      }
-      elseif (in_array($estado_term->id(), $estados_tids_that_show_factura)) {
-        // Client is on estado captacion '2'; deal with facturas.
-        // Show button to create a factura.
-        $build['take_action']['factura'] = [
-          '#type'      => 'link',
-          '#title'     => 'Crear Factura',
-          '#url'       => Url::fromRoute('carbray.add_expediente_form'),
-          '#attributes' => [
-            'class' => ['btn', 'btn-primary', 'btn-sm']
-          ]
-        ];
-      }
-      elseif (in_array($estado_term->id(), $estados_tids_that_show_expediente)) {
-        // Client is on estado captacion '3'; deal with expedientes.
-        // Show button to create a expediente.
-
-        // First gather the Captacion for the user.
-        $captacion_nid = get_cliente_captacion($uid);
-        $options = array(
-          'query' => array(
-            'uid' => $uid,
-            // @todo: deal with clientes that have multiple Captaciones!
-            'nid' => $captacion_nid[0]->nid,
-          ),
-        );
-        $build['take_action']['expediente'] = [
-          '#type'      => 'link',
-          '#title'     => 'Crear Expediente',
-          '#url'       => Url::fromRoute('carbray.add_expediente_form', [], $options),
-          '#attributes' => [
-            'class' => ['btn', 'btn-primary', 'btn-sm']
-          ]
-        ];
-      }
     }
   }
   elseif ($view_mode === 'cliente_produccion') {
@@ -260,7 +193,6 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
         '#uid' => $uid,
       ];
     }
-
   }
   // Viewing a carbray admin/worker.
   elseif ($view_mode === 'full') {
@@ -443,7 +375,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         // First gather the Captacion for the user.
         $options = array(
           'query' => array(
-            'uid' => $cliente_uid,
+            'uid' => $user->id(),
             // @todo: deal with clientes that have multiple Captaciones!
             'nid' => $nid,
           ),
@@ -642,7 +574,7 @@ function get_cliente_captacion($uid) {
  */
 function get_captacion_cliente($nid) {
   $db = \Drupal::database();
-  $sql = "SELECT nid FROM node_field_data nfd INNER JOIN node__field_captacion_cliente cc ON nfd.nid = cc.entity_id WHERE cc.field_captacion_cliente_target_id = :uid";
-  $data = $db->query($sql, array(':uid' => $uid))->fetchAll();
+  $sql = "SELECT field_captacion_cliente_target_id FROM node__field_captacion_cliente WHERE entity_id = :nid";
+  $data = $db->query($sql, array(':nid' => $nid))->fetchAll();
   return $data;
 }
