@@ -22,7 +22,7 @@ class ClientesCaptacion extends BlockBase {
   public function build() {
     $logged_in_uid = \Drupal::currentUser()->id();
     $clientes = get_my_clients($logged_in_uid);
-
+    $rows = [];
     foreach ($clientes as $cliente) {
       $cliente_data = \Drupal::entityTypeManager()->getStorage('user')->load($cliente->uid);
 
@@ -62,6 +62,7 @@ class ClientesCaptacion extends BlockBase {
       '#type' => 'table',
       '#header' => $header,
       '#rows' => $rows,
+      '#empty' => t('Ningun cliente en captacion.'),
     );
     return $build;
   }

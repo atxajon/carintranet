@@ -20,6 +20,7 @@ class ClientesProduccion extends BlockBase {
   public function build() {
     $logged_in_uid = \Drupal::currentUser()->id();
     $clientes = get_my_clients($logged_in_uid, 'produccion');
+    $rows = [];
     foreach ($clientes as $cliente) {
       $cliente_data = \Drupal::entityTypeManager()->getStorage('user')->load($cliente->uid);
 
@@ -59,6 +60,7 @@ class ClientesProduccion extends BlockBase {
       '#type' => 'table',
       '#header' => $header,
       '#rows' => $rows,
+      '#empty' => t('Ningun cliente en produccion.'),
     );
     return $build;
   }
