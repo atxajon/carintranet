@@ -151,7 +151,7 @@ class NewExpedienteForm extends FormBase {
 
     $tematica_tid = $form_state->getValue('tematica');
     $num_expediente = assign_expediente_title($tematica_tid);
-    $captacion = $form_state->getValue('captacion');
+    $captacion_nid = $form_state->getValue('captacion');
     $uid = $form_state->getValue('cliente');
 //    $factura = $form_state->getValue('factura');
     $values = $form_state->getValues();
@@ -170,12 +170,22 @@ class NewExpedienteForm extends FormBase {
     // Create expediente node.
     $expediente = Node::create(['type' => 'expediente']);
     $expediente->set('title', $num_expediente);
-    $expediente->set('field_expediente_captacion', $captacion);
+    $expediente->set('field_expediente_captacion', $captacion_nid);
 //    $expediente->set('field_expediente_factura', $factura);
     $expediente->set('field_expediente_responsable', $selected_responsable);
     $expediente->set('field_expediente_tematica', $values['servicios']);
     $expediente->enforceIsNew();
     $expediente->save();
+
+    // Update the entry on custom table carbray_user_captacion_expediente.
+    $query = \Drupal::database()->update('carbray_user_captacion_expediente');
+    $query->fields([
+      'expediente_nid' =>  $expediente->id()
+    ]);
+    $query->condition('uid', $uid);
+    $query->condition('captacion_nid', $captacion_nid);
+    $query->execute();
+
 
     $user = User::Load($uid);
 

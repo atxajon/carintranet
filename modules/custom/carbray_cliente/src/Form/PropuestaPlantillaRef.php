@@ -32,18 +32,18 @@ class PropuestaPlantillaRef extends FormBase {
       '#options' => $propuesta_plantillas,
     ];
 
-    // Capture current user this propuesta is going to refer to on a hidden field.
+    // Capture current captacion this propuesta is going to refer to on a hidden field.
     $current_path = \Drupal::service('path.current')->getPath();
     $path_args = explode('/', $current_path);
-    $cliente_uid = 0;
+    $captacion_nid = 0;
     foreach ($path_args as $path_arg) {
       if (is_numeric($path_arg)) {
-        $cliente_uid = $path_arg;
+        $captacion_nid = $path_arg;
       }
     }
-    $form['cliente_uid'] = [
+    $form['captacion_nid'] = [
       '#type' => 'hidden',
-      '#value' => $cliente_uid,
+      '#value' => $captacion_nid,
     ];
 
     $form['submit'] = [
@@ -67,11 +67,11 @@ class PropuestaPlantillaRef extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $propuesta_plantilla_nid = $form_state->getValue('propuesta_ref');
-    $cliente_uid = $form_state->getValue('cliente_uid');
+    $captacion_nid = $form_state->getValue('captacion_nid');
     $route = 'carbray_cliente.new_propuesta';
     $options = array(
       'prop_plantilla' => $propuesta_plantilla_nid,
-      'uid' => $cliente_uid,
+      'nid' => $captacion_nid,
     );
 
     $form_state->setRedirect($route, $options);

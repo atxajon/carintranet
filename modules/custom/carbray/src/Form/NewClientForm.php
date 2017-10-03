@@ -160,6 +160,18 @@ class NewClientForm extends FormBase {
     $captacion->enforceIsNew();
     $captacion->save();
 
+    // Create an entry on custom table carbray_user_captacion_expediente.
+    \Drupal::database()->insert('carbray_user_captacion_expediente')
+      ->fields([
+        'uid',
+        'captacion_nid',
+      ])
+      ->values(array(
+        $uid,
+        $captacion->id(),
+      ))
+      ->execute();
+
     drupal_set_message('Cliente ' . $nombre . ' ' . $apellido . ' con uid: ' . $uid . ' ha sido creado');
     $form_state->setRedirectUrl(_carbray_redirecter());
   }
