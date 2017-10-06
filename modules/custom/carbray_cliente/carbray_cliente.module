@@ -116,6 +116,24 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['node']['captacion']['display']['client_fecha_alta'] = array(
+    'label' => t('Client fecha alta'),
+    'description' => t('Client fecha alta.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['captacion']['display']['client_telefono'] = array(
+    'label' => t('Client telefono'),
+    'description' => t('Client telefono.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['captacion']['display']['client_pais'] = array(
+    'label' => t('Client pais'),
+    'description' => t('Client pais.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
   return $extra;
 }
 
@@ -326,6 +344,25 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         '#markup' => $cliente_nombre,
       ];
     }
+    if ($display->getComponent('client_fecha_alta')) {
+      $fecha_alta_timestamp = strtotime($user->get('field_fecha_alta')->value);
+      $cliente_fecha_alta = date('d-M-Y',$fecha_alta_timestamp);
+      $build['client_fecha_alta'] = [
+        '#markup' => $cliente_fecha_alta,
+      ];
+    }
+    if ($display->getComponent('client_telefono')) {
+      $cliente_telefono = $user->get('field_telefono')->value;
+      $build['client_telefono'] = [
+        '#markup' => $cliente_telefono,
+      ];
+    }
+    if ($display->getComponent('client_pais')) {
+      $cliente_pais = $user->get('field_pais')->value;
+      $build['client_pais'] = [
+        '#markup' => $cliente_pais,
+      ];
+    }
     if ($display->getComponent('take_action')) {
       // Is the estado de captacion on estado '1'?
 
@@ -456,14 +493,21 @@ function print_cliente_link($cliente) {
   return $user_link;
 }
 
-function print_captacion_link($cliente, $captacion_nid) {
+function print_captacion_link($captacion_nid, $cliente = '') {
   // Build column 'Nombre': link to user page with nombre and apellido as text.
-  $nombre = $cliente->get('field_nombre')->value;
-  $apellido = $cliente->get('field_apellido')->value;
-  $nombre_apellido = $nombre . ' ' . $apellido;
-  $url = Url::fromRoute('entity.node.canonical', array('node' => $captacion_nid));
-  $user_link = Link::fromTextAndUrl($nombre_apellido, $url);
-  return $user_link;
+  if ($cliente) {
+    $nombre = $cliente->get('field_nombre')->value;
+    $apellido = $cliente->get('field_apellido')->value;
+    $nombre_apellido = $nombre . ' ' . $apellido;
+    $url = Url::fromRoute('entity.node.canonical', array('node' => $captacion_nid));
+    $link = Link::fromTextAndUrl($nombre_apellido, $url);
+  }
+  else {
+    $url = Url::fromRoute('entity.node.canonical', array('node' => $captacion_nid), array('attributes' => array('class' => array('btn', 'btn-primary', 'btn-sm'))));
+    $link = Link::fromTextAndUrl('Ver Captacion', $url);
+  }
+
+  return $link;
 }
 
 function print_cliente_contacto($cliente) {
@@ -479,26 +523,14 @@ function print_cliente_contacto($cliente) {
 function print_cliente_captadores_responsables($workers) {
   /**
    * A client can have multiple captadores/responsables assigned;
-   * Each captador/responsable is a link to the Carbray worker.
-   * To print the links in a table $row we need to:
-   *  1- Create the Link obj.
-   *  2- Get its html.
-   *  3- Loop through extra captadores/responsables and concatenate their link html in a string.
-   *  4- Create the Markup obj that later will get rendered as HTML by twig.
    **/
-  $worker_link_string = '';
+  $workers_string = '';
   foreach ($workers as $worker_uid) {
     $worker_uid = $worker_uid['target_id'];
     $worker = get_cliente_nombre($worker_uid);
-    // Step 1:
-    $worker_link = Link::fromTextAndUrl($worker, Url::fromRoute('entity.user.canonical', array('user' => $worker_uid), array('attributes' => array('target' => '_blank'))));
-    // Step 2: Convert captador link from Link obj to html.
-    // and 3: concatenate.
-    $worker_link_string .= $worker_link->toString()
-        ->getGeneratedLink() . '<br>';
+    $workers_string .= $worker . '<br>';
   }
-  // Step 4.
-  $worker_markup = Markup::create($worker_link_string);
+  $worker_markup = Markup::create($workers_string);
   return $worker_markup;
 }
 
@@ -510,7 +542,12 @@ function print_cliente_expedientes($expediente_nids) {
   $expediente_link_string = '';
   foreach ($expediente_nids as $expediente_nid) {
     $title = get_node_title($expediente_nid);
-    $expediente_link = Link::fromTextAndUrl($title, Url::fromRoute('entity.node.canonical', ['node' => $expediente_nid], array('attributes' => array('target' => '_blank'))));
+    $expediente_link = Link::fromTextAndUrl($title, Url::fromRoute('entity.node.canonical', ['node' => $expediente_nid], array(
+          'attributes' => array(
+            'target' => '_blank',
+            'class' => array('btn', 'btn-primary', 'btn-sm')
+          ),
+        )));
     $expediente_link_string .= $expediente_link->toString()
         ->getGeneratedLink() . '<br>';
   }

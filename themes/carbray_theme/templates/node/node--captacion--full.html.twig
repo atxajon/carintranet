@@ -29,23 +29,12 @@
       <div class="col-sm-4">
         <div class="panel panel-default">
           <div class="panel-heading">
-            {{ 'Informacion del cliente'|trans }}
-          </div>
-          <div class="panel-body">
-            <div class="field"><div class="field--label">Nombre</div><div class="field--item">{{ content.client_name }}</div></div>
-            {{ content.field_captacion_cliente }}
-            {{ content.take_action }}
-          </div>
-        </div>
-      </div>
-      <div class="col-sm-4">
-        <div class="panel panel-default">
-          <div class="panel-heading">
             {{ 'Estado de la captacion'|trans }}
           </div>
           <div class="panel-body">
             {{ content.field_captacion_estado_captacion }}
             {{ content.assign_estado_captacion }}
+            {{ content.take_action }}
           </div>
         </div>
       </div>
@@ -56,6 +45,20 @@
           </div>
           <div class="panel-body">
             {{ content.field_captacion_captador }}
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            {{ 'Informacion del cliente'|trans }}
+          </div>
+          <div class="panel-body">
+            <div class="field"><div class="field--label">Nombre</div><div class="field--item">{{ content.client_name }}</div></div>
+            {{ content.field_captacion_cliente }}
+            <div class="field"><div class="field--label">Fecha alta</div><div class="field--item">{{ content.client_fecha_alta }}</div></div>
+            <div class="field"><div class="field--label">Telefono</div><div class="field--item">{{ content.client_telefono }}</div></div>
+            <div class="field"><div class="field--label">Pais</div><div class="field--item">{{ content.client_pais }}</div></div>
           </div>
         </div>
       </div>
