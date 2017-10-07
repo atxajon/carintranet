@@ -27,6 +27,7 @@ class NewNotaForm extends FormBase {
       '#type' => 'textarea',
       '#title' => 'Nota',
     );
+    // @todo: fix hardcoded!!
     $form['uid'] = array(
       '#type' => 'hidden',
       '#value' => 22,

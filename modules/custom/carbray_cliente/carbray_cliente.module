@@ -134,6 +134,12 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['node']['captacion']['display']['client_captador_edit_form'] = array(
+    'label' => t('Edit captador'),
+    'description' => t('Edit captador form.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
   return $extra;
 }
 
@@ -363,6 +369,18 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         '#markup' => $cliente_pais,
       ];
     }
+    if ($display->getComponent('client_captador_edit_form')) {
+      $form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray_cliente\Form\EditCaptadores', $captacion_node->id());
+      $build['client_captador_edit_form'] = [
+        '#theme' => 'button_modal',
+        '#unique_id' => 'edit-captador-' . $nid,
+        '#button_text' => 'Editar captadores',
+        '#modal_title' => t('Editar captadores'),
+        '#modal_content' => $form,
+      ];
+    }
+
     if ($display->getComponent('take_action')) {
       // Is the estado de captacion on estado '1'?
 
@@ -607,7 +625,7 @@ function get_cliente_captacion($uid) {
 /**
  * Given a captacion nid return its User uid.
  *
- * @param $uid
+ * @param $nid
  */
 function get_captacion_cliente($nid) {
   $db = \Drupal::database();
@@ -615,3 +633,16 @@ function get_captacion_cliente($nid) {
   $data = $db->query($sql, array(':nid' => $nid))->fetchAll();
   return $data;
 }
+
+/**
+ * Given a captacion nid return its captador(es).
+ *
+ * @param $nid
+ */
+function get_captacion_captador($nid) {
+  $db = \Drupal::database();
+  $sql = "SELECT field_captacion_captador_target_id FROM node__field_captacion_captador WHERE entity_id = :nid";
+  $data = $db->query($sql, array(':nid' => $nid))->fetchCol();
+  return $data;
+}
+

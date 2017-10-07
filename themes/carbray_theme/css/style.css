@@ -239,6 +239,12 @@ ul {
   text-decoration: underline;
 }
 
+.edit-captadores .form-type-checkbox {
+  float: left;
+  width: 275px;
+  margin-top: 0;
+}
+
 @media screen and (min-width: 992px) {
   .carbray-new-client .form-item,
   .carbray-new-expediente .form-item,
