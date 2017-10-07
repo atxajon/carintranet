@@ -99,9 +99,12 @@ function carbray_theme_preprocess_page_title(&$variables) {
     $user = ($uid) ? User::load($uid) : \Drupal::currentUser();
 
     if (in_array('user', $path_args) && $user->isAuthenticated()) {
-      $nombre = $user->get('field_nombre')->value;
+      $nombre = $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value;
+      if ($nombre) {
+        $nombre .= ', ';
+      }
       $mail = $user->get('mail')->value;
-      $variables['title'] = $nombre . ', ' . $mail;
+      $variables['title'] = 'Ficha del cliente - ' . $nombre . $mail;
     }
   }
 

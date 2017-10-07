@@ -43,7 +43,7 @@ class ClientesCaptacion extends BlockBase {
       }
 
       $rows[] = array(
-        print_captacion_link($cliente->captacion_nid, $cliente_data),
+        print_cliente_link($cliente_data),
         print_cliente_captadores_responsables($captacion_data->get('field_captacion_captador')->getValue()),
         $estado_nombre,
         $new_date_format,
