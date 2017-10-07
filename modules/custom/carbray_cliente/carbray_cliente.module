@@ -419,7 +419,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
           '#title'     => 'Crear Factura',
           '#url'       => Url::fromRoute('carbray.add_expediente_form'),
           '#attributes' => [
-            'class' => ['btn', 'btn-primary', 'btn-sm']
+            'class' => ['btn', 'btn-primary', 'btn-sm', 'margin-top']
           ]
         ];
       }
@@ -440,7 +440,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
           '#title'     => 'Crear Expediente',
           '#url'       => Url::fromRoute('carbray.add_expediente_form', [], $options),
           '#attributes' => [
-            'class' => ['btn', 'btn-primary', 'btn-sm']
+            'class' => ['btn', 'btn-primary', 'btn-sm', 'margin-top']
           ]
         ];
       }

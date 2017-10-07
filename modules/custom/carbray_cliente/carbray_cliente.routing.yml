@@ -1,12 +1,3 @@
-carbray_cliente.new_propuesta:
-  path: '/crear-propuesta'
-  defaults:
-    _form: '\Drupal\carbray_cliente\Form\NewPropuesta'
-    _title: 'Crear Propuesta'
-  requirements:
-    _permission: 'access content'
-
-
 carbray_cliente.propuesta_to_doc:
   path: '/node/{nid}/doc'
   defaults:

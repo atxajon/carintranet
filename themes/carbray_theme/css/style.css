@@ -238,6 +238,9 @@ ul {
 .underlined {
   text-decoration: underline;
 }
+.margin-top {
+  margin-top: 20px;
+}
 
 .edit-captadores .form-type-checkbox {
   float: left;
