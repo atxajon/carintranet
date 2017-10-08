@@ -38,11 +38,15 @@ class ClientesProduccion extends BlockBase {
         $new_date_format = date('d-M-Y', $timestamp);
       }
 
+      $tematicas = $expediente_data->get('field_expediente_tematica')->getValue();
+      $tematica = reset($tematicas);
+
       $rows[] = array(
         print_cliente_link($cliente_data),
         print_cliente_captadores_responsables($captacion_data->get('field_captacion_captador')->getValue()),
         print_cliente_captadores_responsables($expediente_data->get('field_expediente_responsable')->getValue()),
         $new_date_format,
+        print_cliente_tematica($tematica),
         print_cliente_contacto($cliente_data),
         print_cliente_expedientes($expedientes_nids),
       );
@@ -53,6 +57,7 @@ class ClientesProduccion extends BlockBase {
       'Captador',
       'Responsable',
       'Fecha alta',
+      'Tematica',
       'Contacto',
       'Expedientes',
     );

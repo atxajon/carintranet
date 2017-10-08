@@ -528,6 +528,13 @@ function print_captacion_link($captacion_nid, $cliente = '') {
   return $link;
 }
 
+function print_cliente_tematica($servicio) {
+  $servicio_tid = $servicio['target_id'];
+  $tematica = get_parent_of_child_term($servicio_tid);
+  $tematica_markup = Markup::create($tematica);
+  return $tematica_markup;
+}
+
 function print_cliente_contacto($cliente) {
   // Build contacto column.
   $mail = ($cliente->getEmail()) ? $cliente->getEmail() . '<br>' : '';
