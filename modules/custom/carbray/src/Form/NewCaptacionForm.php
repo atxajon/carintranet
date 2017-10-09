@@ -29,6 +29,7 @@ class NewCaptacionForm extends FormBase {
     $form_state->setCached(FALSE);
 
     $form['#attributes']['class'][] = 'block';
+    $form['#attributes']['class'][] = 'form-in-modal';
 
     $form['cliente_uid'] = array(
       '#type' => 'hidden',

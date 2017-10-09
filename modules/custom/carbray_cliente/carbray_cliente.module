@@ -77,7 +77,13 @@ function carbray_cliente_entity_extra_field_info() {
   );
   $extra['user']['user']['display']['new_captacion'] = array(
     'label' => t('New captacion'),
-    'description' => t('Shows new captacion buttons'),
+    'description' => t('Shows new captacion button'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['user']['user']['display']['new_expediente'] = array(
+    'label' => t('New expediente'),
+    'description' => t('Shows new expediente button'),
     'weight' => 100,
     'visible' => TRUE,
   );
@@ -229,6 +235,18 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
         '#unique_id' => 'new-captacion-uid-' . $uid,
         '#button_text' => 'Nueva captacion',
         '#modal_title' => t('Nueva captacion'),
+        '#modal_content' => $form,
+      ];
+    }
+
+    if ($display->getComponent('new_expediente')) {
+      $form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray\Form\NewExpedienteForm');
+      $build['new_expediente'] = [
+        '#theme' => 'button_modal',
+        '#unique_id' => 'new-expediente-uid-' . $uid,
+        '#button_text' => 'Nuevo expediente',
+        '#modal_title' => t('Nuevo expediente'),
         '#modal_content' => $form,
       ];
     }

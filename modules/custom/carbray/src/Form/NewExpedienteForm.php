@@ -30,18 +30,58 @@ class NewExpedienteForm extends FormBase {
 
     $form['#attributes']['class'][] = 'block';
 
-    // Get Captacion nid from url query string.
-    $captacion_nid = \Drupal::request()->query->get('nid');
-    $uid = \Drupal::request()->query->get('uid');
+    // Look at urk to determine whether new expediente form is being called from user path or captacion node path.
+    $current_path = \Drupal::service('path.current')->getPath();
+    $path_args = explode('/', $current_path);
+    $is_from_user = FALSE;
+    foreach ($path_args as $path_arg) {
+      if ($path_arg == 'user') {
+        $is_from_user = TRUE;
+      }
+    }
+    // If creating a new expediente from user ficha (path user/%uid)
+    if ($is_from_user) {
+      $uid = end($path_args);
+      $form['#attributes']['class'][] = 'form-in-modal';
+
+      // Get available Captaciones and put them in a select list for admin to choose from.
+      $captaciones = db_query("SELECT captacion_nid FROM carbray_user_captacion_expediente WHERE uid = :uid", array(':uid' => $uid))->fetchCol();
+      $options = [];
+      foreach ($captaciones as $captacion) {
+        $captacion_node = Node::load($captacion);
+        $options[$captacion] = $captacion_node->label();
+
+      }
+      $form['captacion'] = array(
+        '#type' => 'select',
+        '#options' => $options,
+        '#empty_option' => ' - Selecciona Captacion - ',
+        '#required' => TRUE,
+      );
+
+    }
+    else {
+      // Creating a new expediente from captacion node (path captacion/%nid).
+      // Get Captacion nid from url query string.
+      $captacion_nid = \Drupal::request()->query->get('nid');
+      $uid = \Drupal::request()->query->get('uid');
+      $form['captacion'] = array(
+        '#type' => 'hidden',
+        '#default_value' => (isset($captacion_nid)) ? $captacion_nid : '',
+      );
+    }
+
 
     $form['cliente'] = array(
       '#type' => 'hidden',
       '#default_value' => (isset($uid)) ? $uid : '',
     );
-    $form['captacion'] = array(
+
+    $form['is_from_user'] = array(
       '#type' => 'hidden',
-      '#default_value' => (isset($captacion_nid)) ? $captacion_nid : '',
+      '#value' => $is_from_user,
     );
+
 
 //    $form['factura'] = array(
 //      '#title' => 'Factura',
@@ -152,7 +192,9 @@ class NewExpedienteForm extends FormBase {
     $tematica_tid = $form_state->getValue('tematica');
     $num_expediente = assign_expediente_title($tematica_tid);
     $captacion_nid = $form_state->getValue('captacion');
+    $captacion_node = Node::load($captacion_nid);
     $uid = $form_state->getValue('cliente');
+    $is_from_user = $form_state->getValue('is_from_user');
 //    $factura = $form_state->getValue('factura');
     $values = $form_state->getValues();
     $responsable = $form_state->getValue('responsable');
@@ -185,11 +227,11 @@ class NewExpedienteForm extends FormBase {
     $query->condition('uid', $uid);
     $query->condition('captacion_nid', $captacion_nid);
     $query->execute();
-
-
-    $user = User::Load($uid);
-
-    drupal_set_message('Expediente ' . $num_expediente . ' para captacion del cliente ' . $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value . ' ha sido creado');
-    $form_state->setRedirectUrl(_carbray_redirecter());
+    
+    drupal_set_message('Expediente ' . $num_expediente . ' para ' . $captacion_node->label() . ' ha sido creado');
+    // Expediente created from captacion node gets redirected on form submission; expediente created through modal from user ficha path does NOT get redirected.
+    if (!$is_from_user) {
+      $form_state->setRedirectUrl(_carbray_redirecter());
+    }
   }
 }

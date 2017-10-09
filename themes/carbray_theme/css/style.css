@@ -242,14 +242,16 @@ ul {
   margin-top: 20px;
 }
 
+.modal-dialog {
+  /*Sets the width to 80/100ths of the viewport.*/
+  width: 80vw;
+}
+
 .edit-captadores .form-type-checkbox,
-.carbray-new-captacion .form-type-checkbox {
+.form-in-modal .form-type-checkbox {
   float: left;
   width: 275px;
   margin-top: 0;
-}
-.carbray-new-captacion .form-type-checkbox {
-  width: 250px;
 }
 
 @media screen and (min-width: 992px) {
@@ -298,7 +300,7 @@ ul {
   }
   .carbray-new-client .form-checkboxes .form-item,
   .new-propuesta .form-checkboxes .form-item,
-  .carbray-new-expediente .form-checkboxes .form-item {
+  .carbray-new-expediente .form-type-checkbox {
     float: left;
     margin: 0 20px 20px 0;
     width: 210px;
@@ -332,4 +334,11 @@ ul {
   #block-views-block-clientes-por-fase-block-5 .form-item-field-user-estado-de-captacion-target-id .form-select {
     width: 240px;
   }
+}
+
+.form-in-modal .form-type-checkbox {
+  width: 235px;
+}
+.form-in-modal .form-item.fieldgroup {
+  width: auto;
 }
