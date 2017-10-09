@@ -227,7 +227,7 @@ class NewExpedienteForm extends FormBase {
     $query->condition('uid', $uid);
     $query->condition('captacion_nid', $captacion_nid);
     $query->execute();
-    
+
     drupal_set_message('Expediente ' . $num_expediente . ' para ' . $captacion_node->label() . ' ha sido creado');
     // Expediente created from captacion node gets redirected on form submission; expediente created through modal from user ficha path does NOT get redirected.
     if (!$is_from_user) {

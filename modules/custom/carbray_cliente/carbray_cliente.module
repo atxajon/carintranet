@@ -286,8 +286,42 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
     }
 
     if ($display->getComponent('expedientes')) {
-
+      $expedientes_nids = db_query("SELECT expediente_nid FROM carbray_user_captacion_expediente WHERE uid = :uid", array(':uid' => $uid))->fetchCol();
+      foreach ($expedientes_nids as $expediente) {
+        if (is_null($expediente)) {
+          // Client has a captacion but not an expediente for it yet,
+          // let's move on to next iteration (expediente).
+          continue;
+        }
+        $expediente_data = \Drupal::entityTypeManager()->getStorage('node')->load($expediente);
+        $tematica_nombre = '';
+        $term_entity = $expediente_data->field_expediente_tematica->entity;
+        if ($term_entity) {
+          $term = Term::load($term_entity->id());
+          $servicio_nombre = $term->name->value;
+          // @todo: work out tematica term name, not servicios...
+        }
+        $expedientes_rows[] = array(
+          $expediente_data->label(),
+          print_cliente_captadores_responsables($expediente_data->get('field_expediente_responsable')->getValue()),
+          $servicio_nombre,
+          print_cliente_expedientes($expediente),
+        );
+      }
+      $header = array(
+        'Expediente',
+        'Responsable',
+        'Tematica',
+        'Ver expediente',
+      );
+      $build['expedientes'] = array(
+        '#type' => 'table',
+        '#header' => $header,
+        '#rows' => $expedientes_rows,
+        '#empty' => t('Ningun expediente.'),
+      );
     }
+    
   }
   elseif ($view_mode === 'cliente_produccion') {
     if ($display->getComponent('cliente_expediente')) {
@@ -653,17 +687,31 @@ function print_cliente_expedientes($expediente_nids) {
   }
 
   $expediente_link_string = '';
-  foreach ($expediente_nids as $expediente_nid) {
-    $title = get_node_title($expediente_nid);
-    $expediente_link = Link::fromTextAndUrl($title, Url::fromRoute('entity.node.canonical', ['node' => $expediente_nid], array(
-          'attributes' => array(
-            'target' => '_blank',
-            'class' => array('btn', 'btn-primary', 'btn-sm')
-          ),
-        )));
+  if (is_array($expediente_nids)) {
+    foreach ($expediente_nids as $expediente_nid) {
+      $title = get_node_title($expediente_nid);
+      $expediente_link = Link::fromTextAndUrl($title, Url::fromRoute('entity.node.canonical', ['node' => $expediente_nid], array(
+        'attributes' => array(
+          'target' => '_blank',
+          'class' => array('btn', 'btn-primary', 'btn-sm')
+        ),
+      )));
+      $expediente_link_string .= $expediente_link->toString()
+          ->getGeneratedLink() . '<br>';
+    }
+  }
+  else {
+    $title = get_node_title($expediente_nids);
+    $expediente_link = Link::fromTextAndUrl($title, Url::fromRoute('entity.node.canonical', ['node' => $expediente_nids], array(
+      'attributes' => array(
+        'target' => '_blank',
+        'class' => array('btn', 'btn-primary', 'btn-sm')
+      ),
+    )));
     $expediente_link_string .= $expediente_link->toString()
         ->getGeneratedLink() . '<br>';
   }
+
   $expediente_markup = Markup::create($expediente_link_string);
   return $expediente_markup;
 
