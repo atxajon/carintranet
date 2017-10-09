@@ -13,6 +13,7 @@ use Drupal\Core\Url;
 use Drupal\Core\Link;
 use Drupal\Core\Render\Markup;
 use Drupal\node\Entity\Node;
+use Drupal\taxonomy\Entity\Term;
 
 
 /**
@@ -71,6 +72,18 @@ function carbray_cliente_entity_extra_field_info() {
   $extra['user']['user']['display']['take_action'] = array(
     'label' => t('Client action'),
     'description' => t('Shows clients actions like generate new propuesta, new factura, new expediente... based on users estado'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['user']['user']['display']['captaciones'] = array(
+    'label' => t('Client captaciones'),
+    'description' => t('Shows clients captaciones'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['user']['user']['display']['expedientes'] = array(
+    'label' => t('Client expedientes'),
+    'description' => t('Shows clients expedientes'),
     'weight' => 100,
     'visible' => TRUE,
   );
@@ -201,6 +214,40 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
         '#modal_content' => $form,
       ];
     }
+
+    if ($display->getComponent('captaciones')) {
+      $captacion_nids = db_query("SELECT captacion_nid FROM carbray_user_captacion_expediente WHERE uid = :uid", array(':uid' => $uid))->fetchAll();
+      foreach ($captacion_nids as $captacion) {
+        $captacion_data = \Drupal::entityTypeManager()->getStorage('node')->load($captacion->captacion_nid);
+        $estado_nombre = '';
+        $term_entity = $captacion_data->field_captacion_estado_captacion->entity;
+        if ($term_entity) {
+          $term = Term::load($term_entity->id());
+          $estado_nombre = $term->name->value;
+        }
+
+        $rows[] = array(
+          print_cliente_captadores_responsables($captacion_data->get('field_captacion_captador')->getValue()),
+          $estado_nombre,
+          print_captacion_link($captacion->captacion_nid),
+        );
+      }
+      $header = array(
+        'Captador',
+        'Estado captacion',
+        'Ver captacion',
+      );
+      $build['captaciones'] = array(
+        '#type' => 'table',
+        '#header' => $header,
+        '#rows' => $rows,
+        '#empty' => t('Ningun cliente en captacion.'),
+      );
+    }
+
+    if ($display->getComponent('expedientes')) {
+
+    }
   }
   elseif ($view_mode === 'cliente_produccion') {
     if ($display->getComponent('cliente_expediente')) {
@@ -243,6 +290,7 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
         );
       }
     }
+
     if ($display->getComponent('toggle_status')) {
       // Show toggle status form only to admins.
       $current_user = \Drupal::currentUser();
@@ -459,7 +507,7 @@ function get_cliente_nombre($uid) {
 /**
  * Gets clientes uids where a given worker has them as Captador node's captador OR Expediente node's responsable.
  */
-function get_my_clients($uid, $estado = 'captacion') {
+function get_my_clients($worker_uid, $estado = 'captacion') {
   $db = \Drupal::database();
 
   if ($estado == 'captacion') {
@@ -474,7 +522,7 @@ function get_my_clients($uid, $estado = 'captacion') {
 		WHERE ec.entity_id IN (SELECT entity_id as expediente_nid FROM node__field_expediente_responsable er WHERE er.field_expediente_responsable_target_id = :uid))";
   }
 
-  $clientes_uids = $db->query($sql, array(':uid' => $uid))
+  $clientes_uids = $db->query($sql, array(':uid' => $worker_uid))
     ->fetchAll();
 
   return $clientes_uids;

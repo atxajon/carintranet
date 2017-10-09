@@ -28,7 +28,6 @@ class ClientesCaptacion extends BlockBase {
 
       $captacion_data = \Drupal::entityTypeManager()->getStorage('node')->load($cliente->captacion_nid);
 
-
       $estado_nombre = '';
       $term_entity = $captacion_data->field_captacion_estado_captacion->entity;
       if ($term_entity) {
