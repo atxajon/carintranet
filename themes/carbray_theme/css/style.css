@@ -242,10 +242,14 @@ ul {
   margin-top: 20px;
 }
 
-.edit-captadores .form-type-checkbox {
+.edit-captadores .form-type-checkbox,
+.carbray-new-captacion .form-type-checkbox {
   float: left;
   width: 275px;
   margin-top: 0;
+}
+.carbray-new-captacion .form-type-checkbox {
+  width: 250px;
 }
 
 @media screen and (min-width: 992px) {

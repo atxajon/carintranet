@@ -75,6 +75,12 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['user']['user']['display']['new_captacion'] = array(
+    'label' => t('New captacion'),
+    'description' => t('Shows new captacion buttons'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
   $extra['user']['user']['display']['captaciones'] = array(
     'label' => t('Client captaciones'),
     'description' => t('Shows clients captaciones'),
@@ -215,6 +221,20 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
       ];
     }
 
+    if ($display->getComponent('new_captacion')) {
+      $form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray\Form\NewCaptacionForm', $uid);
+      $build['new_captacion'] = [
+        '#theme' => 'button_modal',
+        '#unique_id' => 'new-captacion-uid-' . $uid,
+        '#button_text' => 'Nueva captacion',
+        '#modal_title' => t('Nueva captacion'),
+        '#modal_content' => $form,
+      ];
+    }
+
+
+
     if ($display->getComponent('captaciones')) {
       $captacion_nids = db_query("SELECT captacion_nid FROM carbray_user_captacion_expediente WHERE uid = :uid", array(':uid' => $uid))->fetchAll();
       foreach ($captacion_nids as $captacion) {
@@ -227,12 +247,14 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
         }
 
         $rows[] = array(
+          $captacion_data->label(),
           print_cliente_captadores_responsables($captacion_data->get('field_captacion_captador')->getValue()),
           $estado_nombre,
           print_captacion_link($captacion->captacion_nid),
         );
       }
       $header = array(
+        'Captacion',
         'Captador',
         'Estado captacion',
         'Ver captacion',
@@ -700,4 +722,3 @@ function get_captacion_captador($nid) {
   $data = $db->query($sql, array(':nid' => $nid))->fetchCol();
   return $data;
 }
-
