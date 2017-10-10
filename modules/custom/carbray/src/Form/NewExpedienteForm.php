@@ -24,11 +24,12 @@ class NewExpedienteForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state) {
+  public function buildForm(array $form, FormStateInterface $form_state, $captacion_nid = 0) {
     // Disable caching on this form.
     $form_state->setCached(FALSE);
 
     $form['#attributes']['class'][] = 'block';
+    $form['#attributes']['id'] = 'new-expediente-captacion-nid' . $captacion_nid;
 
     // Look at urk to determine whether new expediente form is being called from user path or captacion node path.
     $current_path = \Drupal::service('path.current')->getPath();
@@ -43,34 +44,16 @@ class NewExpedienteForm extends FormBase {
     if ($is_from_user) {
       $uid = end($path_args);
       $form['#attributes']['class'][] = 'form-in-modal';
-
-      // Get available Captaciones and put them in a select list for admin to choose from.
-      $captaciones = db_query("SELECT captacion_nid FROM carbray_user_captacion_expediente WHERE uid = :uid", array(':uid' => $uid))->fetchCol();
-      $options = [];
-      foreach ($captaciones as $captacion) {
-        $captacion_node = Node::load($captacion);
-        $options[$captacion] = $captacion_node->label();
-
-      }
-      $form['captacion'] = array(
-        '#type' => 'select',
-        '#options' => $options,
-        '#empty_option' => ' - Selecciona Captacion - ',
-        '#required' => TRUE,
-      );
-
     }
     else {
       // Creating a new expediente from captacion node (path captacion/%nid).
-      // Get Captacion nid from url query string.
-      $captacion_nid = \Drupal::request()->query->get('nid');
       $uid = \Drupal::request()->query->get('uid');
-      $form['captacion'] = array(
-        '#type' => 'hidden',
-        '#default_value' => (isset($captacion_nid)) ? $captacion_nid : '',
-      );
     }
 
+    $form['captacion'] = array(
+      '#type' => 'hidden',
+      '#default_value' => $captacion_nid,
+    );
 
     $form['cliente'] = array(
       '#type' => 'hidden',
@@ -115,7 +98,7 @@ class NewExpedienteForm extends FormBase {
       '#options' => $term_data,
       '#ajax' => array(
         'callback' => '::serviciosCallback',
-        'wrapper' => 'servicios-wrapper',
+        'wrapper' => 'servicios-wrapper-' . $captacion_nid,
         'effect' => 'fade',
         'event' => 'change',
         'progress' => array(
@@ -136,9 +119,9 @@ class NewExpedienteForm extends FormBase {
       }
     }
 
-    $form['servicios_wrapper'] = [
+    $form['servicios_wrapper_' . $captacion_nid] = [
       '#type' => 'container',
-      '#attributes' => ['id' => 'servicios-wrapper'],
+      '#attributes' => ['id' => 'servicios-wrapper-' . $captacion_nid],
       '#states' => array(
         'visible' => array(
           ':input[name="tematica"]' => array('filled' => TRUE),
@@ -146,7 +129,7 @@ class NewExpedienteForm extends FormBase {
       ),
     ];
 
-    $form['servicios_wrapper']['servicios'] = [
+    $form['servicios_wrapper_' . $captacion_nid]['servicios'] = [
       '#type' => 'select',
       '#title' => $this->t('Servicios'),
       '#options' => $servicios_options,
@@ -175,7 +158,8 @@ class NewExpedienteForm extends FormBase {
    */
   public function serviciosCallback(array &$form, FormStateInterface &$form_state) {
     $form_state->setRebuild(TRUE);
-    return $form['servicios_wrapper'];
+    $captacion_nid = $form['captacion']['#default_value'];
+    return $form['servicios_wrapper_' . $captacion_nid];
   }
 
   /**
@@ -220,6 +204,10 @@ class NewExpedienteForm extends FormBase {
     $expediente->save();
 
     // Update the entry on custom table carbray_user_captacion_expediente.
+    // @todo: or if its another new expediente for an existing captacion (that takes multiple values...) CREATE new entry!
+    // for this, logic is: if this row's user and captacion have an expediente NULL, update NULL to new expediente id;
+    // else, if not NULL, create new record.
+    // So 1st query: select expediente_nid from carbray_cliente_captacion_expediente table rows for this user and captacion_nid; then if NULL, proceed one way or another.
     $query = \Drupal::database()->update('carbray_user_captacion_expediente');
     $query->fields([
       'expediente_nid' =>  $expediente->id()

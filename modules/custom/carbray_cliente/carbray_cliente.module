@@ -239,22 +239,9 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
       ];
     }
 
-    if ($display->getComponent('new_expediente')) {
-      $form = \Drupal::formBuilder()
-        ->getForm('Drupal\carbray\Form\NewExpedienteForm');
-      $build['new_expediente'] = [
-        '#theme' => 'button_modal',
-        '#unique_id' => 'new-expediente-uid-' . $uid,
-        '#button_text' => 'Nuevo expediente',
-        '#modal_title' => t('Nuevo expediente'),
-        '#modal_content' => $form,
-      ];
-    }
-
-
-
     if ($display->getComponent('captaciones')) {
       $captacion_nids = db_query("SELECT captacion_nid FROM carbray_user_captacion_expediente WHERE uid = :uid", array(':uid' => $uid))->fetchAll();
+      $rows = [];
       foreach ($captacion_nids as $captacion) {
         $captacion_data = \Drupal::entityTypeManager()->getStorage('node')->load($captacion->captacion_nid);
         $estado_nombre = '';
@@ -263,12 +250,22 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
           $term = Term::load($term_entity->id());
           $estado_nombre = $term->name->value;
         }
+        $form = \Drupal::formBuilder()
+          ->getForm('Drupal\carbray\Form\NewExpedienteForm', $captacion->captacion_nid);
+        $build['new_expediente'] = [
+          '#theme' => 'button_modal',
+          '#unique_id' => 'new-expediente-captacion_nid-' . $captacion->captacion_nid,
+          '#button_text' => 'Nuevo expediente',
+          '#modal_title' => t('Nuevo expediente'),
+          '#modal_content' => $form,
+        ];
 
         $rows[] = array(
           $captacion_data->label(),
           print_cliente_captadores_responsables($captacion_data->get('field_captacion_captador')->getValue()),
           $estado_nombre,
           print_captacion_link($captacion->captacion_nid),
+          render($build['new_expediente']),
         );
       }
       $header = array(
@@ -276,6 +273,7 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
         'Captador',
         'Estado captacion',
         'Ver captacion',
+        'Crear expediente',
       );
       $build['captaciones'] = array(
         '#type' => 'table',
@@ -321,7 +319,7 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
         '#empty' => t('Ningun expediente.'),
       );
     }
-    
+
   }
   elseif ($view_mode === 'cliente_produccion') {
     if ($display->getComponent('cliente_expediente')) {
