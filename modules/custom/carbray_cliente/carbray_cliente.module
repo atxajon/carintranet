@@ -285,6 +285,7 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
 
     if ($display->getComponent('expedientes')) {
       $expedientes_nids = db_query("SELECT expediente_nid FROM carbray_user_captacion_expediente WHERE uid = :uid", array(':uid' => $uid))->fetchCol();
+      $expedientes_rows = [];
       foreach ($expedientes_nids as $expediente) {
         if (is_null($expediente)) {
           // Client has a captacion but not an expediente for it yet,
@@ -292,7 +293,7 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
           continue;
         }
         $expediente_data = \Drupal::entityTypeManager()->getStorage('node')->load($expediente);
-        $tematica_nombre = '';
+        $servicio_nombre = '';
         $term_entity = $expediente_data->field_expediente_tematica->entity;
         if ($term_entity) {
           $term = Term::load($term_entity->id());
@@ -322,6 +323,7 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
 
   }
   elseif ($view_mode === 'cliente_produccion') {
+    // @todo: we dont have this view mode anymore, what to do with this?
     if ($display->getComponent('cliente_expediente')) {
       $expediente_nids = get_cliente_expediente_nids($uid);
       $expedientes = get_expedientes_data($expediente_nids);

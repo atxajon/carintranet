@@ -197,24 +197,46 @@ class NewExpedienteForm extends FormBase {
     $expediente = Node::create(['type' => 'expediente']);
     $expediente->set('title', $num_expediente);
     $expediente->set('field_expediente_captacion', $captacion_nid);
-//    $expediente->set('field_expediente_factura', $factura);
     $expediente->set('field_expediente_responsable', $selected_responsable);
     $expediente->set('field_expediente_tematica', $values['servicios']);
     $expediente->enforceIsNew();
     $expediente->save();
 
-    // Update the entry on custom table carbray_user_captacion_expediente.
-    // @todo: or if its another new expediente for an existing captacion (that takes multiple values...) CREATE new entry!
-    // for this, logic is: if this row's user and captacion have an expediente NULL, update NULL to new expediente id;
-    // else, if not NULL, create new record.
-    // So 1st query: select expediente_nid from carbray_cliente_captacion_expediente table rows for this user and captacion_nid; then if NULL, proceed one way or another.
-    $query = \Drupal::database()->update('carbray_user_captacion_expediente');
-    $query->fields([
-      'expediente_nid' =>  $expediente->id()
-    ]);
-    $query->condition('uid', $uid);
-    $query->condition('captacion_nid', $captacion_nid);
-    $query->execute();
+    /**
+     * Update/Insert on custom table carbray_user_captacion_expediente.
+     * If its another new expediente for an existing captacion (it takes multiple values...) CREATE new entry!
+     * Logic is: if this row's user and captacion have an expediente NULL, update NULL to new expediente id;
+     * else, if not NULL, insert new record.
+     */
+
+    // Query for expediente_nid from carbray_cliente_captacion_expediente table rows for this user and captacion_nid; then if NULL, proceed one way or another.
+    $db = \Drupal::database();
+    $has_expediente = $db->query("SELECT expediente_nid FROM carbray_user_captacion_expediente WHERE uid = :uid AND captacion_nid = :captacion_nid", array(':uid' => $uid, ':captacion_nid' => $captacion_nid))->fetchField();
+    if (!$has_expediente) {
+      // Update NULL to new expediente.
+      $query = \Drupal::database()->update('carbray_user_captacion_expediente');
+      $query->fields([
+        'expediente_nid' =>  $expediente->id()
+      ]);
+      $query->condition('uid', $uid);
+      $query->condition('captacion_nid', $captacion_nid);
+      $query->execute();
+    }
+    else {
+      // Create an entry on custom table carbray_user_captacion_expediente.
+      \Drupal::database()->insert('carbray_user_captacion_expediente')
+        ->fields([
+          'uid',
+          'captacion_nid',
+          'expediente_nid',
+        ])
+        ->values(array(
+          $uid,
+          $captacion_nid,
+          $expediente->id(),
+        ))
+        ->execute();
+    }
 
     drupal_set_message('Expediente ' . $num_expediente . ' para ' . $captacion_node->label() . ' ha sido creado');
     // Expediente created from captacion node gets redirected on form submission; expediente created through modal from user ficha path does NOT get redirected.
