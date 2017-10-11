@@ -99,15 +99,27 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['user']['user']['display']['toggle_status'] = array(
+    'label' => t('User status change form'),
+    'description' => t('Shows a form that allows an admin to activate or block a user.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
   $extra['node']['captacion']['display']['take_action'] = array(
     'label' => t('Client action'),
     'description' => t('Shows clients actions like generate new propuesta, new factura, new expediente... based on users estado'),
     'weight' => 100,
     'visible' => TRUE,
   );
-  $extra['user']['user']['display']['toggle_status'] = array(
-    'label' => t('User status change form'),
-    'description' => t('Shows a form that allows an admin to activate or block a user.'),
+  $extra['node']['captacion']['display']['view_tematica'] = array(
+    'label' => t('View tematica'),
+    'description' => t('Shows tematicas and servicios.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['captacion']['display']['assign_tematica'] = array(
+    'label' => t('Assign tematica'),
+    'description' => t('Shows button to assign a tematica for this captacion.'),
     'weight' => 100,
     'visible' => TRUE,
   );
@@ -567,6 +579,46 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         ];
       }
     }
+
+    if ($display->getComponent('view_tematica')) {
+      $db = \Drupal::database();
+      $sql = "SELECT field_captacion_tematica_target_id FROM node__field_captacion_tematica WHERE entity_id = :nid";
+      $servicios_tids = $db->query($sql, array(':nid' => $nid))
+        ->fetchCol();
+      if ($servicios_tids) {
+        foreach ($servicios_tids as $servicio_tid) {
+          $term = Term::load($servicio_tid);
+          $parent_term = get_parent_of_child_term($servicio_tid);
+          $rows[] = array(
+            $parent_term,
+            $term->name->value,
+          );
+        }
+      }
+
+      $header = array(
+        'Tematica',
+        'Servicio',
+      );
+      $build['view_tematica'] = [
+        '#type' => 'table',
+        '#header' => $header,
+        '#rows' => $rows,
+      ];
+    }
+
+    if ($display->getComponent('assign_tematica')) {
+      $form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray\Form\AssignTematicaCaptacion', $nid);
+      $build['assign_tematica'] = [
+        '#theme' => 'button_modal',
+        '#unique_id' => 'assign-tematica-captacion-nid-' . $nid,
+        '#button_text' => 'Asignar tematica',
+        '#modal_title' => t('Nueva tematica'),
+        '#modal_content' => $form,
+      ];
+    }
+
   }
 }
 

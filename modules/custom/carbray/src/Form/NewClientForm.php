@@ -76,7 +76,7 @@ class NewClientForm extends FormBase {
       '#type' => 'select',
       '#title' => 'Procedencia',
       '#options' => $options,
-      '#empty_option' => ' - Selecciona tematica - ',
+      '#empty_option' => ' - Selecciona procedencia - ',
     );
 
     $form['submit'] = array(
@@ -92,6 +92,14 @@ class NewClientForm extends FormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
+    $email = $form_state->getValue('email');
+    $unique_email = email_already_in_system($email);
+    if(filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+      $form_state->setErrorByName('email', t('The email address %mail is not valid.', array('%mail' => $email)));
+    }
+    if($unique_email){
+      $form_state->setErrorByName('email', t('A user with email address %mail already exists in the system. Please use a different email.', array('%mail' => $email)));
+    }
   }
 
   /**

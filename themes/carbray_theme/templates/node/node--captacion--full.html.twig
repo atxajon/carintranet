@@ -29,7 +29,7 @@
       <div class="col-sm-4">
         <div class="panel panel-default">
           <div class="panel-heading">
-            {{ 'Estado de la captacion'|trans }}
+            <h4>{{ 'Estado de la captacion'|trans }}</h4>
           </div>
           <div class="panel-body">
             {{ content.field_captacion_estado_captacion }}
@@ -41,18 +41,21 @@
       <div class="col-sm-4">
         <div class="panel panel-default">
           <div class="panel-heading">
-            {{ 'Informacion de la captacion'|trans }}
+            <h4>{{ 'Informacion de la captacion'|trans }}</h4>
           </div>
           <div class="panel-body">
             {{ content.field_captacion_captador }}
             {{ content.client_captador_edit_form }}
+            <div class="margin-top-20">{{ content.view_tematica }}</div>
+            <div class="margin-top-10">{{ content.assign_tematica }}</div>
+
           </div>
         </div>
       </div>
       <div class="col-sm-4">
         <div class="panel panel-default">
           <div class="panel-heading">
-            {{ 'Informacion del cliente'|trans }}
+            <h4>{{ 'Informacion del cliente'|trans }}</h4>
           </div>
           <div class="panel-body">
             <div class="field"><div class="field--label">Nombre</div><div class="field--item">{{ content.client_name }}</div></div>

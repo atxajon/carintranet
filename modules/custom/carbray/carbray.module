@@ -417,6 +417,36 @@ function carbray_preprocess_node(&$variables) {
 }
 
 /**
+ * Finds whether there is a match for the email in the system.
+ *
+ * @param $email
+ * @return mixed
+ */
+function email_already_in_system($email) {
+  if (\Drupal::currentUser()->isAuthenticated()) {
+    // User editing their profile must allow for matching their
+    // email on validating profile edit form submit.
+    $logged_in_uid = \Drupal::currentUser()->id();
+    $uid = array(
+      0,
+      $logged_in_uid,
+    );
+  }
+  else {
+    $uid = array(
+      0,
+    );
+  }
+
+  $found = db_query("SELECT mail from {users_field_data} WHERE uid NOT IN (:uid[]) AND mail = :mail", array(
+    ':uid[]' => $uid,
+    ':mail' => $email
+  ))->fetchAssoc();
+
+  return $found;
+}
+
+/**
  * @param bool $just_active
  *    Flags whether the query should bring results only for active users.
  * @return mixed
