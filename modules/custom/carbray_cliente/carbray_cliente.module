@@ -31,6 +31,7 @@ function carbray_cliente_theme($existing, $type, $theme, $path) {
     'button_modal' => [
       'variables' => [
         'button_text' => NULL,
+        'button_classes' => NULL,
         'unique_id' => NULL,
         'modal_title' => NULL,
         'modal_content' => NULL,
@@ -240,6 +241,7 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
         '#theme' => 'button_modal',
         '#unique_id' => 'anadir-nota-uid-' . $uid,
         '#button_text' => 'Añadir nota',
+        '#button_classes' => 'btn btn-primary btn-sm',
         '#modal_title' => t('Nueva nota'),
         '#modal_content' => $form,
       ];
@@ -252,6 +254,7 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
         '#theme' => 'button_modal',
         '#unique_id' => 'new-captacion-uid-' . $uid,
         '#button_text' => 'Nueva captacion',
+        '#button_classes' => 'btn btn-primary btn-sm',
         '#modal_title' => t('Nueva captacion'),
         '#modal_content' => $form,
       ];
@@ -274,6 +277,7 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
           '#theme' => 'button_modal',
           '#unique_id' => 'new-expediente-captacion_nid-' . $captacion->captacion_nid,
           '#button_text' => 'Nuevo expediente',
+          '#button_classes' => 'btn btn-primary btn-sm',
           '#modal_title' => t('Nuevo expediente'),
           '#modal_content' => $form,
         ];
@@ -487,6 +491,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         '#theme' => 'button_modal',
         '#unique_id' => 'edit-captacion-' . $nid,
         '#button_text' => 'Editar captacion',
+        '#button_classes' => 'btn btn-warning',
         '#modal_title' => t('Editar captacion'),
         '#modal_content' => $form,
       );
@@ -529,6 +534,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         '#theme' => 'button_modal',
         '#unique_id' => 'edit-captador-' . $nid,
         '#button_text' => 'Editar captadores',
+        '#button_classes' => 'btn btn-primary btn-sm',
         '#modal_title' => t('Editar captadores'),
         '#modal_content' => $form,
       ];
@@ -633,6 +639,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         '#theme' => 'button_modal',
         '#unique_id' => 'assign-tematica-captacion-nid-' . $nid,
         '#button_text' => 'Asignar tematica',
+        '#button_classes' => 'btn btn-primary btn-sm',
         '#modal_title' => t('Nueva tematica'),
         '#modal_content' => $form,
       ];
