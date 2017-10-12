@@ -63,6 +63,12 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['node']['captacion']['display']['edit_captacion'] = array(
+    'label' => t('Edit captacion'),
+    'description' => t('Edit captacion.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
   $extra['node']['captacion']['display']['assign_estado_captacion'] = array(
     'label' => t('Assign estado de captacion to client'),
     'description' => t('Estado de captacion.'),
@@ -473,6 +479,19 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
     $captacion_node = Node::load($nid);
     $cliente_uid = $captacion_node->get('field_captacion_cliente')->getValue();
     $user = User::load($cliente_uid[0]['target_id']);
+
+    if ($display->getComponent('edit_captacion')) {
+      $form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray\Form\EditCaptacion', $nid);
+      $build['edit_captacion'] = array(
+        '#theme' => 'button_modal',
+        '#unique_id' => 'edit-captacion-' . $nid,
+        '#button_text' => 'Editar captacion',
+        '#modal_title' => t('Editar captacion'),
+        '#modal_content' => $form,
+      );
+    }
+
     if ($display->getComponent('assign_estado_captacion')) {
       $form = \Drupal::formBuilder()
         ->getForm('Drupal\carbray\Form\AssignEstadoCaptacion', $nid);

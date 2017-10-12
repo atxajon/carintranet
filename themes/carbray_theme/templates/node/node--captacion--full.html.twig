@@ -24,6 +24,9 @@
   {% endif %}
   {{ title_suffix }}
 
+
+  <div class="margin-bottom-20">{{ content.edit_captacion }}</div>
+
   <div{{ content_attributes.addClass('content') }}>
     <div class="row">
       <div class="col-sm-4">
@@ -33,7 +36,7 @@
           </div>
           <div class="panel-body">
             {{ content.field_captacion_estado_captacion }}
-            {{ content.assign_estado_captacion }}
+            {#{{ content.assign_estado_captacion }}#}
             {{ content.take_action }}
           </div>
         </div>
@@ -45,9 +48,10 @@
           </div>
           <div class="panel-body">
             {{ content.field_captacion_captador }}
-            {{ content.client_captador_edit_form }}
-            <div class="margin-top-20">{{ content.view_tematica }}</div>
-            <div class="margin-top-10">{{ content.assign_tematica }}</div>
+            {#{{ content.client_captador_edit_form }}#}
+            <div class="tematica-table margin-top-20">{{ content.view_tematica }}</div>
+            <div class="margin-bottom-20">{{ content.assign_tematica }}</div>
+            {{ content.field_captacion_ciudad }}
 
           </div>
         </div>

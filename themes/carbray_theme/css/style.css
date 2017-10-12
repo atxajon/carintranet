@@ -44,6 +44,9 @@ ul {
 .margin-bottom-10 {
   margin-bottom: 10px;
 }
+.tematica-table .table {
+  margin-bottom: 5px;
+}
 .logo .center-block {
   max-width: 160px;
 }

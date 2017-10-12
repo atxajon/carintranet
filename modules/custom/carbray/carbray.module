@@ -491,3 +491,29 @@ function get_parent_of_child_term($tid) {
 function get_node_title($nid) {
   return db_query('SELECT title FROM node_field_data WHERE nid = :nid', array(':nid' => $nid))->fetchField();
 }
+
+/**
+ * Returns term id and name for all available terms in a given vocabulary.
+ *
+ * @param $vocabulary
+ *   String referencing the vocabulary name.
+ *
+ * @return $options
+ *   Array
+ */
+function get_taxonomy_terms_options($vocabulary) {
+  // Query for all estados de captaction terms.
+  $db = \Drupal::database();
+  $sql = "SELECT tid FROM taxonomy_term_field_data WHERE vid= :vid";
+  $tids = $db->query($sql, array(':vid' => $vocabulary))->fetchCol();
+
+  $terms = \Drupal::entityTypeManager()
+    ->getStorage('taxonomy_term')
+    ->loadMultiple($tids);
+
+  $options = [];
+  foreach ($terms as $term) {
+    $options[$term->id()] = $term->name->value;
+  }
+  return $options;
+}
