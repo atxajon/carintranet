@@ -514,8 +514,11 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
     }
     if ($display->getComponent('client_name')) {
       $cliente_nombre = $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value;
+      $url = Url::fromRoute('entity.user.canonical', ['user' => $user->id()]);
+      $user_link = Link::fromTextAndUrl($cliente_nombre, $url);
+      $user_link = $user_link->toRenderable();
       $build['client_name'] = [
-        '#markup' => $cliente_nombre,
+        '#markup' => render($user_link),
       ];
     }
     if ($display->getComponent('client_fecha_alta')) {
