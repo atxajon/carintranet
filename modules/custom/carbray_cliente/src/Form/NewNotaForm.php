@@ -7,6 +7,8 @@ namespace Drupal\carbray_cliente\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\user\Entity\User;
+use Drupal\node\Entity\Node;
+
 
 /**
  * NewNotaForm form.
@@ -22,15 +24,16 @@ class NewNotaForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state) {
+  public function buildForm(array $form, FormStateInterface $form_state, $id = 0) {
     $form['nota'] = array(
-      '#type' => 'textarea',
+      '#type' => 'text_format',
       '#title' => 'Nota',
+      '#format' => 'basic_html',
+      '#rows' => 5,
     );
-    // @todo: fix hardcoded!!
-    $form['uid'] = array(
+    $form['id'] = array(
       '#type' => 'hidden',
-      '#value' => 22,
+      '#value' => $id,
     );
     $form['submit'] = array(
       '#type' => 'submit',
@@ -51,14 +54,19 @@ class NewNotaForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $nota = $form_state->getValue('nota');
-    $uid = $form_state->getValue('uid');
+    $id = $form_state->getValue('id');
 
-    $user = User::load($uid);
+    $nota_node = Node::create(['type' => 'nota']);
+    $nota_node->set('title', 'Nota para nid ' . $id . ' creada el ' . date('d-M-Y H:m:s', time()));
+    $nota_node->set('field_nota_nota', $nota);
+    $nota_node->enforceIsNew();
+    $nota_node->save();
+
+    $captacion_node = Node::load($id);
     // Adding a new value to a multivalue field.
-    $user->field_notas->appendItem($nota);
-    $user->save();
+    $captacion_node->field_captacion_nota->appendItem($nota_node->id());
+    $captacion_node->save();
 
-    $uid = $user->id();
-    drupal_set_message('Nueva nota para cliente con uid: ' . $uid . ' ha sido creada');
+    drupal_set_message('Nueva nota creada');
   }
 }

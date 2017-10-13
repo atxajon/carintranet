@@ -70,6 +70,16 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['node']['captacion']['display']['anadir_nota'] = array(
+    'label' => t('Añadir nota'),
+    'description' => t('Boton para crear una nueva nota.'),
+    'weight' => 100,
+  );
+  $extra['node']['captacion']['display']['ver_notas'] = array(
+    'label' => t('Ver notas'),
+    'description' => t('Ver notas.'),
+    'weight' => 100,
+  );
   $extra['node']['captacion']['display']['assign_estado_captacion'] = array(
     'label' => t('Assign estado de captacion to client'),
     'description' => t('Estado de captacion.'),
@@ -236,7 +246,7 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
   if ($view_mode === 'cliente') {
     if ($display->getComponent('anadir_nota')) {
       $form = \Drupal::formBuilder()
-        ->getForm('Drupal\carbray_cliente\Form\NewNotaForm');
+        ->getForm('Drupal\carbray_cliente\Form\NewNotaForm', $uid);
       $build['anadir_nota'] = [
         '#theme' => 'button_modal',
         '#unique_id' => 'anadir-nota-uid-' . $uid,
@@ -645,6 +655,44 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
       ];
     }
 
+    if ($display->getComponent('anadir_nota')) {
+      $form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray_cliente\Form\NewNotaForm', $nid);
+      $build['anadir_nota'] = [
+        '#theme' => 'button_modal',
+        '#unique_id' => 'anadir-nota-nid-' . $nid,
+        '#button_text' => 'Añadir nota',
+        '#button_classes' => 'btn btn-primary btn-sm',
+        '#modal_title' => t('Nueva nota'),
+        '#modal_content' => $form,
+      ];
+    }
+
+    if ($display->getComponent('ver_notas')) {
+      $notas_nids = get_notas($nid);
+      $rows = [];
+      foreach ($notas_nids as $notas_nid) {
+        $nota_node = Node::load($notas_nid);
+        $author_uid = $nota_node->getOwnerId();
+        $user = User::load($author_uid);
+        $rows[] = array(
+          Markup::create($nota_node->get('field_nota_nota')->value),
+          $user->getDisplayName(),
+          date('d-M-Y H:m:s', $nota_node->created->value),
+        );
+      }
+      $header = array(
+        'Nota',
+        'Autor',
+        'Fecha creacion',
+      );
+      $build['notas_table'] = [
+        '#type' => 'table',
+        '#header' => $header,
+        '#rows' => $rows,
+      ];
+    }
+
   }
 }
 
@@ -865,4 +913,16 @@ function get_captacion_captador($nid) {
   $sql = "SELECT field_captacion_captador_target_id FROM node__field_captacion_captador WHERE entity_id = :nid";
   $data = $db->query($sql, array(':nid' => $nid))->fetchCol();
   return $data;
+}
+
+/**
+ * Get notas referenced against a given nid.
+ *
+ * @param $nid
+ */
+function get_notas($nid) {
+  $db = \Drupal::database();
+  $sql = "SELECT nn.entity_id FROM node__field_nota_nota nn INNER JOIN node__field_captacion_nota cn on nn.entity_id = cn.field_captacion_nota_target_id INNER JOIN node_field_data nfd on nn.entity_id = nfd.nid WHERE cn.entity_id = :nid ORDER BY created DESC";
+  $notas_nids = $db->query($sql, array(':nid' => $nid))->fetchCol();
+  return $notas_nids;
 }

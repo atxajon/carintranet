@@ -351,6 +351,10 @@ ul {
   }
 }
 
+.form-in-modal .form-type-select {
+  width: 50%;
+}
+
 .form-in-modal .form-type-checkbox {
   width: 235px;
 }
