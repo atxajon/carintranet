@@ -90,7 +90,7 @@
       <div class="col-sm-4">
         <div class="panel panel-default">
           <div class="panel-heading">
-            {{ 'Informacion del cliente'|trans }}
+            <h4>{{ 'Informacion del cliente'|trans }}</h4>
           </div>
           <div class="panel-body">
             {{ content.cliente_expediente }}
@@ -100,7 +100,7 @@
       <div class="col-sm-8">
         <div class="panel panel-default">
           <div class="panel-heading">
-            {{ 'Informacion del expediente'|trans }}
+            <h4>{{ 'Informacion del expediente'|trans }}</h4>
           </div>
           <div class="panel-body">
             {{ label }}
@@ -109,6 +109,15 @@
             {{ content.field_expediente_responsable }}
           </div>
         </div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4>{{ 'Notas expediente'|trans }}</h4>
+      </div>
+      <div class="panel-body">
+        {{ content.anadir_nota }}
+        {{ content.notas_table }}
       </div>
     </div>
   </div>

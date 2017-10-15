@@ -194,6 +194,16 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['node']['expediente']['display']['anadir_nota'] = array(
+    'label' => t('Añadir nota'),
+    'description' => t('Boton para crear una nueva nota.'),
+    'weight' => 100,
+  );
+  $extra['node']['expediente']['display']['ver_notas'] = array(
+    'label' => t('Ver notas'),
+    'description' => t('Ver notas.'),
+    'weight' => 100,
+  );
   return $extra;
 }
 
@@ -246,7 +256,7 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
   if ($view_mode === 'cliente') {
     if ($display->getComponent('anadir_nota')) {
       $form = \Drupal::formBuilder()
-        ->getForm('Drupal\carbray_cliente\Form\NewNotaForm', $uid);
+        ->getForm('Drupal\carbray_cliente\Form\NewNotaForm', $uid, $entity->bundle());
       $build['anadir_nota'] = [
         '#theme' => 'button_modal',
         '#unique_id' => 'anadir-nota-uid-' . $uid,
@@ -414,9 +424,9 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
  * Implements hook_node_view().
  */
 function carbray_cliente_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  $nid = $entity->id();
   if ($entity->bundle() == 'propuesta') {
     if ($display->getComponent('link_to_download')) {
-      $nid = $entity->id();
       $url = Url::fromRoute('carbray_cliente.propuesta_to_doc', array('nid' => $nid));
 
       $build['link_to_download'] = [
@@ -489,7 +499,6 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
   }
 
   if ($entity->bundle() == 'captacion') {
-    $nid = $entity->id();
     $captacion_node = Node::load($nid);
     $cliente_uid = $captacion_node->get('field_captacion_cliente')->getValue();
     $user = User::load($cliente_uid[0]['target_id']);
@@ -660,7 +669,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
 
     if ($display->getComponent('anadir_nota')) {
       $form = \Drupal::formBuilder()
-        ->getForm('Drupal\carbray_cliente\Form\NewNotaForm', $nid);
+        ->getForm('Drupal\carbray_cliente\Form\NewNotaForm', $nid, $entity->bundle());
       $build['anadir_nota'] = [
         '#theme' => 'button_modal',
         '#unique_id' => 'anadir-nota-nid-' . $nid,
@@ -672,7 +681,48 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
     }
 
     if ($display->getComponent('ver_notas')) {
-      $notas_nids = get_notas($nid);
+      $notas_nids = get_notas($nid, $entity->bundle());
+      $rows = [];
+      foreach ($notas_nids as $notas_nid) {
+        $nota_node = Node::load($notas_nid);
+        $author_uid = $nota_node->getOwnerId();
+        $user = User::load($author_uid);
+        $rows[] = array(
+          Markup::create($nota_node->get('field_nota_nota')->value),
+          $user->getDisplayName(),
+          date('d-M-Y H:m:s', $nota_node->created->value),
+        );
+      }
+      $header = array(
+        'Nota',
+        'Autor',
+        'Fecha creacion',
+      );
+      $build['notas_table'] = [
+        '#type' => 'table',
+        '#header' => $header,
+        '#rows' => $rows,
+      ];
+    }
+  }
+
+  if ($entity->bundle() == 'expediente') {
+    $expediente_node = Node::load($nid);
+    if ($display->getComponent('anadir_nota')) {
+      $form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray_cliente\Form\NewNotaForm', $nid, $entity->bundle());
+      $build['anadir_nota'] = [
+        '#theme' => 'button_modal',
+        '#unique_id' => 'anadir-nota-nid-' . $nid,
+        '#button_text' => 'Añadir nota',
+        '#button_classes' => 'btn btn-primary btn-sm',
+        '#modal_title' => t('Nueva nota'),
+        '#modal_content' => $form,
+      ];
+    }
+
+    if ($display->getComponent('ver_notas')) {
+      $notas_nids = get_notas($nid, $entity->bundle());
       $rows = [];
       foreach ($notas_nids as $notas_nid) {
         $nota_node = Node::load($notas_nid);
@@ -923,9 +973,18 @@ function get_captacion_captador($nid) {
  *
  * @param $nid
  */
-function get_notas($nid) {
+function get_notas($nid, $bundle) {
   $db = \Drupal::database();
-  $sql = "SELECT nn.entity_id FROM node__field_nota_nota nn INNER JOIN node__field_captacion_nota cn on nn.entity_id = cn.field_captacion_nota_target_id INNER JOIN node_field_data nfd on nn.entity_id = nfd.nid WHERE cn.entity_id = :nid ORDER BY created DESC";
+  $sql = "SELECT nn.entity_id FROM node__field_nota_nota nn INNER JOIN";
+  if ($bundle == 'captacion') {
+    $sql .= ' node__field_captacion_nota cn on nn.entity_id = cn.field_captacion_nota_target_id';
+  }
+  else if ($bundle == 'expediente') {
+    $sql .= ' node__field_expediente_nota cn on nn.entity_id = cn.field_expediente_nota_target_id';
+  }
+
+  $sql .= " INNER JOIN node_field_data nfd on nn.entity_id = nfd.nid WHERE cn.entity_id = :nid ORDER BY created DESC";
+  
   $notas_nids = $db->query($sql, array(':nid' => $nid))->fetchCol();
   return $notas_nids;
 }

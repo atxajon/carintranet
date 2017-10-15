@@ -24,7 +24,7 @@ class NewNotaForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, $id = 0) {
+  public function buildForm(array $form, FormStateInterface $form_state, $id = 0, $bundle = '') {
     $form['nota'] = array(
       '#type' => 'text_format',
       '#title' => 'Nota',
@@ -34,6 +34,10 @@ class NewNotaForm extends FormBase {
     $form['id'] = array(
       '#type' => 'hidden',
       '#value' => $id,
+    );
+    $form['bundle'] = array(
+      '#type' => 'hidden',
+      '#value' => $bundle,
     );
     $form['submit'] = array(
       '#type' => 'submit',
@@ -55,6 +59,7 @@ class NewNotaForm extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $nota = $form_state->getValue('nota');
     $id = $form_state->getValue('id');
+    $bundle = $form_state->getValue('bundle');
 
     $nota_node = Node::create(['type' => 'nota']);
     $nota_node->set('title', 'Nota para nid ' . $id . ' creada el ' . date('d-M-Y H:m:s', time()));
@@ -62,10 +67,16 @@ class NewNotaForm extends FormBase {
     $nota_node->enforceIsNew();
     $nota_node->save();
 
-    $captacion_node = Node::load($id);
+    $bundle_node = Node::load($id);
     // Adding a new value to a multivalue field.
-    $captacion_node->field_captacion_nota->appendItem($nota_node->id());
-    $captacion_node->save();
+    if ($bundle == 'captacion') {
+      $field_name = 'field_captacion_nota';
+    }
+    elseif ($bundle == 'expediente') {
+      $field_name = 'field_expediente_nota';
+    }
+    $bundle_node->$field_name->appendItem($nota_node->id());
+    $bundle_node->save();
 
     drupal_set_message('Nueva nota creada');
   }
