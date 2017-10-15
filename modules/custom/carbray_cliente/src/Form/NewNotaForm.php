@@ -62,21 +62,30 @@ class NewNotaForm extends FormBase {
     $bundle = $form_state->getValue('bundle');
 
     $nota_node = Node::create(['type' => 'nota']);
-    $nota_node->set('title', 'Nota para nid ' . $id . ' creada el ' . date('d-M-Y H:m:s', time()));
+    $nota_node->set('title', 'Nota para id ' . $id . ' creada el ' . date('d-M-Y H:m:s', time()));
     $nota_node->set('field_nota_nota', $nota);
     $nota_node->enforceIsNew();
     $nota_node->save();
 
-    $bundle_node = Node::load($id);
-    // Adding a new value to a multivalue field.
     if ($bundle == 'captacion') {
+      $bundle_node = Node::load($id);
       $field_name = 'field_captacion_nota';
+      // Adding a new value to a multivalue field.
+      $bundle_node->$field_name->appendItem($nota_node->id());
+      $bundle_node->save();
     }
     elseif ($bundle == 'expediente') {
+      $bundle_node = Node::load($id);
       $field_name = 'field_expediente_nota';
+      $bundle_node->$field_name->appendItem($nota_node->id());
+      $bundle_node->save();
     }
-    $bundle_node->$field_name->appendItem($nota_node->id());
-    $bundle_node->save();
+    elseif ($bundle == 'user') {
+      $user = User::load($id);
+      $field_name = 'field_notas';
+      $user->$field_name->appendItem($nota_node->id());
+      $user->save();
+    }
 
     drupal_set_message('Nueva nota creada');
   }

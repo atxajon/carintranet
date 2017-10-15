@@ -58,6 +58,11 @@ function carbray_cliente_entity_extra_field_info() {
     'description' => t('Boton para crear una nueva nota.'),
     'weight' => 100,
   );
+  $extra['user']['user']['display']['ver_notas'] = array(
+    'label' => t('Ver notas'),
+    'description' => t('Ver notas.'),
+    'weight' => 100,
+  );
   $extra['user']['user']['display']['user_role'] = array(
     'label' => t('User role'),
     'description' => t('Muestra el rol del usuario.'),
@@ -264,6 +269,30 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
         '#button_classes' => 'btn btn-primary btn-sm',
         '#modal_title' => t('Nueva nota'),
         '#modal_content' => $form,
+      ];
+    }
+    if ($display->getComponent('ver_notas')) {
+      $notas_nids = get_notas($uid, 'user');
+      $rows = [];
+      foreach ($notas_nids as $notas_nid) {
+        $nota_node = Node::load($notas_nid);
+        $author_uid = $nota_node->getOwnerId();
+        $user = User::load($author_uid);
+        $rows[] = array(
+          Markup::create($nota_node->get('field_nota_nota')->value),
+          $user->getDisplayName(),
+          date('d-M-Y H:m:s', $nota_node->created->value),
+        );
+      }
+      $header = array(
+        'Nota',
+        'Autor',
+        'Fecha creacion',
+      );
+      $build['notas_table'] = [
+        '#type' => 'table',
+        '#header' => $header,
+        '#rows' => $rows,
       ];
     }
 
@@ -971,10 +1000,12 @@ function get_captacion_captador($nid) {
 /**
  * Get notas referenced against a given nid.
  *
- * @param $nid
+ * @param $id
+ *   Int nid/uid of the captacion/expediente/user the note refers to.
  */
-function get_notas($nid, $bundle) {
+function get_notas($id, $bundle) {
   $db = \Drupal::database();
+
   $sql = "SELECT nn.entity_id FROM node__field_nota_nota nn INNER JOIN";
   if ($bundle == 'captacion') {
     $sql .= ' node__field_captacion_nota cn on nn.entity_id = cn.field_captacion_nota_target_id';
@@ -982,9 +1013,12 @@ function get_notas($nid, $bundle) {
   else if ($bundle == 'expediente') {
     $sql .= ' node__field_expediente_nota cn on nn.entity_id = cn.field_expediente_nota_target_id';
   }
+  else if ($bundle == 'user') {
+    $sql .= ' user__field_notas cn on nn.entity_id = cn.field_notas_target_id';
+  }
 
-  $sql .= " INNER JOIN node_field_data nfd on nn.entity_id = nfd.nid WHERE cn.entity_id = :nid ORDER BY created DESC";
-  
-  $notas_nids = $db->query($sql, array(':nid' => $nid))->fetchCol();
+  $sql .= " INNER JOIN node_field_data nfd on nn.entity_id = nfd.nid WHERE cn.entity_id = :id ORDER BY created DESC";
+
+  $notas_nids = $db->query($sql, array(':id' => $id))->fetchCol();
   return $notas_nids;
 }
