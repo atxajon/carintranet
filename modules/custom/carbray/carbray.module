@@ -99,6 +99,13 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
         }
       }
 
+      // A user of role Worker can not edit another user's password etc.
+      if (in_array('worker', $current_user_roles)) {
+        $form['account']['pass']['#access'] = FALSE;
+        $form['field_notas']['#access'] = FALSE;
+
+      }
+
       break;
     case 'node-objetivos-form':
     case 'node-objetivos-edit-form':

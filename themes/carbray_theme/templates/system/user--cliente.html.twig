@@ -3,7 +3,7 @@
  * @file
  * Default theme implementation to present all user data.
  *
- * This template is used when viewing a carbray client's page i.e a user without any role, just authenticated, ON FASE CAPTACION.
+ * This template is used when viewing a carbray client's page i.e a user without any role, just authenticated.
  *
  * Available variables:
  * - content: A list of content items. Use 'content' to print all content, or
@@ -18,6 +18,8 @@
  */
 #}
 {% set has_mail = mail|render %}
+{% set current_path = path('entity.user.canonical', {'user': user.id}) %}
+{% set edit_link = path('entity.user.edit_form', {'user': user.id, 'destination': current_path}) %}
 <article{{ attributes }}>
   {% if content %}
     <div class="row">
@@ -37,6 +39,7 @@
             <h4>{{ 'Informacion del cliente'|trans }}</h4>
           </div>
           <div class="panel-body">
+            <a class="btn btn-warning margin-bottom-20" href="{{ edit_link }}">Editar cliente</a>
             {{ content.field_nombre}}
             {{ content.field_apellido }}
             {% if has_mail is not empty %}
