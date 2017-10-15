@@ -31,7 +31,12 @@
  * @ingroup templates
  */
 #}
-<button type="button" class="{{ button_classes }}" data-toggle="modal" data-target="#{{ unique_id }}">{{ button_text|trans }}</button>
+
+<button type="button" class="{{ button_classes }}" data-toggle="modal" data-target="#{{ unique_id }}">
+  {% if has_plus %}
+    <span class="glyphicon glyphicon-plus-sign"></span>
+  {% endif -%}
+  {{ button_text|trans }}</button>
   {% set classes = [
   'modal',
   'fade',

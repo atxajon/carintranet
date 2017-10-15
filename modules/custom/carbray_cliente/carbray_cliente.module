@@ -35,6 +35,7 @@ function carbray_cliente_theme($existing, $type, $theme, $path) {
         'unique_id' => NULL,
         'modal_title' => NULL,
         'modal_content' => NULL,
+        'has_plus' => NULL,
       ],
     ],
   ];
@@ -269,6 +270,7 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
         '#button_classes' => 'btn btn-primary btn-sm',
         '#modal_title' => t('Nueva nota'),
         '#modal_content' => $form,
+        '#has_plus' => TRUE,
       ];
     }
     if ($display->getComponent('ver_notas')) {
@@ -306,6 +308,7 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
         '#button_classes' => 'btn btn-primary btn-sm',
         '#modal_title' => t('Nueva captacion'),
         '#modal_content' => $form,
+        '#has_plus' => TRUE,
       ];
     }
 
@@ -329,6 +332,7 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
           '#button_classes' => 'btn btn-primary btn-sm',
           '#modal_title' => t('Nuevo expediente'),
           '#modal_content' => $form,
+          '#has_plus' => TRUE,
         ];
 
         $rows[] = array(
@@ -693,6 +697,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         '#button_classes' => 'btn btn-primary btn-sm',
         '#modal_title' => t('Nueva tematica'),
         '#modal_content' => $form,
+        '#has_plus' => TRUE,
       ];
     }
 
@@ -706,6 +711,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         '#button_classes' => 'btn btn-primary btn-sm',
         '#modal_title' => t('Nueva nota'),
         '#modal_content' => $form,
+        '#has_plus' => TRUE,
       ];
     }
 
@@ -747,6 +753,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         '#button_classes' => 'btn btn-primary btn-sm',
         '#modal_title' => t('Nueva nota'),
         '#modal_content' => $form,
+        '#has_plus' => TRUE,
       ];
     }
 
