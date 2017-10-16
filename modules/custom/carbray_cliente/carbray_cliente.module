@@ -210,6 +210,30 @@ function carbray_cliente_entity_extra_field_info() {
     'description' => t('Ver notas.'),
     'weight' => 100,
   );
+  $extra['node']['expediente']['display']['client_name'] = array(
+    'label' => t('Client name surname'),
+    'description' => t('Client name and surname.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['expediente']['display']['client_fecha_alta'] = array(
+    'label' => t('Client fecha alta'),
+    'description' => t('Client fecha alta.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['expediente']['display']['client_telefono'] = array(
+    'label' => t('Client telefono'),
+    'description' => t('Client telefono.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['expediente']['display']['client_pais'] = array(
+    'label' => t('Client pais'),
+    'description' => t('Client pais.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
   return $extra;
 }
 
@@ -742,7 +766,12 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
   }
 
   if ($entity->bundle() == 'expediente') {
-    $expediente_node = Node::load($nid);
+    $db = \Drupal::database();
+    $sql = "SELECT uid FROM carbray_user_captacion_expediente WHERE expediente_nid = :expediente_nid";
+    $uid = $db->query($sql, array(':expediente_nid' => $entity->id()))
+      ->fetchField();
+    $user = User::load($uid);
+
     if ($display->getComponent('anadir_nota')) {
       $form = \Drupal::formBuilder()
         ->getForm('Drupal\carbray_cliente\Form\NewNotaForm', $nid, $entity->bundle());
@@ -763,10 +792,10 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
       foreach ($notas_nids as $notas_nid) {
         $nota_node = Node::load($notas_nid);
         $author_uid = $nota_node->getOwnerId();
-        $user = User::load($author_uid);
+        $author = User::load($author_uid);
         $rows[] = array(
           Markup::create($nota_node->get('field_nota_nota')->value),
-          $user->getDisplayName(),
+          $author->getDisplayName(),
           date('d-M-Y H:m:s', $nota_node->created->value),
         );
       }
@@ -779,6 +808,34 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         '#type' => 'table',
         '#header' => $header,
         '#rows' => $rows,
+      ];
+    }
+    if ($display->getComponent('client_name')) {
+      $cliente_nombre = $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value;
+      $url = Url::fromRoute('entity.user.canonical', ['user' => $user->id()]);
+      $user_link = Link::fromTextAndUrl($cliente_nombre, $url);
+      $user_link = $user_link->toRenderable();
+      $build['client_name'] = [
+        '#markup' => render($user_link),
+      ];
+    }
+    if ($display->getComponent('client_fecha_alta')) {
+      $fecha_alta_timestamp = strtotime($user->get('field_fecha_alta')->value);
+      $cliente_fecha_alta = date('d-M-Y',$fecha_alta_timestamp);
+      $build['client_fecha_alta'] = [
+        '#markup' => $cliente_fecha_alta,
+      ];
+    }
+    if ($display->getComponent('client_telefono')) {
+      $cliente_telefono = $user->get('field_telefono')->value;
+      $build['client_telefono'] = [
+        '#markup' => $cliente_telefono,
+      ];
+    }
+    if ($display->getComponent('client_pais')) {
+      $cliente_pais = $user->get('field_pais')->value;
+      $build['client_pais'] = [
+        '#markup' => $cliente_pais,
       ];
     }
 
