@@ -246,6 +246,13 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['node']['expediente']['display']['view_actuaciones'] = array(
+    'label' => t('View actuaciones'),
+    'description' => t('Shows actuaciones.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+
   return $extra;
 }
 
@@ -833,7 +840,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
     }
     if ($display->getComponent('client_fecha_alta')) {
       $fecha_alta_timestamp = strtotime($user->get('field_fecha_alta')->value);
-      $cliente_fecha_alta = date('d-M-Y',$fecha_alta_timestamp);
+      $cliente_fecha_alta = date('d-M-Y', $fecha_alta_timestamp);
       $build['client_fecha_alta'] = [
         '#markup' => $cliente_fecha_alta,
       ];
@@ -885,6 +892,31 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
       ];
     }
 
+    if ($display->getComponent('view_actuaciones')) {
+      $db = \Drupal::database();
+      $sql = "SELECT nid, title FROM node_field_data nfd INNER JOIN node__field_actuacion_expediente ae ON nfd.nid = ae.entity_id WHERE field_actuacion_expediente_target_id = :nid";
+      $actuaciones_nids = $db->query($sql, array(':nid' => $nid))
+        ->fetchAll();
+      if ($actuaciones_nids) {
+        $rows = [];
+        foreach ($actuaciones_nids as $actuacion_nid) {
+          $actuacion_node = Node::load($actuacion_nid->nid);
+          $rows[] = array(
+            $actuacion_nid->title,
+            $actuacion_node->get('field_actuacion_tiempo_en_seg')->value,
+          );
+        }
+      }
+      $header = array(
+        'Actuacion',
+        'Tiempo',
+      );
+      $build['view_actuaciones'] = [
+        '#type' => 'table',
+        '#header' => $header,
+        '#rows' => $rows,
+      ];
+    }
   }
 }
 
