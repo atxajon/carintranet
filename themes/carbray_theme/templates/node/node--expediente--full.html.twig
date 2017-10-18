@@ -103,9 +103,8 @@
             <h4>{{ 'Informacion del expediente'|trans }}</h4>
           </div>
           <div class="panel-body">
-            {{ label }}
             {{ content.field_expediente_fecha_alta }}
-            {{ content.field_expediente_tematica }}
+            <div class="tematica-table margin-top-20 margin-bottom-20">{{ content.view_expediente_tematica }}</div>
             {{ content.field_expediente_responsable }}
           </div>
         </div>

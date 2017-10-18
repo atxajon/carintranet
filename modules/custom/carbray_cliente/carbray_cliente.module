@@ -240,6 +240,12 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['node']['expediente']['display']['view_tematica'] = array(
+    'label' => t('View tematica'),
+    'description' => t('Shows tematicas and servicios.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
   return $extra;
 }
 
@@ -849,6 +855,34 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
       $form = \Drupal::formBuilder()
         ->getForm('Drupal\carbray\Form\NewActuacionForm', $nid);
       $build['new_actuacion'] = $form;
+    }
+
+    if ($display->getComponent('view_tematica')) {
+      $db = \Drupal::database();
+      $sql = "SELECT field_expediente_tematica_target_id FROM node__field_expediente_tematica WHERE entity_id = :nid";
+      $servicios_tids = $db->query($sql, array(':nid' => $nid))
+        ->fetchCol();
+      if ($servicios_tids) {
+        $rows = [];
+        foreach ($servicios_tids as $servicio_tid) {
+          $term = Term::load($servicio_tid);
+          $parent_term = get_parent_of_child_term($servicio_tid);
+          $rows[] = array(
+            $parent_term,
+            $term->name->value,
+          );
+        }
+      }
+
+      $header = array(
+        'Tematica',
+        'Servicio',
+      );
+      $build['view_expediente_tematica'] = [
+        '#type' => 'table',
+        '#header' => $header,
+        '#rows' => $rows,
+      ];
     }
 
   }
