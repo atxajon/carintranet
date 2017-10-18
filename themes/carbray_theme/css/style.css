@@ -361,3 +361,7 @@ ul {
 .form-in-modal .form-item.fieldgroup {
   width: auto;
 }
+
+.carbray-new-actuacion .filter-wrapper {
+  display: none;
+}

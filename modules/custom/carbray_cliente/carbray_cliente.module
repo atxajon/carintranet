@@ -234,6 +234,12 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['node']['expediente']['display']['new_actuacion'] = array(
+    'label' => t('New actuacion'),
+    'description' => t('New actuacion.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
   return $extra;
 }
 
@@ -778,9 +784,9 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
       $build['anadir_nota'] = [
         '#theme' => 'button_modal',
         '#unique_id' => 'anadir-nota-nid-' . $nid,
-        '#button_text' => 'Añadir nota',
+        '#button_text' => 'Añadir nota a expediente',
         '#button_classes' => 'btn btn-primary btn-sm',
-        '#modal_title' => t('Nueva nota'),
+        '#modal_title' => t('Nueva nota para expediente'),
         '#modal_content' => $form,
         '#has_plus' => TRUE,
       ];
@@ -837,6 +843,12 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
       $build['client_pais'] = [
         '#markup' => $cliente_pais,
       ];
+    }
+
+    if ($display->getComponent('new_actuacion')) {
+      $form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray\Form\NewActuacionForm', $nid);
+      $build['new_actuacion'] = $form;
     }
 
   }

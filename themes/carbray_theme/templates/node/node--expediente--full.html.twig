@@ -87,6 +87,29 @@
 
   <div{{ content_attributes.addClass('content') }}>
     <div class="row">
+      <div class="col-sm-5">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4>{{ 'Nueva captacion'|trans }}</h4>
+          </div>
+          <div class="panel-body">
+            {{ content.new_actuacion }}
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-3">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4>{{ 'Informacion del expediente'|trans }}</h4>
+          </div>
+          <div class="panel-body">
+            {{ label }}
+            {{ content.field_expediente_fecha_alta }}
+            {{ content.field_expediente_tematica }}
+            {{ content.field_expediente_responsable }}
+          </div>
+        </div>
+      </div>
       <div class="col-sm-4">
         <div class="panel panel-default">
           <div class="panel-heading">
@@ -98,19 +121,6 @@
             <div class="field"><div class="field--label">Fecha alta</div><div class="field--item">{{ content.client_fecha_alta }}</div></div>
             <div class="field"><div class="field--label">Telefono</div><div class="field--item">{{ content.client_telefono }}</div></div>
             <div class="field"><div class="field--label">Pais</div><div class="field--item">{{ content.client_pais }}</div></div>
-          </div>
-        </div>
-      </div>
-      <div class="col-sm-8">
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h4>{{ 'Informacion del expediente'|trans }}</h4>
-          </div>
-          <div class="panel-body">
-            {{ label }}
-            {{ content.field_expediente_fecha_alta }}
-            {{ content.field_expediente_tematica }}
-            {{ content.field_expediente_responsable }}
           </div>
         </div>
       </div>
