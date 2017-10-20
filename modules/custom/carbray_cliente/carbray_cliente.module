@@ -366,8 +366,9 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
           $term = Term::load($term_entity->id());
           $estado_nombre = $term->name->value;
         }
+
         $form = \Drupal::formBuilder()
-          ->getForm('Drupal\carbray\Form\NewExpedienteForm', $captacion->captacion_nid);
+          ->getForm('Drupal\carbray\Form\NewExpedienteForm', $captacion->captacion_nid, $uid);
         $build['new_expediente'] = [
           '#theme' => 'button_modal',
           '#unique_id' => 'new-expediente-captacion_nid-' . $captacion->captacion_nid,
@@ -684,21 +685,21 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         // Client is on estado captacion '3'; deal with expedientes.
         // Show button to create a expediente.
 
-        // First gather the Captacion for the user.
-        $options = array(
-          'query' => array(
-            'uid' => $user->id(),
-            // @todo: deal with clientes that have multiple Captaciones!
-            'nid' => $nid,
-          ),
-        );
+        $db = \Drupal::database();
+        $sql = "SELECT uid FROM carbray_user_captacion_expediente WHERE captacion_nid = :nid";
+        $uid = $db->query($sql, array(':nid' => $captacion_node->id()))
+          ->fetchCol();
+
+        $form = \Drupal::formBuilder()
+          ->getForm('Drupal\carbray\Form\NewExpedienteForm', $captacion_node->id(), reset($uid));
         $build['take_action']['expediente'] = [
-          '#type'      => 'link',
-          '#title'     => 'Crear Expediente',
-          '#url'       => Url::fromRoute('carbray.add_expediente_form', [], $options),
-          '#attributes' => [
-            'class' => ['btn', 'btn-primary', 'btn-sm', 'margin-top']
-          ]
+          '#theme' => 'button_modal',
+          '#unique_id' => 'new-expediente-captacion_nid-' . $captacion_node->id(),
+          '#button_text' => 'Nuevo expediente',
+          '#button_classes' => 'btn btn-primary btn-sm',
+          '#modal_title' => t('Nuevo expediente'),
+          '#modal_content' => $form,
+          '#has_plus' => TRUE,
         ];
       }
     }
@@ -708,6 +709,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
       $sql = "SELECT field_captacion_tematica_target_id FROM node__field_captacion_tematica WHERE entity_id = :nid";
       $servicios_tids = $db->query($sql, array(':nid' => $nid))
         ->fetchCol();
+      $rows = [];
       if ($servicios_tids) {
         foreach ($servicios_tids as $servicio_tid) {
           $term = Term::load($servicio_tid);

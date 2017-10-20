@@ -24,31 +24,12 @@ class NewExpedienteForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, $captacion_nid = 0) {
+  public function buildForm(array $form, FormStateInterface $form_state, $captacion_nid = 0, $uid = 0) {
     // Disable caching on this form.
     $form_state->setCached(FALSE);
 
     $form['#attributes']['class'][] = 'block';
     $form['#attributes']['id'] = 'new-expediente-captacion-nid' . $captacion_nid;
-
-    // Look at urk to determine whether new expediente form is being called from user path or captacion node path.
-    $current_path = \Drupal::service('path.current')->getPath();
-    $path_args = explode('/', $current_path);
-    $is_from_user = FALSE;
-    foreach ($path_args as $path_arg) {
-      if ($path_arg == 'user') {
-        $is_from_user = TRUE;
-      }
-    }
-    // If creating a new expediente from user ficha (path user/%uid)
-    if ($is_from_user) {
-      $uid = end($path_args);
-      $form['#attributes']['class'][] = 'form-in-modal';
-    }
-    else {
-      // Creating a new expediente from captacion node (path captacion/%nid).
-      $uid = \Drupal::request()->query->get('uid');
-    }
 
     $form['captacion'] = array(
       '#type' => 'hidden',
@@ -58,11 +39,6 @@ class NewExpedienteForm extends FormBase {
     $form['cliente'] = array(
       '#type' => 'hidden',
       '#default_value' => (isset($uid)) ? $uid : '',
-    );
-
-    $form['is_from_user'] = array(
-      '#type' => 'hidden',
-      '#value' => $is_from_user,
     );
 
 
@@ -178,8 +154,6 @@ class NewExpedienteForm extends FormBase {
     $captacion_nid = $form_state->getValue('captacion');
     $captacion_node = Node::load($captacion_nid);
     $uid = $form_state->getValue('cliente');
-    $is_from_user = $form_state->getValue('is_from_user');
-//    $factura = $form_state->getValue('factura');
     $values = $form_state->getValues();
     $responsable = $form_state->getValue('responsable');
 
@@ -239,9 +213,6 @@ class NewExpedienteForm extends FormBase {
     }
 
     drupal_set_message('Expediente ' . $num_expediente . ' para ' . $captacion_node->label() . ' ha sido creado');
-    // Expediente created from captacion node gets redirected on form submission; expediente created through modal from user ficha path does NOT get redirected.
-    if (!$is_from_user) {
-      $form_state->setRedirectUrl(_carbray_redirecter());
-    }
+
   }
 }
