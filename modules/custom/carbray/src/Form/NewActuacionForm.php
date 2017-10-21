@@ -45,6 +45,17 @@ class NewActuacionForm extends FormBase {
       '#required' => TRUE,
     );
 
+    $form['start'] = array(
+      '#type' => 'button',
+      '#value' => 'Empezar',
+      '#prefix' => '<h2 id="crono">00:00:00</h2>',
+//      '#attributes' => array('onclick="return false;"'),
+      '#attributes' => array('class' => array('btn-primary', 'btn-sm', 'margin-bottom-20')),
+//      '#attributes' => array('onclick="empezarDetener(this);"'),
+//      '#attributes' => array('onclick="clearInterval(timerVar)"'),
+    );
+    $form['#attached']['library'][] = 'carbray/carbray.carbray_timer';
+
     $form['nota_container'] = array(
       '#type' => 'container',
       '#attributes' => array('class' => array('margin-bottom-20')),

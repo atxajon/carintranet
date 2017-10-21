@@ -7,3 +7,11 @@ carbray.propuesta-styles:
   css:
     theme:
       css/carbray.propuesta.css: {}
+
+carbray.carbray_timer:
+  version: 1.x
+  js:
+    js/timer.js: {}
+  dependencies:
+     - core/jquery
+     - core/drupalSettings

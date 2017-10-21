@@ -292,6 +292,9 @@ function carbray_form_user_register_form_alter(&$form, FormStateInterface $form_
  */
 function carbray_page_attachments(array &$attachments) {
   $attachments['#attached']['library'][] = 'carbray/carbray.global-styles';
+  $attachments['#attached']['library'][] = 'carbray/carbray.global-styles';
+  //    $form['#attached']['library'][] = 'carbray.carbray_timer';
+
 }
 
 /**
