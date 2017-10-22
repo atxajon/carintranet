@@ -111,11 +111,14 @@ class NewActuacionForm extends FormBase {
     $actuacion->save();
 
     $nota_node = Node::create(['type' => 'nota']);
-    $nota_node->set('title', 'Nota para id ' . $expediente_nid . ' creada el ' . date('d-M-Y H:m:s', time()));
+    $nota_node->set('title', 'Nota para id ' . $actuacion->id() . ' creada el ' . date('d-M-Y H:m:s', time()));
     $nota_node->set('field_nota_nota', $nota);
     $nota_node->enforceIsNew();
     $nota_node->save();
 
+    $actuacion = Node::load($actuacion->id());
+    $actuacion->set('field_actuacion_nota', $nota_node->id());
+    $actuacion->save();
 
     drupal_set_message('Actuacion ' . $title . ' ha sido creada');
   }
