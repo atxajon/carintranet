@@ -4,7 +4,7 @@
       var inicio = 0;
       var timeout = 0;
       var total = 0;
-
+      $('.form-item-timer').hide();
 
       $('#edit-start').click(function () {
         empezarDetener(this);
@@ -16,6 +16,7 @@
         if (timeout == 0) {
           // empezar el cronometro
           document.getElementById('edit-start').innerHTML = "Detener";
+          $('#edit-start').addClass('btn-warning');
 
           // Obtenemos el valor actual
           inicio = vuelta = new Date().getTime();
@@ -25,11 +26,13 @@
         }
         else {
           // detener el cronometro
-          elemento.value = "Empezar";
+          document.getElementById('edit-start').innerHTML = "Empezar";
 
           document.getElementById('edit-timer').value = total;
           clearTimeout(timeout);
           timeout = 0;
+          $('.form-item-timer').fadeIn();
+          $('#edit-start').removeClass('btn-warning');
         }
       }
 

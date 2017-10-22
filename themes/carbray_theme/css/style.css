@@ -32,6 +32,9 @@ ul {
   margin: 0;
   padding: 0;
 }
+.no-margin {
+  margin: 0 !important;
+}
 .margin-top-10 {
   margin-top: 10px;
 }
@@ -365,3 +368,13 @@ ul {
 .carbray-new-actuacion .filter-wrapper {
   display: none;
 }
+#edit-start {
+  margin-left: 10px;
+}
+.timer-textfield {
+  width: 40%;
+}
+#edit-nota-container {
+  clear: both;
+}
+

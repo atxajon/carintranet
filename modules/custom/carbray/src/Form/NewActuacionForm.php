@@ -39,32 +39,44 @@ class NewActuacionForm extends FormBase {
       '#required' => TRUE,
     );
 
-    $form['timer'] = array(
-      '#title' => 'Clock',
-      '#type' => 'textfield',
-      '#required' => TRUE,
-    );
-
     $form['start'] = array(
       '#type' => 'button',
       '#value' => 'Empezar',
-      '#prefix' => '<h2 id="crono">00:00:00</h2>',
-//      '#attributes' => array('onclick="return false;"'),
+      '#prefix' => '<div class="clearfix"><div class="pull-left crono-wrapper"><h2 id="crono" class="no-margin crono-heading pull-left">00:00:00</h2>',
       '#attributes' => array('class' => array('btn-primary', 'btn-sm', 'margin-bottom-20')),
-//      '#attributes' => array('onclick="empezarDetener(this);"'),
-//      '#attributes' => array('onclick="clearInterval(timerVar)"'),
+      '#suffix' => '</div></div>',
     );
+
+    $form['timer'] = array(
+      '#title' => 'Segundos transcurridos',
+      '#type' => 'textfield',
+      '#description' => 'Edita el numero de segundos transcurridos.',
+      '#required' => TRUE,
+//      '#prefix' => '<div class="pull-right timer-textfield">',
+//      '#suffix' => '</div>',
+    );
+
     $form['#attached']['library'][] = 'carbray/carbray.carbray_timer';
 
     $form['nota_container'] = array(
       '#type' => 'container',
-      '#attributes' => array('class' => array('margin-bottom-20')),
+      '#attributes' => array('class' => array('margin-bottom-20 margin-top-20')),
     );
     $form['nota_container']['nota'] = array(
       '#type' => 'text_format',
-      '#title' => 'Notas',
+      '#title' => 'Notas de la actuacion',
       '#format' => 'basic_html',
       '#rows' => 5,
+    );
+
+    $form['actuacion_file'] = array(
+      '#type' => 'managed_file',
+      '#name' => 'my_file',
+      '#title' => t('Añadir Documentacion'),
+      '#size' => 20,
+//      '#description' => t('PDF format only'),
+//      '#upload_validators' => $validators,
+      '#upload_location' => 'public://my_files/',
     );
 
     $form['submit'] = array(
