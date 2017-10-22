@@ -3,7 +3,7 @@
     attach: function (context, settings) {
       var inicio = 0;
       var timeout = 0;
-      var total_to_store = 0;
+      var total = 0;
 
 
       $('#edit-start').click(function () {
@@ -27,7 +27,7 @@
           // detener el cronometro
           elemento.value = "Empezar";
 
-          document.getElementById('edit-timer').value = total_to_store;
+          document.getElementById('edit-timer').value = total;
           clearTimeout(timeout);
           timeout = 0;
         }
@@ -43,7 +43,14 @@
         // mostramos la diferencia entre la fecha actual y la inicial
         var result = LeadingZero(diff.getUTCHours()) + ":" + LeadingZero(diff.getUTCMinutes()) + ":" + LeadingZero(diff.getUTCSeconds());
         document.getElementById('crono').innerHTML = result;
-        total_to_store = result;
+
+
+        var date_diff = actual - inicio;
+
+        var secs_from_inicio_to_actual = date_diff / 1000;
+        var secs_between_dates = parseInt(Math.abs(secs_from_inicio_to_actual));
+
+        total = secs_between_dates;
 
         // Indicamos que se ejecute esta función nuevamente dentro de 1 segundo
         timeout = setTimeout(function () {

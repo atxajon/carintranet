@@ -896,7 +896,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
 
     if ($display->getComponent('view_actuaciones')) {
       $db = \Drupal::database();
-      $sql = "SELECT nid, title FROM node_field_data nfd INNER JOIN node__field_actuacion_expediente ae ON nfd.nid = ae.entity_id WHERE field_actuacion_expediente_target_id = :nid";
+      $sql = "SELECT nid, title, created, uid FROM node_field_data nfd INNER JOIN node__field_actuacion_expediente ae ON nfd.nid = ae.entity_id WHERE field_actuacion_expediente_target_id = :nid ORDER BY created DESC";
       $actuaciones_nids = $db->query($sql, array(':nid' => $nid))
         ->fetchAll();
       if ($actuaciones_nids) {
@@ -904,14 +904,18 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         foreach ($actuaciones_nids as $actuacion_nid) {
           $actuacion_node = Node::load($actuacion_nid->nid);
           $rows[] = array(
+            date('d-M-Y H:m:s', $actuacion_nid->created),
             $actuacion_nid->title,
-            $actuacion_node->get('field_actuacion_tiempo_en_seg')->value,
+            gmdate("H:i:s", $actuacion_node->get('field_actuacion_tiempo_en_seg')->value),
+            get_cliente_nombre($actuacion_nid->uid),
           );
         }
       }
       $header = array(
+        'Fecha creacion',
         'Actuacion',
-        'Tiempo',
+        'Tiempo (en Horas:Minutos:Segundos)',
+        'Autor',
       );
       $build['view_actuaciones'] = [
         '#type' => 'table',
