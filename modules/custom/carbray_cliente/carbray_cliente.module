@@ -13,6 +13,7 @@ use Drupal\Core\Url;
 use Drupal\Core\Link;
 use Drupal\Core\Render\Markup;
 use Drupal\node\Entity\Node;
+use Drupal\file\Entity\File;
 use Drupal\taxonomy\Entity\Term;
 
 
@@ -896,18 +897,33 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
 
     if ($display->getComponent('view_actuaciones')) {
       $db = \Drupal::database();
-      $sql = "SELECT nid, title, created, uid, field_nota_nota_value FROM node_field_data nfd INNER JOIN node__field_actuacion_expediente ae ON nfd.nid = ae.entity_id LEFT JOIN node__field_actuacion_nota an ON an.entity_id = nfd.nid LEFT JOIN node__field_nota_nota nn on an.field_actuacion_nota_target_id = nn.entity_id WHERE field_actuacion_expediente_target_id = :nid ORDER BY created DESC";
+      $sql = "SELECT nid, title, created, uid, field_nota_nota_value, field_actuacion_documentacion_target_id as fid FROM node_field_data nfd INNER JOIN node__field_actuacion_expediente ae ON nfd.nid = ae.entity_id LEFT JOIN node__field_actuacion_nota an ON an.entity_id = nfd.nid LEFT JOIN node__field_nota_nota nn on an.field_actuacion_nota_target_id = nn.entity_id LEFT JOIN node__field_actuacion_documentacion ad on ad.entity_id = nfd.nid  WHERE field_actuacion_expediente_target_id = :nid ORDER BY created DESC";
       $actuaciones_nids = $db->query($sql, array(':nid' => $nid))
         ->fetchAll();
       if ($actuaciones_nids) {
         $rows = [];
         foreach ($actuaciones_nids as $actuacion_nid) {
+          $file_link = '';
+          if ($actuacion_nid->fid) {
+            $file = File::load($actuacion_nid->fid);
+            $file_uri = $file->getFileUri();
+            $url = file_create_url($file_uri);
+            $url = Url::fromUri($url, ['absolute' => TRUE]);
+            $file_link = Link::fromTextAndUrl($file->getFilename(), $url, array(
+              'attributes' => array(
+                'target' => '_blank',
+                'class' => array('btn', 'btn-primary', 'btn-sm')
+              ),
+            ));
+          }
           $actuacion_node = Node::load($actuacion_nid->nid);
+
           $rows[] = array(
             date('d-M-Y H:m:s', $actuacion_nid->created),
             $actuacion_nid->title,
             gmdate("H:i:s", $actuacion_node->get('field_actuacion_tiempo_en_seg')->value),
-            $actuacion_nid->field_nota_nota_value,
+            Markup::create($actuacion_nid->field_nota_nota_value),
+            $file_link,
             get_cliente_nombre($actuacion_nid->uid),
           );
         }
@@ -917,6 +933,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         'Actuacion',
         'Tiempo (en Horas:Minutos:Segundos)',
         'Notas',
+        'Documentacion',
         'Autor',
       );
       $build['view_actuaciones'] = [

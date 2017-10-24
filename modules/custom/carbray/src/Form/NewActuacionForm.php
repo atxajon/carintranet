@@ -76,7 +76,7 @@ class NewActuacionForm extends FormBase {
       '#size' => 20,
 //      '#description' => t('PDF format only'),
 //      '#upload_validators' => $validators,
-      '#upload_location' => 'public://my_files/',
+      '#upload_location' => 'private://actuacion/',
     );
 
     $form['submit'] = array(
@@ -102,11 +102,13 @@ class NewActuacionForm extends FormBase {
     $title = $form_state->getValue('title');
     $timer = $form_state->getValue('timer');
     $nota = $form_state->getValue('nota');
+    $actuacion_file = $form_state->getValue('actuacion_file');
 
     $actuacion = Node::create(['type' => 'actuacion']);
     $actuacion->set('title', $title);
     $actuacion->set('field_actuacion_expediente', $expediente_nid);
     $actuacion->set('field_actuacion_tiempo_en_seg', $timer);
+    $actuacion->set('field_actuacion_documentacion', $actuacion_file);
     $actuacion->enforceIsNew();
     $actuacion->save();
 
