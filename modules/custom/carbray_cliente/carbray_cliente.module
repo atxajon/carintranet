@@ -908,13 +908,14 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
             $file = File::load($actuacion_nid->fid);
             $file_uri = $file->getFileUri();
             $url = file_create_url($file_uri);
-            $url = Url::fromUri($url, ['absolute' => TRUE]);
-            $file_link = Link::fromTextAndUrl($file->getFilename(), $url, array(
+            $url = Url::fromUri($url, ['absolute' => TRUE], array(
               'attributes' => array(
                 'target' => '_blank',
                 'class' => array('btn', 'btn-primary', 'btn-sm')
               ),
             ));
+
+            $file_link = Link::fromTextAndUrl($file->getFilename(), $url);
           }
           $actuacion_node = Node::load($actuacion_nid->nid);
 

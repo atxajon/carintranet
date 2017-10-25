@@ -1,16 +1,16 @@
 (function ($, Drupal, drupalSettings) {
   Drupal.behaviors.carbray_timer = {
     attach: function (context, settings) {
+
       var inicio = 0;
       var timeout = 0;
       var total = 0;
       $('.form-item-timer').hide();
 
-      $('#edit-start').click(function () {
+      $('#edit-start', context).once('carbray_timer').on('click', function () {
         empezarDetener(this);
         return false;
       });
-
 
       function empezarDetener(elemento) {
         if (timeout == 0) {
