@@ -404,15 +404,15 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
     }
 
     if ($display->getComponent('expedientes')) {
-      $expedientes_nids = db_query("SELECT expediente_nid FROM carbray_user_captacion_expediente WHERE uid = :uid", array(':uid' => $uid))->fetchCol();
+      $expedientes_nids = db_query("SELECT expediente_nid, captacion_nid FROM carbray_user_captacion_expediente WHERE uid = :uid", array(':uid' => $uid))->fetchAll();
       $expedientes_rows = [];
       foreach ($expedientes_nids as $expediente) {
-        if (is_null($expediente)) {
+        if (is_null($expediente->expediente_nid)) {
           // Client has a captacion but not an expediente for it yet,
           // let's move on to next iteration (expediente).
           continue;
         }
-        $expediente_data = \Drupal::entityTypeManager()->getStorage('node')->load($expediente);
+        $expediente_data = \Drupal::entityTypeManager()->getStorage('node')->load($expediente->expediente_nid);
         $servicio_nombre = '';
         $term_entity = $expediente_data->field_expediente_tematica->entity;
         if ($term_entity) {
@@ -420,11 +420,22 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
           $servicio_nombre = $term->name->value;
           // @todo: work out tematica term name, not servicios...
         }
+        // Prepare link to actuacion.
+        $actuacion_title = get_node_title($expediente->captacion_nid);
+        $actuacion_link = Link::fromTextAndUrl($actuacion_title, Url::fromRoute('entity.node.canonical', ['node' => $expediente->captacion_nid]
+        ));
+        $actuacion_link_string = $actuacion_link->toString()
+            ->getGeneratedLink() . '<br>';
+
+        $actuacion_link_markup = Markup::create($actuacion_link_string);
+
         $expedientes_rows[] = array(
           $expediente_data->label(),
-          print_cliente_captadores_responsables($expediente_data->get('field_expediente_responsable')->getValue()),
+          print_cliente_captadores_responsables($expediente_data->get('field_expediente_responsable')
+              ->getValue()),
           $servicio_nombre,
-          print_cliente_expedientes($expediente),
+          print_cliente_expedientes($expediente->expediente_nid),
+          $actuacion_link_markup,
         );
       }
       $header = array(
@@ -432,6 +443,7 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
         'Responsable',
         'Tematica',
         'Ver expediente',
+        'Captacion',
       );
       $build['expedientes'] = array(
         '#type' => 'table',
