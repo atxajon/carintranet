@@ -4,7 +4,7 @@
 
       var inicio = 0;
       var timeout = 0;
-      var total = 0;
+      var total_minutes = 0;
       $('.form-item-timer').hide();
 
       $('#edit-start', context).once('carbray_timer').on('click', function () {
@@ -28,7 +28,7 @@
           // detener el cronometro
           document.getElementById('edit-start').innerHTML = "Empezar";
 
-          document.getElementById('edit-timer').value = total;
+          document.getElementById('edit-timer').value = total_minutes;
           clearTimeout(timeout);
           timeout = 0;
           $('.form-item-timer').fadeIn();
@@ -53,7 +53,7 @@
         var secs_from_inicio_to_actual = date_diff / 1000;
         var secs_between_dates = parseInt(Math.abs(secs_from_inicio_to_actual));
 
-        total = secs_between_dates;
+        total_minutes = Math.floor(secs_between_dates / 60);
 
         // Indicamos que se ejecute esta función nuevamente dentro de 1 segundo
         timeout = setTimeout(function () {

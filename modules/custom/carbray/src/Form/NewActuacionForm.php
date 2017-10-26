@@ -48,9 +48,9 @@ class NewActuacionForm extends FormBase {
     );
 
     $form['timer'] = array(
-      '#title' => 'Segundos transcurridos',
+      '#title' => 'Minutos transcurridos',
       '#type' => 'textfield',
-      '#description' => 'Edita el numero de segundos transcurridos.',
+      '#description' => 'Edita el numero de minutos transcurridos.',
       '#required' => TRUE,
 //      '#prefix' => '<div class="pull-right timer-textfield">',
 //      '#suffix' => '</div>',

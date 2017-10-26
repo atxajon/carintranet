@@ -930,11 +930,14 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
             $file_link = Link::fromTextAndUrl($file->getFilename(), $url);
           }
           $actuacion_node = Node::load($actuacion_nid->nid);
+          // Get the minutes values for the actuacion and transform it to seconds for correct display.
+          $minutes = $actuacion_node->get('field_actuacion_tiempo_en_seg')->value;
+          $seconds = $minutes * 60;
 
           $rows[] = array(
             date('d-M-Y H:m:s', $actuacion_nid->created),
             $actuacion_nid->title,
-            gmdate("H:i:s", $actuacion_node->get('field_actuacion_tiempo_en_seg')->value),
+            gmdate("H:i", $seconds),
             Markup::create($actuacion_nid->field_nota_nota_value),
             $file_link,
             get_cliente_nombre($actuacion_nid->uid),
@@ -944,7 +947,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
       $header = array(
         'Fecha creacion',
         'Actuacion',
-        'Tiempo (en Horas:Minutos:Segundos)',
+        'Tiempo (en Horas:Minutos)',
         'Notas',
         'Documentacion',
         'Autor',
