@@ -16,6 +16,8 @@ use Drupal\node\Entity\Node;
 use Drupal\file\Entity\File;
 use Drupal\taxonomy\Entity\Term;
 
+define('CAPTACION_ARCHIVADA', 184);
+
 
 /**
  * Implements hook_theme().
@@ -74,6 +76,12 @@ function carbray_cliente_entity_extra_field_info() {
   $extra['node']['captacion']['display']['edit_captacion'] = array(
     'label' => t('Edit captacion'),
     'description' => t('Edit captacion.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['captacion']['display']['archive_captacion'] = array(
+    'label' => t('Archive captacion'),
+    'description' => t('Archive captacion.'),
     'weight' => 100,
     'visible' => TRUE,
   );
@@ -600,10 +608,16 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         '#theme' => 'button_modal',
         '#unique_id' => 'edit-captacion-' . $nid,
         '#button_text' => 'Editar captacion',
-        '#button_classes' => 'btn btn-warning',
+        '#button_classes' => 'btn btn-warning pull-left',
         '#modal_title' => t('Editar captacion'),
         '#modal_content' => $form,
       );
+    }
+
+    if ($display->getComponent('archive_captacion')) {
+      $form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray\Form\ArchiveCaptacion', $nid);
+      $build['archive_captacion'] = $form;
     }
 
     if ($display->getComponent('assign_estado_captacion')) {
