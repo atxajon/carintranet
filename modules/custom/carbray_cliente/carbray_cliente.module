@@ -376,24 +376,35 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
           $estado_nombre = $term->name->value;
         }
 
-        $form = \Drupal::formBuilder()
-          ->getForm('Drupal\carbray\Form\NewExpedienteForm', $captacion->captacion_nid, $uid);
-        $build['new_expediente'] = [
-          '#theme' => 'button_modal',
-          '#unique_id' => 'new-expediente-captacion_nid-' . $captacion->captacion_nid,
-          '#button_text' => 'Nuevo expediente',
-          '#button_classes' => 'btn btn-primary btn-sm',
-          '#modal_title' => t('Nuevo expediente'),
-          '#modal_content' => $form,
-          '#has_plus' => TRUE,
-        ];
+        $row_class = 'captacion-row';
+        if ($term_entity->id() == CAPTACION_ARCHIVADA) {
+          $build['new_expediente'] = '';
+          $row_class = 'captacion-archivada-row';
+        }
+        else {
+          $form = \Drupal::formBuilder()
+            ->getForm('Drupal\carbray\Form\NewExpedienteForm', $captacion->captacion_nid, $uid);
+          $build['new_expediente'] = [
+            '#theme' => 'button_modal',
+            '#unique_id' => 'new-expediente-captacion_nid-' . $captacion->captacion_nid,
+            '#button_text' => 'Nuevo expediente',
+            '#button_classes' => 'btn btn-primary btn-sm',
+            '#modal_title' => t('Nuevo expediente'),
+            '#modal_content' => $form,
+            '#has_plus' => TRUE,
+          ];
+        }
 
         $rows[] = array(
-          $captacion_data->label(),
-          print_cliente_captadores_responsables($captacion_data->get('field_captacion_captador')->getValue()),
-          $estado_nombre,
-          print_captacion_link($captacion->captacion_nid),
-          render($build['new_expediente']),
+          'data' => array(
+            $captacion_data->label(),
+            print_cliente_captadores_responsables($captacion_data->get('field_captacion_captador')
+                ->getValue()),
+            $estado_nombre,
+            print_captacion_link($captacion->captacion_nid),
+            render($build['new_expediente']),
+          ),
+          'class' => [$row_class],
         );
       }
       $header = array(

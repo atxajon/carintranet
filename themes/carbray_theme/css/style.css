@@ -390,3 +390,7 @@ ul {
   clear: both;
 }
 
+.captacion-archivada-row {
+  opacity: 0.5;
+}
+
