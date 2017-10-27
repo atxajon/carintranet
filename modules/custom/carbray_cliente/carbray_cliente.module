@@ -365,7 +365,7 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
     }
 
     if ($display->getComponent('captaciones')) {
-      $captacion_nids = db_query("SELECT captacion_nid FROM carbray_user_captacion_expediente WHERE uid = :uid", array(':uid' => $uid))->fetchAll();
+      $captacion_nids = db_query("SELECT DISTINCT captacion_nid FROM carbray_user_captacion_expediente WHERE uid = :uid", array(':uid' => $uid))->fetchAll();
       $rows = [];
       foreach ($captacion_nids as $captacion) {
         $captacion_data = \Drupal::entityTypeManager()->getStorage('node')->load($captacion->captacion_nid);
