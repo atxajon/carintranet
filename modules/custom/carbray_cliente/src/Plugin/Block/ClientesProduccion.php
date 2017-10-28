@@ -25,6 +25,10 @@ class ClientesProduccion extends BlockBase {
       $cliente_data = \Drupal::entityTypeManager()->getStorage('user')->load($cliente->uid);
 
       $captacion_data = \Drupal::entityTypeManager()->getStorage('node')->load($cliente->captacion_nid);
+      $estado_captacion = $captacion_data->get('field_captacion_estado_captacion')->entity;
+      if ($estado_captacion->id() == CAPTACION_ARCHIVADA) {
+        continue;
+      }
 
       $expedientes = get_expedientes_for_captacion($cliente->captacion_nid);
       $expedientes_nids = array_values($expedientes);

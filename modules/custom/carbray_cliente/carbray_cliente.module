@@ -365,7 +365,7 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
     }
 
     if ($display->getComponent('captaciones')) {
-      $captacion_nids = db_query("SELECT DISTINCT captacion_nid FROM carbray_user_captacion_expediente WHERE uid = :uid", array(':uid' => $uid))->fetchAll();
+      $captacion_nids = db_query("SELECT DISTINCT captacion_nid FROM carbray_user_captacion_expediente WHERE uid = :uid ORDER BY id DESC", array(':uid' => $uid))->fetchAll();
       $rows = [];
       foreach ($captacion_nids as $captacion) {
         $captacion_data = \Drupal::entityTypeManager()->getStorage('node')->load($captacion->captacion_nid);
@@ -423,7 +423,7 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
     }
 
     if ($display->getComponent('expedientes')) {
-      $expedientes_nids = db_query("SELECT expediente_nid, captacion_nid FROM carbray_user_captacion_expediente WHERE uid = :uid", array(':uid' => $uid))->fetchAll();
+      $expedientes_nids = db_query("SELECT expediente_nid, captacion_nid FROM carbray_user_captacion_expediente WHERE uid = :uid ORDER BY id DESC", array(':uid' => $uid))->fetchAll();
       $expedientes_rows = [];
       foreach ($expedientes_nids as $expediente) {
         if (is_null($expediente->expediente_nid)) {
