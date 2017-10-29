@@ -26,9 +26,11 @@ class ProgressBar {
             AND field_objetivo_fecha_inicio_value < :now
             AND field_objetivo_fecha_final_value > :now";
     $objetivo = $this->db->query($sql, array(':tid' => $id, ':now' => $this->now))->fetchAll();
-    $this->cifra = $objetivo[0]->cifra;
-    $this->fecha_inicio = $objetivo[0]->fecha_inicio;
-    $this->fecha_final = $objetivo[0]->fecha_final;
+    if ($objetivo) {
+      $this->cifra = $objetivo[0]->cifra;
+      $this->fecha_inicio = $objetivo[0]->fecha_inicio;
+      $this->fecha_final = $objetivo[0]->fecha_final;
+    }
   }
 
   /**

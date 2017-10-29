@@ -5,6 +5,11 @@ namespace Drupal\carbray\Plugin\Block;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Url;
 use Drupal\Core\Link;
+use Drupal\user\Entity\User;
+use Drupal\taxonomy\Entity\Term;
+use Drupal\Core\Render\Markup;
+
+
 
 /**
  * Provides an Gestionar trabajadores Block.
@@ -21,22 +26,32 @@ class GestionarTrabajadoresBlock extends BlockBase {
    * {@inheritdoc}
    */
   public function build() {
+    $db = \Drupal::database();
+    $sql = "SELECT uid FROM users_field_data ufd WHERE ufd.status = 1 AND uid != 1 AND uid != 0";
 
-    $results = db_query('SELECT uid, field_nombre_value as nombre, field_apellido_value as apellido, mail, field_departamento_target_id as tid, roles_target_id as role, status FROM users_field_data ufd INNER JOIN user__roles ur ON ufd.uid = ur. entity_id LEFT JOIN user__field_nombre n on n.entity_id = ufd.uid LEFT JOIN user__field_apellido a on a.entity_id = ufd.uid LEFT JOIN user__field_departamento d on d.entity_id = ufd.uid WHERE ufd.status = 1 AND uid != 1')->fetchAll();
-    foreach ($results as $result) {
-      if ($result->tid) {
-        $departamento_term = \Drupal::entityTypeManager()
-          ->getStorage('taxonomy_term')
-          ->load($result->tid);
+    $results = $db->query($sql)->fetchAll();
+    foreach ($results as $worker) {
+      $user = User::load($worker->uid);
+      $departamento_nombre = '';
+      $departamento_terms = $user->get('field_departamento')->getValue();
+      if ($departamento_terms) {
+        foreach ($departamento_terms as $dep_term) {
+          $term = Term::load($dep_term['target_id']);
+          $dep_nombre = $term->name->value . '<br>';
+          $departamento_nombre .= Markup::create($dep_nombre);
+        }
       }
-      $objetivo = db_query("SELECT field_objetivo_cifra_value as cifra FROM node__field_objetivo_cifra c INNER JOIN node__field_objetivo_trabajador t on c.entity_id = t.entity_id  INNER JOIN node__field_objetivo_fecha_inicio fe on c.entity_id = fe.entity_id
+
+      $sql = "SELECT field_objetivo_cifra_value as cifra FROM node__field_objetivo_cifra c INNER JOIN node__field_objetivo_trabajador t on c.entity_id = t.entity_id  INNER JOIN node__field_objetivo_fecha_inicio fe on c.entity_id = fe.entity_id
             INNER JOIN node__field_objetivo_fecha_final ff on c.entity_id = ff.entity_id WHERE field_objetivo_trabajador_target_id = :uid AND field_objetivo_fecha_inicio_value < :now
-            AND field_objetivo_fecha_final_value > :now", array(':uid' => $result->uid, ':now' => date('Y-m-d H:i:s')))->fetchField();
+            AND field_objetivo_fecha_final_value > :now";
+
+      $objetivo = $db->query($sql, array(':uid' => $worker->uid, ':now' => date('Y-m-d H:i:s')))->fetchField();
       // No objetivo cifra? add a link to create new one for this user.
       if (!$objetivo) {
         $options = [
           'query' => [
-            'uid' => $result->uid,
+            'uid' => $worker->uid,
           ],
           'attributes' => [
             'class' => [
@@ -52,22 +67,23 @@ class GestionarTrabajadoresBlock extends BlockBase {
       }
 
       // Make worker name surname into a link.
-      $url = Url::fromRoute('entity.user.canonical', ['user' => $result->uid]);
-      $worker = Link::fromTextAndUrl($result->nombre . ' ' . $result->apellido, $url);
+      $url = Url::fromRoute('entity.user.canonical', ['user' => $worker->uid]);
+      $worker = Link::fromTextAndUrl($user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value, $url);
 
-      if ($result->role == 'carbray_administrator') {
-        $result->role = 'Administrador';
+      $role = '';
+      if ($user->hasRole('carbray_administrator')) {
+        $role = 'Administrador';
       }
-      if ($result->role == 'worker') {
-        $result->role = 'Trabajador';
+      if ($user->hasRole('worker')) {
+        $role = 'Trabajador';
       }
       $rows[] = array(
         $worker,
-        $result->mail,
-        ($result->tid) ? $departamento_term->name->value : '',
+        $user->getEmail(),
+        $departamento_nombre,
         $objetivo,
-        $result->role,
-        $result->status,
+        $role,
+        $user->status->value,
       );
     }
 
