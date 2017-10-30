@@ -66,6 +66,10 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
         $is_internal_user = TRUE;
       }
 
+      if (!$is_internal_user) {
+        $form['field_departamento']['#access'] = FALSE;
+      }
+
       // An internal user must not see/populate clients related fields. A user resetting pwd does must not see anything else than password reset box.
       $pass_token = \Drupal::request()->query->get('pass-reset-token');
       if ($pass_token) {
@@ -230,7 +234,7 @@ function _hide_user_form_fields($form, $is_user_reset = FALSE) {
   $form['field_identificacion']['#access'] = FALSE;
   $form['field_notas']['#access'] = FALSE;
   $form['field_email']['#access'] = FALSE;
-  $form['field_user_estado_de_captacion']['#access'] = FALSE;
+  $form['field_procedencia']['#access'] = FALSE;
   return $form;
 }
 
@@ -252,6 +256,7 @@ function _hide_everything_but_pwd($form) {
   $form['account']['mail']['#access'] = FALSE;
   $form['account']['roles']['#access'] = FALSE;
   $form['account']['notify']['#access'] = FALSE;
+  $form['field_procedencia']['#access'] = FALSE;
   return $form;
 }
 /**
