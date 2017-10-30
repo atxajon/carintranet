@@ -159,6 +159,14 @@ class NewWorkerForm extends FormBase {
     // $user->set("timezone", 'Pacific/Wallis');
 
     $user->save();
+
+    // Send email with one time log in link to worker.
+    $mailManager = \Drupal::service('plugin.manager.mail');
+    $module = 'carbray';
+    $langcode = \Drupal::currentUser()->getPreferredLangcode();
+    $send = TRUE;
+    $sent = $mailManager->mail($module, 'worker_created', $email, $langcode, [], NULL, $send);
+
     $uid = $user->id();
 
     drupal_set_message('Trabajador ' . $nombre . ' ' . $apellido . ' con uid: ' . $uid . ' ha sido creado');

@@ -25,10 +25,10 @@ class ToggleUserStatus extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state, $uid = NULL) {
     $user = User::load($uid);
     $status = $user->get('status')->value;
-    $status_text = ($status) ? 'activo' : 'bloqueado';
-    $button_text = ($status) ? 'Bloquear usuario' : 'Activar usuario';
+    $status_text = ($status) ? 'activo' : 'inactivo';
+    $button_text = ($status) ? 'Desactivar trabajador' : 'Activar trabajador';
     $form['system_status'] = array(
-      '#markup' => 'Usuario esta <b>' . $status_text . '</b><br>',
+      '#markup' => 'Trabajador está <b>' . $status_text . '</b><br>',
     );
 
     $form['uid'] = array(

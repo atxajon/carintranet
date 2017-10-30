@@ -463,14 +463,11 @@ function email_already_in_system($email) {
  */
 function get_carbray_workers($just_active = FALSE) {
   $db = \Drupal::database();
-  $query = $db->select('users_field_data', 'ufd');
-  $query->fields('ufd', ['uid', 'mail']);
-  $query->join('user__roles');
+  $sql = "SELECT uid, mail FROM users_field_data ufd INNER JOIN user__roles ur on ur.entity_id = ufd.uid WHERE roles_target_id = 'carbray_administrator' OR roles_target_id = 'worker'";
   if ($just_active) {
-    $query->condition('status', 1);
+    $sql .= ' AND status = 1';
   }
-  $query->condition('uid', array(0, 1), 'NOT IN');
-  return $query->execute()->fetchAllKeyed();
+  return $db->query($sql)->fetchAllKeyed();
 }
 
 function carbray_node_view(array &$build, \Drupal\Core\Entity\EntityInterface $entity, \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display, $view_mode) {

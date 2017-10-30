@@ -85,7 +85,7 @@ class GestionarTrabajadoresBlock extends BlockBase {
         $departamento_nombre,
         $objetivo,
         $role,
-        $user->status->value,
+        ($user->status->value == 1) ? t('Activo') : t('Inactivo'),
       );
     }
 
