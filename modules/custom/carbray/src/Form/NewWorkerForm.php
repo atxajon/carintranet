@@ -9,6 +9,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\user\Entity\User;
 use Drupal\node\Entity\Node;
 use Drupal\Core\Url;
+use Drupal\Core\Session\AccountInterface;
 
 
 
@@ -161,11 +162,7 @@ class NewWorkerForm extends FormBase {
     $user->save();
 
     // Send email with one time log in link to worker.
-    $mailManager = \Drupal::service('plugin.manager.mail');
-    $module = 'carbray';
-    $langcode = \Drupal::currentUser()->getPreferredLangcode();
-    $send = TRUE;
-    $sent = $mailManager->mail($module, 'worker_created', $email, $langcode, [], NULL, $send);
+    _user_mail_notify('status_activated', $user, $langcode = NULL);
 
     $uid = $user->id();
 
