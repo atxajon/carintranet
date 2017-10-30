@@ -12,3 +12,10 @@ carbray.add_objetivo_form:
     _form: '\Drupal\carbray\Form\NewObjetivoForm'
   requirements:
     _permission: 'access content'
+carbray.add_worker_form:
+  path: '/crear-trabajador'
+  defaults:
+    _title: 'Crear nuevo trabajador'
+    _form: '\Drupal\carbray\Form\NewWorkerForm'
+  requirements:
+    _permission: 'access content'

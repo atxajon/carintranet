@@ -36,9 +36,11 @@ class GestionarTrabajadoresBlock extends BlockBase {
       $departamento_terms = $user->get('field_departamento')->getValue();
       if ($departamento_terms) {
         foreach ($departamento_terms as $dep_term) {
-          $term = Term::load($dep_term['target_id']);
-          $dep_nombre = $term->name->value . '<br>';
-          $departamento_nombre .= Markup::create($dep_nombre);
+          if ($dep_term['target_id']) {
+            $term = Term::load($dep_term['target_id']);
+            $dep_nombre = $term->name->value . '<br>';
+            $departamento_nombre .= Markup::create($dep_nombre);
+          }
         }
       }
 

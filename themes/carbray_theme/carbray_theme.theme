@@ -189,6 +189,7 @@ function carbray_theme_preprocess_taxonomy_term(&$variables) {
       '#type' => 'table',
       '#header' => $header,
       '#rows' => $rows,
+      '#empty' => t('Ningun trabajador asignado.'),
     );
     $variables['trabajadores'] = $build;
 
