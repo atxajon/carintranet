@@ -131,6 +131,12 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['user']['user']['display']['edit_user'] = array(
+    'label' => t('Edit user link'),
+    'description' => t('Shows a form that allows to edit a user.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
   $extra['user']['user']['display']['toggle_status'] = array(
     'label' => t('User status change form'),
     'description' => t('Shows a form that allows an admin to activate or block a user.'),
@@ -513,6 +519,52 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
         $build['user_role'] = array(
           '#markup' => '<div class="field--label">Rol</div><div class="field--item">Administrador</div>',
         );
+      }
+    }
+
+    if ($display->getComponent('edit_user')) {
+      // Edit user link shows for:
+      // 1- Form owner (e.g uid 15 on page user/15
+      // 2- User with role carbray_administrator/administrator.
+
+      $current_path = \Drupal::service('path.current')->getPath();
+      $path_args = explode('/', $current_path);
+      $form_owner_uid = 0;
+      foreach ($path_args as $path_arg) {
+        if (is_numeric($path_arg)) {
+          $form_owner_uid = $path_arg;
+        }
+      }
+
+      $current_user = \Drupal::currentUser();
+      $current_user_roles = $current_user->getRoles();
+
+      if ($form_owner_uid == $current_user->id()
+        || in_array('carbray_administrator', $current_user_roles)
+        || in_array('administrator', $current_user_roles)) {
+        $current_path = \Drupal::service('path.current')->getPath();
+        $options = [
+          'query' => [
+            'destination' => $current_path,
+          ],
+        ];
+
+        $url = Url::fromRoute('entity.user.edit_form', array('user' => $current_user->id()), $options);
+
+        $build['edit_user'] = [
+          '#type' => 'link',
+          '#url' => $url,
+          '#title' => t('Editar usuario'),
+          '#attributes' => array(
+            'target' => '_blank',
+            'class' => array(
+              'btn',
+              'btn-sm',
+              'btn-warning',
+              'margin-bottom-20',
+            ),
+          ),
+        ];
       }
     }
 
