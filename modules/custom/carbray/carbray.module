@@ -77,6 +77,7 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
       }
       if ($is_internal_user || $is_user_resetting_pwd) {
         $form = _hide_user_form_fields($form, $is_user_resetting_pwd);
+
       }
       // If user lands on profile form after requesting new pwd and
       // clicking on one time login link...
@@ -104,10 +105,9 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
       }
 
       // A user of role Worker can not edit another user's password etc.
-      if (in_array('worker', $current_user_roles)) {
+      if (in_array('worker', $current_user_roles) && !$is_user_resetting_pwd) {
         $form['account']['pass']['#access'] = FALSE;
         $form['field_notas']['#access'] = FALSE;
-
       }
 
       break;
@@ -228,13 +228,13 @@ function carbray_form_user_pass_alter(&$form, FormStateInterface $form_state) {
  * @return mixed
  */
 function _hide_user_form_fields($form, $is_user_reset = FALSE) {
-  $form['field_captador']['#access'] = FALSE;
-  $form['field_responsable']['#access'] = FALSE;
   $form['field_fecha_alta']['#access'] = FALSE;
   $form['field_identificacion']['#access'] = FALSE;
   $form['field_notas']['#access'] = FALSE;
   $form['field_email']['#access'] = FALSE;
   $form['field_procedencia']['#access'] = FALSE;
+  // A user can't delete his own account.
+  $form['actions']['delete']['#access'] = FALSE;
   return $form;
 }
 
