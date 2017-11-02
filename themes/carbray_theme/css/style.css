@@ -228,7 +228,7 @@ ul {
 .path-user-password .region-content {
   margin-top: 100px;
 }
-.region-content .block {
+.block {
   border: 1px solid rgba(112, 112, 112, 0.12);
   background: white;
   border-radius: .25rem;
@@ -392,5 +392,13 @@ ul {
 
 .captacion-archivada-row {
   opacity: 0.5;
+}
+#search-users {
+  float: left;
+}
+.form-type-entity-autocomplete.form-item-uid {
+  float: left;
+  width: 300px;
+  margin-right: 20px;
 }
 

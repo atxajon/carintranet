@@ -424,7 +424,7 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
         '#type' => 'table',
         '#header' => $header,
         '#rows' => $rows,
-        '#empty' => t('Ningun cliente en captacion.'),
+        '#empty' => t('El cliente no tiene ninguna captación.'),
       );
     }
 
@@ -474,7 +474,7 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
         '#type' => 'table',
         '#header' => $header,
         '#rows' => $expedientes_rows,
-        '#empty' => t('Ningun expediente.'),
+        '#empty' => t('Ningún expediente.'),
       );
     }
 
