@@ -13,3 +13,11 @@ carbray_cliente.propuesta_to_pdf:
     _title: 'Propuesta en pdf'
   requirements:
     _permission: 'access content'
+
+carbray_cliente.clientes_autocomplete:
+  path: '/clientes-autocomplete'
+  defaults:
+    _controller: '\Drupal\carbray_cliente\Controller\UserAutocomplete::getClients'
+    _format: json
+  requirements:
+    _access: 'TRUE'

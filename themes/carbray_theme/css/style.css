@@ -396,9 +396,12 @@ ul {
 #search-users {
   float: left;
 }
-.form-type-entity-autocomplete.form-item-uid {
+#search-users .form-type-textfield.form-item-uid {
   float: left;
-  width: 300px;
+  width: 370px;
   margin-right: 20px;
+}
+#search-users .btn {
+
 }
 

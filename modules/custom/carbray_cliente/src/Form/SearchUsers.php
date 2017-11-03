@@ -29,8 +29,11 @@ class SearchUsers extends FormBase {
     $form['#attributes']['class'][] = 'margin-bottom-20';
 
     $form['uid'] = [
-      '#type' => 'entity_autocomplete',
-      '#target_type' => 'user',
+//      '#type' => 'entity_autocomplete',
+//      '#target_type' => 'user',
+      '#type' => 'textfield',
+      '#autocomplete_route_name' => 'carbray_cliente.clientes_autocomplete',
+//      '#autocomplete_route_parameters' => array('name' => 'title'),
       '#attributes' => array(
         'placeholder' => 'Cliente',
 //        'autofocus' => TRUE,
@@ -55,7 +58,11 @@ class SearchUsers extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $uid = $form_state->getValue('uid');
+    $uid_value = array();
+    preg_match_all("/\[([^\]]*)\]/", $uid, $uid_value);
+    $client_uid = reset($uid_value[1]);
+
     $route_name = 'entity.user.canonical';
-    $form_state->setRedirect($route_name, ['user' => $uid]);
+    $form_state->setRedirect($route_name, ['user' => $client_uid]);
   }
 }
