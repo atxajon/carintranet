@@ -69,13 +69,14 @@ class NewActuacionForm extends FormBase {
       '#rows' => 5,
     );
 
+    $allowed_exts = array('jpg jpeg gif png txt doc xls xlsx pdf ppt pptx pps odt ods odp docx zip rar msg');
     $form['actuacion_file'] = array(
       '#type' => 'managed_file',
       '#name' => 'my_file',
       '#title' => t('Añadir Documentacion'),
       '#size' => 20,
-//      '#description' => t('PDF format only'),
-//      '#upload_validators' => $validators,
+      '#description' => t('Allowed Files - jpg jpeg gif png txt doc xls xlsx pdf ppt pptx pps odt ods odp docx zip rar msg'),
+      '#upload_validators' => array('file_validate_extensions' => $allowed_exts),
       '#upload_location' => 'private://actuacion/',
     );
 
