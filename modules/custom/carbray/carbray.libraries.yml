@@ -16,3 +16,10 @@ carbray.carbray_timer:
      - core/jquery
      - core/drupalSettings
      - core/jquery.once
+
+carbray.client_search:
+  version: 1.x
+  js:
+    js/client_search.js: {}
+  dependencies:
+     - core/jquery

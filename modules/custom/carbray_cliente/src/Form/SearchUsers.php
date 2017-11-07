@@ -27,6 +27,8 @@ class SearchUsers extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form['#attributes']['class'][] = 'block';
     $form['#attributes']['class'][] = 'margin-bottom-20';
+    $form['#attached']['library'][] = 'carbray/carbray.client_search';
+
 
     $form['uid'] = [
 //      '#type' => 'entity_autocomplete',
@@ -38,6 +40,7 @@ class SearchUsers extends FormBase {
         'placeholder' => 'Cliente',
 //        'autofocus' => TRUE,
       ),
+      '#required' => TRUE,
     ];
     $form['actions']['submit'] = array(
       '#type' => 'submit',
@@ -51,6 +54,10 @@ class SearchUsers extends FormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
+    $uid = $form_state->getValue('uid');
+    if (!$uid) {
+      $form_state->setErrorByName('uid', $this->t('Selecciona un cliente de la lista.'));
+    }
   }
 
   /**
