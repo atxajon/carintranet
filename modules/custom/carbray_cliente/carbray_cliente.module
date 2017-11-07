@@ -764,8 +764,8 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         // Show button to create a factura.
         $build['take_action']['factura'] = [
           '#type'      => 'link',
-          '#title'     => 'Crear Factura',
-          '#url'       => Url::fromRoute('carbray.add_expediente_form'),
+          '#title'     => 'Crear Factura (pendiente de implementar)',
+          '#url'       => Url::fromRoute('carbray.add_user_form'),
           '#attributes' => [
             'class' => ['btn', 'btn-primary', 'btn-sm', 'margin-top']
           ]

@@ -47,7 +47,7 @@ class UserAutocomplete extends ControllerBase {
         $full_name = $client->field_nombre_value . ' ' . $client->field_apellido_value;
         $results[] = [
           'value' => $full_name . ' [' . $client->uid . ']',
-          'label' => $full_name . ' - ' . $client->mail . ' (' . $client->uid . ')',
+          'label' => $full_name . ' - ' . $client->mail . '<span class="sr-only" style="display:none"> (' . $client->uid . ')</span>',
         ];
       }
     }
