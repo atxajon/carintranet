@@ -55,6 +55,17 @@ class NewClientForm extends FormBase {
       '#options' => $countries,
     );
 
+    $entityManager = \Drupal::service('entity_field.manager');
+    $fields = $entityManager->getFieldStorageDefinitions('user', 'user');
+    $options = options_allowed_values($fields['field_procedencia']);
+//    $options = FieldConfig::loadByName('user', 'user', 'field_procedencia')->getSetting('allowed_values');
+    $form['procedencia'] = array(
+      '#type' => 'select',
+      '#title' => 'Procedencia',
+      '#options' => $options,
+      '#empty_option' => ' - Selecciona procedencia - ',
+    );
+
     // @todo: añadir campo identificacion??
 
     $internal_users = get_carbray_workers(TRUE);
@@ -68,16 +79,7 @@ class NewClientForm extends FormBase {
       '#multiple' => TRUE,
     );
 
-    $entityManager = \Drupal::service('entity_field.manager');
-    $fields = $entityManager->getFieldStorageDefinitions('user', 'user');
-    $options = options_allowed_values($fields['field_procedencia']);
-//    $options = FieldConfig::loadByName('user', 'user', 'field_procedencia')->getSetting('allowed_values');
-    $form['procedencia'] = array(
-      '#type' => 'select',
-      '#title' => 'Procedencia',
-      '#options' => $options,
-      '#empty_option' => ' - Selecciona procedencia - ',
-    );
+
 
     $form['submit'] = array(
       '#type' => 'submit',
