@@ -62,6 +62,10 @@ ul {
 .tematica-table .table {
   margin-bottom: 5px;
 }
+.logo {
+  display: block;
+  margin-top: 150px;
+}
 .logo .center-block {
   max-width: 160px;
 }
@@ -104,6 +108,17 @@ ul {
 }
 .panel-body .field {
   margin-bottom: 15px;
+}
+
+.block-worker-info {
+  padding: 0 20px 25px;
+  color: white;
+  margin-bottom: 30px;
+}
+.worker-info-container {
+  padding: 25px;
+  border-bottom: 2px solid white;
+
 }
 
 /* collapsed sidebar styles */
@@ -427,13 +442,15 @@ table tr td {
 .path-user-password .region-content {
   margin-top: 100px;
 }
-.block {
+#main-col .block {
   border: 1px solid rgba(112, 112, 112, 0.12);
   background: white;
   border-radius: .25rem;
   margin-bottom: 20px;
   padding: 10px 20px;
 }
+
+
 
 .form-item-field-user-estado-de-captacion-target-id,
 .form-item-field-user-estado-de-captacion-target-id .control-label,
