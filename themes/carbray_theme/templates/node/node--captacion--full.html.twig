@@ -62,11 +62,12 @@
             <h3 class="text-center">{{ 'Informacion del cliente'|trans }}</h3>
           </div>
           <div class="panel-body">
-            <div class="field"><div class="field--label">Nombre</div><div class="field--item">{{ content.client_name }}</div></div>
-            {{ content.field_captacion_cliente }}
-            <div class="field"><div class="field--label">Fecha alta</div><div class="field--item">{{ content.client_fecha_alta }}</div></div>
-            <div class="field"><div class="field--label">Telefono</div><div class="field--item">{{ content.client_telefono }}</div></div>
-            <div class="field"><div class="field--label">Pais</div><div class="field--item">{{ content.client_pais }}</div></div>
+            <table class="table table-responsive no-borders">
+              <tr><td class="text-right" style="width: 10%"><i class="glyphicon glyphicon-user"></i></td><td style="width: 20%"><div class="field--label">Nombre</div></td><td style="width: 50%">{{ content.client_name }}</td></tr>
+              <tr><td class="text-right" style="width: 10%"><i class="glyphicon glyphicon-user"></i></td><td style="width: 20%"><div class="field--label">Fecha alta</div></td><td style="width: 50%">{{ content.client_fecha_alta }}</td></tr>
+              <tr><td class="text-right" style="width: 10%"><i class="glyphicon glyphicon-user"></i></td><td style="width: 20%"><div class="field--label">Telefono</div></td><td style="width: 50%">{{ content.client_telefono }}</td></tr>
+              <tr><td class="text-right" style="width: 10%"><i class="glyphicon glyphicon-user"></i></td><td style="width: 20%"><div class="field--label">Pais</div></td><td style="width: 50%">{{ content.client_pais }}</td></tr>
+            </table>
           </div>
         </div>
       </div>

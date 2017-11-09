@@ -353,6 +353,7 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
         '#type' => 'table',
         '#header' => $header,
         '#rows' => $rows,
+        '#empty' => t('Ninguna nota creada aún.'),
       ];
     }
 
@@ -872,6 +873,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         '#type' => 'table',
         '#header' => $header,
         '#rows' => $rows,
+        '#empty' => t('Ninguna nota creada aún.'),
       ];
     }
   }
@@ -919,6 +921,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         '#type' => 'table',
         '#header' => $header,
         '#rows' => $rows,
+        '#empty' => t('Ninguna nota creada aún.'),
       ];
     }
     if ($display->getComponent('client_name')) {

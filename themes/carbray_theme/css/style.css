@@ -78,6 +78,10 @@ ul {
 .tematica-table .table {
   margin-bottom: 5px;
 }
+.btn-primary {
+  background: #777777;
+  border: 1px solid white;
+}
 .logo {
   display: block;
   margin-top: 150px;
@@ -484,7 +488,9 @@ table tr td {
   padding: 0;
 }
 
-
+.no-borders > tbody > tr > td {
+  border: none;
+}
 
 .form-item-field-user-estado-de-captacion-target-id,
 .form-item-field-user-estado-de-captacion-target-id .control-label,
