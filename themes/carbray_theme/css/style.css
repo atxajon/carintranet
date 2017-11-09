@@ -59,6 +59,10 @@ ul {
 .margin-right-20 {
   margin-left: 20px;
 }
+.block-title,
+.panel-heading {
+  text-shadow: 1px 1px 0px black;
+}
 .panel-default > .grey {
   background: #777777;
 }
@@ -474,6 +478,10 @@ table tr td {
 #main-col .block.search-users {
   border: none;
   background: transparent;
+}
+#main-col .block.block-clientes-captacion,
+#main-col .block.block-clientes-produccion {
+  padding: 0;
 }
 
 

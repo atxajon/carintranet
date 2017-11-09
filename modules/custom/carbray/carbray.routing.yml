@@ -1,7 +1,7 @@
 carbray.add_user_form:
   path: '/crear-cliente'
   defaults:
-    _title: 'Crear cliente nuevo'
+    _title: 'Crear contacto nuevo'
     _form: '\Drupal\carbray\Form\NewClientForm'
   requirements:
     _permission: 'access content'

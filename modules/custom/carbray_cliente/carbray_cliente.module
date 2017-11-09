@@ -1129,8 +1129,7 @@ function print_cliente_contacto($cliente) {
   // Build contacto column.
   $mail = ($cliente->getEmail()) ? $cliente->getEmail() . '<br>' : '';
   $telefono = ($cliente->get('field_telefono')->value) ? $cliente->get('field_telefono')->value . '<br>' : '';
-  $pais = ($cliente->get('field_pais')->value) ? $cliente->get('field_pais')->value : '';
-  $contacto = $mail . $telefono . $pais;
+  $contacto = $mail . $telefono;
   $contacto_markup = Markup::create($contacto);
   return $contacto_markup;
 }

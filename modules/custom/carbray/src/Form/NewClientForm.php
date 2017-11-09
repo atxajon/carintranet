@@ -42,17 +42,20 @@ class NewClientForm extends FormBase {
       '#type' => 'textfield',
       '#title' => 'Email',
       '#size' => '20',
+      '#required' => TRUE,
     );
     $form['telefono'] = array(
       '#type' => 'textfield',
       '#title' => 'Telefono',
       '#size' => '20',
+      '#required' => TRUE,
     );
     $countries = \Drupal::service('country_manager')->getList();
     $form['pais'] = array(
       '#type' => 'select',
       '#title' => 'Pais',
       '#options' => $countries,
+      '#empty_option' => ' - Sin especificar - ',
     );
 
     $entityManager = \Drupal::service('entity_field.manager');
@@ -64,6 +67,7 @@ class NewClientForm extends FormBase {
       '#title' => 'Procedencia',
       '#options' => $options,
       '#empty_option' => ' - Selecciona procedencia - ',
+      '#required' => TRUE,
     );
 
     // @todo: añadir campo identificacion??

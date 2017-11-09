@@ -25,7 +25,7 @@
     <div class="row">
       <div class="col-sm-8">
         <div class="panel panel-default">
-          <div class="panel-heading">
+          <div class="panel-heading blue">
             <h4>{{ 'Crear nueva captacion'|trans }}</h4>
           </div>
           <div class="panel-body">
@@ -35,7 +35,7 @@
       </div>
       <div class="col-sm-4">
         <div class="panel panel-default cliente-info">
-          <div class="panel-heading">
+          <div class="panel-heading blue">
             <h4>{{ 'Informacion del cliente'|trans }}</h4>
           </div>
           <div class="panel-body">
@@ -57,7 +57,7 @@
     </div>
 
     <div class="panel panel-default">
-      <div class="panel-heading">
+      <div class="panel-heading blue">
         <h4>{{ 'Captaciones'|trans }}</h4>
       </div>
       <div class="panel-body">
@@ -66,7 +66,7 @@
     </div>
 
     <div class="panel panel-default">
-      <div class="panel-heading">
+      <div class="panel-heading blue">
        <h4> {{ 'Expedientes'|trans }}</h4>
       </div>
       <div class="panel-body">
@@ -75,11 +75,10 @@
     </div>
 
     <div class="cliente-notas panel panel-default">
-      <div class="panel-heading">
-        <h4>{{ 'Notas'|trans }}</h4>
+      <div class="panel-heading dark-blue clearfix">
+        <h4 class="pull-left">{{ 'Notas'|trans }}</h4><div class="pull-right">{{ content.anadir_nota }}</div>
       </div>
       <div class="panel-body">
-        {{ content.anadir_nota }}
         {{ content.notas_table }}
       </div>
     </div>
