@@ -7,6 +7,19 @@
       $('[data-toggle=offcanvas]').click(function() {
         $('.row-offcanvas').toggleClass('active');
       });
+
+      var colSets = $(".row.equal");
+      $(colSets).each(function () {
+        var maxheight = 0;
+        $(this).find('.panel-body').each(function () {
+          maxheight = ($(this).outerHeight() > maxheight ? $(this).outerHeight() : maxheight);
+        });
+        // apply the height to all cols in this set
+        $(this).find('.panel-body').height(maxheight);
+        // reset the maxheight to make it ready for next colSet iteration
+        maxheight = 0;
+      });
+
     }
   };
 

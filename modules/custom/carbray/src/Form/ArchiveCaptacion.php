@@ -25,19 +25,18 @@ class ArchiveCaptacion extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, $nid = NULL) {
-    $form['#attributes']['class'][] = 'pull-left';
     $form['#attributes']['class'][] = 'margin-left-20';
 
     $captacion = Node::load($nid);
     $estado_term = $captacion->get('field_captacion_estado_captacion')->entity;
-    $button_classes = ['btn-danger', 'btn'];
+    $button_classes = ['btn-danger', 'btn', 'pull-right'];
 
     if ($estado_term->id() == CAPTACION_ARCHIVADA) {
-      $button_text = t('Desarchivar captacion');
+      $button_text = t('Desarchivar');
       $estado = 'archivada';
     }
     else {
-      $button_text = t('Archivar captacion');
+      $button_text = t('Archivar');
       $estado = 'desarchivada';
     }
     $form['captacion_nid'] = array(

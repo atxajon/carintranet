@@ -42,7 +42,7 @@ class NewNotaForm extends FormBase {
     $form['submit'] = array(
       '#type' => 'submit',
       '#value' => 'Crear nota',
-      '#attributes' => array('class' => array('btn-primary')),
+      '#attributes' => array('class' => array('btn-primary', 'margin-top-20')),
     );
     return $form;
   }

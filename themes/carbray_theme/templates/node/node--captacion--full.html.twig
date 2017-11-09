@@ -28,11 +28,11 @@
   <div class="margin-bottom-20 clearfix">{{ content.edit_captacion }} {{ content.archive_captacion }}</div>
 
   <div{{ content_attributes.addClass('content') }}>
-    <div class="row">
+    <div class="row equal">
       <div class="col-sm-4">
         <div class="panel panel-default">
-          <div class="panel-heading">
-            <h4>{{ 'Estado de la captacion'|trans }}</h4>
+          <div class="panel-heading green">
+            <h3 class="text-center">{{ 'Estado de la captacion'|trans }}</h3>
           </div>
           <div class="panel-body">
             {{ content.field_captacion_estado_captacion }}
@@ -43,8 +43,8 @@
       </div>
       <div class="col-sm-4">
         <div class="panel panel-default">
-          <div class="panel-heading">
-            <h4>{{ 'Informacion de la captacion'|trans }}</h4>
+          <div class="panel-heading grey">
+            <h3 class="text-center">{{ 'Informacion de la captacion'|trans }}</h3>
           </div>
           <div class="panel-body">
             {{ content.field_captacion_captador }}
@@ -58,8 +58,8 @@
       </div>
       <div class="col-sm-4">
         <div class="panel panel-default">
-          <div class="panel-heading">
-            <h4>{{ 'Informacion del cliente'|trans }}</h4>
+          <div class="panel-heading blue">
+            <h3 class="text-center">{{ 'Informacion del cliente'|trans }}</h3>
           </div>
           <div class="panel-body">
             <div class="field"><div class="field--label">Nombre</div><div class="field--item">{{ content.client_name }}</div></div>
@@ -72,11 +72,11 @@
       </div>
     </div>
     <div class="panel panel-default">
-      <div class="panel-heading">
-        <h4>{{ 'Notas captacion'|trans }}</h4>
+      <div class="panel-heading clearfix dark-blue">
+        <h3 class="pull-left">{{ 'Notas captacion'|trans }}</h3><div class="pull-right">{{ content.anadir_nota }}</div>
       </div>
       <div class="panel-body">
-        {{ content.anadir_nota }}
+
         {{ content.notas_table }}
       </div>
     </div>

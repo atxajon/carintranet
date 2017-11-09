@@ -59,6 +59,18 @@ ul {
 .margin-right-20 {
   margin-left: 20px;
 }
+.panel-default > .grey {
+  background: #777777;
+}
+.panel-default > .blue {
+  background: #5D879E;
+}
+.panel-default > .dark-blue {
+  background: #2A3E46;
+}
+.panel-default > .green {
+  background: #859D56;
+}
 .tematica-table .table {
   margin-bottom: 5px;
 }
@@ -71,6 +83,9 @@ ul {
 }
 .dashboard-heading {
   padding-left: 15px;
+}
+.filter-wrapper {
+  display: none;
 }
 #navbar {
   display: none;
@@ -106,6 +121,9 @@ ul {
   background-color: #337ab7;
   border-color: #2e6da4;
 }
+.panel-default > .panel-heading {
+  color: white;
+}
 .panel-body .field {
   margin-bottom: 15px;
 }
@@ -118,7 +136,6 @@ ul {
 .worker-info-container {
   padding: 25px;
   border-bottom: 2px solid white;
-
 }
 
 /* collapsed sidebar styles */
@@ -293,6 +310,11 @@ ul {
 #search-users .btn {
   display: none;
 }
+.log-out-link {
+  position: relative;
+  top: 8px;
+  font-size: 16px;
+}
 
 /***************************************/
 /*************ESTILOS HOME************/
@@ -448,6 +470,10 @@ table tr td {
   border-radius: .25rem;
   margin-bottom: 20px;
   padding: 10px 20px;
+}
+#main-col .block.search-users {
+  border: none;
+  background: transparent;
 }
 
 

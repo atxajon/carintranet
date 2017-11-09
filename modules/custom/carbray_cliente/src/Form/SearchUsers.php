@@ -25,7 +25,6 @@ class SearchUsers extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $form['#attributes']['class'][] = 'block';
     $form['#attributes']['class'][] = 'margin-bottom-20';
     $form['#attached']['library'][] = 'carbray/carbray.client_search';
 
@@ -46,6 +45,9 @@ class SearchUsers extends FormBase {
       '#type' => 'submit',
       '#value' => $this->t('Search'),
       '#button_type' => 'primary',
+    );
+    $form['log_out'] = array(
+      '#markup' => '<a class="log-out-link pull-right" href="/user/logout">Log Out</a>',
     );
     return $form;
   }
