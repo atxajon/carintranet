@@ -42,13 +42,12 @@ class NewActuacionForm extends FormBase {
     $form['start'] = array(
       '#type' => 'button',
       '#value' => 'Empezar',
-      '#prefix' => '<div class="clearfix"><div class="pull-left crono-wrapper"><h2 id="crono" class="no-margin crono-heading pull-left">00:00:00</h2>',
+      '#prefix' => '<div class="pull-left clearfix timer-container"><div class="pull-left crono-wrapper"><h2 id="crono" class="no-margin crono-heading pull-left">00:00:00</h2>',
       '#attributes' => array('class' => array('btn-primary', 'btn-sm', 'margin-bottom-20')),
       '#suffix' => '</div></div>',
     );
 
     $form['timer'] = array(
-      '#title' => 'Minutos transcurridos',
       '#type' => 'textfield',
       '#description' => 'Edita el numero de minutos transcurridos.',
       '#required' => TRUE,

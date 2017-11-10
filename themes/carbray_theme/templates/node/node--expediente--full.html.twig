@@ -87,9 +87,9 @@
 
   <div{{ content_attributes.addClass('content') }}>
     <div class="row">
-      <div class="col-sm-5">
+      <div class="col-sm-8">
         <div class="panel panel-default">
-          <div class="panel-heading">
+          <div class="panel-heading grey">
             <h4>{{ 'Nueva actuacion'|trans }}</h4>
           </div>
           <div class="panel-body">
@@ -97,9 +97,9 @@
           </div>
         </div>
       </div>
-      <div class="col-sm-3">
+      <div class="col-sm-4">
         <div class="panel panel-default">
-          <div class="panel-heading">
+          <div class="panel-heading green">
             <h4>{{ 'Informacion del expediente'|trans }}</h4>
           </div>
           <div class="panel-body">
@@ -108,10 +108,8 @@
             {{ content.field_expediente_responsable }}
           </div>
         </div>
-      </div>
-      <div class="col-sm-4">
         <div class="panel panel-default">
-          <div class="panel-heading">
+          <div class="panel-heading blue">
             <h4>{{ 'Informacion del cliente'|trans }}</h4>
           </div>
           <div class="panel-body">
@@ -125,7 +123,7 @@
       </div>
     </div>
     <div class="panel panel-default">
-      <div class="panel-heading">
+      <div class="panel-heading red">
         <h4>{{ 'Actuaciones'|trans }}</h4>
       </div>
       <div class="panel-body">
@@ -133,11 +131,10 @@
       </div>
     </div>
     <div class="panel panel-default">
-      <div class="panel-heading">
-        <h4>{{ 'Notas expediente'|trans }}</h4>
+      <div class="panel-heading dark-blue clearfix">
+        <h4 class="pull-left">{{ 'Notas expediente'|trans }}</h4><div class="pull-right">{{ content.anadir_nota }}</div>
       </div>
       <div class="panel-body">
-        {{ content.anadir_nota }}
         {{ content.notas_table }}
       </div>
     </div>
