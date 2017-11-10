@@ -22,10 +22,10 @@ class PropuestaToDoc extends ControllerBase {
     $node = $storage->load($nid);
     $build = $view_builder->view($node, $view_mode);
     $output = render($build);
-    $filename = 'propuesta-' . $nid . '.docx';
-//    $c_type = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    $filename = 'propuesta-' . $nid . '.doc';
+    $c_type = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 //    $c_type = 'application/vnd.msword';
-    $c_type = 'application/msword';
+//    $c_type = 'application/msword';
     $render_array = [
       '#markup' => $output,
       '#attached' => array(
