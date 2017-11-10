@@ -80,7 +80,7 @@ ul {
 }
 .btn-primary {
   background: #777777;
-  border: 1px solid white;
+  border: none;
 }
 .logo {
   display: block;

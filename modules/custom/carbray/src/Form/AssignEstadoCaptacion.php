@@ -60,7 +60,7 @@ class AssignEstadoCaptacion extends FormBase {
     $form['submit'] = array(
       '#type' => 'submit',
       '#value' => 'Asignar como nuevo estado',
-      '#attributes' => array('class' => array('btn-warning', 'btn-sm')),
+      '#attributes' => array('class' => array('btn-primary', 'btn-sm')),
     );
     return $form;
   }
