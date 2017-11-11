@@ -231,7 +231,7 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
-  $extra['node']['expediente']['display']['client_fecha_alta'] = array(
+  $extra['node']['expediente']['display']['client_correo'] = array(
     'label' => t('Client fecha alta'),
     'description' => t('Client fecha alta.'),
     'weight' => 100,
@@ -933,11 +933,9 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         '#markup' => render($user_link),
       ];
     }
-    if ($display->getComponent('client_fecha_alta')) {
-      $fecha_alta_timestamp = strtotime($user->get('field_fecha_alta')->value);
-      $cliente_fecha_alta = date('d-M-Y', $fecha_alta_timestamp);
-      $build['client_fecha_alta'] = [
-        '#markup' => $cliente_fecha_alta,
+    if ($display->getComponent('client_correo')) {
+      $build['client_correo'] = [
+        '#markup' => $user->getEmail(),
       ];
     }
     if ($display->getComponent('client_telefono')) {
