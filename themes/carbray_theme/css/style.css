@@ -135,6 +135,10 @@ ul {
 .panel-default > .panel-heading {
   color: white;
 }
+.panel-heading .btn {
+  position: relative;
+  top: 5px;
+}
 .panel-body .field {
   margin-bottom: 15px;
 }
@@ -648,6 +652,15 @@ table tr td {
     width: 8%;
     position: relative;
     top: 24px;
+  }
+  .carbray-new-actuacion .form-type-managed-file {
+    float: left;
+    width: 400px;
+  }
+  .carbray-new-actuacion .create-actuacion {
+    float: right;
+    position: relative;
+    top: 26px;
   }
 }
 

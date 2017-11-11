@@ -82,7 +82,7 @@ class NewActuacionForm extends FormBase {
     $form['submit'] = array(
       '#type' => 'submit',
       '#value' => 'Añadir actuacion',
-      '#attributes' => array('class' => array('btn-primary', 'btn-sm')),
+      '#attributes' => array('class' => array('btn-primary', 'create-actuacion')),
     );
     return $form;
   }

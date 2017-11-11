@@ -1027,7 +1027,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
       $header = array(
         'Fecha creacion',
         'Actuacion',
-        'Tiempo (en Horas:Minutos)',
+        'Horas:Minutos',
         'Notas',
         'Documentacion',
         'Autor',
