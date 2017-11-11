@@ -714,7 +714,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
     if ($display->getComponent('client_pais')) {
       $cliente_pais = $user->get('field_pais')->value;
       $build['client_pais'] = [
-        '#markup' => $cliente_pais,
+        '#markup' => code_to_country($cliente_pais),
       ];
     }
     if ($display->getComponent('client_captador_edit_form')) {
@@ -949,7 +949,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
     if ($display->getComponent('client_pais')) {
       $cliente_pais = $user->get('field_pais')->value;
       $build['client_pais'] = [
-        '#markup' => $cliente_pais,
+        '#markup' => code_to_country($cliente_pais),
       ];
     }
 
