@@ -4,6 +4,9 @@ namespace Drupal\carbray_cliente\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\node\Entity\Node;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+
 
 /**
  * Class PropuestaPlantillaRef.
@@ -54,8 +57,13 @@ class PropuestaPlantillaRef extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $propuesta_plantilla_nid = $form_state->getValue('propuesta_ref');
-    $route = 'carbray_cliente.propuesta_to_doc';
-    $route_parameters = array('nid' => $propuesta_plantilla_nid);
-    $form_state->setRedirect($route, $route_parameters);
+
+    // Get the file for this propuesta plantilla nid and download it for user.
+    $propuesta_plantilla_node = Node::load($propuesta_plantilla_nid);
+    $uri = $propuesta_plantilla_node->field_propuesta_plantilla_doc->entity->getFileUri();
+    $content_disposition = 'attachment';
+
+    $response = new BinaryFileResponse($uri, 200, [], true, $content_disposition);
+    $form_state->setResponse($response);
   }
 }

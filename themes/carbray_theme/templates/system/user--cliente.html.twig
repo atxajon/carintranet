@@ -24,22 +24,11 @@
   {% if content %}
     <div class="row">
       <div class="col-sm-8">
-        <div class="panel panel-default">
-          <div class="panel-heading blue">
-            <h4>{{ 'Crear nueva captacion'|trans }}</h4>
-          </div>
-          <div class="panel-body">
-            {{ content.new_captacion }}
-          </div>
-        </div>
-      </div>
-      <div class="col-sm-4">
         <div class="panel panel-default cliente-info">
-          <div class="panel-heading blue">
-            <h4>{{ 'Informacion del cliente'|trans }}</h4>
+          <div class="panel-heading blue clearfix">
+            <h4 class="pull-left">{{ 'Informacion del cliente'|trans }}</h4><div class="pull-right"><a class="btn btn-warning margin-bottom-20" href="{{ edit_link }}">Editar cliente</a></div>
           </div>
           <div class="panel-body">
-            <a class="btn btn-warning margin-bottom-20" href="{{ edit_link }}">Editar cliente</a>
             {{ content.field_nombre}}
             {{ content.field_apellido }}
             {% if has_mail is not empty %}
@@ -57,8 +46,9 @@
     </div>
 
     <div class="panel panel-default">
-      <div class="panel-heading blue">
-        <h4>{{ 'Captaciones'|trans }}</h4>
+      <div class="panel-heading blue clearfix">
+        <h4 class="pull-left">{{ 'Captaciones'|trans }}</h4><div class="pull-right">{{ content.new_captacion }}</div>
+
       </div>
       <div class="panel-body">
         {{ content.captaciones }}
