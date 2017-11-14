@@ -364,7 +364,7 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
         '#theme' => 'button_modal',
         '#unique_id' => 'new-captacion-uid-' . $uid,
         '#button_text' => 'Nueva captacion',
-        '#button_classes' => 'btn btn-primary',
+        '#button_classes' => 'btn green btn-lg',
         '#modal_title' => t('Nueva captacion'),
         '#modal_content' => $form,
         '#has_plus' => TRUE,

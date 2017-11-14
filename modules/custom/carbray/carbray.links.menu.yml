@@ -1,5 +1,5 @@
 carbray.add_new_client:
-  title: 'Nuevo cliente'
+  title: 'Nuevo contacto'
   description: 'glyphicon glyphicon-user'
   route_name: carbray.add_user_form
   menu_name: worker-menu

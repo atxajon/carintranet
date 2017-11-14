@@ -29,25 +29,34 @@
             <h4 class="pull-left">{{ 'Informacion del cliente'|trans }}</h4><div class="pull-right"><a class="btn btn-warning margin-bottom-20" href="{{ edit_link }}">Editar cliente</a></div>
           </div>
           <div class="panel-body">
-            {{ content.field_nombre}}
-            {{ content.field_apellido }}
-            {% if has_mail is not empty %}
-              <div class="field"><div class="field--label">Email </div><div class="field--item">{{ mail }}</div></div>
-            {% endif %}
-            {{ content.field_fecha_alta }}
-            {{ content.field_telefono }}
-            {{ content.field_direccion }}
-            {{ content.field_pais }}
-            {{ content.field_fax }}
-            {{ content.field_procedencia }}
+            <div class="row">
+              <div class="col-sm-6">
+                {{ content.field_nombre}}
+                {{ content.field_apellido }}
+                {% if has_mail is not empty %}
+                  <div class="field"><div class="field--label">Email </div><div class="field--item">{{ mail }}</div></div>
+                {% endif %}
+                {{ content.field_fecha_alta }}
+              </div>
+              <div class="col-sm-6">
+                {{ content.field_telefono }}
+                {{ content.field_direccion }}
+                {{ content.field_pais }}
+                {{ content.field_fax }}
+                {{ content.field_procedencia }}
+              </div>
+            </div>
           </div>
         </div>
+      </div>
+      <div class="col-sm-4">
+        {{ content.new_captacion }}
       </div>
     </div>
 
     <div class="panel panel-default">
-      <div class="panel-heading blue clearfix">
-        <h4 class="pull-left">{{ 'Captaciones'|trans }}</h4><div class="pull-right">{{ content.new_captacion }}</div>
+      <div class="panel-heading blue">
+        <h4>{{ 'Captaciones'|trans }}</h4>
 
       </div>
       <div class="panel-body">

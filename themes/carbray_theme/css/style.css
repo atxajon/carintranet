@@ -63,19 +63,24 @@ ul {
 .panel-heading {
   text-shadow: 1px 1px 0px black;
 }
-.panel-default > .grey {
+.panel-default > .grey,
+.btn.grey {
   background: #777777;
 }
-.panel-default > .blue {
+.panel-default > .blue,
+.btn.blue {
   background: #5D879E;
 }
-.panel-default > .dark-blue {
+.panel-default > .dark-blue,
+.btn.dark-blue {
   background: #2A3E46;
 }
-.panel-default > .green {
+.panel-default > .green,
+.btn.green {
   background: #859D56;
 }
-.panel-default > .red {
+.panel-default > .red,
+.btn.red {
   background: #763332;
 }
 .tematica-table .table {
