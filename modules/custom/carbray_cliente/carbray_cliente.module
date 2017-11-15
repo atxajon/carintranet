@@ -338,16 +338,31 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
         $nota_node = Node::load($notas_nid);
         $author_uid = $nota_node->getOwnerId();
         $user = User::load($author_uid);
+
+        $edit_form = \Drupal::formBuilder()
+          ->getForm('Drupal\carbray_cliente\Form\EditNotaForm', $notas_nid);
+        $build['edit_nota_form'] = [
+          '#theme' => 'button_modal',
+          '#unique_id' => 'edit-nota_nid-' . $notas_nid,
+          '#button_text' => 'Editar nota',
+          '#button_classes' => 'btn btn-primary btn-sm',
+          '#modal_title' => t('Editar nota'),
+          '#modal_content' => $edit_form,
+          '#has_plus' => FALSE,
+        ];
+
         $rows[] = array(
           Markup::create($nota_node->get('field_nota_nota')->value),
           $user->getDisplayName(),
           date('d-M-Y H:m:s', $nota_node->created->value),
+          render($build['edit_nota_form']),
         );
       }
       $header = array(
         'Nota',
         'Autor',
         'Fecha creacion',
+        'Editar'
       );
       $build['notas_table'] = [
         '#type' => 'table',
@@ -858,16 +873,29 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         $nota_node = Node::load($notas_nid);
         $author_uid = $nota_node->getOwnerId();
         $user = User::load($author_uid);
+        $edit_form = \Drupal::formBuilder()
+          ->getForm('Drupal\carbray_cliente\Form\EditNotaForm', $notas_nid);
+        $build['edit_nota_form'] = [
+          '#theme' => 'button_modal',
+          '#unique_id' => 'edit-nota_nid-' . $notas_nid,
+          '#button_text' => 'Editar nota',
+          '#button_classes' => 'btn btn-primary btn-sm',
+          '#modal_title' => t('Editar nota'),
+          '#modal_content' => $edit_form,
+          '#has_plus' => FALSE,
+        ];
         $rows[] = array(
           Markup::create($nota_node->get('field_nota_nota')->value),
           $user->getDisplayName(),
           date('d-M-Y H:m:s', $nota_node->created->value),
+          render($build['edit_nota_form']),
         );
       }
       $header = array(
         'Nota',
         'Autor',
         'Fecha creacion',
+        'Editar',
       );
       $build['notas_table'] = [
         '#type' => 'table',
@@ -906,16 +934,29 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         $nota_node = Node::load($notas_nid);
         $author_uid = $nota_node->getOwnerId();
         $author = User::load($author_uid);
+        $edit_form = \Drupal::formBuilder()
+          ->getForm('Drupal\carbray_cliente\Form\EditNotaForm', $notas_nid);
+        $build['edit_nota_form'] = [
+          '#theme' => 'button_modal',
+          '#unique_id' => 'edit-nota_nid-' . $notas_nid,
+          '#button_text' => 'Editar nota',
+          '#button_classes' => 'btn btn-primary btn-sm',
+          '#modal_title' => t('Editar nota'),
+          '#modal_content' => $edit_form,
+          '#has_plus' => FALSE,
+        ];
         $rows[] = array(
           Markup::create($nota_node->get('field_nota_nota')->value),
           $author->getDisplayName(),
           date('d-M-Y H:m:s', $nota_node->created->value),
+          render($build['edit_nota_form']),
         );
       }
       $header = array(
         'Nota',
         'Autor',
         'Fecha creacion',
+        'Editar',
       );
       $build['notas_table'] = [
         '#type' => 'table',
