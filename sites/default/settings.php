@@ -775,3 +775,5 @@ $databases['default']['default'] = array (
 );
 $settings['install_profile'] = 'standard';
 $config_directories['sync'] = 'sites/default/files/config_mgrMqgG9CumQZyCUBg892OfiF2M6qLLTFrKQ51z24t6zHYLWKM6__dqhyQ2FxyHQd3J837mWCQ/sync';
+$settings['cache']['bins']['render'] = 'cache.backend.null';
+$settings['cache']['bins']['dynamic_page_cache'] = 'cache.backend.null';
