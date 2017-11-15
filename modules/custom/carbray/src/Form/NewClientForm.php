@@ -4,6 +4,7 @@
  * Contains \Drupal\carbray\Form\NewClientForm.
  */
 namespace Drupal\carbray\Form;
+
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\user\Entity\User;
@@ -84,7 +85,6 @@ class NewClientForm extends FormBase {
     );
 
 
-
     $form['submit'] = array(
       '#type' => 'submit',
       '#value' => 'Crear cliente',
@@ -100,11 +100,16 @@ class NewClientForm extends FormBase {
   public function validateForm(array &$form, FormStateInterface $form_state) {
     $email = $form_state->getValue('email');
     $unique_email = email_already_in_system($email);
-    if(filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+    if (filter_var($email, FILTER_VALIDATE_EMAIL) === FALSE) {
       $form_state->setErrorByName('email', t('The email address %mail is not valid.', array('%mail' => $email)));
     }
-    if($unique_email){
+    if ($unique_email) {
       $form_state->setErrorByName('email', t('A user with email address %mail already exists in the system. Please use a different email.', array('%mail' => $email)));
+    }
+
+    $telefono = $form_state->getValue('telefono');
+    if (strlen($telefono) < 6) {
+      $form_state->setErrorByName('telefono', t('El numero de telefono tiene que tener un minimo de 6 dígitos'));
     }
   }
 
@@ -154,7 +159,7 @@ class NewClientForm extends FormBase {
     // $user->activate();
 
     // More optionals to be considered...
-     $user->set('init', $email);
+    $user->set('init', $email);
     // $user->set("langcode", $lang);
     // $user->set("preferred_langcode", $lang);
     // $user->set("preferred_admin_langcode", $lang);
