@@ -59,6 +59,9 @@ class ClientesCaptacion extends BlockBase {
       '#rows' => $rows,
       '#empty' => t('Ningun cliente en captacion.'),
     );
+    // Disable caching...
+    $build['#cache']['max-age'] = 0;
+
     return $build;
   }
 }
