@@ -23,6 +23,9 @@ class ClientesProduccion extends BlockBase {
     $rows = [];
     foreach ($clientes as $cliente) {
       $cliente_data = \Drupal::entityTypeManager()->getStorage('user')->load($cliente->uid);
+      if (!$cliente_data) {
+        continue;
+      }
 
       $captacion_data = \Drupal::entityTypeManager()->getStorage('node')->load($cliente->captacion_nid);
       $estado_captacion = $captacion_data->get('field_captacion_estado_captacion')->entity;
