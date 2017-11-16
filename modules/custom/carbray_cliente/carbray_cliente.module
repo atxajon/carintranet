@@ -1053,6 +1053,18 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
           $minutes = $actuacion_node->get('field_actuacion_tiempo_en_seg')->value;
           $seconds = $minutes * 60;
 
+          $edit_form = \Drupal::formBuilder()
+            ->getForm('Drupal\carbray\Form\EditActuacionForm', $actuacion_nid->nid);
+          $build['edit_actuacion_form'] = [
+            '#theme' => 'button_modal',
+            '#unique_id' => 'edit-actuacion_nid-' . $actuacion_nid->nid,
+            '#button_text' => 'Editar actuacion',
+            '#button_classes' => 'btn btn-primary btn-sm',
+            '#modal_title' => t('Editar actuacion'),
+            '#modal_content' => $edit_form,
+            '#has_plus' => FALSE,
+          ];
+
           $rows[] = array(
             date('d-M-Y H:m:s', $actuacion_nid->created),
             $actuacion_nid->title,
@@ -1060,6 +1072,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
             Markup::create($actuacion_nid->field_nota_nota_value),
             $file_link,
             get_cliente_nombre($actuacion_nid->uid),
+            render($build['edit_actuacion_form']),
           );
         }
       }
@@ -1070,6 +1083,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         'Notas',
         'Documentacion',
         'Autor',
+        'Editar',
       );
       $build['view_actuaciones'] = [
         '#type' => 'table',
