@@ -64,7 +64,8 @@ class EditActuacionForm extends FormBase {
       '#rows' => 5,
       '#default_value' => ($nota_ref) ? $nota_node->get('field_nota_nota')->value : '',
     );
-
+    $fid = ($actuacion_node->get('field_actuacion_documentacion')->getValue()) ? $actuacion_node->get('field_actuacion_documentacion')->getValue() : '';
+    ksm($fid);
     $allowed_exts = array('jpg jpeg gif png txt doc xls xlsx pdf ppt pptx pps odt ods odp docx zip rar msg');
     $form['actuacion_file'] = array(
       '#type' => 'managed_file',
@@ -74,6 +75,7 @@ class EditActuacionForm extends FormBase {
       '#description' => t('Allowed Files - jpg jpeg gif png txt doc xls xlsx pdf ppt pptx pps odt ods odp docx zip rar msg'),
       '#upload_validators' => array('file_validate_extensions' => $allowed_exts),
       '#upload_location' => 'private://actuacion/',
+//      '#default_value' => ($fid) ? $fid[0]['target_id'] : '',
     );
 
     $form['submit'] = array(
@@ -106,9 +108,7 @@ class EditActuacionForm extends FormBase {
     $timer = $form_state->getValue('timer_min');
     $nota = $form_state->getValue('edit_nota');
 
-    // @todo: add file handling updating!
-
-//    $actuacion_file = $form_state->getValue('actuacion_file');
+    $actuacion_file = $form_state->getValue('actuacion_file');
 
     // Actuacion had a note already; open it up and edit with new value.
     if ($nota_nid) {
@@ -130,7 +130,7 @@ class EditActuacionForm extends FormBase {
     $actuacion->set('title', $title);
     $actuacion->set('field_actuacion_tiempo_en_seg', $timer);
     $actuacion->set('field_actuacion_nota', $nota_node->id());
-//    $actuacion->set('field_actuacion_documentacion', $actuacion_file);
+    $actuacion->set('field_actuacion_documentacion', $actuacion_file);
     $actuacion->save();
 
     drupal_set_message('Actuacion ' . $title . ' ha sido guardada');

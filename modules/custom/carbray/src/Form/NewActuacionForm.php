@@ -43,7 +43,7 @@ class NewActuacionForm extends FormBase {
       '#type' => 'button',
       '#value' => 'Empezar',
       '#prefix' => '<div class="pull-left clearfix timer-container"><div class="pull-left crono-wrapper"><h2 id="crono" class="no-margin crono-heading pull-left">00:00:00</h2>',
-      '#attributes' => array('class' => array('btn-primary', 'btn-sm', 'margin-bottom-20')),
+      '#attributes' => array('class' => array('btn-primary', 'margin-bottom-20')),
       '#suffix' => '</div></div>',
     );
 

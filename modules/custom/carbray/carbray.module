@@ -327,6 +327,9 @@ function _carbray_redirecter() {
   elseif (in_array('worker', $roles)) {
     $url = Url::fromUri('entity:node/2');
   }
+  elseif (in_array('secretaria', $roles)) {
+    $url = Url::fromUri('entity:node/1748');
+  }
   elseif (in_array('carbray_administrator', $roles)) {
     $url = Url::fromUri('entity:node/33');
   }
