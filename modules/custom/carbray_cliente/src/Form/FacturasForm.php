@@ -54,8 +54,8 @@ class FacturasForm extends FormBase {
     }
 
     $header = array(
-//      'cliente' => t('Cliente'),
-//      'captador' => t('Captador'),
+      'cliente' => t('Cliente'),
+      'captador' => t('Captador'),
       'nif' => t('NIF'),
       'iva' => t('IVA'),
       'precio' => t('Precio'),
@@ -66,7 +66,7 @@ class FacturasForm extends FormBase {
       '#header' => $header,
       '#options' => $options,
       '#js_select' => FALSE, // Don't want the select all checbox at the header.
-      '#empty' => t('Ninguna factura aún.'),
+      '#empty' => t('Ninguna factura sin pagar.'),
     );
 
     $form['submit'] = array(

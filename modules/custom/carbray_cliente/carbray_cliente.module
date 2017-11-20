@@ -1349,6 +1349,11 @@ function get_notas($id, $bundle) {
 function get_facturas($paid = FALSE) {
   $query = \Drupal::entityQuery('node')
     ->condition('type', 'factura');
-//    ->condition('field_first_name.value', 'jo', 'STARTS_WITH');
+  if ($paid) {
+    $query->condition('field_factura_pagada.value', 1);
+  }
+  else {
+    $query->condition('field_factura_pagada.value', 0);
+  }
   return $query->execute();
 }
