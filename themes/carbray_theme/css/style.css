@@ -171,6 +171,9 @@ ul {
   padding: 10px 25px 25px;
   border-bottom: 2px solid white;
 }
+.new-factura .form-inline .form-control {
+  display: block;
+}
 
 /* collapsed sidebar styles */
 @media screen and (max-width: 767px) {

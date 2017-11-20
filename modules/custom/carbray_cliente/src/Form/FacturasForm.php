@@ -54,8 +54,8 @@ class FacturasForm extends FormBase {
     }
 
     $header = array(
-      'cliente' => t('Cliente'),
-      'captador' => t('Captador'),
+//      'cliente' => t('Cliente'),
+//      'captador' => t('Captador'),
       'nif' => t('NIF'),
       'iva' => t('IVA'),
       'precio' => t('Precio'),
@@ -91,7 +91,7 @@ class FacturasForm extends FormBase {
     // We can use the array_filter function to give us only the selected items.
     $unpaid_factura_ids = array_filter($form_state->getValue('table'));
     foreach ($unpaid_factura_ids as $unpaid_factura_id) {
-      $factura_node = Node::load(key($unpaid_factura_id));
+      $factura_node = Node::load($unpaid_factura_id);
       $factura_node->set('field_factura_pagada', 1);
       $factura_node->save();
     }

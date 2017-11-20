@@ -778,13 +778,16 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
       elseif (in_array($estado_term->id(), $estados_tids_that_show_factura)) {
         // Client is on estado captacion '2'; deal with facturas.
         // Show button to create a factura.
+        $form = \Drupal::formBuilder()
+          ->getForm('Drupal\carbray_cliente\Form\NewFacturaForm', $nid);
         $build['take_action']['factura'] = [
-          '#type'      => 'link',
-          '#title'     => 'Crear Factura (pendiente de implementar)',
-          '#url'       => Url::fromRoute('carbray.add_user_form'),
-          '#attributes' => [
-            'class' => ['btn', 'btn-primary', 'btn-sm', 'margin-top']
-          ]
+          '#theme' => 'button_modal',
+          '#unique_id' => 'new-factura-for-captacion-' . $nid,
+          '#button_text' => 'Crear Factura',
+          '#button_classes' => 'btn btn-primary btn-sm margin-top-20',
+          '#modal_title' => t('Nueva factura'),
+          '#modal_content' => $form,
+          '#has_plus' => TRUE,
         ];
       }
       elseif (in_array($estado_term->id(), $estados_tids_that_show_expediente)) {
