@@ -811,14 +811,24 @@ function carbray_mail($key, &$message, $params) {
   switch ($key) {
     case'notify_secretaria_new_factura':
       $message['from'] = \Drupal::config('system.site')->get('mail');
-      $message['subject'] = t('Nueva factura creada.');
+      $message['subject'] = t('Nueva factura creada');
       $message['body'][] = carbray_emailer_new_factura($params);
+      break;
+    case'notify_captador_factura_paid':
+      $message['from'] = \Drupal::config('system.site')->get('mail');
+      $message['subject'] = t('Factura pagada');
+      $message['body'][] = carbray_emailer_factura_paid($params);
       break;
   }
 }
 
 function carbray_emailer_new_factura() {
   $output = "Tienes una nueva factura creada por revisar.";
+  return $output;
+}
+
+function carbray_emailer_factura_paid() {
+  $output = "La factura blah ha sido pagada.";
   return $output;
 }
 

@@ -7,6 +7,7 @@ namespace Drupal\carbray_cliente\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
+use Drupal\user\Entity\User;
 
 
 /**
@@ -91,9 +92,29 @@ class FacturasForm extends FormBase {
     // We can use the array_filter function to give us only the selected items.
     $unpaid_factura_ids = array_filter($form_state->getValue('table'));
     foreach ($unpaid_factura_ids as $unpaid_factura_id) {
+      // Update factura node field pagada to true.
       $factura_node = Node::load($unpaid_factura_id);
       $factura_node->set('field_factura_pagada', 1);
       $factura_node->save();
+      
+      // Notify abogados by email.
+      $factura_captacion = $factura_node->get('field_factura')->getValue();
+      $captacion_node = \Drupal::entityTypeManager()
+        ->getStorage('node')
+        ->load($factura_captacion[0]['target_id']);
+      $captacion_captadores = $captacion_node->get('field_captacion_captador')->getValue();
+      foreach ($captacion_captadores as $captacion_captador) {
+        $captador_user = User::load($captacion_captador['target_id']);
+        $captador_email = $captador_user->getEmail();
+        $to = $captador_email;
+        $mailManager = \Drupal::service('plugin.manager.mail');
+        $module = 'carbray';
+        $langcode = \Drupal::currentUser()->getPreferredLangcode();
+        $sent = $mailManager->mail($module, 'notify_captador_factura_paid', $to, $langcode);
+        $mssg = ($sent) ? 'Email sent to abogado captador as a factura has been marked as paid by secretaria' : '';
+        \Drupal::logger('carbray')->warning($mssg);
+      }
+
     }
     drupal_set_message('Facturas marcadas como pagadas.');
   }
