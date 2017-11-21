@@ -96,7 +96,7 @@ class FacturasForm extends FormBase {
       $factura_node = Node::load($unpaid_factura_id);
       $factura_node->set('field_factura_pagada', 1);
       $factura_node->save();
-      
+
       // Notify abogados by email.
       $factura_captacion = $factura_node->get('field_factura')->getValue();
       $captacion_node = \Drupal::entityTypeManager()

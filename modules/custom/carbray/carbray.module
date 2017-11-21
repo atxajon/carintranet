@@ -15,6 +15,8 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\user\Entity\User;
 use Drupal\carbray\ProgressBar;
 
+define('REROUTE_EMAIL_ADDRESS', 'jon.atxa@bondmason.com');
+
 
 /**
  * Implements hook_theme().
@@ -832,3 +834,12 @@ function carbray_emailer_factura_paid() {
   return $output;
 }
 
+/**
+ * Implements hook_mail_alter().
+ */
+function carbray_mail_alter(&$message) {
+
+  $message['subject'] .= ' {Email from ' . $_SERVER['HTTP_HOST'] . ' environment intended for user ' . $message['to'] . ' }';
+  // set 'To' field to dev email account, so Drupal won't email live users.
+  $message['to'] = REROUTE_EMAIL_ADDRESS;
+}
