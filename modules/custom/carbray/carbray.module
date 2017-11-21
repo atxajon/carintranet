@@ -469,9 +469,15 @@ function email_already_in_system($email) {
  *    Flags whether the query should bring results only for active users.
  * @return mixed
  */
-function get_carbray_workers($just_active = FALSE) {
+function get_carbray_workers($just_active = FALSE, $by_role = '') {
   $db = \Drupal::database();
-  $sql = "SELECT uid, mail FROM users_field_data ufd INNER JOIN user__roles ur on ur.entity_id = ufd.uid WHERE roles_target_id = 'carbray_administrator' OR roles_target_id = 'worker'";
+  $sql = "SELECT uid, mail FROM users_field_data ufd INNER JOIN user__roles ur on ur.entity_id = ufd.uid";
+  if ($by_role) {
+    $sql .= " WHERE roles_target_id = 'secretaria'";
+  }
+  else {
+    $sql .= " WHERE roles_target_id = 'carbray_administrator' OR roles_target_id = 'worker'";
+  }
   if ($just_active) {
     $sql .= ' AND status = 1';
   }
@@ -793,3 +799,26 @@ function code_to_country($code) {
     return $countryList[$code];
   }
 }
+
+/**
+ * Implements hook_mail().
+ */
+function carbray_mail($key, &$message, $params) {
+
+  $message['headers']['MIME-Version'] = '1.0';
+  $message['headers']['Content-Type'] = 'multipart/mixed; text/html; charset=UTF-8; format=flowed;';
+
+  switch ($key) {
+    case'notify_secretaria_new_factura':
+      $message['from'] = \Drupal::config('system.site')->get('mail');
+      $message['subject'] = t('Nueva factura creada.');
+      $message['body'][] = carbray_emailer_new_factura($params);
+      break;
+  }
+}
+
+function carbray_emailer_new_factura() {
+  $output = "Tienes una nueva factura creada por revisar.";
+  return $output;
+}
+

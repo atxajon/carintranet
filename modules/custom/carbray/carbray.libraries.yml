@@ -23,3 +23,10 @@ carbray.client_search:
     js/client_search.js: {}
   dependencies:
      - core/jquery
+
+factura_calculator:
+  version: 1.x
+  js:
+    js/factura_calculator.js: {}
+  dependencies:
+     - core/jquery
