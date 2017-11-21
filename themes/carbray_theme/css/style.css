@@ -387,14 +387,12 @@ ul {
 #block-clientescaptacion a.btn {
   background: #4f8edc;
   border-color: none;
-  font-weight: 700;
   transition: 0.5s;
 }
 
 #block-clientescaptacion a.btn:hover {
   background: #4172af;
   border-color: none;
-  font-weight: 700;
   transition: 0.5s;
 }
 
@@ -424,22 +422,18 @@ ul {
 #block-clientesproduccion a.btn {
   background: #4f8edc;
   border-color: #4f8edc;
-  font-weight: 700;
   transition: 0.5s;
 }
 
 #block-clientesproduccion a.btn:hover {
   background: #4172af;
   border-color: #4172af;
-  font-weight: 700;
   transition: 0.5s;
 }
 
 table tr td {
   vertical-align: inherit !important;
 }
-
-
 
 .row {
   margin-bottom: 20px;

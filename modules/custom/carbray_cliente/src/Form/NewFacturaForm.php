@@ -127,9 +127,10 @@ class NewFacturaForm extends FormBase {
     foreach ($secretarias as $secretaria) {
       $to = $secretaria;
       $mailManager = \Drupal::service('plugin.manager.mail');
-      $module = 'bm_emailer';
+      $module = 'carbray';
       $langcode = \Drupal::currentUser()->getPreferredLangcode();
-      $mailManager->mail($module, 'notify_secretaria_new_factura', $to, $langcode);
+      $sent = $mailManager->mail($module, 'notify_secretaria_new_factura', $to, $langcode);
+      \Drupal::logger('carbray')->warning(print_r($sent));
     }
 
     drupal_set_message('Factura creada');
