@@ -130,7 +130,8 @@ class NewFacturaForm extends FormBase {
       $module = 'carbray';
       $langcode = \Drupal::currentUser()->getPreferredLangcode();
       $sent = $mailManager->mail($module, 'notify_secretaria_new_factura', $to, $langcode);
-      \Drupal::logger('carbray')->warning(print_r($sent));
+      $mssg = ($sent) ? 'Email sent to users of role secretaria as a new factura has been created' : '';
+      \Drupal::logger('carbray')->warning($mssg);
     }
 
     drupal_set_message('Factura creada');

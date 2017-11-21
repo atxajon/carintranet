@@ -64,8 +64,13 @@ class EditActuacionForm extends FormBase {
       '#rows' => 5,
       '#default_value' => ($nota_ref) ? $nota_node->get('field_nota_nota')->value : '',
     );
+
+    // Get default value for uploaded file if exists.
     $fid = ($actuacion_node->get('field_actuacion_documentacion')->getValue()) ? $actuacion_node->get('field_actuacion_documentacion')->getValue() : '';
-    ksm($fid);
+    $default_value_file = [];
+    if ($fid) {
+      $default_value_file = array($fid[0]['target_id']);
+    }
     $allowed_exts = array('jpg jpeg gif png txt doc xls xlsx pdf ppt pptx pps odt ods odp docx zip rar msg');
     $form['actuacion_file'] = array(
       '#type' => 'managed_file',
@@ -75,7 +80,7 @@ class EditActuacionForm extends FormBase {
       '#description' => t('Allowed Files - jpg jpeg gif png txt doc xls xlsx pdf ppt pptx pps odt ods odp docx zip rar msg'),
       '#upload_validators' => array('file_validate_extensions' => $allowed_exts),
       '#upload_location' => 'private://actuacion/',
-//      '#default_value' => ($fid) ? $fid[0]['target_id'] : '',
+      '#default_value' => $default_value_file,
     );
 
     $form['submit'] = array(
@@ -86,7 +91,7 @@ class EditActuacionForm extends FormBase {
     $form['delete'] = array(
       '#type' => 'submit',
       '#value' => 'Eliminar actuacion',
-      '#attributes' => array('class' => array('btn-warning', 'delete-actuacion')),
+      '#attributes' => array('class' => array('btn-danger', 'delete-actuacion')),
       '#submit' => array('::deleteSubmit'),
     );
     return $form;

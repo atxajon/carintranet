@@ -72,9 +72,8 @@
   Drupal.behaviors.delete_actuacion = {
     attach: function (context, settings) {
       $('.delete-actuacion').on( "click", function() {
-        if (confirm('Atención: esto eliminará la actuacion, estás seguro?')) {
+        if (confirm('Atención: esto eliminará la actuacion. Quieres proceder?')) {
           $(this).parent('.carbray-edit-actuacion').submit();
-          //document.getElementById('delete-form').submit();
         } else {
           return false;
         }
