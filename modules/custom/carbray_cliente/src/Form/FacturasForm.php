@@ -102,6 +102,17 @@ class FacturasForm extends FormBase {
       $captacion_node = \Drupal::entityTypeManager()
         ->getStorage('node')
         ->load($factura_captacion[0]['target_id']);
+
+      $captacion_uid = $captacion_node->get('field_captacion_cliente')
+        ->getValue();
+      $cliente_data = \Drupal::entityTypeManager()
+        ->getStorage('user')
+        ->load($captacion_uid[0]['target_id']);
+      $params = [
+        'cliente' => print_cliente_link($cliente_data, FALSE),
+        'nif' => $factura_node->get('field_factura_nif')->value,
+      ];
+
       $captacion_captadores = $captacion_node->get('field_captacion_captador')->getValue();
       foreach ($captacion_captadores as $captacion_captador) {
         $captador_user = User::load($captacion_captador['target_id']);
@@ -110,7 +121,7 @@ class FacturasForm extends FormBase {
         $mailManager = \Drupal::service('plugin.manager.mail');
         $module = 'carbray';
         $langcode = \Drupal::currentUser()->getPreferredLangcode();
-        $sent = $mailManager->mail($module, 'notify_captador_factura_paid', $to, $langcode);
+        $sent = $mailManager->mail($module, 'notify_captador_factura_paid', $to, $langcode, $params);
         $mssg = ($sent) ? 'Email sent to abogado captador as a factura has been marked as paid by secretaria' : '';
         \Drupal::logger('carbray')->warning($mssg);
       }

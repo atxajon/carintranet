@@ -824,13 +824,13 @@ function carbray_mail($key, &$message, $params) {
   }
 }
 
-function carbray_emailer_new_factura() {
-  $output = "Tienes una nueva factura creada por revisar.";
+function carbray_emailer_new_factura($params) {
+  $output = "Factura " . $params['nif'] . " creada por " . $params['captador'] . " pendiente de revisioón.";
   return $output;
 }
 
-function carbray_emailer_factura_paid() {
-  $output = "La factura blah ha sido pagada.";
+function carbray_emailer_factura_paid($params) {
+  $output = "La factura " . $params['nif'] . " del cliente " . $params['cliente'] . " ha sido pagada.";
   return $output;
 }
 

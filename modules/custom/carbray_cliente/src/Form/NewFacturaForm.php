@@ -7,7 +7,7 @@ namespace Drupal\carbray_cliente\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
-
+use Drupal\user\Entity\User;
 
 /**
  * NewFacturaForm form.
@@ -85,6 +85,10 @@ class NewFacturaForm extends FormBase {
       '#type' => 'hidden',
       '#value' => $captacion_nid,
     );
+    $form['captador_uid'] = array(
+      '#type' => 'hidden',
+      '#value' => $uid = \Drupal::currentUser()->id(),
+    );
     $form['submit'] = array(
       '#type' => 'submit',
       '#value' => 'Crear factura',
@@ -112,6 +116,8 @@ class NewFacturaForm extends FormBase {
     $total = $form_state->getValue('importe_total');
     $servicio = $form_state->getValue('servicio');
     $captacion_nid = $form_state->getValue('captacion_nid');
+    $captador_uid = $form_state->getValue('captador_uid');
+    $captador_user = User::load($captador_uid);
 
     $factura_node = Node::create(['type' => 'factura']);
     $factura_node->set('title', 'Factura para captacion id ' . $captacion_nid);
@@ -121,6 +127,10 @@ class NewFacturaForm extends FormBase {
     $factura_node->set('field_factura', $captacion_nid);
     $factura_node->enforceIsNew();
     $factura_node->save();
+    $params = [
+      'nif' => $nif,
+      'captador' => $captador_user->get('field_nombre')->value . ' ' . $captador_user->get('field_apellido')->value,
+    ];
 
     // Send email to notify users with role secretaria.
     $secretarias = get_carbray_workers(TRUE, 'secretaria');
@@ -129,7 +139,7 @@ class NewFacturaForm extends FormBase {
       $mailManager = \Drupal::service('plugin.manager.mail');
       $module = 'carbray';
       $langcode = \Drupal::currentUser()->getPreferredLangcode();
-      $sent = $mailManager->mail($module, 'notify_secretaria_new_factura', $to, $langcode);
+      $sent = $mailManager->mail($module, 'notify_secretaria_new_factura', $to, $langcode, $params);
       $mssg = ($sent) ? 'Email sent to users of role secretaria as a new factura has been created' : '';
       \Drupal::logger('carbray')->warning($mssg);
     }
