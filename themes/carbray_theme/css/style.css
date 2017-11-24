@@ -567,6 +567,14 @@ table tr td {
   width: 275px;
   margin-top: 0;
 }
+.bordered {
+  border: 1px solid #d1d1d1;
+  padding: 20px;
+}
+/* Set appropriate editor heights based on the rows attribute. */
+textarea[rows="3"] + .cke .cke_contents {
+  height: 100px !important;
+}
 
 @media screen and (min-width: 992px) {
   .carbray-new-client .form-item,
@@ -677,6 +685,28 @@ table tr td {
     float: right;
     position: relative;
     top: 26px;
+  }
+  .new-factura .form-item-cliente,
+  .new-factura .form-item-email,
+  .new-factura .form-item-telefono,
+  .new-factura .form-item-nif {
+    float: left;
+    width: 48%;
+    margin-right: 1%;
+  }
+  .new-factura .form-item-precio,
+  .new-factura .form-wrapper,
+  .new-factura .form-item-importe-total {
+    float: left;
+    width: 32%;
+    margin-right: 1%;
+  }
+  .new-factura legend {
+    display: none;
+    border: none;
+  }
+  .new-factura .form-item-provision-fondos {
+    clear: both;
   }
 }
 

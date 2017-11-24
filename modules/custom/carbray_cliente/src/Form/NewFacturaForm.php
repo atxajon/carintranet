@@ -54,11 +54,11 @@ class NewFacturaForm extends FormBase {
       '#title' => 'NIF',
       '#required' => TRUE,
     );
-    $form['servicio'] = array(
-      '#title' => 'Servicio',
+    $form['direccion'] = array(
+      '#title' => 'Direccion',
       '#type' => 'text_format',
       '#format' => 'basic_html',
-      '#rows' => 5,
+      '#rows' => 3,
     );
     $form['precio'] = array(
       '#type' => 'number',
@@ -66,6 +66,7 @@ class NewFacturaForm extends FormBase {
       '#default_value' => 0,
       '#min' => 0,
       '#step' => 0.01,
+      '#prefix' => '<div class="bordered clearfix margin-top-20 margin-bottom-20"',
     );
     $form['iva'] = [
       '#type' => 'radios',
@@ -77,6 +78,14 @@ class NewFacturaForm extends FormBase {
     $form['importe_total'] = array(
       '#type' => 'number',
       '#title' => 'Importe total',
+      '#default_value' => 0,
+      '#min' => 0,
+      '#step' => 0.01,
+      '#suffix' => '</div>',
+    );
+    $form['provision_fondos'] = array(
+      '#type' => 'number',
+      '#title' => 'Provision fondos',
       '#default_value' => 0,
       '#min' => 0,
       '#step' => 0.01,
@@ -114,7 +123,8 @@ class NewFacturaForm extends FormBase {
     $precio = $form_state->getValue('precio');
     $iva = $form_state->getValue('iva');
     $total = $form_state->getValue('importe_total');
-    $servicio = $form_state->getValue('servicio');
+    $direccion = $form_state->getValue('direccion');
+    $provision_fondos = $form_state->getValue('provision_fondos');
     $captacion_nid = $form_state->getValue('captacion_nid');
     $captador_uid = $form_state->getValue('captador_uid');
     $captador_user = User::load($captador_uid);
@@ -123,7 +133,9 @@ class NewFacturaForm extends FormBase {
     $factura_node->set('title', 'Factura para captacion id ' . $captacion_nid);
     $factura_node->set('field_factura_nif', $nif);
     $factura_node->set('field_factura_iva', $iva);
+    $factura_node->set('field_factura_direccion', $direccion);
     $factura_node->set('field_factura_precio', $total);
+    $factura_node->set('field_factura_provision_de_fondo', $provision_fondos);
     $factura_node->set('field_factura', $captacion_nid);
     $factura_node->enforceIsNew();
     $factura_node->save();
