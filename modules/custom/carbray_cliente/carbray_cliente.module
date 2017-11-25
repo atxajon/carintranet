@@ -1366,7 +1366,7 @@ function get_facturas($paid = FALSE) {
 function get_facturas_mis_clientes($captador_uid) {
   $db = \Drupal::database();
   $sql = "SELECT entity_id FROM node__field_factura ff
-WHERE field_factura_target_id IN (SELECT entity_id FROM node__field_captacion_captador WHERE field_captacion_captador_target_id = :captador_uid)";
+WHERE field_factura_target_id IN (SELECT entity_id FROM node__field_captacion_captador WHERE field_captacion_captador_target_id = :captador_uid) ORDER BY entity_id DESC";
   $my_facturas = $db->query($sql, [':captador_uid' => $captador_uid])->fetchAll();
   return $my_facturas;
 }

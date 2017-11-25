@@ -44,6 +44,7 @@ class FacturasCaptador extends BlockBase {
           ->getValue()),
         'iva' => $iva,
         'precio' => $factura_node->get('field_factura_precio')->value,
+        'pagada' => ($factura_node->get('field_factura_pagada')->value) ? 'Pagada' : 'No pagada',
       );
     }
 
@@ -53,6 +54,7 @@ class FacturasCaptador extends BlockBase {
       'captador' => t('Captador'),
       'iva' => t('IVA'),
       'precio' => t('Precio'),
+      'pagada' => t('Pagada?'),
     );
     $build['heading'] = [
       '#markup' => '<h2>Facturas de mis clientes</h2>',
