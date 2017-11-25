@@ -15,7 +15,7 @@
           maxheight = ($(this).outerHeight() > maxheight ? $(this).outerHeight() : maxheight);
         });
         // apply the height to all cols in this set
-        $(this).find('.panel-body').height(maxheight);
+        $(this).find('.col-sm-4 > .panel > .panel-body').height(maxheight);
         // reset the maxheight to make it ready for next colSet iteration
         maxheight = 0;
       });

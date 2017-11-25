@@ -36,6 +36,7 @@ class NewFacturaForm extends FormBase {
       '#title' => 'Cliente',
       '#default_value' => $cliente_data->get('field_nombre')->value . ' ' . $cliente_data->get('field_apellido')->value,
       '#disabled' => TRUE,
+      '#prefix' => '<div class="clearfix">',
     );
     $form['email'] = array(
       '#type' => 'textfield',
@@ -53,29 +54,84 @@ class NewFacturaForm extends FormBase {
       '#type' => 'textfield',
       '#title' => 'NIF',
       '#required' => TRUE,
+      '#suffix' => '</div>',
     );
+
+    $i = 0;
+    $name_field = $form_state->get('num_names');
+    $amount = $name_field;
+    $form['#tree'] = TRUE;
+    $form['names_fieldset'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Servicios'),
+      '#prefix' => '<div id="names-fieldset-wrapper" class="clearfix margin-top-20 margin-bottom-20">',
+      '#suffix' => '</div>',
+    ];
+    if (empty($name_field)) {
+      $name_field = $form_state->set('num_names', 1);
+      $amount = 1;
+    }
+
+    for ($i = 0; $i < $amount; $i++) {
+      $form['names_fieldset']['name'][$i] = [
+        '#type' => 'textfield',
+        '#title' => t('Servicio'),
+      ];
+    }
+    $form['actions'] = [
+      '#type' => 'actions',
+    ];
+    $form['names_fieldset']['actions']['add_name'] = [
+      '#type' => 'submit',
+      '#value' => t('Añadir servicio'),
+      '#submit' => array('::addOne'),
+      '#ajax' => [
+        'callback' => '::addmoreCallback',
+        'wrapper' => 'names-fieldset-wrapper',
+      ],
+    ];
+    if ($amount > 1) {
+      $form['names_fieldset']['actions']['remove_name'] = [
+        '#type' => 'submit',
+        '#value' => t('Borrar servicio'),
+        '#submit' => array('::removeCallback'),
+        '#ajax' => [
+          'callback' => '::addmoreCallback',
+          'wrapper' => 'names-fieldset-wrapper',
+        ],
+      ];
+    }
+    $form_state->setCached(FALSE);
+
+
     $form['direccion'] = array(
       '#title' => 'Direccion',
       '#type' => 'text_format',
       '#format' => 'basic_html',
       '#rows' => 3,
     );
-    $form['precio'] = array(
+    $form['coste_fieldset'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Importe factura'),
+      '#prefix' => '<div id="importe-factura-wrapper" class="margin-top-20 margin-bottom-20">',
+      '#suffix' => '</div>',
+    ];
+    $form['coste_fieldset']['precio'] = array(
       '#type' => 'number',
       '#title' => 'Coste',
       '#default_value' => 0,
       '#min' => 0,
       '#step' => 0.01,
-      '#prefix' => '<div class="bordered clearfix margin-top-20 margin-bottom-20"',
+      '#prefix' => '<div class="clearfix margin-top-20 margin-bottom-20"',
     );
-    $form['iva'] = [
+    $form['coste_fieldset']['iva'] = [
       '#type' => 'radios',
       '#title' => t('IVA 21%'),
       '#options' => array(0 => $this->t('Sin IVA'), 1 => $this->t('Con IVA')),
       '#default_value' => 1,
       '#required' => TRUE,
     ];
-    $form['importe_total'] = array(
+    $form['coste_fieldset']['importe_total'] = array(
       '#type' => 'number',
       '#title' => 'Importe total',
       '#default_value' => 0,
@@ -113,6 +169,42 @@ class NewFacturaForm extends FormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
+  }
+
+  /**
+   * Callback for both ajax-enabled buttons.
+   *
+   * Selects and returns the fieldset with the names in it.
+   */
+  public function addmoreCallback(array &$form, FormStateInterface $form_state) {
+    $name_field = $form_state->get('num_names');
+    return $form['names_fieldset'];
+  }
+
+  /**
+   * Submit handler for the "add-one-more" button.
+   *
+   * Increments the max counter and causes a rebuild.
+   */
+  public function addOne(array &$form, FormStateInterface $form_state) {
+    $name_field = $form_state->get('num_names');
+    $add_button = $name_field + 1;
+    $form_state->set('num_names', $add_button);
+    $form_state->setRebuild();
+  }
+
+  /**
+   * Submit handler for the "remove one" button.
+   *
+   * Decrements the max counter and causes a form rebuild.
+   */
+  public function removeCallback(array &$form, FormStateInterface $form_state) {
+    $name_field = $form_state->get('num_names');
+    if ($name_field > 1) {
+      $remove_button = $name_field - 1;
+      $form_state->set('num_names', $remove_button);
+    }
+    $form_state->setRebuild();
   }
 
   /**

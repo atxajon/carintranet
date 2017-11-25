@@ -705,7 +705,7 @@ textarea[rows="3"] + .cke .cke_contents {
     margin-right: 1%;
   }
   .new-factura .form-item-precio,
-  .new-factura .form-wrapper,
+  .new-factura #edit-iva--wrapper,
   .new-factura .form-item-importe-total {
     float: left;
     width: 32%;
