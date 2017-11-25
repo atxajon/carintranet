@@ -54,11 +54,14 @@ class FacturasCaptador extends BlockBase {
       'iva' => t('IVA'),
       'precio' => t('Precio'),
     );
-    $build = array(
+    $build['heading'] = [
+      '#markup' => '<h2>Facturas de mis clientes</h2>',
+    ];
+    $build['table'] = array(
       '#type' => 'table',
       '#header' => $header,
       '#rows' => $rows,
-      '#empty' => t('Ninguna factura pagada.'),
+      '#empty' => t('Ninguna factura aún.'),
     );
     // Disable caching...
     $build['#cache']['max-age'] = 0;
