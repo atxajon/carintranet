@@ -6,7 +6,7 @@ use Drupal\Core\Block\BlockBase;
 
 
 /**
- * Provides a 'Facturas' block.
+ * Provides a 'Facturas sin pagar' block.
  *
  * @Block(
  *  id = "facturas",
