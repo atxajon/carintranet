@@ -704,9 +704,9 @@ textarea[rows="3"] + .cke .cke_contents {
     width: 48%;
     margin-right: 1%;
   }
-  .new-factura .form-item-precio,
-  .new-factura #edit-iva--wrapper,
-  .new-factura .form-item-importe-total {
+  .new-factura .form-item-coste-fieldset-precio,
+  .new-factura #edit-coste-fieldset-iva--wrapper,
+  .new-factura .form-item-coste-fieldset-importe-total {
     float: left;
     width: 32%;
     margin-right: 1%;
@@ -717,6 +717,11 @@ textarea[rows="3"] + .cke .cke_contents {
   }
   .new-factura .form-item-provision-fondos {
     clear: both;
+  }
+  #edit-coste-fieldset .panel-title,
+  #edit-names-fieldset .panel-title {
+    color: black;
+    text-shadow: none;
   }
 }
 

@@ -75,7 +75,8 @@ class NewFacturaForm extends FormBase {
     for ($i = 0; $i < $amount; $i++) {
       $form['names_fieldset']['name'][$i] = [
         '#type' => 'textfield',
-        '#title' => t('Servicio'),
+        '#title' => t('Servicio / Coste'),
+        '#description' => t('Introduce la descripcion del servicio seguido del costo del mismo en este campo.')
       ];
     }
     $form['actions'] = [
@@ -85,6 +86,11 @@ class NewFacturaForm extends FormBase {
       '#type' => 'submit',
       '#value' => t('Añadir servicio'),
       '#submit' => array('::addOne'),
+      '#attributes' => [
+        'class' => [
+          'btn-sm',
+        ],
+      ],
       '#ajax' => [
         'callback' => '::addmoreCallback',
         'wrapper' => 'names-fieldset-wrapper',
@@ -95,6 +101,12 @@ class NewFacturaForm extends FormBase {
         '#type' => 'submit',
         '#value' => t('Borrar servicio'),
         '#submit' => array('::removeCallback'),
+        '#attributes' => [
+          'class' => [
+            'btn-sm',
+            'btn-danger',
+          ],
+        ],
         '#ajax' => [
           'callback' => '::addmoreCallback',
           'wrapper' => 'names-fieldset-wrapper',
