@@ -225,7 +225,7 @@ class NewFacturaForm extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $nif = $form_state->getValue('nif');
     $precio = $form_state->getValue('precio');
-    $iva = $form_state->getValue('iva');
+    $iva = $form_state->getValue(array('coste_fieldset', 'iva'));
     $servicios = $form_state->getValue(array('names_fieldset', 'name'));
     $total = $form_state->getValue(array('coste_fieldset', 'importe_total'));
     $direccion = $form_state->getValue('direccion');
@@ -235,7 +235,7 @@ class NewFacturaForm extends FormBase {
     $captador_user = User::load($captador_uid);
 
     $factura_node = Node::create(['type' => 'factura']);
-    $factura_node->set('title', 'Factura para captacion id ' . $captacion_nid);
+    $factura_node->set('title', 'Factura con NIF ' . $nif . ' para captacion id ' . $captacion_nid);
     $factura_node->set('field_factura_nif', $nif);
     foreach ($servicios as $servicio) {
       $factura_node->field_factura_servicio->appendItem($servicio);
