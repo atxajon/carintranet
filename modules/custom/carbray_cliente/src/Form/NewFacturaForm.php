@@ -226,7 +226,8 @@ class NewFacturaForm extends FormBase {
     $nif = $form_state->getValue('nif');
     $precio = $form_state->getValue('precio');
     $iva = $form_state->getValue('iva');
-    $total = $form_state->getValue('importe_total');
+    $servicios = $form_state->getValue(array('names_fieldset', 'name'));
+    $total = $form_state->getValue(array('coste_fieldset', 'importe_total'));
     $direccion = $form_state->getValue('direccion');
     $provision_fondos = $form_state->getValue('provision_fondos');
     $captacion_nid = $form_state->getValue('captacion_nid');
@@ -236,6 +237,10 @@ class NewFacturaForm extends FormBase {
     $factura_node = Node::create(['type' => 'factura']);
     $factura_node->set('title', 'Factura para captacion id ' . $captacion_nid);
     $factura_node->set('field_factura_nif', $nif);
+    foreach ($servicios as $servicio) {
+      $factura_node->field_factura_servicio->appendItem($servicio);
+    }
+    // @todo: iva not being saved?
     $factura_node->set('field_factura_iva', $iva);
     $factura_node->set('field_factura_direccion', $direccion);
     $factura_node->set('field_factura_precio', $total);
