@@ -37,7 +37,10 @@ function field_group_field_ui_form_params($form, \Drupal\Core\Entity\EntityDispl
   $params->parents = array();
   foreach ($params->groups as $name => $group) {
     foreach ($group->children as $child) {
-      $params->parents[$child] = $name;
+      // Field UI js sometimes can trigger an endless loop. Check if the parent of this field is not a child.
+      if ($child !== $group->parent_name) {
+        $params->parents[$child] = $name;
+      }
     }
   }
 
@@ -121,6 +124,7 @@ function field_group_field_ui_display_form_alter(&$form, FormStateInterface $for
   $formatter_options = field_group_field_formatter_options($params->context);
 
   $refresh_rows = isset($form_state_values['refresh_rows']) ? $form_state_values['refresh_rows'] : (isset($form_state->getUserInput()['refresh_rows']) ? $form_state->getUserInput()['refresh_rows'] : NULL);
+
   // Create the group rows and check actions.
   foreach ($form['#fieldgroups'] as $name) {
     $group = &$field_group_form_state[$name];
@@ -438,6 +442,11 @@ function field_group_field_overview_submit($form, FormStateInterface $form_state
 
       $group = $groups[$group_name];
       $group->label = $field_group_form_state[$group_name]->label;
+
+      // Sometimes field UI does a fuckup if people drag to fast when switching nested values.
+      // This results in an endless loop => Cleanup before saving.
+      //unset($children[$group_name][$form_values[$group_name]['parent']]);
+
       $group->children = array_keys($children[$group_name]);
       $group->parent_name = $form_values[$group_name]['parent'];
       $group->weight = $form_values[$group_name]['weight'];
