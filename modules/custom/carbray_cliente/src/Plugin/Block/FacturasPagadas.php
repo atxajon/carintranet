@@ -44,6 +44,7 @@ class FacturasPagadas extends BlockBase {
         'nif' => $factura_node->get('field_factura_nif')->value,
         'iva' => $iva,
         'precio' => $factura_node->get('field_factura_precio')->value,
+        'fecha' => date('d-m-Y H:i:s', $factura_node->created->value),
       );
     }
 
@@ -53,6 +54,7 @@ class FacturasPagadas extends BlockBase {
       'nif' => t('NIF'),
       'iva' => t('IVA'),
       'precio' => t('Precio'),
+      'fecha' => t('Fecha creacion'),
     );
     $build = array(
       '#type' => 'table',

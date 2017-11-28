@@ -10,9 +10,6 @@ use Drupal\node\Entity\Node;
 use Drupal\user\Entity\User;
 
 
-/**
- * ArchiveCaptacion form.
- */
 class FacturasForm extends FormBase {
   /**
    * {@inheritdoc}
@@ -51,6 +48,7 @@ class FacturasForm extends FormBase {
         'nif' => $factura_node->get('field_factura_nif')->value,
         'iva' => $iva,
         'precio' => $factura_node->get('field_factura_precio')->value,
+        'fecha' => date('d-m-Y H:i:s', $factura_node->created->value),
       );
     }
 
@@ -60,6 +58,7 @@ class FacturasForm extends FormBase {
       'nif' => t('NIF'),
       'iva' => t('IVA'),
       'precio' => t('Precio'),
+      'fecha' => t('Fecha creacion'),
     );
 
     $form['table'] = array(
