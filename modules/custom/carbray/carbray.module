@@ -368,14 +368,14 @@ function carbray_preprocess_views_view_field(&$variables) {
   // 1) get the field name : $variables['field']->realField
   // 2) get the field value : $variables['field']->getValue($variables['row'])
   // 3) get the field classes in the view : $variables['field']->elementClasses()
-  $user = $variables['row']->_entity;
-  $uid = $user->id();
-  $field = $variables['field']->realField;
-  $field_class = $variables['field']->elementClasses();
-  if ($field == 'field_user_estado_de_captacion_target_id' && $field_class == 'estado-captacion') {
-    $form = \Drupal::formBuilder()->getForm('Drupal\carbray\Form\AssignEstadoCaptacion', $uid);
-    $variables['output'] = $form;
-  }
+//  $user = $variables['row']->_entity;
+//  $uid = $user->id();
+//  $field = $variables['field']->realField;
+//  $field_class = $variables['field']->elementClasses();
+//  if ($field == 'field_user_estado_de_captacion_target_id' && $field_class == 'estado-captacion') {
+//    $form = \Drupal::formBuilder()->getForm('Drupal\carbray\Form\AssignEstadoCaptacion', $uid);
+//    $variables['output'] = $form;
+//  }
 }
 
 /**
