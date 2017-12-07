@@ -1355,6 +1355,7 @@ function get_facturas($paid = FALSE) {
   else {
     $query->condition('field_factura_pagada.value', 0);
   }
+  // @todo: sort by most recent first.
   return $query->execute();
 }
 

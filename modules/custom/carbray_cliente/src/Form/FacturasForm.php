@@ -43,6 +43,7 @@ class FacturasForm extends FormBase {
       $iva = ($factura_node->get('field_factura_iva')->value == 1) ? 'Con IVA' : 'Sin IVA';
       $options[$factura_id] = array(
         'cliente' => print_cliente_link($cliente_data, FALSE),
+        'proforma' => ($factura_node->get('field_factura_proforma')->value) ? t('Proforma') : 'Factura',
         'captador' => print_cliente_captadores_responsables($captacion_node->get('field_captacion_captador')
             ->getValue()),
         'nif' => $factura_node->get('field_factura_nif')->value,
@@ -54,6 +55,7 @@ class FacturasForm extends FormBase {
 
     $header = array(
       'cliente' => t('Cliente'),
+      'proforma' => t('Proforma / Factura'),
       'captador' => t('Captador'),
       'nif' => t('NIF'),
       'iva' => t('IVA'),
@@ -74,6 +76,12 @@ class FacturasForm extends FormBase {
       '#value' => t('Marcar facturas como pagadas'),
     );
 
+    $form['delete'] = array(
+      '#type' => 'submit',
+      '#value' => 'Eliminar proforma',
+      '#attributes' => array('class' => array('btn-danger', 'delete-proforma')),
+      '#submit' => array('::deleteProforma'),
+    );
     return $form;
   }
 
@@ -127,5 +135,15 @@ class FacturasForm extends FormBase {
 
     }
     drupal_set_message('Facturas marcadas como pagadas.');
+  }
+
+  public function deleteProforma(array &$form, FormStateInterface $form_state) {
+    $unpaid_factura_ids = array_filter($form_state->getValue('table'));
+    foreach ($unpaid_factura_ids as $unpaid_factura_id) {
+      $factura = Node::load($unpaid_factura_id);
+      $factura->delete();
+    }
+
+    drupal_set_message('Proforma(s) eliminadas.');
   }
 }
