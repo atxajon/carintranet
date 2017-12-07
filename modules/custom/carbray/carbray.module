@@ -821,6 +821,11 @@ function carbray_mail($key, &$message, $params) {
       $message['subject'] = t('Factura pagada');
       $message['body'][] = carbray_emailer_factura_paid($params);
       break;
+    case'test':
+      $message['from'] = \Drupal::config('system.site')->get('mail');
+      $message['subject'] = t('Test');
+      $message['body'][] = 'Esto es una prueba';
+      break;
   }
 }
 

@@ -57,6 +57,14 @@ class NewFacturaForm extends FormBase {
       '#suffix' => '</div>',
     );
 
+    $form['proforma'] = [
+      '#type' => 'radios',
+      '#title' => t('Factura / Proforma'),
+      '#options' => array(0 => $this->t('Factura'), 1 => $this->t('Proforma')),
+      '#default_value' => 1,
+      '#required' => TRUE,
+    ];
+
     $i = 0;
     $name_field = $form_state->get('num_names');
     $amount = $name_field;
@@ -168,7 +176,7 @@ class NewFacturaForm extends FormBase {
     );
     $form['submit'] = array(
       '#type' => 'submit',
-      '#value' => 'Crear factura',
+      '#value' => 'Crear factura / proforma',
       '#attributes' => array('class' => array('btn-primary', 'margin-top-20')),
     );
 
@@ -225,6 +233,7 @@ class NewFacturaForm extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $nif = $form_state->getValue('nif');
     $precio = $form_state->getValue('precio');
+    $proforma = $form_state->getValue('proforma');
     $iva = $form_state->getValue(array('coste_fieldset', 'iva'));
     $servicios = $form_state->getValue(array('names_fieldset', 'name'));
     $total = $form_state->getValue(array('coste_fieldset', 'importe_total'));
@@ -240,7 +249,7 @@ class NewFacturaForm extends FormBase {
     foreach ($servicios as $servicio) {
       $factura_node->field_factura_servicio->appendItem($servicio);
     }
-    // @todo: iva not being saved?
+    $factura_node->set('field_factura_proforma', $proforma);
     $factura_node->set('field_factura_iva', $iva);
     $factura_node->set('field_factura_direccion', $direccion);
     $factura_node->set('field_factura_precio', $total);

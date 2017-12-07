@@ -783,9 +783,9 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         $build['take_action']['factura'] = [
           '#theme' => 'button_modal',
           '#unique_id' => 'new-factura-for-captacion-' . $nid,
-          '#button_text' => 'Crear Factura',
+          '#button_text' => 'Crear Factura / Proforma',
           '#button_classes' => 'btn btn-primary btn-sm margin-top-20',
-          '#modal_title' => t('Nueva factura'),
+          '#modal_title' => t('Nueva factura / proforma'),
           '#modal_content' => $form,
           '#has_plus' => TRUE,
         ];
