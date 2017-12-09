@@ -807,8 +807,7 @@ function code_to_country($code) {
  */
 function carbray_mail($key, &$message, $params) {
 
-//  $message['headers']['MIME-Version'] = '1.0';
-  $message['headers']['Content-Type'] = 'multipart/mixed; text/html; charset=UTF-8; format=flowed; delsp=yes';
+  $message['headers']['Content-Type'] = 'text/plain; charset=UTF-8; format=flowed; delsp=yes';
 
   switch ($key) {
     case'notify_secretaria_new_factura':
