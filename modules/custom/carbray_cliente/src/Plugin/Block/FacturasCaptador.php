@@ -40,6 +40,7 @@ class FacturasCaptador extends BlockBase {
       $rows[] = array(
         'nif' => $factura_node->get('field_factura_nif')->value,
         'cliente' => print_cliente_link($cliente_data, FALSE),
+        'proforma' => ($factura_node->get('field_factura_proforma')->value) ? t('Proforma') : 'Factura',
         'captador' => print_cliente_captadores_responsables($captacion_node->get('field_captacion_captador')
           ->getValue()),
         'iva' => $iva,
@@ -52,6 +53,7 @@ class FacturasCaptador extends BlockBase {
     $header = array(
       'nif' => t('NIF'),
       'cliente' => t('Cliente'),
+      'proforma' => t('Proforma / Factura'),
       'captador' => t('Captador'),
       'iva' => t('IVA'),
       'precio' => t('Precio'),
