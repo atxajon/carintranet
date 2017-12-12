@@ -13,6 +13,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\user\Entity\User;
+use Drupal\node\Entity\Node;
 use Drupal\carbray\ProgressBar;
 
 define('REROUTE_EMAIL_ADDRESS', 'atxajon@gmail.com');
@@ -129,8 +130,100 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
     case 'node-plantilla-propuesta-edit-form':
       $form['path']['#access'] = FALSE;
       $form['revision_log']['#access'] = FALSE;
+    $form['#attributes']['class'][] = 'block';
+    break;
+    case 'node-factura-form':
+      // @todo: enabling it for node edit breaks...
+      //case 'node-factura-edit-form':
       $form['#attributes']['class'][] = 'block';
+
+      // Get captacion nid from url arg.
+      $captacion_nid = \Drupal::request()->query->get('captacion_nid');
+      $captacion_node = Node::load($captacion_nid);
+      $captacion_uid = $captacion_node->get('field_captacion_cliente')
+        ->getValue();
+      $cliente_data = \Drupal::entityTypeManager()
+        ->getStorage('user')
+        ->load($captacion_uid[0]['target_id']);
+
+      $form['cliente'] = array(
+        '#type' => 'textfield',
+        '#title' => 'Cliente',
+        '#default_value' => $cliente_data->get('field_nombre')->value . ' ' . $cliente_data->get('field_apellido')->value,
+        '#disabled' => TRUE,
+        '#prefix' => '<div class="clearfix">',
+      );
+      $form['email'] = array(
+        '#type' => 'textfield',
+        '#title' => 'Email',
+        '#default_value' => $cliente_data->getEmail(),
+        '#disabled' => TRUE,
+      );
+      $form['telefono'] = array(
+        '#type' => 'textfield',
+        '#title' => 'Telefono',
+        '#default_value' => $cliente_data->get('field_telefono')->value,
+        '#disabled' => TRUE,
+        '#suffix' => '</div>',
+      );
+
+      $form['captacion_nid'] = array(
+        '#type' => 'hidden',
+        '#value' => $captacion_nid,
+      );
+      $form['captador_uid'] = array(
+        '#type' => 'hidden',
+        '#value' => $uid = \Drupal::currentUser()->id(),
+      );
+
+      $form['field_factura_servicios']['widget']['add_more_button_servicio']['#value'] = t('Añadir otro servicio');
+
+      $form['#attached']['library'][] = 'carbray/factura_calculator';
+      $form['title']['#access'] = FALSE;
+      $form['title']['widget'][0]['value']['#default_value'] = t('Factura  para captacion id ' . $captacion_nid);
+
+      // Set default for current captacion.
+      $form['field_factura']['widget'][0]['target_id']['#default_value'] = \Drupal\node\Entity\Node::load($captacion_nid);
+      $form['field_factura']['#access'] = FALSE;
+      $form['field_factura_pagada']['#access'] = FALSE;
+
+      unset($form['revision_information']);
+      unset($form['revision_log']);
+      $form['actions']['submit']['#value'] = t('Crear factura / proforma');
+
+      foreach (array_keys($form['actions']) as $action) {
+        if ($action != 'preview' && isset($form['actions'][$action]['#type']) && $form['actions'][$action]['#type'] === 'submit') {
+          array_unshift($form['actions'][$action]['#submit'], 'set_factura_title_and_send_email');
+        }
+      }
+
       break;
+  }
+}
+
+function set_factura_title_and_send_email(array &$form, FormStateInterface $form_state){
+  $captador_uid = $form_state->getValue('captador_uid');
+  $captador_user = User::load($captador_uid);
+  $nif = $form_state->getValue('field_factura_nif');
+  $captacion_nid = $form_state->getValue('captacion_nid');
+
+  $form['title']['widget'][0]['value']['#default_value'] = t('Factura con NIF ' . $nif[0]['value'] . ' para captacion id ' . $captacion_nid);
+
+  // Send email to notify users with role secretaria.
+  $params = [
+    'nif' => $nif[0]['value'],
+    'captador' => $captador_user->get('field_nombre')->value . ' ' . $captador_user->get('field_apellido')->value,
+  ];
+
+  $secretarias = get_carbray_workers(TRUE, 'secretaria');
+  foreach ($secretarias as $secretaria) {
+    $to = $secretaria;
+    $mailManager = \Drupal::service('plugin.manager.mail');
+    $module = 'carbray';
+    $langcode = \Drupal::currentUser()->getPreferredLangcode();
+    $sent = $mailManager->mail($module, 'notify_secretaria_new_factura', $to, $langcode, $params);
+    $mssg = ($sent) ? 'Email sent to users of role secretaria as a new factura has been created' : '';
+    \Drupal::logger('carbray')->warning($mssg);
   }
 }
 

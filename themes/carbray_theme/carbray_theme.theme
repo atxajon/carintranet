@@ -114,10 +114,11 @@ function carbray_theme_preprocess_page_title(&$variables) {
       }
     }
     elseif (in_array('node', $path_args) && $user->isAuthenticated()) {
-      $node = Node::load($id);
-      if ($node->bundle() == 'expediente') {
-        $variables['title'] = 'Expediente ' . $node->label();
-
+      if ($id) {
+        $node = Node::load($id);
+        if ($node->bundle() == 'expediente') {
+          $variables['title'] = 'Expediente ' . $node->label();
+        }
       }
     }
   }

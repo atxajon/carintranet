@@ -696,21 +696,44 @@ textarea[rows="3"] + .cke .cke_contents {
     position: relative;
     top: 26px;
   }
-  .new-factura .form-item-cliente,
-  .new-factura .form-item-email,
-  .new-factura .form-item-telefono,
-  .new-factura .form-item-nif {
+  .node-factura-form .form-item-cliente,
+  .node-factura-form .form-item-email,
+  .node-factura-form .form-item-telefono {
     float: left;
-    width: 48%;
+    width: 32.3%;
     margin-right: 1%;
   }
-  .new-factura .form-item-coste-fieldset-precio,
-  .new-factura #edit-coste-fieldset-iva--wrapper,
-  .new-factura .form-item-coste-fieldset-importe-total {
+  .node-factura-form .form-item-coste-fieldset-precio,
+  .node-factura-form #edit-coste-fieldset-iva--wrapper,
+  .node-factura-form .form-item-coste-fieldset-importe-total {
     float: left;
-    width: 32%;
+    width: 32.3%;
     margin-right: 1%;
   }
+  .node-factura-form .paragraphs-subform .form-group {
+    float: left;
+    width: 50%;
+  }
+  .node-factura-form .paragraph-type-title,
+  .node-factura-form .field--name-field-factura-servicios .tabledrag-toggle-weight {
+    display: none;
+  }
+  .node-factura-form .field--name-field-factura-servicios .paragraph-type-top {
+    float: right;
+    position: relative;
+    top: 70px;
+    margin-top: -40px;
+    margin-right: 50px;
+  }
+  .node-factura-form .form-item-field-factura-nif-0-value .form-text {
+    width: 32.3%;
+  }
+
+  .node-factura-form .form-item-field-factura-provision-de-fondo-0-value .control-label,
+  .node-factura-form .form-item-field-factura-precio-0-value .control-label {
+    width: 15%;
+  }
+
   .new-factura legend {
     display: none;
     border: none;
