@@ -136,8 +136,7 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
       // @todo: enabling it for node edit breaks...
       //case 'node-factura-edit-form':
       $form['#attributes']['class'][] = 'block';
-//
-//      // Get captacion nid from url arg.
+      // Get captacion nid from url arg.
       $captacion_nid = \Drupal::request()->query->get('captacion_nid');
       $captacion_node = Node::load($captacion_nid);
       $captacion_uid = $captacion_node->get('field_captacion_cliente')
@@ -182,9 +181,9 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
       $form['title']['widget'][0]['value']['#default_value'] = t('Factura  para captacion id ' . $captacion_nid);
       $form['title']['#attributes']['class'][] = 'hidden';
 
-      // Set default for current captacion.
+      // Set default for current captacion and css hide it.
       $form['field_factura']['widget'][0]['target_id']['#default_value'] = \Drupal\node\Entity\Node::load($captacion_nid);
-      $form['field_factura']['#access'] = FALSE;
+      $form['field_factura']['#attributes']['class'][] = 'hidden';
       $form['field_factura_pagada']['#access'] = FALSE;
 
       unset($form['revision_information']);
@@ -196,7 +195,7 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
 
       foreach (array_keys($form['actions']) as $action) {
         if ($action != 'preview' && isset($form['actions'][$action]['#type']) && $form['actions'][$action]['#type'] === 'submit') {
-          array_unshift($form['actions'][$action]['#submit'], 'set_factura_title_and_send_email');
+          array_unshift($form['actions'][$action]['#submit'], 'send_email_secretaria');
         }
       }
 
@@ -204,13 +203,10 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
   }
 }
 
-function set_factura_title_and_send_email(array &$form, FormStateInterface $form_state){
+function send_email_secretaria(array &$form, FormStateInterface $form_state){
   $captador_uid = $form_state->getValue('captador_uid');
   $captador_user = User::load($captador_uid);
   $nif = $form_state->getValue('field_factura_nif');
-  $captacion_nid = $form_state->getValue('captacion_nid');
-
-  $form['title']['widget'][0]['value']['#default_value'] = t('Factura con NIF ' . $nif[0]['value'] . ' para captacion id ' . $captacion_nid);
 
   // Send email to notify users with role secretaria.
   $params = [
@@ -227,6 +223,14 @@ function set_factura_title_and_send_email(array &$form, FormStateInterface $form
     $sent = $mailManager->mail($module, 'notify_secretaria_new_factura', $to, $langcode, $params);
     $mssg = ($sent) ? 'Email sent to users of role secretaria as a new factura has been created' : '';
     \Drupal::logger('carbray')->warning($mssg);
+  }
+}
+
+function carbray_entity_presave(EntityInterface $entity){
+  if ($entity->bundle() == 'factura') {
+    $nif = $entity->get('field_factura_nif')->value;
+    $captacion_id = $entity->get('field_factura')->getValue();
+    $entity->setTitle('Factura con nif ' . $nif . ' para captacion id ' . $captacion_id[0]['target_id']);
   }
 }
 
