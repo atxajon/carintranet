@@ -705,11 +705,14 @@ textarea[rows="3"] + .cke .cke_contents {
   }
   .node-factura-form .form-item-coste-fieldset-precio,
   .node-factura-form #edit-coste-fieldset-iva--wrapper,
-  .node-factura-form .form-item-coste-fieldset-importe-total {
+  .node-factura-form .form-item-coste-fieldset-importe-total,
+  .node-factura-form .form-item-field-factura-direccion-0-value,
+  .node-factura-form .field--name-field-factura-nif {
     float: left;
     width: 32.3%;
     margin-right: 1%;
   }
+
   .node-factura-form .paragraphs-subform .form-group {
     float: left;
     width: 50%;
@@ -724,9 +727,6 @@ textarea[rows="3"] + .cke .cke_contents {
     top: 70px;
     margin-top: -40px;
     margin-right: 50px;
-  }
-  .node-factura-form .form-item-field-factura-nif-0-value .form-text {
-    width: 32.3%;
   }
 
   .node-factura-form .form-item-field-factura-provision-de-fondo-0-value .control-label,

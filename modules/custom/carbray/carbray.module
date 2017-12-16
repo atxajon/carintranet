@@ -136,8 +136,8 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
       // @todo: enabling it for node edit breaks...
       //case 'node-factura-edit-form':
       $form['#attributes']['class'][] = 'block';
-
-      // Get captacion nid from url arg.
+//
+//      // Get captacion nid from url arg.
       $captacion_nid = \Drupal::request()->query->get('captacion_nid');
       $captacion_node = Node::load($captacion_nid);
       $captacion_uid = $captacion_node->get('field_captacion_cliente')
@@ -179,8 +179,8 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
       $form['field_factura_servicios']['widget']['add_more_button_servicio']['#value'] = t('Añadir otro servicio');
 
       $form['#attached']['library'][] = 'carbray/factura_calculator';
-      $form['title']['#access'] = FALSE;
       $form['title']['widget'][0]['value']['#default_value'] = t('Factura  para captacion id ' . $captacion_nid);
+      $form['title']['#attributes']['class'][] = 'hidden';
 
       // Set default for current captacion.
       $form['field_factura']['widget'][0]['target_id']['#default_value'] = \Drupal\node\Entity\Node::load($captacion_nid);
@@ -189,7 +189,10 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
 
       unset($form['revision_information']);
       unset($form['revision_log']);
-      $form['actions']['submit']['#value'] = t('Crear factura / proforma');
+      // @todo: following causes a nasty bug: when submitting
+      // a factura with multiple servicios (paragraph type)
+      // the form prompts you to confirm removal of first servicio added!
+//      $form['actions']['submit']['#value'] = t('Crear factura / proforma');
 
       foreach (array_keys($form['actions']) as $action) {
         if ($action != 'preview' && isset($form['actions'][$action]['#type']) && $form['actions'][$action]['#type'] === 'submit') {
