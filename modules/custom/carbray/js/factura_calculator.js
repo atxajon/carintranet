@@ -47,6 +47,14 @@
         $('#edit-field-factura-precio-0-value').val(total.toFixed(2));
       }
 
+      // Prevent from accidentaly typing 'enter' key on servicios adding,
+      // which toggles some undesired show row weight column...
+      $('#node-factura-form').keypress(function(event) {
+        if (event.keyCode == '13') {
+          event.preventDefault();
+        }
+      });
+
 
       /**
        * Old code for NewFacturaForm.php, currently unused
