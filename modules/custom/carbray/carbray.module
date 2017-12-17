@@ -211,6 +211,7 @@ function send_email_secretaria(array &$form, FormStateInterface $form_state){
   // Send email to notify users with role secretaria.
   $precio = $form_state->getValue('field_factura_precio');
   $direccion = $form_state->getValue('field_factura_direccion');
+  $proforma = $form_state->getValue('field_factura_proforma');
   $params = [
     'nif' => $nif[0]['value'],
     'captador' => $captador_user->get('field_nombre')->value . ' ' . $captador_user->get('field_apellido')->value,
@@ -218,7 +219,7 @@ function send_email_secretaria(array &$form, FormStateInterface $form_state){
     'email' => $form_state->getValue('email'),
     'telefono' => $form_state->getValue('telefono'),
     'precio' => $precio[0]['value'],
-    'proforma' => $form_state->getValue('field_factura_proforma'),
+    'proforma' => $proforma['value'],
     'direccion' => $direccion[0]['value'],
   ];
 
