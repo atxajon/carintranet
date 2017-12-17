@@ -209,15 +209,17 @@ function send_email_secretaria(array &$form, FormStateInterface $form_state){
   $nif = $form_state->getValue('field_factura_nif');
 
   // Send email to notify users with role secretaria.
+  $precio = $form_state->getValue('field_factura_precio');
+  $direccion = $form_state->getValue('field_factura_direccion');
   $params = [
     'nif' => $nif[0]['value'],
     'captador' => $captador_user->get('field_nombre')->value . ' ' . $captador_user->get('field_apellido')->value,
     'cliente' => $form_state->getValue('cliente'),
     'email' => $form_state->getValue('email'),
     'telefono' => $form_state->getValue('telefono'),
-    'precio' => $form_state->getValue('field_factura_precio'),
+    'precio' => $precio[0]['value'],
     'proforma' => $form_state->getValue('field_factura_proforma'),
-    'direccion' => $form_state->getValue('field_factura_direccion'),
+    'direccion' => $direccion[0]['value'],
   ];
 
   $secretarias = get_carbray_workers(TRUE, 'secretaria');
