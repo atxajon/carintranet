@@ -16,7 +16,7 @@ use Drupal\user\Entity\User;
 use Drupal\node\Entity\Node;
 use Drupal\carbray\ProgressBar;
 
-define('REROUTE_EMAIL_ADDRESS', 'marc.mozos@carbray.es');
+define('REROUTE_EMAIL_ADDRESS', 'atxajon@gmail.com');
 
 
 /**
@@ -129,13 +129,14 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
     case 'node-plantilla-propuesta-form':
     case 'node-plantilla-propuesta-edit-form':
       $form['path']['#access'] = FALSE;
-      $form['revision_log']['#access'] = FALSE;
+    $form['revision_log']['#access'] = FALSE;
     $form['#attributes']['class'][] = 'block';
     break;
     case 'node-factura-form':
-      // @todo: enabling it for node edit breaks...
-      //case 'node-factura-edit-form':
+    case 'node-factura-edit-form':
       $form['#attributes']['class'][] = 'block';
+      $form['#attached']['library'][] = 'carbray/factura_calculator';
+
       // Get captacion nid from url arg.
       $captacion_nid = \Drupal::request()->query->get('captacion_nid');
       $captacion_node = Node::load($captacion_nid);
@@ -177,7 +178,6 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
 
       $form['field_factura_servicios']['widget']['add_more_button_servicio']['#value'] = t('Añadir otro servicio');
 
-      $form['#attached']['library'][] = 'carbray/factura_calculator';
       $form['title']['widget'][0]['value']['#default_value'] = t('Factura  para captacion id ' . $captacion_nid);
       $form['title']['#attributes']['class'][] = 'hidden';
 
@@ -212,6 +212,12 @@ function send_email_secretaria(array &$form, FormStateInterface $form_state){
   $params = [
     'nif' => $nif[0]['value'],
     'captador' => $captador_user->get('field_nombre')->value . ' ' . $captador_user->get('field_apellido')->value,
+    'cliente' => $form_state->getValue('cliente'),
+    'email' => $form_state->getValue('email'),
+    'telefono' => $form_state->getValue('telefono'),
+    'precio' => $form_state->getValue('field_factura_precio'),
+    'proforma' => $form_state->getValue('field_factura_proforma'),
+    'direccion' => $form_state->getValue('field_factura_direccion'),
   ];
 
   $secretarias = get_carbray_workers(TRUE, 'secretaria');
@@ -920,16 +926,13 @@ function carbray_mail($key, &$message, $params) {
       $message['subject'] = t('Factura pagada');
       $message['body'][] = carbray_emailer_factura_paid($params);
       break;
-    case'test':
-      $message['from'] = \Drupal::config('system.site')->get('mail');
-      $message['subject'] = t('Test');
-      $message['body'][] = 'Esto es una prueba';
-      break;
   }
 }
 
 function carbray_emailer_new_factura($params) {
-  $output = "Factura " . $params['nif'] . " creada por " . $params['captador'] . " pendiente de revision.";
+  $proforma_factura_text = ($params['proforma']) ? 'Proforma' : 'Factura';
+  $output = $proforma_factura_text . " creada por " . $params['captador'] . " pendiente de revision. Detalles: ";
+  $output .= '<br><br>' . 'NIF: ' . $params['nif'] . '<br>Cliente: ' . $params['cliente'] . ', email: ' . $params['email'] . ', telefono: ' . $params['telefono'] . '<br>Precio: ' . $params['precio'] . '<br>Direccion: ' . $params['direccion'];
   return $output;
 }
 
