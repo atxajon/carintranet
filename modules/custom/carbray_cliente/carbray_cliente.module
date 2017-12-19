@@ -1373,17 +1373,34 @@ function get_notas($id, $bundle) {
   return $notas_nids;
 }
 
-function get_facturas($paid = FALSE) {
-  $query = \Drupal::entityQuery('node')
-    ->condition('type', 'factura');
-  if ($paid) {
-    $query->condition('field_factura_pagada.value', 1);
+function get_facturas($paid = FALSE, $captador_uid = 0, $departamento_tid = 0) {
+  // @todo: standardise into one query that takes parameters.
+  $db = \Drupal::database();
+
+  if ($captador_uid) {
+    $sql = 'SELECT DISTINCT fc.entity_id FROM node__field_factura fc
+WHERE field_factura_target_id IN (SELECT entity_id FROM node__field_captacion_captador WHERE field_captacion_captador_target_id = :captador_uid) ORDER BY fc.entity_id DESC';
+    $result = $db->query($sql, [':captador_uid' => $captador_uid])->fetchCol();
+  }
+  elseif ($departamento_tid) {
+    $sql = 'SELECT DISTINCT fc.entity_id FROM node__field_factura fc INNER JOIN node__field_captacion_captador cc ON cc.entity_id = fc.field_factura_target_id
+WHERE cc.field_captacion_captador_target_id IN (SELECT DISTINCT entity_id FROM user__field_departamento d  WHERE field_departamento_target_id = :departamento_tid) ORDER BY fc.entity_id DESC';
+    $result = $db->query($sql, [':departamento_tid' => $departamento_tid])->fetchCol();
   }
   else {
-    $query->condition('field_factura_pagada.value', 0);
+    $query = \Drupal::entityQuery('node')
+      ->condition('type', 'factura');
+    if ($paid) {
+      $query->condition('field_factura_pagada.value', 1);
+    }
+    else {
+      $query->condition('field_factura_pagada.value', 0);
+    }
+    // @todo: sort by most recent first.
+    $result = $query->execute();
   }
-  // @todo: sort by most recent first.
-  return $query->execute();
+
+  return $result;
 }
 
 /**

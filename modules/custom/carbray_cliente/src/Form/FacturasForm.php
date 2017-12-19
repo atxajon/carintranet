@@ -8,6 +8,8 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
 use Drupal\user\Entity\User;
+use Drupal\Core\Url;
+
 
 
 class FacturasForm extends FormBase {
@@ -24,7 +26,52 @@ class FacturasForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     // Adding checkboxes to a table using tableselect: https://www.drupal.org/node/945102
 
-    $factura_ids = get_facturas();
+    // Work out filter values from query string.
+    $qs_defaults = '';
+    $qs = \Drupal::request()->query->all();
+    if ($qs) {
+      foreach ($qs as $key => $value) {
+        $qs_defaults[$key] = $value;
+      }
+    }
+
+    $departamentos = get_taxonomy_terms_options('departamento');
+    $form['departamento_id'] = array(
+      '#type' => 'select',
+      '#title' => 'Departamento',
+      '#options' => $departamentos,
+      '#empty_option' => 'Todos los departamentos',
+      '#default_value' => (isset($qs_defaults['departamento'])) ? $qs_defaults['departamento'] : '',
+    );
+    $workers = get_carbray_workers(TRUE);
+    $form['captador_id'] = array(
+      '#type' => 'select',
+      '#title' => 'Captador',
+      '#options' => $workers,
+      '#empty_option' => 'Tod@s l@s captadores',
+      '#default_value' => (isset($qs_defaults['captador'])) ? $qs_defaults['captador'] : '',
+    );
+
+    $form['search'] = array(
+      '#type' => 'submit',
+      '#value' => 'Buscar',
+      '#attributes' => array('class' => array('btn-primary')),
+      '#submit' => array('::buscarFactura'),
+    );
+
+    // @todo: standardise this into one query with parameters, no if's.
+    if (isset($qs_defaults['captador'])) {
+      $factura_ids = get_facturas(FALSE, $qs_defaults['captador']);
+    }
+
+    if (isset($qs_defaults['departamento'])) {
+      $factura_ids = get_facturas(FALSE, 0, $qs_defaults['departamento']);
+    }
+
+    if (!isset($qs_defaults['captador']) && !isset($qs_defaults['departamento'])) {
+      $factura_ids = get_facturas();
+    }
+
     $options = [];
     foreach ($factura_ids as $factura_id) {
       $factura_node = \Drupal::entityTypeManager()
@@ -68,7 +115,7 @@ class FacturasForm extends FormBase {
       '#header' => $header,
       '#options' => $options,
       '#js_select' => FALSE, // Don't want the select all checbox at the header.
-      '#empty' => t('Ninguna factura sin pagar.'),
+      '#empty' => t('No se encontraron facturas sin pagar.'),
     );
 
     $form['submit'] = array(
@@ -145,5 +192,22 @@ class FacturasForm extends FormBase {
     }
 
     drupal_set_message('Proforma(s) eliminadas.');
+  }
+
+  public function buscarFactura(array &$form, FormStateInterface $form_state) {
+    $departamento_id = $form_state->getValue('departamento_id');
+    $captador_id = $form_state->getValue('captador_id');
+
+    $options = [];
+    if ($departamento_id) {
+      $options['query'] = ['departamento' => $departamento_id];
+    }
+    if ($captador_id) {
+      $options['query'][] = ['captador' => $captador_id];
+
+    }
+
+    $url = Url::fromUri('internal:/node/1748', $options);
+    $form_state->setRedirectUrl($url);
   }
 }
