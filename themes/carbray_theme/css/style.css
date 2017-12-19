@@ -746,6 +746,18 @@ textarea[rows="3"] + .cke .cke_contents {
     color: black;
     text-shadow: none;
   }
+  #facturas-form .form-item-departamento-id,
+  #facturas-form .form-item-captador-id {
+    float: left;
+    width: 33%;
+    margin-right: 1%;
+  }
+  #facturas-form #edit-search {
+    float: left;
+    position: relative;
+    top: 26px;
+  }
+
 }
 
 .form-in-modal .form-type-select {

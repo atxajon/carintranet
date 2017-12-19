@@ -39,6 +39,7 @@ class FacturasForm extends FormBase {
     $form['departamento_id'] = array(
       '#type' => 'select',
       '#title' => 'Departamento',
+      '#prefix' => '<div class="clearfix factura-filters margin-bottom-20">',
       '#options' => $departamentos,
       '#empty_option' => 'Todos los departamentos',
       '#default_value' => (isset($qs_defaults['departamento'])) ? $qs_defaults['departamento'] : '',
@@ -57,6 +58,7 @@ class FacturasForm extends FormBase {
       '#value' => 'Buscar',
       '#attributes' => array('class' => array('btn-primary')),
       '#submit' => array('::buscarFactura'),
+      '#suffix' => '</div>',
     );
 
     // @todo: standardise this into one query with parameters, no if's.
