@@ -27,7 +27,7 @@ class FacturasForm extends FormBase {
     // Adding checkboxes to a table using tableselect: https://www.drupal.org/node/945102
 
     // Work out filter values from query string.
-    $qs_defaults = '';
+    $qs_defaults = [];
     $qs = \Drupal::request()->query->all();
     if ($qs) {
       foreach ($qs as $key => $value) {
@@ -61,18 +61,7 @@ class FacturasForm extends FormBase {
       '#suffix' => '</div>',
     );
 
-    // @todo: standardise this into one query with parameters, no if's.
-    if (isset($qs_defaults['captador'])) {
-      $factura_ids = get_facturas(FALSE, $qs_defaults['captador']);
-    }
-
-    if (isset($qs_defaults['departamento'])) {
-      $factura_ids = get_facturas(FALSE, 0, $qs_defaults['departamento']);
-    }
-
-    if (!isset($qs_defaults['captador']) && !isset($qs_defaults['departamento'])) {
-      $factura_ids = get_facturas();
-    }
+    $factura_ids = get_facturas($qs_defaults);
 
     $options = [];
     foreach ($factura_ids as $factura_id) {

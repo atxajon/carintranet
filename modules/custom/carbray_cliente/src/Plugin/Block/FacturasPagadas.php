@@ -20,7 +20,7 @@ class FacturasPagadas extends BlockBase {
    */
   public function build() {
     $paid = TRUE;
-    $factura_ids = get_facturas($paid);
+    $factura_ids = get_facturas([], $paid);
     $rows = [];
     foreach ($factura_ids as $factura_id) {
       $factura_node = \Drupal::entityTypeManager()

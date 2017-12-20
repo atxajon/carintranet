@@ -1373,21 +1373,32 @@ function get_notas($id, $bundle) {
   return $notas_nids;
 }
 
-function get_facturas($paid = FALSE, $captador_uid = 0, $departamento_tid = 0) {
+function get_facturas($filters = [], $paid = FALSE ) {
   // @todo: standardise into one query that takes parameters.
   $db = \Drupal::database();
 
-  if ($captador_uid) {
+  if (isset($filters['captador']) && !isset($filters['departamento'])) {
+    // Used captador filter only.
     $sql = 'SELECT DISTINCT fc.entity_id FROM node__field_factura fc
 WHERE field_factura_target_id IN (SELECT entity_id FROM node__field_captacion_captador WHERE field_captacion_captador_target_id = :captador_uid) ORDER BY fc.entity_id DESC';
-    $result = $db->query($sql, [':captador_uid' => $captador_uid])->fetchCol();
+    $result = $db->query($sql, [':captador_uid' => $filters['captador']])->fetchCol();
   }
-  elseif ($departamento_tid) {
+  elseif (isset($filters['departamento']) && !isset($filters['captador'])) {
+    // Used departamento filter only.
     $sql = 'SELECT DISTINCT fc.entity_id FROM node__field_factura fc INNER JOIN node__field_captacion_captador cc ON cc.entity_id = fc.field_factura_target_id
 WHERE cc.field_captacion_captador_target_id IN (SELECT DISTINCT entity_id FROM user__field_departamento d  WHERE field_departamento_target_id = :departamento_tid) ORDER BY fc.entity_id DESC';
-    $result = $db->query($sql, [':departamento_tid' => $departamento_tid])->fetchCol();
+    $result = $db->query($sql, [':departamento_tid' => $filters['departamento']])->fetchCol();
+  }
+  elseif(isset($filters['departamento']) && isset($filters['captador'])) {
+    // Used both departamento and captador filters.
+    $sql = 'SELECT DISTINCT fc.entity_id FROM node__field_factura fc INNER JOIN node__field_captacion_captador cc ON cc.entity_id = fc.field_factura_target_id
+WHERE cc.field_captacion_captador_target_id IN (SELECT DISTINCT entity_id FROM user__field_departamento d  WHERE field_departamento_target_id = :departamento_tid)
+AND field_factura_target_id IN (SELECT DISTINCT entity_id FROM node__field_captacion_captador WHERE field_captacion_captador_target_id = :captador_uid)
+ORDER BY fc.entity_id DESC';
+    $result = $db->query($sql, [':departamento_tid' => $filters['departamento'], ':captador_uid' => $filters['captador']])->fetchCol();
   }
   else {
+    // Used no filters.
     $query = \Drupal::entityQuery('node')
       ->condition('type', 'factura');
     if ($paid) {
