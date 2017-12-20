@@ -1063,6 +1063,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         ->fetchAll();
       if ($actuaciones_nids) {
         $rows = [];
+        $total_seconds = 0;
         foreach ($actuaciones_nids as $actuacion_nid) {
           $file_link = '';
           if ($actuacion_nid->fid) {
@@ -1082,6 +1083,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
           // Get the minutes values for the actuacion and transform it to seconds for correct display.
           $minutes = $actuacion_node->get('field_actuacion_tiempo_en_seg')->value;
           $seconds = $minutes * 60;
+          $total_seconds += $seconds;
 
           $edit_form = \Drupal::formBuilder()
             ->getForm('Drupal\carbray\Form\EditActuacionForm', $actuacion_nid->nid);
@@ -1106,6 +1108,16 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
           );
         }
       }
+      // Add a total row at the bottom.
+      $rows[] = [
+        Markup::create('<b>Total:</b>'),
+        '',
+        Markup::create('<b>' . gmdate("H:i", $total_seconds) . '</b>'),
+        '',
+        '',
+        '',
+        '',
+      ];
       $header = array(
         'Fecha creacion',
         'Actuacion',
