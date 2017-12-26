@@ -1,16 +1,17 @@
-id: users_migration
+id: users_migration2
 migration_tags: null
 migration_group: null
 label: 'User migration from CSV'
 source:
   plugin: csv
-  path: public://csv_imports/users_migrate.csv
+  path: public://csv_imports/users_migrate2.csv
   header_row_count: 1
   keys:
     - ID
 process:
   name: Nombre
   mail: Mails
+  field_direccion: Direccion
   field_nombre: Nombre
   field_telefono: Telefonos
 

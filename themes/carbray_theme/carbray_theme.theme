@@ -85,8 +85,6 @@ function carbray_theme_preprocess_page_title(&$variables) {
     return;
   }
 
-  // Logged in user accessing user/%uid page gets page title
-  // rewritten from username to field_nombre, mail.
   if (\Drupal::currentUser()->isAuthenticated()) {
     $path_args = explode('/', $current_path);
     $id = 0;
@@ -95,25 +93,31 @@ function carbray_theme_preprocess_page_title(&$variables) {
         $id = $path_arg;
       }
     }
-    $user = ($id) ? User::load($id) : \Drupal::currentUser();
-    if (in_array('user', $path_args) && $user->isAuthenticated()) {
-      $nombre = $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value;
-      if ($nombre) {
-        $nombre .= ', ';
-      }
-      $mail = $user->get('mail')->value;
 
-      $workers = get_carbray_workers();
-      // If the user page we're viewing refers to a Carbray worker.
-      if (array_key_exists($id, $workers)) {
-        $variables['title'] = 'Trabajador: ' . $nombre . $mail;
-      }
-      else {
-        $variables['title'] = 'Ficha del cliente - ' . $nombre . $mail;
+    $node = \Drupal::request()->attributes->get('node');
+    if (!$node) {
+      // Logged in user accessing user/%uid page gets page title
+      // rewritten from username to field_nombre, mail.
+      $user = ($id) ? User::load($id) : \Drupal::currentUser();
+      if (in_array('user', $path_args) && $user->isAuthenticated()) {
+        $nombre = $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value;
+        if ($nombre) {
+          $nombre .= ', ';
+        }
+        $mail = $user->get('mail')->value;
 
+        $workers = get_carbray_workers();
+        // If the user page we're viewing refers to a Carbray worker.
+        if (array_key_exists($id, $workers)) {
+          $variables['title'] = 'Trabajador: ' . $nombre . $mail;
+        }
+        else {
+          $variables['title'] = 'Ficha del cliente - ' . $nombre . $mail;
+
+        }
       }
     }
-    elseif (in_array('node', $path_args) && $user->isAuthenticated()) {
+    else {
       if ($id) {
         $node = Node::load($id);
         if ($node->bundle() == 'expediente') {
@@ -122,8 +126,6 @@ function carbray_theme_preprocess_page_title(&$variables) {
       }
     }
   }
-
-
 }
 
 function carbray_theme_preprocess_block(&$variables) {
