@@ -753,19 +753,6 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
     if ($display->getComponent('take_action')) {
       // Is the estado de captacion on estado '1'?
 
-      // Has the Captacion a propuesta yet? show it.
-      $has_propuesta = FALSE;
-      if ($propuesta = get_captacion_propuesta($captacion_node->id())) {
-        $propuesta_node = Node::load(current($propuesta));
-        $propuesta_title = $propuesta_node->getTitle();
-        $url = Url::fromRoute('entity.node.canonical', array('node' => $propuesta_node->id()));
-        $propuesta_link = Link::fromTextAndUrl($propuesta_title, $url);
-        $build['take_action']['propuesta'] = $propuesta_link->toRenderable();
-        $build['take_action']['propuesta']['#prefix'] = '<div class="field"><div class="field--label">Propuesta</div><div class="field--item">';
-        $build['take_action']['propuesta']['#suffix'] = '</div></div>';
-        $has_propuesta = TRUE;
-      }
-
       $estado_term = $captacion_node->get('field_captacion_estado_captacion')->entity;
       $estados_tids_that_show_propuesta = array(43, 44, 45, 46);
       $estados_tids_that_show_factura = array(47, 48, 49, 50, 51);
@@ -773,12 +760,10 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
 
       if (in_array($estado_term->id(), $estados_tids_that_show_propuesta)) {
         // Client is on estado captacion '1'; deal with propuestas.
-        // If does not have a propuesta show button to create one.
-        if (!$has_propuesta) {
-          $form = \Drupal::formBuilder()
-            ->getForm('Drupal\carbray_cliente\Form\PropuestaPlantillaRef');
-          $build['take_action'] = $form;
-        }
+        // Show button to download propuesta plantilla.
+        $form = \Drupal::formBuilder()
+          ->getForm('Drupal\carbray_cliente\Form\PropuestaPlantillaRef');
+        $build['take_action'] = $form;
       }
       elseif (in_array($estado_term->id(), $estados_tids_that_show_factura)) {
         // Client is on estado captacion '2'; deal with facturas.
