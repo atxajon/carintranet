@@ -433,7 +433,12 @@ function _carbray_redirecter() {
   $roles = $current_user->getRoles();
   // If user with only 1 role and it is authenticated:
   if (in_array('authenticated', $roles) && count($roles) == 1) {
-
+    // Redirect to abogado home;
+    // Even though abogado has its dedicated role ('worker'),
+    // if by any chance admin creating an abogado forgets to tick the role checkbox
+    // it falls to this scenario and we need to have a $url otherwise it errors!
+    // @todo: when opening up for clients access this will need to be updated!
+    $url = Url::fromUri('entity:node/2');
   }
   elseif (in_array('worker', $roles)) {
     $url = Url::fromUri('entity:node/2');
@@ -587,7 +592,7 @@ function get_carbray_workers($just_active = FALSE, $by_role = '') {
     $sql .= " WHERE roles_target_id = 'secretaria'";
   }
   else {
-    $sql .= " WHERE roles_target_id = 'carbray_administrator' OR roles_target_id = 'worker'";
+    $sql .= " WHERE roles_target_id = 'carbray_administrator' OR roles_target_id = 'worker' OR roles_target_id = 'secretaria'";
   }
   if ($just_active) {
     $sql .= ' AND status = 1';

@@ -109,11 +109,10 @@ function carbray_theme_preprocess_page_title(&$variables) {
         $workers = get_carbray_workers();
         // If the user page we're viewing refers to a Carbray worker.
         if (array_key_exists($id, $workers)) {
-          $variables['title'] = 'Trabajador: ' . $nombre . $mail;
+          $variables['title'] = 'Trabajador/a: ' . $nombre . $mail;
         }
         else {
           $variables['title'] = 'Ficha del cliente - ' . $nombre . $mail;
-
         }
       }
     }

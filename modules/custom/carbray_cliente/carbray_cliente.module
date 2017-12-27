@@ -531,6 +531,11 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
           '#markup' => '<div class="field--label">Rol</div><div class="field--item">Abogado</div>',
         );
       }
+      elseif (in_array('secretaria', $roles)) {
+        $build['user_role'] = array(
+          '#markup' => '<div class="field--label">Rol</div><div class="field--item">Secretaria</div>',
+        );
+      }
       elseif (in_array('carbray_administrator', $roles)) {
         $build['user_role'] = array(
           '#markup' => '<div class="field--label">Rol</div><div class="field--item">Administrador</div>',
@@ -565,7 +570,7 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
           ],
         ];
 
-        $url = Url::fromRoute('entity.user.edit_form', array('user' => $current_user->id()), $options);
+        $url = Url::fromRoute('entity.user.edit_form', array('user' => $form_owner_uid), $options);
 
         $build['edit_user'] = [
           '#type' => 'link',

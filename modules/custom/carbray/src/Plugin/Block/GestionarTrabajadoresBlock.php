@@ -38,8 +38,7 @@ class GestionarTrabajadoresBlock extends BlockBase {
         foreach ($departamento_terms as $dep_term) {
           if ($dep_term['target_id']) {
             $term = Term::load($dep_term['target_id']);
-            $dep_nombre = $term->name->value . '<br>';
-            $departamento_nombre .= Markup::create($dep_nombre);
+            $departamento_nombre .= $term->name->value . Markup::create('<br>');
           }
         }
       }
@@ -79,10 +78,13 @@ class GestionarTrabajadoresBlock extends BlockBase {
       if ($user->hasRole('worker')) {
         $role = 'Trabajador';
       }
+      if ($user->hasRole('secretaria')) {
+        $role = 'Secretaria';
+      }
       $rows[] = array(
         $worker,
         $user->getEmail(),
-        $departamento_nombre,
+        Markup::create($departamento_nombre),
         $objetivo,
         $role,
         ($user->status->value == 1) ? t('Activo') : t('Inactivo'),
@@ -102,6 +104,9 @@ class GestionarTrabajadoresBlock extends BlockBase {
       '#theme' => 'table',
       '#header' => $header,
       '#rows' => $rows,
+      '#cache' => [
+        'max-age' => 0,
+      ],
     );
   }
 }
