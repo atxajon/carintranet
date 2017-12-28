@@ -1051,9 +1051,9 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
       $sql = "SELECT nid, title, created, uid, field_nota_nota_value, field_actuacion_documentacion_target_id as fid FROM node_field_data nfd INNER JOIN node__field_actuacion_expediente ae ON nfd.nid = ae.entity_id LEFT JOIN node__field_actuacion_nota an ON an.entity_id = nfd.nid LEFT JOIN node__field_nota_nota nn on an.field_actuacion_nota_target_id = nn.entity_id LEFT JOIN node__field_actuacion_documentacion ad on ad.entity_id = nfd.nid  WHERE field_actuacion_expediente_target_id = :nid ORDER BY created DESC";
       $actuaciones_nids = $db->query($sql, array(':nid' => $nid))
         ->fetchAll();
+      $total_seconds = 0;
       if ($actuaciones_nids) {
         $rows = [];
-        $total_seconds = 0;
         foreach ($actuaciones_nids as $actuacion_nid) {
           $file_link = '';
           if ($actuacion_nid->fid) {

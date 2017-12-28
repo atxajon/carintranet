@@ -592,7 +592,7 @@ function get_carbray_workers($just_active = FALSE, $by_role = '') {
     $sql .= " WHERE roles_target_id = 'secretaria'";
   }
   else {
-    $sql .= " WHERE roles_target_id = 'carbray_administrator' OR roles_target_id = 'worker' OR roles_target_id = 'secretaria'";
+    $sql .= " WHERE (roles_target_id = 'carbray_administrator' OR roles_target_id = 'worker' OR roles_target_id = 'secretaria')";
   }
   if ($just_active) {
     $sql .= ' AND status = 1';
