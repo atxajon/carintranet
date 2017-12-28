@@ -749,7 +749,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         $uid = $db->query($sql, array(':nid' => $captacion_node->id()))
           ->fetchCol();
 
-        $form = \Drupal::formBuilder()
+        $new_exp_form = \Drupal::formBuilder()
           ->getForm('Drupal\carbray\Form\NewExpedienteForm', $captacion_node->id(), reset($uid));
         $build['take_action']['expediente'] = [
           '#theme' => 'button_modal',
@@ -757,7 +757,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
           '#button_text' => 'Nuevo expediente',
           '#button_classes' => 'btn btn-primary btn-sm margin-top-10',
           '#modal_title' => t('Nuevo expediente'),
-          '#modal_content' => $form,
+          '#modal_content' => $new_exp_form,
           '#has_plus' => TRUE,
         ];
       }
@@ -792,7 +792,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
     }
 
     if ($display->getComponent('assign_tematica')) {
-      $form = \Drupal::formBuilder()
+      $assign_tematica_form = \Drupal::formBuilder()
         ->getForm('Drupal\carbray\Form\AssignTematicaCaptacion', $nid);
       $build['assign_tematica'] = [
         '#theme' => 'button_modal',
@@ -800,7 +800,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         '#button_text' => 'Asignar tematica',
         '#button_classes' => 'btn btn-primary btn-sm',
         '#modal_title' => t('Nueva tematica'),
-        '#modal_content' => $form,
+        '#modal_content' => $assign_tematica_form,
         '#has_plus' => TRUE,
       ];
     }
@@ -940,9 +940,11 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
     }
     if ($display->getComponent('client_pais')) {
       $cliente_pais = $user->get('field_pais')->value;
-      $build['client_pais'] = [
-        '#markup' => code_to_country($cliente_pais),
-      ];
+      if ($cliente_pais) {
+        $build['client_pais'] = [
+          '#markup' => code_to_country($cliente_pais),
+        ];
+      }
     }
 
     if ($display->getComponent('new_actuacion')) {

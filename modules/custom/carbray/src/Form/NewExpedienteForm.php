@@ -66,14 +66,14 @@ class NewExpedienteForm extends FormBase {
     foreach ($tematica_parent_terms as $term) {
       $term_data[$term->tid] = $term->name;
     }
-    $form['tematica'] = array(
+    $form['exp_tematica'] = array(
       '#title' => 'Tematica',
       '#type' => 'select',
       '#empty_option' => ' - Selecciona tematica - ',
       '#options' => $term_data,
       '#ajax' => array(
-        'callback' => '::serviciosCallback',
-        'wrapper' => 'servicios-wrapper-' . $captacion_nid,
+        'callback' => '::expServiciosCallback',
+        'wrapper' => 'exp-servicios-wrapper-' . $captacion_nid,
         'effect' => 'fade',
         'event' => 'change',
         'progress' => array(
@@ -84,7 +84,7 @@ class NewExpedienteForm extends FormBase {
       '#required' => TRUE,
     );
 
-    $tematica_tid = $form_state->getValue('tematica');
+    $tematica_tid = $form_state->getValue('exp_tematica');
     $servicios = ($tematica_tid) ? get_children_of_parent_term($tematica_tid, 'tematicas') : '';
 
     $servicios_options = [];
@@ -94,17 +94,17 @@ class NewExpedienteForm extends FormBase {
       }
     }
 
-    $form['servicios_wrapper_' . $captacion_nid] = [
+    $form['exp_servicios_wrapper_' . $captacion_nid] = [
       '#type' => 'container',
-      '#attributes' => ['id' => 'servicios-wrapper-' . $captacion_nid],
+      '#attributes' => ['id' => 'exp-servicios-wrapper-' . $captacion_nid],
       '#states' => array(
         'visible' => array(
-          ':input[name="tematica"]' => array('filled' => TRUE),
+          ':input[name="exp_tematica"]' => array('filled' => TRUE),
         ),
       ),
     ];
 
-    $form['servicios_wrapper_' . $captacion_nid]['servicios'] = [
+    $form['exp_servicios_wrapper_' . $captacion_nid]['servicios'] = [
       '#type' => 'select',
       '#title' => $this->t('Servicios'),
       '#options' => $servicios_options,
@@ -131,10 +131,10 @@ class NewExpedienteForm extends FormBase {
    * @return array
    *   Color selection section of the form.
    */
-  public function serviciosCallback(array &$form, FormStateInterface &$form_state) {
+  public function expServiciosCallback(array &$form, FormStateInterface &$form_state) {
     $form_state->setRebuild(TRUE);
     $captacion_nid = $form['captacion']['#default_value'];
-    return $form['servicios_wrapper_' . $captacion_nid];
+    return $form['exp_servicios_wrapper_' . $captacion_nid];
   }
 
   /**
@@ -148,7 +148,7 @@ class NewExpedienteForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
 
-    $tematica_tid = $form_state->getValue('tematica');
+    $tematica_tid = $form_state->getValue('exp_tematica');
     $num_expediente = assign_expediente_title($tematica_tid);
     $captacion_nid = $form_state->getValue('captacion');
     $captacion_node = Node::load($captacion_nid);
