@@ -287,6 +287,9 @@ function carbray_cliente_entity_view_mode_alter(&$view_mode, EntityInterface $en
     if (!is_numeric($uid)) {
       return;
     }
+    if ($arg[1] != 'user') {
+      return;
+    }
 
     $user = User::load($uid);
     $roles = $user->getRoles();
@@ -607,78 +610,6 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
  */
 function carbray_cliente_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
   $nid = $entity->id();
-  if ($entity->bundle() == 'propuesta') {
-    if ($display->getComponent('link_to_download')) {
-      $url = Url::fromRoute('carbray_cliente.propuesta_to_doc', array('nid' => $nid));
-
-      $build['link_to_download'] = [
-        '#type' => 'link',
-        '#url' => $url,
-        '#title' => t('Descargar propuesta doc'),
-        '#attributes' => array(
-          'target' => '_blank',
-          'class' => array(
-            'btn',
-            'btn-primary',
-          ),
-        ),
-      ];
-    }
-    if ($display->getComponent('link_to_pdf')) {
-      $nid = $entity->id();
-      $url = Url::fromRoute('carbray_cliente.propuesta_to_pdf', array('nid' => $nid));
-
-      $build['link_to_pdf'] = [
-        '#type' => 'link',
-        '#url' => $url,
-        '#title' => t('Descargar propuesta pdf'),
-        '#attributes' => array(
-//          'target' => '_blank',
-          'class' => array(
-            'btn',
-            'btn-primary',
-          ),
-        ),
-      ];
-    }
-    if ($display->getComponent('preprocessed_body')) {
-      // Define a var 'preprocess_body' that contains the body field with the [precio] and [workteam] tokens replaced.
-      $precio = $entity->get('field_propuesta_precio')->value;
-      $equipo_workers = $entity->get('field_propuesta_equipo')->getValue();
-      $entity_manager = \Drupal::entityTypeManager();
-      $trabajador_nombre_apellido = '';
-      foreach ($equipo_workers as $worker) {
-        $worker_data = $entity_manager->getStorage('user')
-          ->load($worker['target_id']);
-        $trabajador_nombre_apellido .= $worker_data->field_nombre->value . ' ' . $worker_data->field_apellido->value . '<br>';
-      }
-      // @todo: bring this back, for that we need to traverse from propuesta to captacion to cliente.
-//      $body = $entity->get('body')->value;
-//
-//      $cliente_uid = $entity->get('field_propuesta_cliente')->getValue();
-//      $user = User::load($cliente_uid[0]['target_id']);
-//      $cliente_nombre = $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value;
-//
-//      $body = str_replace('[NOMBRE]', $cliente_nombre, $body);
-//      $body = str_replace('[PRECIO]', $precio, $body);
-//      $body = str_replace('[WORKTEAM]', $trabajador_nombre_apellido, $body);
-//      $build['preprocessed_body'] = [
-//        '#markup' => $body,
-//      ];
-
-      // @todo: add link for admin to view/manage existing propuestas.
-    }
-    if ($display->getComponent('client_name')) {
-      // @todo: bring this back, for that we need to traverse from propuesta to captacion to cliente.
-
-//      $cliente_uid = $entity->get('field_propuesta_cliente')->getValue();
-//      $user = User::load($cliente_uid[0]['target_id']);
-//      $cliente_nombre = $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value;
-//      $build['client_name'] = [
-//        '#markup' => $cliente_nombre,
-//      ];
-    }
-  }
 
   if ($entity->bundle() == 'captacion') {
     $captacion_node = Node::load($nid);
@@ -733,9 +664,11 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
     }
     if ($display->getComponent('client_pais')) {
       $cliente_pais = $user->get('field_pais')->value;
-      $build['client_pais'] = [
-        '#markup' => code_to_country($cliente_pais),
-      ];
+      if ($cliente_pais) {
+        $build['client_pais'] = [
+          '#markup' => code_to_country($cliente_pais),
+        ];
+      }
     }
     if ($display->getComponent('client_captador_edit_form')) {
       $form = \Drupal::formBuilder()
