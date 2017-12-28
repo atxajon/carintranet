@@ -73,6 +73,7 @@ class NewWorkerForm extends FormBase {
     $roles = user_role_names();
     $allowed_roles = [
       'worker',
+      'secretaria',
       'carbray_administrator',
     ];
     $role_options = [];

@@ -27,11 +27,9 @@ class GestionarTrabajadoresBlock extends BlockBase {
    */
   public function build() {
     $db = \Drupal::database();
-    $sql = "SELECT uid FROM users_field_data ufd WHERE ufd.status = 1 AND uid != 1 AND uid != 0";
-
-    $results = $db->query($sql)->fetchAll();
-    foreach ($results as $worker) {
-      $user = User::load($worker->uid);
+    $results = get_carbray_workers();
+    foreach ($results as $worker_uid => $worker_email) {
+      $user = User::load($worker_uid);
       $departamento_nombre = '';
       $departamento_terms = $user->get('field_departamento')->getValue();
       if ($departamento_terms) {
@@ -47,12 +45,12 @@ class GestionarTrabajadoresBlock extends BlockBase {
             INNER JOIN node__field_objetivo_fecha_final ff on c.entity_id = ff.entity_id WHERE field_objetivo_trabajador_target_id = :uid AND field_objetivo_fecha_inicio_value < :now
             AND field_objetivo_fecha_final_value > :now";
 
-      $objetivo = $db->query($sql, array(':uid' => $worker->uid, ':now' => date('Y-m-d H:i:s')))->fetchField();
+      $objetivo = $db->query($sql, array(':uid' => $worker_uid, ':now' => date('Y-m-d H:i:s')))->fetchField();
       // No objetivo cifra? add a link to create new one for this user.
       if (!$objetivo) {
         $options = [
           'query' => [
-            'uid' => $worker->uid,
+            'uid' => $worker_uid,
           ],
           'attributes' => [
             'class' => [
@@ -68,7 +66,7 @@ class GestionarTrabajadoresBlock extends BlockBase {
       }
 
       // Make worker name surname into a link.
-      $url = Url::fromRoute('entity.user.canonical', ['user' => $worker->uid]);
+      $url = Url::fromRoute('entity.user.canonical', ['user' => $worker_uid]);
       $worker = Link::fromTextAndUrl($user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value, $url);
 
       $role = '';
@@ -100,13 +98,18 @@ class GestionarTrabajadoresBlock extends BlockBase {
       'Estado',
     );
 
-    return array(
+    $build['new_worker_link'] = [
+      '#markup' => '<a href="/crear-trabajador" class="btn btn-primary margin-bottom-20"><span class="glyphicon glyphicon-plus-sign"></span>Crear nuevo trabajador</a>',
+    ];
+    $build['table'] = [
       '#theme' => 'table',
       '#header' => $header,
       '#rows' => $rows,
       '#cache' => [
         'max-age' => 0,
       ],
-    );
+    ];
+
+    return $build;
   }
 }
