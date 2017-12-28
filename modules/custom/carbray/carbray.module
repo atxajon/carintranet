@@ -128,10 +128,10 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
 
     case 'node-plantilla-propuesta-form':
     case 'node-plantilla-propuesta-edit-form':
-//      $form['path']['#access'] = FALSE;
-//    $form['revision_log']['#access'] = FALSE;
-    $form['#attributes']['class'][] = 'block';
-    break;
+      $form['path']['#access'] = FALSE;
+      $form['revision_log']['#access'] = FALSE;
+      $form['#attributes']['class'][] = 'block';
+      break;
     case 'node-factura-form':
     case 'node-factura-edit-form':
       $form['#attributes']['class'][] = 'block';
