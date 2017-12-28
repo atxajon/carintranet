@@ -16,7 +16,7 @@ use Drupal\user\Entity\User;
 use Drupal\node\Entity\Node;
 use Drupal\carbray\ProgressBar;
 
-define('REROUTE_EMAIL_ADDRESS', 'marc.mozos@carbray.es');
+define('REROUTE_EMAIL_ADDRESS', 'atxajon@gmail.com');
 
 
 /**
