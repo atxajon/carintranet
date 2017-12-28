@@ -1052,8 +1052,8 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
       $actuaciones_nids = $db->query($sql, array(':nid' => $nid))
         ->fetchAll();
       $total_seconds = 0;
+      $actuaciones_rows = [];
       if ($actuaciones_nids) {
-        $rows = [];
         foreach ($actuaciones_nids as $actuacion_nid) {
           $file_link = '';
           if ($actuacion_nid->fid) {
@@ -1087,7 +1087,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
             '#has_plus' => FALSE,
           ];
 
-          $rows[] = array(
+          $actuaciones_rows[] = array(
             date('d-M-Y H:m:s', $actuacion_nid->created),
             $actuacion_nid->title,
             gmdate("H:i", $seconds),
@@ -1097,17 +1097,18 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
             render($build['edit_actuacion_form']),
           );
         }
+        // Add a total row at the bottom.
+        $actuaciones_rows[] = [
+          Markup::create('<b>Total:</b>'),
+          '',
+          Markup::create('<b>' . gmdate("H:i", $total_seconds) . '</b>'),
+          '',
+          '',
+          '',
+          '',
+        ];
       }
-      // Add a total row at the bottom.
-      $rows[] = [
-        Markup::create('<b>Total:</b>'),
-        '',
-        Markup::create('<b>' . gmdate("H:i", $total_seconds) . '</b>'),
-        '',
-        '',
-        '',
-        '',
-      ];
+
       $header = array(
         'Fecha creacion',
         'Actuacion',
@@ -1120,7 +1121,8 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
       $build['view_actuaciones'] = [
         '#type' => 'table',
         '#header' => $header,
-        '#rows' => $rows,
+        '#rows' => $actuaciones_rows,
+        '#empty' => t('Ninguna actuación creada aún.'),
       ];
     }
   }
@@ -1248,16 +1250,19 @@ function print_cliente_expedientes($expediente_nids) {
 
   $expediente_link_string = '';
   if (is_array($expediente_nids)) {
+    $count_expedientes = 0;
     foreach ($expediente_nids as $expediente_nid) {
       $title = get_node_title($expediente_nid);
+      $class = ($count_expedientes == 0) ? ['btn', 'btn-primary', 'btn-sm'] : ['btn', 'btn-primary', 'btn-sm', 'margin-top-10'];
       $expediente_link = Link::fromTextAndUrl($title, Url::fromRoute('entity.node.canonical', ['node' => $expediente_nid], array(
         'attributes' => array(
           'target' => '_blank',
-          'class' => array('btn', 'btn-primary', 'btn-sm')
+          'class' => $class,
         ),
       )));
       $expediente_link_string .= $expediente_link->toString()
           ->getGeneratedLink() . '<br>';
+      $count_expedientes ++;
     }
   }
   else {
