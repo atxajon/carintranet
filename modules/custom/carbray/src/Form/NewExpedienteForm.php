@@ -7,8 +7,7 @@ namespace Drupal\carbray\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
-use Drupal\user\Entity\User;
-
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * NewExpedienteForm form.
@@ -214,5 +213,11 @@ class NewExpedienteForm extends FormBase {
 
     drupal_set_message('Expediente ' . $num_expediente . ' para ' . $captacion_node->label() . ' ha sido creado');
 
+    // Redirect to the newly created expediente.
+    $options = ['absolute' => TRUE];
+    $url = \Drupal\Core\Url::fromRoute('entity.node.canonical', ['node' => $expediente->id()], $options);
+    $url = $url->toString();
+    $response = new RedirectResponse($url);
+    $response->send();
   }
 }

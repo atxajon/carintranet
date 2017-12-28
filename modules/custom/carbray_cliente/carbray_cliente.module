@@ -822,7 +822,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
           '#theme' => 'button_modal',
           '#unique_id' => 'new-expediente-captacion_nid-' . $captacion_node->id(),
           '#button_text' => 'Nuevo expediente',
-          '#button_classes' => 'btn btn-primary btn-sm',
+          '#button_classes' => 'btn btn-primary btn-sm margin-top-10',
           '#modal_title' => t('Nuevo expediente'),
           '#modal_content' => $form,
           '#has_plus' => TRUE,
