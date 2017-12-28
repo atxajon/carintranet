@@ -68,6 +68,8 @@ class ClientesProduccion extends BlockBase {
       '#rows' => $rows,
       '#empty' => t('Ningun cliente en produccion.'),
     );
+    // Disable caching...
+    $build['#cache']['max-age'] = 0;
     return $build;
   }
 }
