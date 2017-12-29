@@ -37,6 +37,7 @@ class WorkerInfo extends BlockBase {
     $build['worker_info'] = [
       '#markup' => '<div class="worker-info-container"><h1 class="text-center">' . $name . '</h1>' . '<h4 class="text-center">' . $department . '</h4></div>',
     ];
+    $build['#cache']['max-age'] = 0;
     return $build;
   }
 }
