@@ -221,6 +221,12 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['node']['expediente']['display']['exp_responsables'] = array(
+    'label' => t('Expediente responsables'),
+    'description' => t('Expediente responsables.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
   $extra['node']['expediente']['display']['anadir_nota'] = array(
     'label' => t('Añadir nota'),
     'description' => t('Boton para crear una nueva nota.'),
@@ -884,6 +890,13 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
       $archive_exp_form = \Drupal::formBuilder()
         ->getForm('Drupal\carbray\Form\ArchiveExpediente', $entity->id());
       $build['archive_expediente'] = $archive_exp_form;
+    }
+
+    if ($display->getComponent('exp_responsables')) {
+      $responsables = print_cliente_captadores_responsables($entity->get('field_expediente_responsable')->getValue());
+      $build['exp_responsables'] = [
+        '#markup' => $responsables,
+      ];
     }
 
     if ($display->getComponent('anadir_nota')) {
