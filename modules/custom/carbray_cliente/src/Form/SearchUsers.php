@@ -46,9 +46,7 @@ class SearchUsers extends FormBase {
       '#value' => $this->t('Search'),
       '#button_type' => 'primary',
     );
-    $form['log_out'] = array(
-      '#markup' => '<a class="log-out-link pull-right" href="/user/logout">Log Out</a>',
-    );
+
     return $form;
   }
 
