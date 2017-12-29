@@ -1171,7 +1171,8 @@ function print_cliente_captadores_responsables($workers) {
   $workers_string = '';
   foreach ($workers as $worker_uid) {
     $worker_uid = $worker_uid['target_id'];
-    $worker = get_cliente_nombre($worker_uid);
+    $user = User::load($worker_uid);
+    $worker = $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value;
     $workers_string .= $worker . '<br>';
   }
   $worker_markup = Markup::create($workers_string);
