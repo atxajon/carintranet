@@ -79,6 +79,12 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['node']['captacion']['display']['captacion_captadores'] = array(
+    'label' => t('Captadores'),
+    'description' => t('Captadores.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
   $extra['node']['captacion']['display']['archive_captacion'] = array(
     'label' => t('Archive captacion'),
     'description' => t('Archive captacion.'),
@@ -647,6 +653,13 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         '#modal_title' => t('Editar captacion'),
         '#modal_content' => $form,
       );
+    }
+
+    if ($display->getComponent('captacion_captadores')) {
+      $captadores = print_cliente_captadores_responsables($entity->get('field_captacion_captador')->getValue());
+      $build['captacion_captadores'] = [
+        '#markup' => $captadores,
+      ];
     }
 
     if ($display->getComponent('archive_captacion')) {

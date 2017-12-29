@@ -47,7 +47,10 @@
             <h3 class="text-center">{{ 'Informacion de la captacion'|trans }}</h3>
           </div>
           <div class="panel-body">
-            {{ content.field_captacion_captador }}
+            <div class="margin-bottom-20">
+              <div class="field--label">Captador:</div>
+              {{ content.captacion_captadores }}
+            </div>
             {{ content.client_captador_edit_form }}
             <div class="tematica-table margin-top-20">{{ content.view_tematica }}</div>
             <div class="margin-bottom-20">{{ content.assign_tematica }}</div>
