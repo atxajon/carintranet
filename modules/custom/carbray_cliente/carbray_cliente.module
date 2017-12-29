@@ -215,6 +215,12 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['node']['expediente']['display']['archive_expediente'] = array(
+    'label' => t('Archive expediente'),
+    'description' => t('Archive expediente.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
   $extra['node']['expediente']['display']['anadir_nota'] = array(
     'label' => t('Añadir nota'),
     'description' => t('Boton para crear una nueva nota.'),
@@ -473,13 +479,21 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
 
         $actuacion_link_markup = Markup::create($actuacion_link_string);
 
+        $row_class = 'captacion-row';
+        if (!$expediente_data->isPublished()) {
+          $row_class = 'captacion-archivada-row';
+        }
+
         $expedientes_rows[] = array(
-          $expediente_data->label(),
-          print_cliente_captadores_responsables($expediente_data->get('field_expediente_responsable')
+          'data' => array(
+            $expediente_data->label(),
+            print_cliente_captadores_responsables($expediente_data->get('field_expediente_responsable')
               ->getValue()),
-          $servicio_nombre,
-          print_cliente_expedientes($expediente->expediente_nid),
-          $actuacion_link_markup,
+            $servicio_nombre,
+            print_cliente_expedientes($expediente->expediente_nid),
+            $actuacion_link_markup,
+          ),
+          'class' => [$row_class],
         );
       }
       $header = array(
@@ -865,6 +879,12 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
     $uid = $db->query($sql, array(':expediente_nid' => $entity->id()))
       ->fetchField();
     $user = User::load($uid);
+
+    if ($display->getComponent('archive_expediente')) {
+      $archive_exp_form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray\Form\ArchiveExpediente', $entity->id());
+      $build['archive_expediente'] = $archive_exp_form;
+    }
 
     if ($display->getComponent('anadir_nota')) {
       $form = \Drupal::formBuilder()

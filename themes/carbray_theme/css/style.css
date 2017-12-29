@@ -175,6 +175,11 @@ ul {
   display: block;
 }
 
+/*Hides primary tabs; internal workers have the right to view unpublished content by permission 'bypass content rules...', and this makes view/edit tabs visible!*/
+.tabs--primary {
+  display: none;
+}
+
 /* collapsed sidebar styles */
 @media screen and (max-width: 767px) {
   .row-offcanvas-left {
