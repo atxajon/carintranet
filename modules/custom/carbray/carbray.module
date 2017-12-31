@@ -597,6 +597,8 @@ function get_carbray_workers($just_active = FALSE, $by_role = '') {
   if ($just_active) {
     $sql .= ' AND status = 1';
   }
+  $sql .= ' ORDER BY mail ASC';
+
   return $db->query($sql)->fetchAllKeyed();
 }
 
