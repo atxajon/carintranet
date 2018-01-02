@@ -34,6 +34,9 @@ class ClientesProduccion extends BlockBase {
       }
 
       $expedientes = get_expedientes_for_captacion($cliente->captacion_nid);
+      if (!$expedientes) {
+        continue;
+      }
       $expedientes_nids = array_values($expedientes);
 
       // @todo: add logic to allow for multiple captaciones for this cliente...
