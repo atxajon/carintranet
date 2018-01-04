@@ -928,7 +928,7 @@ function carbray_mail($key, &$message, $params) {
   switch ($key) {
     case'notify_secretaria_new_factura':
       $message['from'] = \Drupal::config('system.site')->get('mail');
-      $message['subject'] = t('Nueva factura creada');
+      $message['subject'] = t('Tienes otra factura');
       $message['body'][] = carbray_emailer_new_factura($params);
       break;
     case'notify_captador_factura_paid':
@@ -940,9 +940,10 @@ function carbray_mail($key, &$message, $params) {
 }
 
 function carbray_emailer_new_factura($params) {
-  $proforma_factura_text = ($params['proforma']) ? 'Proforma' : 'Factura';
-  $output = $proforma_factura_text . " creada por " . $params['captador'] . " pendiente de revision. Detalles: ";
-  $output .= '<br><br>' . 'NIF: ' . $params['nif'] . '<br>Cliente: ' . $params['cliente'] . ', email: ' . $params['email'] . ', telefono: ' . $params['telefono'] . '<br>Precio: ' . $params['precio'] . '<br>Direccion: ' . $params['direccion'];
+//  $proforma_factura_text = ($params['proforma']) ? 'Proforma' : 'Factura';
+//  $output = $proforma_factura_text . " creada por " . $params['captador'] . " pendiente de revision. Detalles: ";
+//  $output .= '<br><br>' . 'NIF: ' . $params['nif'] . '<br>Cliente: ' . $params['cliente'] . ', email: ' . $params['email'] . ', telefono: ' . $params['telefono'] . '<br>Precio: ' . $params['precio'] . '<br>Direccion: ' . $params['direccion'];
+  $output = 'Una nueva factura ha sido creada. Texto de prueba.';
   return $output;
 }
 
