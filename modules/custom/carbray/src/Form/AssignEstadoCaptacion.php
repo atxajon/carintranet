@@ -69,6 +69,10 @@ class AssignEstadoCaptacion extends FormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
+    $estado = $form_state->getValue('estado');
+    if (!$estado) {
+      $form_state->setErrorByName('estado', t('Selecciona un estado de captacion.'));
+    }
   }
 
   /**
