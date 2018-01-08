@@ -1163,17 +1163,21 @@ function get_client_estado_captacion($uid) {
 }
 
 function print_cliente_link($cliente, $link = TRUE) {
-  // Build column 'Nombre': link to user page with nombre and apellido as text.
-  $nombre = $cliente->get('field_nombre')->value;
-  $apellido = $cliente->get('field_apellido')->value;
-  $nombre_apellido = $nombre . ' ' . $apellido;
-  if ($link) {
-    $url = Url::fromRoute('entity.user.canonical', array('user' => $cliente->id()));
-    $user_link = Link::fromTextAndUrl($nombre_apellido, $url);
+  $user_link = '';
+  if ($cliente) {
+    // Build column 'Nombre': link to user page with nombre and apellido as text.
+    $nombre = $cliente->get('field_nombre')->value;
+    $apellido = $cliente->get('field_apellido')->value;
+    $nombre_apellido = $nombre . ' ' . $apellido;
+    if ($link) {
+      $url = Url::fromRoute('entity.user.canonical', array('user' => $cliente->id()));
+      $user_link = Link::fromTextAndUrl($nombre_apellido, $url);
+    }
+    else {
+      $user_link = $nombre_apellido;
+    }
   }
-  else {
-    $user_link = $nombre_apellido;
-  }
+
   return $user_link;
 }
 
