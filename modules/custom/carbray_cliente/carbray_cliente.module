@@ -735,7 +735,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
 
       $estado_term = $captacion_node->get('field_captacion_estado_captacion')->entity;
       $estados_tids_that_show_propuesta = array(43, 44, 45, 46);
-      $estados_tids_that_show_factura = array(47, 48, 49, 50, 51);
+      $estados_tids_that_show_factura = array(52);
       $estados_tids_that_show_expediente = array(52, 53, 54, 55);
 
       if (in_array($estado_term->id(), $estados_tids_that_show_propuesta)) {
