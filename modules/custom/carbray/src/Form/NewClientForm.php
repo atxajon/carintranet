@@ -74,12 +74,17 @@ class NewClientForm extends FormBase {
     // @todo: añadir campo identificacion??
 
     $internal_users = get_carbray_workers(TRUE);
+    $internal_users_options = [];
+    foreach ($internal_users as $uid => $email) {
+      $user = User::load($uid);
+      $internal_users_options[$uid] = $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value;
+    }
     $current_user = \Drupal::currentUser();
     $current_user_uid = $current_user->id();
     $form['captador'] = array(
       '#type' => 'checkboxes',
       '#title' => 'Captador',
-      '#options' => $internal_users,
+      '#options' => $internal_users_options,
       '#default_value' => array($current_user_uid),
       '#multiple' => TRUE,
     );
