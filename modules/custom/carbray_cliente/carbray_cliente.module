@@ -197,6 +197,12 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['node']['captacion']['display']['client_email'] = array(
+    'label' => t('Client email'),
+    'description' => t('Client email.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
   $extra['node']['captacion']['display']['client_fecha_alta'] = array(
     'label' => t('Client fecha alta'),
     'description' => t('Client fecha alta.'),
@@ -682,6 +688,14 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         '#markup' => render($user_link),
       ];
     }
+    if ($display->getComponent('client_email')) {
+      $client_email = $user->getEmail();
+      $build['client_email'] = [
+        '#markup' => $client_email,
+      ];
+    }
+
+
     if ($display->getComponent('client_fecha_alta')) {
       $fecha_alta_timestamp = strtotime($user->get('field_fecha_alta')->value);
       $cliente_fecha_alta = date('d-M-Y',$fecha_alta_timestamp);
