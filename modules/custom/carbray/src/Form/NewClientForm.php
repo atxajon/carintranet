@@ -37,19 +37,16 @@ class NewClientForm extends FormBase {
       '#type' => 'textfield',
       '#title' => 'Apellido',
       '#size' => '20',
-      '#required' => TRUE,
     );
     $form['email'] = array(
       '#type' => 'textfield',
       '#title' => 'Email',
       '#size' => '20',
-      '#required' => TRUE,
     );
     $form['telefono'] = array(
       '#type' => 'textfield',
       '#title' => 'Telefono',
       '#size' => '20',
-      '#required' => TRUE,
     );
     $countries = \Drupal::service('country_manager')->getList();
     $form['pais'] = array(
@@ -68,7 +65,6 @@ class NewClientForm extends FormBase {
       '#title' => 'Procedencia',
       '#options' => $options,
       '#empty_option' => ' - Selecciona procedencia - ',
-      '#required' => TRUE,
     );
 
     // @todo: añadir campo identificacion??
@@ -103,19 +99,19 @@ class NewClientForm extends FormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-    $email = $form_state->getValue('email');
-    $unique_email = email_already_in_system($email);
-    if (filter_var($email, FILTER_VALIDATE_EMAIL) === FALSE) {
-      $form_state->setErrorByName('email', t('The email address %mail is not valid.', array('%mail' => $email)));
-    }
-    if ($unique_email) {
-      $form_state->setErrorByName('email', t('A user with email address %mail already exists in the system. Please use a different email.', array('%mail' => $email)));
-    }
-
-    $telefono = $form_state->getValue('telefono');
-    if (strlen($telefono) < 6) {
-      $form_state->setErrorByName('telefono', t('El numero de telefono tiene que tener un minimo de 6 dígitos'));
-    }
+//    $email = $form_state->getValue('email');
+//    $unique_email = email_already_in_system($email);
+//    if (filter_var($email, FILTER_VALIDATE_EMAIL) === FALSE) {
+//      $form_state->setErrorByName('email', t('The email address %mail is not valid.', array('%mail' => $email)));
+//    }
+//    if ($unique_email) {
+//      $form_state->setErrorByName('email', t('A user with email address %mail already exists in the system. Please use a different email.', array('%mail' => $email)));
+//    }
+//
+//    $telefono = $form_state->getValue('telefono');
+//    if (strlen($telefono) < 6) {
+//      $form_state->setErrorByName('telefono', t('El numero de telefono tiene que tener un minimo de 6 dígitos'));
+//    }
   }
 
   /**
@@ -127,7 +123,7 @@ class NewClientForm extends FormBase {
     $apellido = $form_state->getValue('apellido');
     $email = $form_state->getValue('email');
     // If no email for a client populate it with nombre + apellido + placeholder.
-    $email = ($email) ? $email : 'sin_email@' . $nombre . '_' . $apellido . '.com';
+    $email = ($email) ? $email : 'sin_email@' . $nombre . '_' . time() . '.com';
     $telefono = $form_state->getValue('telefono');
     $pais = $form_state->getValue('pais');
     $procedencia = $form_state->getValue('procedencia');
