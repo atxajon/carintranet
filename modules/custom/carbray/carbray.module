@@ -200,6 +200,14 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
       }
 
       break;
+    case 'node-propuesta-plantilla-form':
+    case 'node-propuesta-plantilla-edit-form':
+    foreach (array_keys($form['actions']) as $action) {
+      if ($action != 'preview' && isset($form['actions'][$action]['#type']) && $form['actions'][$action]['#type'] === 'submit') {
+        $form['actions'][$action]['#submit'][] = 'redirect_to_manage_propuestas';
+      }
+    }
+      break;
   }
 }
 
@@ -233,6 +241,11 @@ function send_email_secretaria(array &$form, FormStateInterface $form_state){
     $mssg = ($sent) ? 'Email sent to users of role secretaria as a new factura has been created' : '';
     \Drupal::logger('carbray')->warning($mssg);
   }
+}
+
+function redirect_to_manage_propuestas() {
+  $response = new RedirectResponse('/edit-propuesta-plantillas');
+  $response->send();
 }
 
 function carbray_entity_presave(EntityInterface $entity){
