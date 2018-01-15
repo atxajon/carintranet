@@ -1076,6 +1076,8 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
           // Get the minutes values for the actuacion and transform it to seconds for correct display.
           $minutes = $actuacion_node->get('field_actuacion_tiempo_en_seg')->value;
           $seconds = $minutes * 60;
+          $hours = floor($seconds / 3600);
+          $minutes = floor(($seconds / 60) % 60);
           $total_seconds += $seconds;
 
           $edit_form = \Drupal::formBuilder()
@@ -1093,18 +1095,21 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
           $actuaciones_rows[] = array(
             date('d-m-y H:m:s', $actuacion_nid->created),
             $actuacion_nid->title,
-            gmdate("H:i", $seconds),
+            $hours . ':' . $minutes,
             Markup::create($actuacion_nid->field_nota_nota_value),
             $file_link,
             get_cliente_nombre($actuacion_nid->uid),
             render($build['edit_actuacion_form']),
           );
         }
+
         // Add a total row at the bottom.
+        $total_hours = floor($total_seconds / 3600);
+        $total_minutes = floor(($total_seconds / 60) % 60);
         $actuaciones_rows[] = [
           Markup::create('<b>Total:</b>'),
           '',
-          Markup::create('<b>' . gmdate("H:i", $total_seconds) . '</b>'),
+          Markup::create('<b>' . $total_hours . ':' . $total_minutes . '</b>'),
           '',
           '',
           '',
