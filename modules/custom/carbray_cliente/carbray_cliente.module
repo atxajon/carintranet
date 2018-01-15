@@ -1164,8 +1164,6 @@ function get_my_clients($worker_uid, $estado = 'captacion') {
 
   $clientes_uids = $db->query($sql, array(':uid' => $worker_uid))
     ->fetchAll();
-  ksm($estado, 'estado');
-ksm($clientes_uids, 'clientes uids');
   return $clientes_uids;
 }
 
