@@ -210,6 +210,13 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
       }
     }
       break;
+    case 'user-cancel-form':
+      foreach (array_keys($form['actions']) as $action) {
+        if ($action != 'preview' && isset($form['actions'][$action]['#type']) && $form['actions'][$action]['#type'] === 'submit') {
+          $form['actions'][$action]['#submit'][] = 'redirect_on_delete_user';
+        }
+      }
+      break;
   }
 }
 
@@ -248,6 +255,12 @@ function send_email_secretaria(array &$form, FormStateInterface $form_state){
 function redirect_to_manage_propuestas() {
   $response = new RedirectResponse('/edit-propuesta-plantillas');
   $response->send();
+}
+
+function redirect_on_delete_user($form, FormStateInterface $form_state) {
+  // Finally redirect to home.
+  $url = Url::fromUri('entity:node/33');
+  $form_state->setRedirectUrl($url);
 }
 
 function carbray_entity_presave(EntityInterface $entity){

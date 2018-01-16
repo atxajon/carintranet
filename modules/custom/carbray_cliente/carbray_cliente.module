@@ -7,7 +7,6 @@
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
-use Drupal\Core\Routing;
 use Drupal\user\Entity\User;
 use Drupal\Core\Url;
 use Drupal\Core\Link;
@@ -15,6 +14,8 @@ use Drupal\Core\Render\Markup;
 use Drupal\node\Entity\Node;
 use Drupal\file\Entity\File;
 use Drupal\taxonomy\Entity\Term;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
 
 define('CAPTACION_ARCHIVADA', 184);
 
@@ -1436,7 +1437,6 @@ ORDER BY fc.entity_id DESC';
 /**
  * Returns all facturas for the clientes of a given captador.
  * @param $captador_uid
- * @return mixed
  */
 function get_facturas_mis_clientes($captador_uid) {
   $db = \Drupal::database();
@@ -1444,4 +1444,98 @@ function get_facturas_mis_clientes($captador_uid) {
 WHERE field_factura_target_id IN (SELECT entity_id FROM node__field_captacion_captador WHERE field_captacion_captador_target_id = :captador_uid) ORDER BY entity_id DESC";
   $my_facturas = $db->query($sql, [':captador_uid' => $captador_uid])->fetchAll();
   return $my_facturas;
+}
+
+/**
+ * Implements hook_user_delete().
+ * @param $account
+ */
+function carbray_cliente_user_delete($account) {
+  $uid_deleted = $account->id();
+
+  /**
+   * Delete all content for the user: captaciones, expedientes, actuaciones, expedientes, notas of captacion, notas of expediente...
+   */
+  $nids_to_delete = [];
+  $captaciones_nids = [];
+  $expedientes_nids = [];
+  $actuaciones_nids = [];
+  $captaciones = \Drupal::entityQuery('node')
+    ->condition('type', 'captacion')
+    ->condition('field_captacion_cliente', $uid_deleted)
+    ->execute();
+  foreach ($captaciones as $captacion) {
+    $nids_to_delete[] = $captacion;
+    $captaciones_nids[] = $captacion;
+  }
+
+  $facturas = \Drupal::entityQuery('node')
+    ->condition('type', 'factura')
+    ->condition('field_factura', $captaciones_nids, 'IN')
+    ->execute();
+  foreach ($facturas as $factura) {
+    $nids_to_delete[] = $factura;
+  }
+
+  $expedientes = \Drupal::entityQuery('node')
+    ->condition('type', 'expediente')
+    ->condition('field_expediente_captacion', $captaciones_nids, 'IN')
+    ->execute();
+  foreach ($expedientes as $expediente) {
+    $nids_to_delete[] = $expediente;
+    $expedientes_nids[] = $expediente;
+  }
+
+  $actuaciones = \Drupal::entityQuery('node')
+    ->condition('type', 'actuacion')
+    ->condition('field_actuacion_expediente', $expedientes_nids, 'IN')
+    ->execute();
+  foreach ($actuaciones as $actuacion) {
+    $nids_to_delete[] = $actuacion;
+    $actuaciones_nids[] = $actuacion;
+  }
+
+  if ($captaciones_nids) {
+    $notas_captacion = \Drupal::entityQuery('node')
+      ->condition('type', 'nota')
+      ->condition('field_captacion_nota', $captaciones_nids, 'IN')
+      ->execute();
+    foreach ($notas_captacion as $nota_captacion) {
+      $nids_to_delete[] = $nota_captacion;
+    }
+  }
+
+  if ($expedientes_nids) {
+    $notas_expediente = \Drupal::entityQuery('node')
+      ->condition('type', 'nota')
+      ->condition('field_expediente_nota', $expedientes_nids, 'IN')
+      ->execute();
+    foreach ($notas_expediente as $nota_expediente) {
+      $nids_to_delete[] = $nota_expediente;
+    }
+  }
+
+  if ($actuaciones_nids) {
+    $notas_actuacion = \Drupal::entityQuery('node')
+      ->condition('type', 'nota')
+      ->condition('field_actuacion_nota', $actuaciones_nids, 'IN')
+      ->execute();
+    foreach ($notas_actuacion as $nota_actuacion) {
+      $nids_to_delete[] = $nota_actuacion;
+    }
+  }
+
+  // Delete also carbray_cliente_captacion_expediente table content.
+  $query = \Drupal::database()->delete('carbray_user_captacion_expediente');
+  $query->condition('uid', $account->id());
+  $query->execute();
+
+  if (!empty($nids_to_delete)) {
+    foreach ($nids_to_delete as $nid) {
+      $node = Node::load($nid);
+      $node->delete();
+      \Drupal::logger('carbray_cliente')->notice('Deleted node: ' . $nid . ' as content that belonged to uid:  ' . $account->id() . ' got deleted ');
+    }
+  }
+
 }
