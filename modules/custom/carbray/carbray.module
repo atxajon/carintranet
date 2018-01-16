@@ -133,7 +133,9 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
       $form['#attributes']['class'][] = 'block';
       break;
     case 'node-factura-form':
-    case 'node-factura-edit-form':
+      // @todo: if carbray request opening up editing factura nodes, will need to uncomment the following and work out
+      // a way to assume the editing path contains query string parameters that allow loading captacion and cliente data...
+//    case 'node-factura-edit-form':
       $form['#attributes']['class'][] = 'block';
       $form['#attached']['library'][] = 'carbray/factura_calculator';
 

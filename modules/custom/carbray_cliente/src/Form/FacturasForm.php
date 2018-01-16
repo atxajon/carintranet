@@ -88,6 +88,7 @@ class FacturasForm extends FormBase {
         'iva' => $iva,
         'precio' => $factura_node->get('field_factura_precio')->value,
         'fecha' => date('d-m-Y H:i:s', $factura_node->created->value),
+        'fecha_captacion' => date('d-m-Y H:i:s', $captacion_node->created->value),
       );
     }
 
@@ -99,6 +100,7 @@ class FacturasForm extends FormBase {
       'iva' => t('IVA'),
       'precio' => t('Precio'),
       'fecha' => t('Fecha creacion'),
+      'fecha_captacion' => t('Fecha creacion captación'),
     );
 
     $form['table'] = array(
