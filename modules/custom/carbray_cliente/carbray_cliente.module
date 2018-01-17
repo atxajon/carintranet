@@ -1474,33 +1474,24 @@ function carbray_cliente_user_delete($account) {
     $captaciones_nids[] = $captacion;
   }
 
-  $facturas = \Drupal::entityQuery('node')
-    ->condition('type', 'factura')
-    ->condition('field_factura', $captaciones_nids, 'IN')
-    ->execute();
-  foreach ($facturas as $factura) {
-    $nids_to_delete[] = $factura;
-  }
-
-  $expedientes = \Drupal::entityQuery('node')
-    ->condition('type', 'expediente')
-    ->condition('field_expediente_captacion', $captaciones_nids, 'IN')
-    ->execute();
-  foreach ($expedientes as $expediente) {
-    $nids_to_delete[] = $expediente;
-    $expedientes_nids[] = $expediente;
-  }
-
-  $actuaciones = \Drupal::entityQuery('node')
-    ->condition('type', 'actuacion')
-    ->condition('field_actuacion_expediente', $expedientes_nids, 'IN')
-    ->execute();
-  foreach ($actuaciones as $actuacion) {
-    $nids_to_delete[] = $actuacion;
-    $actuaciones_nids[] = $actuacion;
-  }
-
   if ($captaciones_nids) {
+    $facturas = \Drupal::entityQuery('node')
+      ->condition('type', 'factura')
+      ->condition('field_factura', $captaciones_nids, 'IN')
+      ->execute();
+    foreach ($facturas as $factura) {
+      $nids_to_delete[] = $factura;
+    }
+
+    $expedientes = \Drupal::entityQuery('node')
+      ->condition('type', 'expediente')
+      ->condition('field_expediente_captacion', $captaciones_nids, 'IN')
+      ->execute();
+    foreach ($expedientes as $expediente) {
+      $nids_to_delete[] = $expediente;
+      $expedientes_nids[] = $expediente;
+    }
+
     $notas_captacion = \Drupal::entityQuery('node')
       ->condition('type', 'nota')
       ->condition('field_captacion_nota', $captaciones_nids, 'IN')
@@ -1510,6 +1501,7 @@ function carbray_cliente_user_delete($account) {
     }
   }
 
+
   if ($expedientes_nids) {
     $notas_expediente = \Drupal::entityQuery('node')
       ->condition('type', 'nota')
@@ -1517,6 +1509,15 @@ function carbray_cliente_user_delete($account) {
       ->execute();
     foreach ($notas_expediente as $nota_expediente) {
       $nids_to_delete[] = $nota_expediente;
+    }
+
+    $actuaciones = \Drupal::entityQuery('node')
+      ->condition('type', 'actuacion')
+      ->condition('field_actuacion_expediente', $expedientes_nids, 'IN')
+      ->execute();
+    foreach ($actuaciones as $actuacion) {
+      $nids_to_delete[] = $actuacion;
+      $actuaciones_nids[] = $actuacion;
     }
   }
 
