@@ -1152,12 +1152,17 @@ function get_my_clients($worker_uid, $estado = 'captacion') {
   $db = \Drupal::database();
 
   if ($estado == 'captacion') {
-    // @todo: this query should show users with captacion estado less than 52 AND no expedientes created yet!
-    // @todo: otherwise an admin changes a captacion's estado to production ready BUT does not create an expediente yet, and results in client not showing anymore on the clientes en captacion block, hence impossible to make changes on that user!
-    $sql = "SELECT field_captacion_cliente_target_id as uid, entity_id as captacion_nid FROM node__field_captacion_cliente WHERE entity_id IN (SELECT c.entity_id from node__field_captacion_captador c INNER JOIN node__field_captacion_estado_captacion e on c.entity_id = e.entity_id WHERE field_captacion_captador_target_id = :uid) ORDER BY uid DESC";
+    // Show users with no expedientes created yet as long as their captacion is not on status 'archivada' (tid 184).
+    $sql = "SELECT field_captacion_cliente_target_id as uid, cc.entity_id as captacion_nid FROM node__field_captacion_cliente cc INNER JOIN node__field_captacion_estado_captacion e on cc.entity_id = e.entity_id
+WHERE cc.entity_id IN (
+	SELECT c.entity_id from node__field_captacion_captador c WHERE 	field_captacion_captador_target_id = :uid) 
+AND cc.entity_id NOT IN (
+	SELECT ec.field_expediente_captacion_target_id FROM node__field_expediente_captacion ec) 
+AND field_captacion_estado_captacion_target_id != 184	
+ORDER BY uid DESC";
   }
   else {
-    // Client's Captacion node is in estado produccion.
+    // Client (his captacion) has an expediente.
     $sql = "Select field_captacion_cliente_target_id as uid, entity_id as captacion_nid FROM node__field_captacion_cliente cc
 	WHERE cc.entity_id IN (SELECT field_expediente_captacion_target_id as captacion_nid FROM node__field_expediente_captacion ec
 		WHERE ec.entity_id IN (SELECT entity_id as expediente_nid FROM node__field_expediente_responsable er WHERE er.field_expediente_responsable_target_id = :uid))";
