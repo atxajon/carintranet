@@ -99,19 +99,30 @@ class NewClientForm extends FormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-//    $email = $form_state->getValue('email');
-//    $unique_email = email_already_in_system($email);
-//    if (filter_var($email, FILTER_VALIDATE_EMAIL) === FALSE) {
-//      $form_state->setErrorByName('email', t('The email address %mail is not valid.', array('%mail' => $email)));
-//    }
-//    if ($unique_email) {
-//      $form_state->setErrorByName('email', t('A user with email address %mail already exists in the system. Please use a different email.', array('%mail' => $email)));
-//    }
-//
-//    $telefono = $form_state->getValue('telefono');
-//    if (strlen($telefono) < 6) {
-//      $form_state->setErrorByName('telefono', t('El numero de telefono tiene que tener un minimo de 6 dígitos'));
-//    }
+    $email = $form_state->getValue('email');
+    $telefono = $form_state->getValue('telefono');
+
+    if (!$email && !$telefono) {
+      $form_state->setErrorByName('email', t('Por favor introduce email o telefono del cliente'));
+    }
+    if ($email) {
+      if (filter_var($email, FILTER_VALIDATE_EMAIL) === FALSE) {
+        $form_state->setErrorByName('email', t('El email %mail no es válido.', array('%mail' => $email)));
+      }
+      $found_email = email_already_in_system($email);
+      if ($found_email) {
+        $form_state->setErrorByName('email', t('Ya hay un cliente en el sistema con este email, por favor verifica que no sea un duplicado.'));
+      }
+    }
+
+    if ($telefono && !$email) {
+      $telefono = str_replace(' ','',$telefono);
+      $found_phone = phone_already_in_system($telefono);
+      if ($found_phone) {
+        $form_state->setErrorByName('telefono', t('Ya hay un cliente en el sistema con este telefono, por favor verifica que no sea un duplicado.'));
+      }
+    }
+
   }
 
   /**
