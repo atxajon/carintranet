@@ -32,11 +32,16 @@ class EditCaptacion extends FormBase {
     );
 
     $internal_users = get_carbray_workers(TRUE);
+    $internal_users_options = [];
+    foreach ($internal_users as $uid => $email) {
+      $user = User::load($uid);
+      $internal_users_options[$uid] = $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value;
+    }
     $current_captador = get_captacion_captador($nid);
     $form['captador'] = array(
       '#type' => 'checkboxes',
       '#title' => 'Captador',
-      '#options' => $internal_users,
+      '#options' => $internal_users_options,
       '#default_value' => $current_captador,
       '#multiple' => TRUE,
       '#required' => TRUE,

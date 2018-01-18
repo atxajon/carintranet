@@ -228,6 +228,12 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['node']['expediente']['display']['edit_expediente'] = array(
+    'label' => t('Edit expediente'),
+    'description' => t('Edit expediente.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
   $extra['node']['expediente']['display']['archive_expediente'] = array(
     'label' => t('Archive expediente'),
     'description' => t('Archive expediente.'),
@@ -914,6 +920,20 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
       ->fetchField();
     $user = User::load($uid);
 
+
+    if ($display->getComponent('edit_expediente')) {
+      $form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray\Form\EditExpediente', $nid);
+      $build['edit_expediente'] = array(
+        '#theme' => 'button_modal',
+        '#unique_id' => 'edit-captacion-' . $nid,
+        '#button_text' => 'Editar expediente',
+        '#button_classes' => 'btn btn-warning pull-left',
+        '#modal_title' => t('Editar expediente'),
+        '#modal_content' => $form,
+      );
+    }
+
     if ($display->getComponent('archive_expediente')) {
       $archive_exp_form = \Drupal::formBuilder()
         ->getForm('Drupal\carbray\Form\ArchiveExpediente', $entity->id());
@@ -1368,6 +1388,18 @@ function get_captacion_cliente($nid) {
 function get_captacion_captador($nid) {
   $db = \Drupal::database();
   $sql = "SELECT field_captacion_captador_target_id FROM node__field_captacion_captador WHERE entity_id = :nid";
+  $data = $db->query($sql, array(':nid' => $nid))->fetchCol();
+  return $data;
+}
+
+/**
+ * Given a expediente nid return its responsable(s).
+ *
+ * @param $nid
+ */
+function get_expediente_responsable($nid) {
+  $db = \Drupal::database();
+  $sql = "SELECT field_expediente_responsable_target_id FROM node__field_expediente_responsable WHERE entity_id = :nid";
   $data = $db->query($sql, array(':nid' => $nid))->fetchCol();
   return $data;
 }
