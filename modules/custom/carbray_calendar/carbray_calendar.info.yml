@@ -1,0 +1,4 @@
+name: Carbray Calendar
+type: module
+description: Provides calendar funcitonality.
+core: 8.x

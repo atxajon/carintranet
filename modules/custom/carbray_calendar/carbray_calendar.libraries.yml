@@ -1,0 +1,12 @@
+fullcalendar:
+  version: 3.8
+  css:
+    theme:
+#      css/fullcalendar.print.min.css: {}
+      css/fullcalendar.min.css: {}
+  js:
+    js/moment.min.js: {}
+    js/fullcalendar.min.js: {}
+    js/custom.js: {}
+  dependencies:
+     - core/jquery
