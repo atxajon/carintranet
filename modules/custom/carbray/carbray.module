@@ -646,7 +646,10 @@ function get_parent_of_child_term($tid) {
   // Get parent term of given child $tid.
   $ancestors =\Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadAllParents($tid);
   $parent = end($ancestors);
-  $parent_label = $parent->label();
+  $parent_label = '';
+  if ($parent) {
+    $parent_label = $parent->label();
+  }
   // If you need the id:
   // $parent->id();
   return $parent_label;
