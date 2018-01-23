@@ -656,16 +656,27 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
     $user = User::load($cliente_uid[0]['target_id']);
 
     if ($display->getComponent('edit_captacion')) {
-      $form = \Drupal::formBuilder()
-        ->getForm('Drupal\carbray\Form\EditCaptacion', $nid);
-      $build['edit_captacion'] = array(
-        '#theme' => 'button_modal',
-        '#unique_id' => 'edit-captacion-' . $nid,
-        '#button_text' => 'Editar captacion',
-        '#button_classes' => 'btn btn-warning pull-left',
-        '#modal_title' => t('Editar captacion'),
-        '#modal_content' => $form,
-      );
+      /**
+       * Not using the custom editCaptacion form;
+       * It was too complex to assign new tematicas through a custom form.
+       */
+//      $form = \Drupal::formBuilder()
+//        ->getForm('Drupal\carbray\Form\EditCaptacion', $nid);
+//      $build['edit_captacion'] = array(
+//        '#theme' => 'button_modal',
+//        '#unique_id' => 'edit-captacion-' . $nid,
+//        '#button_text' => 'Editar captacion',
+//        '#button_classes' => 'btn btn-warning pull-left',
+//        '#modal_title' => t('Editar captacion'),
+//        '#modal_content' => $form,
+//      );
+      /**
+       * Instead we use drupal's default node edit form
+       * (see carbray.module's form_alter)
+       */
+      $build['edit_captacion'] = [
+        '#markup' => "<a class='btn btn-warning pull-left' href='/node/$nid/edit'>Editar captacion</a>",
+      ];
     }
 
     if ($display->getComponent('captacion_captadores')) {

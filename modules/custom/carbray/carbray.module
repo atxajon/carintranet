@@ -217,6 +217,45 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
         }
       }
       break;
+    case 'node-captacion-edit-form':
+      unset($form['revision_information']);
+      unset($form['revision_log']);
+      unset($form['field_captacion_nota']);
+      $form['title']['#attributes']['class'][] = 'hidden';
+      unset($form['field_captacion_cliente']);
+      // Unset estado captacion entity_autocomplete and use instead a custom defined select.
+      unset($form['field_captacion_estado_captacion']);
+      // Query for all estados de captaction terms.
+      $estados_options = get_taxonomy_terms_options('estado_de_captacion');
+      $form['estado'] = array(
+        '#type' => 'select',
+        '#title' => 'Cambiar estado',
+        '#empty_option' => ' - Selecciona estado captacion - ',
+        '#options' => $estados_options,
+        '#weight' => 25,
+      );
+
+      // Get this captacion's estado de captacion.
+      $db = \Drupal::database();
+      $sql = "SELECT field_captacion_estado_captacion_target_id FROM node__field_captacion_estado_captacion WHERE entity_id = :nid";
+      $node = \Drupal::routeMatch()->getParameter('node');
+      $default_estado = $db->query($sql, array(':nid' => $node->id()))->fetchCol();
+      if ($default_estado) {
+        $form['estado']['#default_value'] = $default_estado;
+      }
+
+      $form['nid'] = [
+        '#type' => 'hidden',
+        '#value' => $node->id(),
+      ];
+
+      // Define our custom submit hanlder that saves estado captacion and tematica.
+      foreach (array_keys($form['actions']) as $action) {
+        if ($action != 'preview' && isset($form['actions'][$action]['#type']) && $form['actions'][$action]['#type'] === 'submit') {
+          $form['actions'][$action]['#submit'][] = 'captacion_save_estado';
+        }
+      }
+      break;
   }
 }
 
@@ -260,6 +299,17 @@ function redirect_to_manage_propuestas() {
 function redirect_on_delete_user($form, FormStateInterface $form_state) {
   // Finally redirect to home.
   $url = Url::fromUri('entity:node/33');
+  $form_state->setRedirectUrl($url);
+}
+
+function captacion_save_estado(array &$form, FormStateInterface $form_state) {
+  $estado = $form_state->getValue('estado');
+  $nid = $form_state->getValue('nid');
+  $captacion = Node::load($nid);
+  $captacion->set('field_captacion_estado_captacion', $estado);
+  $captacion->save();
+  // Redirect to captacion node.
+  $url = Url::fromRoute('entity.node.canonical', array('node' => $nid));
   $form_state->setRedirectUrl($url);
 }
 
