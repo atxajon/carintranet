@@ -42,13 +42,13 @@
             title: 'Meeting',
             start: '2018-01-12T10:30:00',
             end: '2018-01-12T12:30:00',
-            rendering: 'background'
+            // rendering: 'background'
           },
           {
             title: 'Pedido extra',
             start: '2018-01-12T10:30:00',
             end: '2018-01-12T13:30:00',
-            rendering: 'background'
+            // rendering: 'background'
           },
           {
             title: 'Lunch',
@@ -79,13 +79,13 @@
             start: '2018-01-28'
           }
         ],
-        eventRender: function eventRender( event, element, view ) {
-          return ['all', event.school].indexOf($('#school_selector').val()) >= 0
-        },
+        // eventRender: function eventRender( event, element, view ) {
+        //   return ['all', event.school].indexOf($('#edit-departamento').val()) >= 0
+        // },
         eventColor: '#378006'
       });
-      $('#school_selector').on('change',function(){
-        $('#mycalendar').fullCalendar('rerenderEvents');
+      $('#edit-departamento').on('change',function(){
+        $('#calendar').fullCalendar('rerenderEvents');
       })
     }
   }

@@ -22,15 +22,14 @@ class FullCalendar extends BlockBase {
    * {@inheritdoc}
    */
   public function build() {
-    $user = User::load(\Drupal::currentUser()->id());
-
+    $form = \Drupal::formBuilder()
+      ->getForm('Drupal\carbray_calendar\Form\CalendarFilters');
+    $build['filters'] = [
+      '#markup' => render($form),
+    ];
 
     $build['fullcalendar'] = [
-      '#markup' => '<form id="school"><select id=\'school_selector\'>
-      <option value=\'all\'>All schools</option>
-      <option value=\'1\'>school 1</option>
-      <option value=\'2\'>school 2</option>
-</select></form><div id="calendar"></div>',
+      '#markup' => '<div id="calendar"></div>',
       '#attached' => array(
         'library' => array(
           'carbray_calendar/fullcalendar',

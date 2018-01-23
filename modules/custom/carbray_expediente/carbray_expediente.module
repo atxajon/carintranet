@@ -88,7 +88,7 @@ function get_expedientes_for_captacion($captacion_nid) {
 }
 
 /**
- * Prepares expediente node title to follow nomenclatura of expdientes:
+ * Prepares expediente node title to follow nomenclatura of expedientes:
  *  INICIAL-AÑO-NÚMERO CORRELATIVO
  *  Ejemplo: C-2017-1
  *
@@ -124,35 +124,22 @@ function assign_expediente_title($tematica_tid) {
  *  Familia: FA
  *  Inmigración: I
  *  Litigation Civil: LC
+ *  Penal: P
+ *
+ * Warning: this works as long as we have unique tematica characters; if another one
+ * gets created starting with same conflicting character, we'll need to revise this.
+ * 
  * @param $tematica_nombre
  */
 function get_tematica_inicial($tematica_nombre) {
-  $inicial = '';
-  switch ($tematica_nombre) {
-    case 'Corporate':
-      $inicial = 'c';
-      break;
-    case 'Real Estate':
-      $inicial = 're';
-      break;
-    case 'Laboral':
-      $inicial = 'l';
-      break;
-    case 'Fiscal':
-      $inicial = 'f';
-      break;
-    case 'Familia':
-      $inicial = 'fa';
-      break;
-    case 'Inmigracion':
-      $inicial = 'i';
-      break;
-    case 'Litigacion civil':
-      $inicial = 'lc';
-      break;
+  $acronym = '';
+  $words = explode(" ", $tematica_nombre);
+
+  foreach ($words as $w) {
+    $acronym .= $w[0];
   }
 
-  return strtoupper($inicial);
+  return strtoupper($acronym);
 }
 
 function count_expedientes_for_current_year_and_tematica($servicios_tids) {
