@@ -19,3 +19,13 @@ carbray.add_worker_form:
     _form: '\Drupal\carbray\Form\NewWorkerForm'
   requirements:
     _permission: 'access content'
+
+carbray.csv:
+  path: '/download-csv'
+  defaults:
+    _title: 'Actuaciones'
+    _controller: '\Drupal\carbray\Controller\CsvDownloader::ActuacionesCsv'
+  requirements:
+    _permission: 'access content'
+
+

@@ -310,6 +310,12 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['node']['expediente']['display']['actuaciones_csv_link'] = array(
+    'label' => t('Download actuaciones'),
+    'description' => t('Download actuaciones.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
 
   return $extra;
 }
@@ -1115,11 +1121,31 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
       ];
     }
 
+    if ($display->getComponent('actuaciones_csv_link')) {
+      $csv_url = Url::fromRoute('carbray.csv');
+      $link_options = array(
+        'attributes' => array(
+          'class' => array(
+            'btn',
+            'btn-primary',
+          ),
+        ),
+        'query' => array(
+          'nid' => $nid,
+        ),
+      );
+      $csv_url->setOptions($link_options);
+      $link_to_csv_url = Link::fromTextAndUrl('Export to CSV', $csv_url);
+      $link_to_csv_string = $link_to_csv_url->toString()
+        ->getGeneratedLink();
+      $csv_link_markup = Markup::create($link_to_csv_string);
+      $build['actuaciones_csv_link'] = [
+        '#markup' => $csv_link_markup,
+      ];
+    }
+
     if ($display->getComponent('view_actuaciones')) {
-      $db = \Drupal::database();
-      $sql = "SELECT nid, title, created, uid, field_nota_nota_value, field_actuacion_documentacion_target_id as fid FROM node_field_data nfd INNER JOIN node__field_actuacion_expediente ae ON nfd.nid = ae.entity_id LEFT JOIN node__field_actuacion_nota an ON an.entity_id = nfd.nid LEFT JOIN node__field_nota_nota nn on an.field_actuacion_nota_target_id = nn.entity_id LEFT JOIN node__field_actuacion_documentacion ad on ad.entity_id = nfd.nid  WHERE field_actuacion_expediente_target_id = :nid ORDER BY created DESC";
-      $actuaciones_nids = $db->query($sql, array(':nid' => $nid))
-        ->fetchAll();
+      $actuaciones_nids = get_actuaciones($nid);
       $total_seconds = 0;
       $actuaciones_rows = [];
       if ($actuaciones_nids) {
@@ -1203,11 +1229,8 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
 }
 
 function get_cliente_nombre($uid) {
-  $db = \Drupal::database();
-  $sql = "SELECT name FROM users_field_data WHERE uid = :uid";
-  $name = $db->query($sql, array(':uid' => $uid))
-    ->fetchField();
-  return $name;
+  $user = User::load($uid);
+  return $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value;
 }
 
 /**
@@ -1620,5 +1643,21 @@ function carbray_cliente_user_delete($account) {
       \Drupal::logger('carbray_cliente')->notice('Deleted node: ' . $nid . ' as content that belonged to uid:  ' . $account->id() . ' got deleted ');
     }
   }
+}
 
+function get_actuaciones($nid) {
+  $db = \Drupal::database();
+  $sql = "SELECT nid, title, created, uid, field_nota_nota_value, field_actuacion_documentacion_target_id as fid FROM node_field_data nfd INNER JOIN node__field_actuacion_expediente ae ON nfd.nid = ae.entity_id LEFT JOIN node__field_actuacion_nota an ON an.entity_id = nfd.nid LEFT JOIN node__field_nota_nota nn on an.field_actuacion_nota_target_id = nn.entity_id LEFT JOIN node__field_actuacion_documentacion ad on ad.entity_id = nfd.nid  WHERE field_actuacion_expediente_target_id = :nid ORDER BY created DESC";
+  return $db->query($sql, array(':nid' => $nid))
+    ->fetchAll();
+}
+
+function get_actuaciones_csv($nid) {
+  $bundle = 'actuacion';
+  $query = \Drupal::entityQuery('node');
+  $query->condition('status', 1);
+  $query->condition('type', $bundle);
+  $query->condition('field_actuacion_expediente', $nid);
+  $actuaciones_nids = $query->execute();
+  return $actuaciones_nids;
 }
