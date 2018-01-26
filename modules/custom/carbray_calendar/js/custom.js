@@ -15,13 +15,13 @@
           {
             title: 'All Day Event',
             start: '2018-01-01',
-            school: '1'
+            dept: '1'
           },
           {
             title: 'Long Event',
             start: '2018-01-07',
             end: '2018-01-10',
-            school: '1',
+            dept: '1',
           },
           {
             id: 999,
@@ -53,17 +53,17 @@
           {
             title: 'Lunch',
             start: '2018-01-12T12:00:00',
-            school: '1',
+            dept: '1',
           },
           {
             title: 'Meeting',
             start: '2018-01-12T14:30:00',
-            school: '2'
+            dept: '2'
           },
           {
             title: 'Happy Hour',
             start: '2018-01-12T17:30:00',
-            school: '3'
+            dept: '3'
           },
           {
             title: 'Dinner',
@@ -79,9 +79,14 @@
             start: '2018-01-28'
           }
         ],
-        // eventRender: function eventRender( event, element, view ) {
-        //   return ['all', event.school].indexOf($('#edit-departamento').val()) >= 0
-        // },
+        // If dropdown is set to show all (no filtering) it sends a 0, hence only showing school: 0 events...
+        // Need to investigate how to make the 0 into 'all'...
+        eventRender: function eventRender( event, element, view ) {
+          var dept = $('#edit-departamento').val();
+          if (dept > 0) {
+            return ['all', event.dept].indexOf($('#edit-departamento').val()) >= 0
+          }
+        },
         eventColor: '#378006'
       });
       $('#edit-departamento').on('change',function(){

@@ -27,20 +27,20 @@ class CalendarFilters extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
 //    $form['#attributes']['class'][] = 'margin-left-20';
     $filter_options = [
-      0 => 'All schools',
-      1 => 'Scool 1',
-      2 => 'School 2',
+      0 => 'Todos los departamentos',
+      1 => 'Departamento 1',
+      2 => 'Departamento 2',
     ];
 
     $form['departamento'] = array(
       '#type' => 'select',
       '#options' => $filter_options,
-      '#title' => t('Usar filtros'),
+      '#title' => t('Filtrar por departamento'),
     );
-    $form['submit'] = array(
-      '#type' => 'submit',
-      '#value' => t('Mostrar'),
-    );
+//    $form['submit'] = array(
+//      '#type' => 'submit',
+//      '#value' => t('Mostrar'),
+//    );
     return $form;
   }
 
