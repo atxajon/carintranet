@@ -303,6 +303,12 @@ ul {
     box-shadow: 0px 1px 11px 0px rgba(0, 0, 0, 0.12);
   }
 
+  .carbray-new-client  .form-item .form-required:after {
+    content: "(obligatorio)";
+    padding-left: 5px;
+    background: none;
+  }
+
   .carbray-new-client .form-item-nombre {
     float: left;
   }

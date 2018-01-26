@@ -55,17 +55,17 @@ class NewClientForm extends FormBase {
     );
     $form['apellido'] = array(
       '#type' => 'textfield',
-      '#title' => 'Apellido',
+      '#title' => 'Apellido (Importante)',
       '#size' => '20',
     );
     $form['email'] = array(
       '#type' => 'textfield',
-      '#title' => 'Email',
+      '#title' => 'Email (Muy Importante)',
       '#size' => '20',
     );
     $form['telefono'] = array(
       '#type' => 'textfield',
-      '#title' => 'Telefono',
+      '#title' => 'Telefono (Muy Importante)',
       '#size' => '20',
     );
 

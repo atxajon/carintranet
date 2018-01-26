@@ -286,6 +286,12 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['node']['expediente']['display']['persona_juridica'] = array(
+    'label' => t('Persona juridica'),
+    'description' => t('Persona juridica.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
   $extra['node']['expediente']['display']['new_actuacion'] = array(
     'label' => t('New actuacion'),
     'description' => t('New actuacion.'),
@@ -1059,6 +1065,17 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
             '#markup' => code_to_country($cliente_pais),
           ];
         }
+      }
+    }
+
+    if ($display->getComponent('persona_juridica')) {
+      if ($user) {
+        $persona = $user->get('field_persona_juridica')->value;
+        $cleaned_up_string = str_replace("_"," ",$persona);
+        $cleaned_up_string = ucfirst($cleaned_up_string);
+        $build['persona_juridica'] = [
+          '#markup' => $cleaned_up_string,
+        ];
       }
     }
 
