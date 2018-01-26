@@ -324,10 +324,13 @@ ul {
   .carbray-new-client .form-item-pais {
     float: left;
   }
+  .carbray-new-client .form-item-persona {
+    float: left;
+    margin-left: 3%;
+  }
 
   .carbray-new-client .form-item-procedencia {
     float: left;
-    margin-left: 3%;
   }
 
   .carbray-new-client #edit-captador--wrapper {

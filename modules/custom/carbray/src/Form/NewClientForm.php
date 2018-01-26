@@ -27,6 +27,26 @@ class NewClientForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form['#attributes']['class'][] = 'block';
+
+    $entityManager = \Drupal::service('entity_field.manager');
+    $fields = $entityManager->getFieldStorageDefinitions('user', 'user');
+
+    $countries = \Drupal::service('country_manager')->getList();
+    $form['pais'] = array(
+      '#type' => 'select',
+      '#title' => 'Pais',
+      '#options' => $countries,
+      '#empty_option' => ' - Sin especificar - ',
+    );
+
+    $persona_options = options_allowed_values($fields['field_persona_juridica']);
+    $form['persona'] = array(
+      '#type' => 'select',
+      '#title' => 'Persona juridica',
+      '#options' => $persona_options,
+      '#empty_option' => ' - Elige - ',
+      '#required' => TRUE,
+    );
     $form['nombre'] = array(
       '#type' => 'textfield',
       '#title' => 'Nombre',
@@ -48,26 +68,15 @@ class NewClientForm extends FormBase {
       '#title' => 'Telefono',
       '#size' => '20',
     );
-    $countries = \Drupal::service('country_manager')->getList();
-    $form['pais'] = array(
-      '#type' => 'select',
-      '#title' => 'Pais',
-      '#options' => $countries,
-      '#empty_option' => ' - Sin especificar - ',
-    );
 
-    $entityManager = \Drupal::service('entity_field.manager');
-    $fields = $entityManager->getFieldStorageDefinitions('user', 'user');
+
     $options = options_allowed_values($fields['field_procedencia']);
-//    $options = FieldConfig::loadByName('user', 'user', 'field_procedencia')->getSetting('allowed_values');
     $form['procedencia'] = array(
       '#type' => 'select',
       '#title' => 'Procedencia',
       '#options' => $options,
       '#empty_option' => ' - Selecciona procedencia - ',
     );
-
-    // @todo: añadir campo identificacion??
 
     $internal_users = get_carbray_workers(TRUE);
     $internal_users_options = [];
@@ -84,7 +93,6 @@ class NewClientForm extends FormBase {
       '#default_value' => array($current_user_uid),
       '#multiple' => TRUE,
     );
-
 
     $form['submit'] = array(
       '#type' => 'submit',
@@ -122,7 +130,6 @@ class NewClientForm extends FormBase {
         $form_state->setErrorByName('telefono', t('Ya hay un cliente en el sistema con este telefono, por favor verifica que no sea un duplicado.'));
       }
     }
-
   }
 
   /**
@@ -138,6 +145,7 @@ class NewClientForm extends FormBase {
     $telefono = $form_state->getValue('telefono');
     $pais = $form_state->getValue('pais');
     $procedencia = $form_state->getValue('procedencia');
+    $persona = $form_state->getValue('persona');
     $captador = $form_state->getValue('captador');
     // $captador strangely adds uid 0 for every non selected captador checkbox;
     // let's clean those up.
@@ -165,6 +173,7 @@ class NewClientForm extends FormBase {
     $user->set('field_nombre', $nombre);
     $user->set('field_apellido', $apellido);
     $user->set('field_procedencia', $procedencia);
+    $user->set('field_persona_juridica', $persona);
 //    $user->set('field_captador', $selected_captador);
 
     // Let's keep the user as Blocked by default, until internal admin activates it.

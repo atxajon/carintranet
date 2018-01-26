@@ -222,6 +222,12 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['node']['captacion']['display']['persona_juridica'] = array(
+    'label' => t('Persona juridica'),
+    'description' => t('Client pais.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
   $extra['node']['captacion']['display']['client_captador_edit_form'] = array(
     'label' => t('Edit captador'),
     'description' => t('Edit captador form.'),
@@ -735,6 +741,15 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         ];
       }
     }
+    if ($display->getComponent('persona_juridica')) {
+      $persona = $user->get('field_persona_juridica')->value;
+      $cleaned_up_string = str_replace("_"," ",$persona);
+      $cleaned_up_string = ucfirst($cleaned_up_string);
+      $build['persona_juridica'] = [
+        '#markup' => $cleaned_up_string,
+      ];
+    }
+
     if ($display->getComponent('client_captador_edit_form')) {
       $form = \Drupal::formBuilder()
         ->getForm('Drupal\carbray_cliente\Form\EditCaptadores', $captacion_node->id());
