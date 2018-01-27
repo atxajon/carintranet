@@ -18,7 +18,7 @@ class CsvDownloader extends ControllerBase {
     $expediente_node = Node::load($query_array['nid']);
     $filename = $expediente_node->label() . '.csv';
 
-    $actuaciones = get_actuaciones_csv($query_array['nid']);
+    $actuaciones = get_actuaciones_for_expediente_csv($query_array['nid']);
     $total_seconds = 0;
     $rows = [];
     foreach ($actuaciones as $actuacion) {
@@ -43,7 +43,7 @@ class CsvDownloader extends ControllerBase {
         date('d-m-Y H:i:s', $actuacion_node->created->value),
         $actuacion_node->title->value,
         $hours . ':' . $minutes,
-        Markup::create($nota_text),
+        strip_tags($nota_text),
         get_cliente_nombre($actuacion_node->getOwner()->id()),
       ];
     }

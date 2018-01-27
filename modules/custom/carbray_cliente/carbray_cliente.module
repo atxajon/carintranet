@@ -1135,7 +1135,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         ),
       );
       $csv_url->setOptions($link_options);
-      $link_to_csv_url = Link::fromTextAndUrl('Export to CSV', $csv_url);
+      $link_to_csv_url = Link::fromTextAndUrl('Exportar CSV', $csv_url);
       $link_to_csv_string = $link_to_csv_url->toString()
         ->getGeneratedLink();
       $csv_link_markup = Markup::create($link_to_csv_string);
@@ -1145,7 +1145,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
     }
 
     if ($display->getComponent('view_actuaciones')) {
-      $actuaciones_nids = get_actuaciones($nid);
+      $actuaciones_nids = get_actuaciones_for_expediente($nid);
       $total_seconds = 0;
       $actuaciones_rows = [];
       if ($actuaciones_nids) {
@@ -1645,14 +1645,14 @@ function carbray_cliente_user_delete($account) {
   }
 }
 
-function get_actuaciones($nid) {
+function get_actuaciones_for_expediente($nid) {
   $db = \Drupal::database();
   $sql = "SELECT nid, title, created, uid, field_nota_nota_value, field_actuacion_documentacion_target_id as fid FROM node_field_data nfd INNER JOIN node__field_actuacion_expediente ae ON nfd.nid = ae.entity_id LEFT JOIN node__field_actuacion_nota an ON an.entity_id = nfd.nid LEFT JOIN node__field_nota_nota nn on an.field_actuacion_nota_target_id = nn.entity_id LEFT JOIN node__field_actuacion_documentacion ad on ad.entity_id = nfd.nid  WHERE field_actuacion_expediente_target_id = :nid ORDER BY created DESC";
   return $db->query($sql, array(':nid' => $nid))
     ->fetchAll();
 }
 
-function get_actuaciones_csv($nid) {
+function get_actuaciones_for_expediente_csv($nid) {
   $bundle = 'actuacion';
   $query = \Drupal::entityQuery('node');
   $query->condition('status', 1);
