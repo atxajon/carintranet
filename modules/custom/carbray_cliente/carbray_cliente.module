@@ -108,6 +108,12 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['node']['captacion']['display']['log_estado_captacion'] = array(
+    'label' => t('View log of estado captacion changes'),
+    'description' => t('Log of estado captacion changes.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
   $extra['user']['user']['display']['take_action'] = array(
     'label' => t('Client action'),
     'description' => t('Shows clients actions like generate new propuesta, new factura, new expediente... based on users estado'),
@@ -714,6 +720,33 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
       $form = \Drupal::formBuilder()
         ->getForm('Drupal\carbray\Form\AssignEstadoCaptacion', $nid);
       $build['assign_estado_captacion'] = $form;
+    }
+    if ($display->getComponent('log_estado_captacion')) {
+      $changes = get_captacion_estado_changes($nid);
+      $rows = [];
+      if ($changes) {
+        foreach ($changes as $change) {
+          // @todo: convert integers to human friendly format!
+          $rows[] = array(
+            $change->previous_status,
+            $change->new_status,
+            $change->author,
+            date('d-m-Y H:i:s', $change->created),
+          );
+        }
+      }
+
+      $header = array(
+        'Estado previo',
+        'Nuevo estado',
+        'Autor',
+        'Fecha del cambio',
+      );
+      $build['log_estado_captacion'] = [
+        '#type' => 'table',
+        '#header' => $header,
+        '#rows' => $rows,
+      ];
     }
     if ($display->getComponent('client_name')) {
       $cliente_nombre = $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value;
@@ -1660,4 +1693,11 @@ function get_actuaciones_for_expediente_csv($nid) {
   $query->condition('field_actuacion_expediente', $nid);
   $actuaciones_nids = $query->execute();
   return $actuaciones_nids;
+}
+
+function get_captacion_estado_changes($nid) {
+  $db = \Drupal::database();
+  $sql = "SELECT * FROM carbray_captacion_changes_log WHERE nid = :nid";
+  return $db->query($sql, array(':nid' => $nid))
+    ->fetchAll();
 }
