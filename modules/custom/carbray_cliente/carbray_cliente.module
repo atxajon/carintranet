@@ -727,10 +727,14 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
       if ($changes) {
         foreach ($changes as $change) {
           // @todo: convert integers to human friendly format!
+          $previous_term = Term::load($change->previous_status);
+          $new_term = Term::load($change->new_status);
+          $user = User::load($change->author);
+
           $rows[] = array(
-            $change->previous_status,
-            $change->new_status,
-            $change->author,
+            $previous_term->label(),
+            $new_term->label(),
+            $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value,
             date('d-m-Y H:i:s', $change->created),
           );
         }

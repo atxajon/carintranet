@@ -87,8 +87,12 @@ class AssignEstadoCaptacion extends FormBase {
     $estado = $form_state->getValue('estado');
 
     $captacion = Node::load($nid);
+    $previous_status = $captacion->get('field_captacion_estado_captacion')->getValue();
     $captacion->set('field_captacion_estado_captacion', $estado);
     $captacion->save();
+
+    // Currently logged in user is making the estado change, let's log it.
+    $uid = \Drupal::currentUser()->id();
 
     // Save changes to custom captacion changes log.
     // @todo move db insert to a dedicated function, call it from node captacion edit form too!
@@ -103,9 +107,9 @@ class AssignEstadoCaptacion extends FormBase {
       ])
       ->values(array(
         $nid,
-        1,
-        2,
-        1,
+        $previous_status[0]['target_id'],
+        $estado,
+        $uid,
         time(),
       ))
       ->execute();
