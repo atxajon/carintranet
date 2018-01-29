@@ -59,7 +59,9 @@ class CsvResponse extends Response
     $this->headers->set('Content-Disposition', sprintf('attachment; filename="%s"', $this->filename));
 
     if (!$this->headers->has('Content-Type')) {
-      $this->headers->set('Content-Type', 'text/csv');
+//      $this->headers->set('Content-Type', 'text/csv');
+//      $this->headers->set('Content-Type', 'application/octet-stream');
+      $this->headers->set('Content-Type', 'application/vnd.ms-excel');
     }
 
     return $this->setContent($this->data);
