@@ -91,28 +91,16 @@ class AssignEstadoCaptacion extends FormBase {
     $captacion->set('field_captacion_estado_captacion', $estado);
     $captacion->save();
 
-    // Currently logged in user is making the estado change, let's log it.
-    $uid = \Drupal::currentUser()->id();
+    if ($previous_status[0]['target_id'] != $estado) {
+      // Save changes to custom captacion changes log.
+      $values_to_save = [
+        'nid' => $nid,
+        'previous_status' => $previous_status[0]['target_id'],
+        'new_status' => $estado,
+      ];
+      log_estado_captacion_change($values_to_save);
+    }
 
-    // Save changes to custom captacion changes log.
-    // @todo move db insert to a dedicated function, call it from node captacion edit form too!
-    // @todo: replace hardcoded values!
-    \Drupal::database()->insert('carbray_captacion_changes_log')
-      ->fields([
-        'nid',
-        'previous_status',
-        'new_status',
-        'author',
-        'created',
-      ])
-      ->values(array(
-        $nid,
-        $previous_status[0]['target_id'],
-        $estado,
-        $uid,
-        time(),
-      ))
-      ->execute();
 
     drupal_set_message('Captacion con nid: ' . $nid . ' ha sido asignado nuevo estado de captacion');
   }

@@ -77,14 +77,14 @@
         </div>
       </div>
     </div>
-    {#<div class="panel panel-default">#}
-      {#<div class="panel-heading dark-blue">#}
-        {#<h3>{{ 'Registro de cambios de estado'|trans }}</h3>#}
-      {#</div>#}
-      {#<div class="panel-body">#}
-        {#{{ content.log_estado_captacion }}#}
-      {#</div>#}
-    {#</div>#}
+    <div class="panel panel-default">
+      <div class="panel-heading dark-blue">
+        <h3>{{ 'Registro de cambios de estado'|trans }}</h3>
+      </div>
+      <div class="panel-body">
+        {{ content.log_estado_captacion }}
+      </div>
+    </div>
     <div class="panel panel-default">
       <div class="panel-heading clearfix dark-blue">
         <h3 class="pull-left">{{ 'Notas captacion'|trans }}</h3><div class="pull-right">{{ content.anadir_nota }}</div>

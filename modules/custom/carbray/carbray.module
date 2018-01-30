@@ -306,8 +306,20 @@ function captacion_save_estado(array &$form, FormStateInterface $form_state) {
   $estado = $form_state->getValue('estado');
   $nid = $form_state->getValue('nid');
   $captacion = Node::load($nid);
+  $previous_status = $captacion->get('field_captacion_estado_captacion')->getValue();
   $captacion->set('field_captacion_estado_captacion', $estado);
   $captacion->save();
+
+  if ($previous_status[0]['target_id'] != $estado) {
+    // Insert into log of estado captacion changes.
+    $values_to_save = [
+      'nid' => $nid,
+      'previous_status' => $previous_status[0]['target_id'],
+      'new_status' => $estado,
+    ];
+    log_estado_captacion_change($values_to_save);
+  }
+
   // Redirect to captacion node.
   $url = Url::fromRoute('entity.node.canonical', array('node' => $nid));
   $form_state->setRedirectUrl($url);
@@ -1040,4 +1052,25 @@ function carbray_mail_alter(&$message) {
   //$message['subject'] .= ' {Email para usuario ' . $message['to'] . ' }';
   // set 'To' field to dev email account, so Drupal won't email live users.
   //$message['to'] = REROUTE_EMAIL_ADDRESS;
+}
+
+function log_estado_captacion_change($values) {
+  // Currently logged in user is making the estado change, let's log it.
+  $uid = \Drupal::currentUser()->id();
+  \Drupal::database()->insert('carbray_captacion_changes_log')
+    ->fields([
+      'nid',
+      'previous_status',
+      'new_status',
+      'author',
+      'created',
+    ])
+    ->values(array(
+      $values['nid'],
+      $values['previous_status'],
+      $values['new_status'],
+      $uid,
+      time(),
+    ))
+    ->execute();
 }

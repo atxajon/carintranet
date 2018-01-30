@@ -750,6 +750,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         '#type' => 'table',
         '#header' => $header,
         '#rows' => $rows,
+        '#empty' => t('Ninguna cambio de estado aún.'),
       ];
     }
     if ($display->getComponent('client_name')) {
@@ -1701,7 +1702,7 @@ function get_actuaciones_for_expediente_csv($nid) {
 
 function get_captacion_estado_changes($nid) {
   $db = \Drupal::database();
-  $sql = "SELECT * FROM carbray_captacion_changes_log WHERE nid = :nid";
+  $sql = "SELECT * FROM carbray_captacion_changes_log WHERE nid = :nid ORDER BY created DESC";
   return $db->query($sql, array(':nid' => $nid))
     ->fetchAll();
 }
