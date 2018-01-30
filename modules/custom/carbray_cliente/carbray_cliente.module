@@ -411,7 +411,7 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
 
         $rows[] = array(
           Markup::create($nota_node->get('field_nota_nota')->value),
-          $user->getDisplayName(),
+          $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value,
           date('d-M-Y H:m:s', $nota_node->created->value),
           render($build['edit_nota_form']),
         );
@@ -969,7 +969,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         ];
         $rows[] = array(
           Markup::create($nota_node->get('field_nota_nota')->value),
-          $user->getDisplayName(),
+          $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value,
           date('d-M-Y H:m:s', $nota_node->created->value),
           render($build['edit_nota_form']),
         );
@@ -1057,7 +1057,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         ];
         $rows[] = array(
           Markup::create($nota_node->get('field_nota_nota')->value),
-          $author->getDisplayName(),
+          $author->get('field_nombre')->value . ' ' . $author->get('field_apellido')->value,
           date('d-M-Y H:m:s', $nota_node->created->value),
           render($build['edit_nota_form']),
         );
