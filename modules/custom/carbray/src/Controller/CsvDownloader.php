@@ -16,7 +16,7 @@ class CsvDownloader extends ControllerBase {
     parse_str($path['query'],$query_array);
 
     $expediente_node = Node::load($query_array['nid']);
-    $filename = $expediente_node->label() . '.csv';
+    $filename = $expediente_node->label() . '.xls';
 
     $actuaciones = get_actuaciones_for_expediente_csv($query_array['nid']);
     $total_seconds = 0;

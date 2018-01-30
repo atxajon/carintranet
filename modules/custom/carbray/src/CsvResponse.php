@@ -28,8 +28,9 @@ class CsvResponse extends Response
   {
     $output = fopen('php://temp', 'r+');
 
+    $delimiter = ';';
     foreach ($data as $row) {
-      fputcsv($output, $row);
+      fputcsv($output, $row, $delimiter);
     }
 
     rewind($output);
