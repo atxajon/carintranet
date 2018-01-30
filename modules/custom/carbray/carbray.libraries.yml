@@ -11,6 +11,7 @@ carbray.propuesta-styles:
 carbray.carbray_timer:
   version: 1.x
   js:
+    js/timer.jquery.min.js: {}
     js/timer.js: {}
   dependencies:
      - core/jquery
