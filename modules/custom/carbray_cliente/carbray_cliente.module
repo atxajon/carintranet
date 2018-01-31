@@ -475,13 +475,23 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
           ];
         }
 
+        // Is the logged in user captador of current cliente? if so print the link to captacion, else hide it.
+        $logged_in_uid = \Drupal::currentUser()->id();
+        $captadores = get_captacion_captadores($captacion->captacion_nid);
+        if (in_array($logged_in_uid, $captadores)) {
+          $captacion_link = print_captacion_link($captacion->captacion_nid);
+        }
+        else {
+          $captacion_link = '';
+        }
+
         $rows[] = array(
           'data' => array(
             $captacion_data->label(),
             print_cliente_captadores_responsables($captacion_data->get('field_captacion_captador')
                 ->getValue()),
             $estado_nombre,
-            print_captacion_link($captacion->captacion_nid),
+            $captacion_link,
             render($build['new_expediente']),
           ),
           'class' => [$row_class],
@@ -1705,4 +1715,15 @@ function get_captacion_estado_changes($nid) {
   $sql = "SELECT * FROM carbray_captacion_changes_log WHERE nid = :nid ORDER BY created DESC";
   return $db->query($sql, array(':nid' => $nid))
     ->fetchAll();
+}
+
+/**
+ * @param $captacion_nid
+ *   Int captacion node id.
+ */
+function get_captacion_captadores($captacion_nid) {
+  $db = \Drupal::database();
+  $sql = "SELECT field_captacion_captador_target_id FROM node__field_captacion_captador WHERE entity_id = :entity_id";
+  return $db->query($sql, array(':entity_id' => $captacion_nid))
+    ->fetchCol();
 }
