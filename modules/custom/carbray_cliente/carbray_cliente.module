@@ -552,13 +552,33 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
           $row_class = 'captacion-archivada-row';
         }
 
+        // Determine if current user has rights to view expediente link.
+        $logged_in_uid = \Drupal::currentUser()->id();
+        $current_user_roles = \Drupal::currentUser()->getRoles();
+        // Is the logged in user a carbray admin?
+        if (in_array('carbray_administrator', $current_user_roles)) {
+          // Print the link to expediente.
+          $expediente_link = print_cliente_expedientes($expediente->expediente_nid);
+
+        }
+        else {
+          // Current logged in user is not carbray admin; but is he responsable of current cliente expediente?
+          $responsables = get_expediente_responsables($captacion->captacion_nid);
+          if (in_array($logged_in_uid, $responsables)) {
+            $expediente_link = print_cliente_expedientes($expediente->expediente_nid);
+          }
+          else {
+            $expediente_link = '';
+          }
+        }
+
         $expedientes_rows[] = array(
           'data' => array(
             $expediente_data->label(),
             print_cliente_captadores_responsables($expediente_data->get('field_expediente_responsable')
               ->getValue()),
             $servicio_nombre,
-            print_cliente_expedientes($expediente->expediente_nid),
+            $expediente_link,
             $actuacion_link_markup,
           ),
           'class' => [$row_class],
@@ -1734,5 +1754,12 @@ function get_captacion_captadores($captacion_nid) {
   $db = \Drupal::database();
   $sql = "SELECT field_captacion_captador_target_id FROM node__field_captacion_captador WHERE entity_id = :entity_id";
   return $db->query($sql, array(':entity_id' => $captacion_nid))
+    ->fetchCol();
+}
+
+function get_expediente_responsables($expediente_nid) {
+  $db = \Drupal::database();
+  $sql = "SELECT field_expediente_responsable_target_id FROM node__field_expediente_responsable WHERE entity_id = :entity_id";
+  return $db->query($sql, array(':entity_id' => $expediente_nid))
     ->fetchCol();
 }
