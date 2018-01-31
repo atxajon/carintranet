@@ -475,14 +475,23 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
           ];
         }
 
-        // Is the logged in user captador of current cliente? if so print the link to captacion, else hide it.
+        // Determine if current user has rights to view captacion link.
         $logged_in_uid = \Drupal::currentUser()->id();
-        $captadores = get_captacion_captadores($captacion->captacion_nid);
-        if (in_array($logged_in_uid, $captadores)) {
+        $current_user_roles = \Drupal::currentUser()->getRoles();
+        // Is the logged in user a carbray admin?
+        if (in_array('carbray_administrator', $current_user_roles)) {
+          // Print the link to captacion.
           $captacion_link = print_captacion_link($captacion->captacion_nid);
         }
         else {
-          $captacion_link = '';
+          // Current logged in suer is not carbray admin; but is he captador of current cliente?
+          $captadores = get_captacion_captadores($captacion->captacion_nid);
+          if (in_array($logged_in_uid, $captadores)) {
+            $captacion_link = print_captacion_link($captacion->captacion_nid);
+          }
+          else {
+            $captacion_link = '';
+          }
         }
 
         $rows[] = array(
