@@ -1,7 +1,6 @@
 (function ($, Drupal, drupalSettings) {
   Drupal.behaviors.carbray_timer = {
     attach: function (context, settings) {
-      $('#edit-timer').toggle();
 
       $('#edit-start', context).once('carbray_timer').on('click', function () {
         $('#crono').timer({
@@ -20,7 +19,7 @@
         var seconds = $("#crono").data('seconds');
         var minutes = Math.floor(seconds / 60);
         document.getElementById('edit-timer').value = minutes;
-        $('#edit-timer').toggle();
+        $('#edit-timer').removeClass('hidden');
         return false;
       });
 
@@ -28,7 +27,7 @@
         $('#crono').timer('resume');
         $('#edit-pause').removeClass('hidden');
         $('#edit-resume').addClass('hidden');
-        $('#edit-timer').toggle();
+        $('#edit-timer').addClass('hidden');
         return false;
       });
     }

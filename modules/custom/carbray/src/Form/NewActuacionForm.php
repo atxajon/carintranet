@@ -65,6 +65,7 @@ class NewActuacionForm extends FormBase {
       '#description' => 'Edita el numero de minutos transcurridos.',
       '#required' => TRUE,
       '#prefix' => '<div class="pull-right timer-textfield">',
+      '#attributes' => array('class' => array('hidden')),
 //      '#suffix' => '</div>',
       '#suffix' => '</div></div></div>',
     );
