@@ -41,18 +41,32 @@ class NewActuacionForm extends FormBase {
 
     $form['start'] = array(
       '#type' => 'button',
-      '#value' => 'Tiempo',
+      '#value' => 'Comenzar',
       '#prefix' => '<div class="pull-left clearfix timer-container"><div class="pull-left crono-wrapper"><h2 id="crono" class="no-margin crono-heading pull-left">00:00:00</h2>',
-      '#attributes' => array('class' => array('btn-primary', 'margin-bottom-20')),
-      '#suffix' => '</div></div>',
+      '#attributes' => array('class' => array('btn-primary', 'margin-bottom-20', 'start-timer-btn')),
     );
+
+    $form['resume'] = array(
+      '#type' => 'button',
+      '#value' => 'Continuar',
+      '#attributes' => array('class' => array('btn-primary', 'margin-bottom-20', 'resume-timer-btn', 'hidden')),
+    );
+
+    $form['pause'] = array(
+      '#type' => 'button',
+      '#value' => 'Pausar',
+      '#attributes' => array('class' => array('hidden', 'pause-timer-btn', 'btn-warning')),
+    );
+
+
 
     $form['timer'] = array(
       '#type' => 'textfield',
       '#description' => 'Edita el numero de minutos transcurridos.',
       '#required' => TRUE,
-//      '#prefix' => '<div class="pull-right timer-textfield">',
+      '#prefix' => '<div class="pull-right timer-textfield">',
 //      '#suffix' => '</div>',
+      '#suffix' => '</div></div></div>',
     );
 
     $form['#attached']['library'][] = 'carbray/carbray.carbray_timer';

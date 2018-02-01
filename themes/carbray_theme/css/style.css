@@ -701,19 +701,18 @@ textarea[rows="3"] + .cke .cke_contents {
   .timer-container {
     position: relative;
     top: 26px;
-    margin-left: 20px;
+    margin-left: 4%;
+    width: 46%;
   }
-  #edit-start {
+  #crono {
+    width: 100px;
+  }
+  #edit-start, #edit-pause, #edit-resume {
     margin-left: 10px;
   }
   .timer-textfield {
-    width: 40%;
-  }
-  .form-item-timer {
-    float: right;
-    width: 8%;
-    position: relative;
-    top: 24px;
+    width: 75px;
+    margin-left: 10px;
   }
   .carbray-new-actuacion .form-type-managed-file {
     float: left;
