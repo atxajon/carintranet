@@ -620,6 +620,9 @@ textarea[rows="3"] + .cke .cke_contents {
   .new-propuesta .form-item {
     width: 40%;
   }
+  .form-item-pack .form-control {
+    display: block;
+  }
   .new-propuesta .js-text-format-wrapper,
   .new-propuesta .js-text-format-wrapper .form-type-textarea {
     width: auto;

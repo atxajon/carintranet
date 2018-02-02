@@ -69,6 +69,15 @@ class NewExpedienteForm extends FormBase {
       '#required' => TRUE,
     );
 
+    $form['pack'] = array(
+      '#type' => 'number',
+      '#title' => 'Pack de horas',
+      '#description' => t('Introduce el número de horas si es un cliente con pack de horas'),
+      '#size' => '20',
+      '#min' => 0,
+      '#step' => 0.5,
+    );
+
     $tematica_parent_terms =\Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('tematicas', 0, 1);
     foreach ($tematica_parent_terms as $term) {
       $term_data[$term->tid] = $term->name;
@@ -160,6 +169,7 @@ class NewExpedienteForm extends FormBase {
     $captacion_nid = $form_state->getValue('captacion');
     $captacion_node = Node::load($captacion_nid);
     $uid = $form_state->getValue('cliente');
+    $pack = $form_state->getValue('pack');
     $values = $form_state->getValues();
     $responsable = $form_state->getValue('responsable');
 
@@ -179,6 +189,7 @@ class NewExpedienteForm extends FormBase {
     $expediente->set('field_expediente_captacion', $captacion_nid);
     $expediente->set('field_expediente_responsable', $selected_responsable);
     $expediente->set('field_expediente_tematica', $values['servicios']);
+    $expediente->set('field_expediente_pack_de_horas', $pack);
     $expediente->enforceIsNew();
     $expediente->save();
 
