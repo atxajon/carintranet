@@ -1,11 +1,22 @@
 (function ($, Drupal, drupalSettings) {
   Drupal.behaviors.carbray_timer = {
     attach: function (context, settings) {
+      var packHoras = drupalSettings.pack_horas;
 
       $('#edit-start', context).once('carbray_timer').on('click', function () {
-        $('#crono').timer({
-          format: '%H:%M:%S'
-        });
+        if (packHoras) {
+          var totalMinutes = packHoras * 3600;
+          $('#crono').timer({
+            format: '%H:%M:%S',
+            countdown: true,
+            duration: totalMinutes,
+          });
+        }
+        else {
+          $('#crono').timer({
+            format: '%H:%M:%S'
+          });
+        }
         $('#edit-pause').removeClass('hidden');
         $('#edit-start').addClass('hidden');
         return false;

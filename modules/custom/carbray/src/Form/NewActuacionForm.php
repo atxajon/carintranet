@@ -39,10 +39,23 @@ class NewActuacionForm extends FormBase {
       '#required' => TRUE,
     );
 
+    $form['#attached']['library'][] = 'carbray/carbray.carbray_timer';
+    // Does this expediente have a pack de horas set? if so pass it to js timer file.
+    $expediente = Node::load($expediente_nid);
+    $pack = $expediente->get('field_expediente_pack_de_horas')->value;
+    $form['#attached']['drupalSettings']['pack_horas'] = $pack;
+
+    if ($pack) {
+      $crono_time = gmdate("H:i:s", $pack * 3600);
+    }
+    else {
+      $crono_time = '00:00:00';
+    }
+
     $form['start'] = array(
       '#type' => 'button',
       '#value' => 'Comenzar',
-      '#prefix' => '<div class="pull-left clearfix timer-container"><div class="pull-left crono-wrapper"><h2 id="crono" class="no-margin crono-heading pull-left">00:00:00</h2>',
+      '#prefix' => '<div class="pull-left clearfix timer-container"><div class="pull-left crono-wrapper"><h2 id="crono" class="no-margin crono-heading pull-left">' . $crono_time . '</h2>',
       '#attributes' => array('class' => array('btn-primary', 'margin-bottom-20', 'start-timer-btn')),
     );
 
@@ -59,18 +72,14 @@ class NewActuacionForm extends FormBase {
     );
 
 
-
     $form['timer'] = array(
       '#type' => 'textfield',
       '#description' => 'Edita el numero de minutos transcurridos.',
       '#required' => TRUE,
       '#prefix' => '<div class="pull-right timer-textfield">',
       '#attributes' => array('class' => array('hidden')),
-//      '#suffix' => '</div>',
       '#suffix' => '</div></div></div>',
     );
-
-    $form['#attached']['library'][] = 'carbray/carbray.carbray_timer';
 
     $form['nota_container'] = array(
       '#type' => 'container',
