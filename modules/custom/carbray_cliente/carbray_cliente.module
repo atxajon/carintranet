@@ -701,7 +701,6 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
     $captacion_node = Node::load($nid);
     $cliente_uid = $captacion_node->get('field_captacion_cliente')->getValue();
     $user = User::load($cliente_uid[0]['target_id']);
-
     if ($display->getComponent('edit_captacion')) {
       /**
        * Not using the custom editCaptacion form;
@@ -752,12 +751,12 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
           // @todo: convert integers to human friendly format!
           $previous_term = Term::load($change->previous_status);
           $new_term = Term::load($change->new_status);
-          $user = User::load($change->author);
+          $author = User::load($change->author);
 
           $rows[] = array(
             $previous_term->label(),
             $new_term->label(),
-            $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value,
+            $author->get('field_nombre')->value . ' ' . $author->get('field_apellido')->value,
             date('d-m-Y H:i:s', $change->created),
           );
         }
