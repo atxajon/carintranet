@@ -45,12 +45,12 @@ class NewActuacionForm extends FormBase {
     $pack = $expediente->get('field_expediente_pack_de_horas')->value;
     $form['#attached']['drupalSettings']['pack_horas'] = $pack;
 
-    if ($pack) {
-      $crono_time = gmdate("H:i:s", $pack * 3600);
-    }
-    else {
-      $crono_time = '00:00:00';
-    }
+    $form['is_pack'] = array(
+      '#type' => 'hidden',
+      '#default_value' => $pack,
+    );
+
+    $crono_time = ($pack) ? gmdate("H:i:s", $pack * 3600) : '00:00:00';
 
     $form['start'] = array(
       '#type' => 'button',
@@ -125,6 +125,7 @@ class NewActuacionForm extends FormBase {
     $expediente_nid = $form_state->getValue('expediente_nid');
     $title = $form_state->getValue('title');
     $timer = $form_state->getValue('timer');
+    $is_pack = $form_state->getValue('is_pack');
     $nota = $form_state->getValue('nota');
     $actuacion_file = $form_state->getValue('actuacion_file');
 
@@ -145,6 +146,16 @@ class NewActuacionForm extends FormBase {
     $actuacion = Node::load($actuacion->id());
     $actuacion->set('field_actuacion_nota', $nota_node->id());
     $actuacion->save();
+
+    // If it's an expediente with pack de horas update remaining time.
+    // @todo: test all this!
+    if ($is_pack) {
+      $expediente = Node::load($expediente_nid);
+      $current_pack_hours = $expediente->get('field_expediente_pack_de_horas')->value;
+      $current_pack_minutes = $current_pack_hours * 60;
+      $remaining_mins_after_current_actuacion = $current_pack_minutes - $timer;
+      $expediente->set('field_expediente_pack_de_horas', $remaining_mins_after_current_actuacion);
+    }
 
     drupal_set_message('Actuacion ' . $title . ' ha sido creada');
   }
