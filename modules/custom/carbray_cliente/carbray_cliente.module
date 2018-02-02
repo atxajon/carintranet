@@ -475,32 +475,13 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
           ];
         }
 
-        // Determine if current user has rights to view captacion link.
-        $logged_in_uid = \Drupal::currentUser()->id();
-        $current_user_roles = \Drupal::currentUser()->getRoles();
-        // Is the logged in user a carbray admin?
-        if (in_array('carbray_administrator', $current_user_roles)) {
-          // Print the link to captacion.
-          $captacion_link = print_captacion_link($captacion->captacion_nid);
-        }
-        else {
-          // Current logged in suer is not carbray admin; but is he captador of current cliente?
-          $captadores = get_captacion_captadores($captacion->captacion_nid);
-          if (in_array($logged_in_uid, $captadores)) {
-            $captacion_link = print_captacion_link($captacion->captacion_nid);
-          }
-          else {
-            $captacion_link = '';
-          }
-        }
-
         $rows[] = array(
           'data' => array(
             $captacion_data->label(),
             print_cliente_captadores_responsables($captacion_data->get('field_captacion_captador')
                 ->getValue()),
             $estado_nombre,
-            $captacion_link,
+            print_captacion_link($captacion->captacion_nid),
             render($build['new_expediente']),
           ),
           'class' => [$row_class],
@@ -547,23 +528,7 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
         ));
         $captacion_link_string = $captacion_link->toString()
             ->getGeneratedLink() . '<br>';
-        $logged_in_uid = \Drupal::currentUser()->id();
-        $current_user_roles = \Drupal::currentUser()->getRoles();
-        // Is the logged in user a carbray admin?
-        if (in_array('carbray_administrator', $current_user_roles)) {
-          // Print the link to captacion.
-          $captacion_link_markup = Markup::create($captacion_link_string);
-        }
-        else {
-          // Current logged in suer is not carbray admin; but is he captador of current cliente?
-          $captadores = get_captacion_captadores($captacion->captacion_nid);
-          if (in_array($logged_in_uid, $captadores)) {
-            $captacion_link_markup = Markup::create($captacion_link_string);
-          }
-          else {
-            $captacion_link_markup = $captacion_title;
-          }
-        }
+        $captacion_link_markup = Markup::create($captacion_link_string);
 
         $row_class = 'captacion-row';
         if (!$expediente_data->isPublished()) {
@@ -574,6 +539,8 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
          * Determine if current user has rights to view expediente link.
          */
         // Is the logged in user a carbray admin?
+        $logged_in_uid = \Drupal::currentUser()->id();
+        $current_user_roles = \Drupal::currentUser()->getRoles();
         if (in_array('carbray_administrator', $current_user_roles)) {
           // Print the link to expediente.
           $expediente_link = print_cliente_expedientes($expediente->expediente_nid);
