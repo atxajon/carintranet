@@ -519,18 +519,41 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
           $servicio_nombre = $term->name->value;
           // @todo: work out tematica term name, not servicios...
         }
-        // Prepare link to actuacion.
-        $actuacion_title = get_node_title($expediente->captacion_nid);
-        $actuacion_link = Link::fromTextAndUrl($actuacion_title, Url::fromRoute('entity.node.canonical', ['node' => $expediente->captacion_nid]
-        ));
-        $actuacion_link_string = $actuacion_link->toString()
-            ->getGeneratedLink() . '<br>';
 
-        $actuacion_link_markup = Markup::create($actuacion_link_string);
+        /**
+         * Prepare link to captacion.
+         */
+        $captacion_title = get_node_title($expediente->captacion_nid);
+        $captacion_link = Link::fromTextAndUrl($captacion_title, Url::fromRoute('entity.node.canonical', ['node' => $expediente->captacion_nid]
+        ));
+        $captacion_link_string = $captacion_link->toString()
+            ->getGeneratedLink() . '<br>';
+        $captacion_link_markup = Markup::create($captacion_link_string);
 
         $row_class = 'captacion-row';
         if (!$expediente_data->isPublished()) {
           $row_class = 'captacion-archivada-row';
+        }
+
+        /**
+         * Determine if current user has rights to view expediente link.
+         */
+        // Is the logged in user a carbray admin?
+        $logged_in_uid = \Drupal::currentUser()->id();
+        $current_user_roles = \Drupal::currentUser()->getRoles();
+        if (in_array('carbray_administrator', $current_user_roles)) {
+          // Print the link to expediente.
+          $expediente_link = print_cliente_expedientes($expediente->expediente_nid);
+        }
+        else {
+          // Current logged in user is not carbray admin; but is he responsable of current cliente expediente?
+          $responsables = get_expediente_responsables($captacion->captacion_nid);
+          if (in_array($logged_in_uid, $responsables)) {
+            $expediente_link = print_cliente_expedientes($expediente->expediente_nid);
+          }
+          else {
+            $expediente_link = '';
+          }
         }
 
         $expedientes_rows[] = array(
@@ -539,8 +562,8 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
             print_cliente_captadores_responsables($expediente_data->get('field_expediente_responsable')
               ->getValue()),
             $servicio_nombre,
-            print_cliente_expedientes($expediente->expediente_nid),
-            $actuacion_link_markup,
+            $expediente_link,
+            $captacion_link_markup,
           ),
           'class' => [$row_class],
         );
@@ -1705,4 +1728,22 @@ function get_captacion_estado_changes($nid) {
   $sql = "SELECT * FROM carbray_captacion_changes_log WHERE nid = :nid ORDER BY created DESC";
   return $db->query($sql, array(':nid' => $nid))
     ->fetchAll();
+}
+
+/**
+ * @param $captacion_nid
+ *   Int captacion node id.
+ */
+function get_captacion_captadores($captacion_nid) {
+  $db = \Drupal::database();
+  $sql = "SELECT field_captacion_captador_target_id FROM node__field_captacion_captador WHERE entity_id = :entity_id";
+  return $db->query($sql, array(':entity_id' => $captacion_nid))
+    ->fetchCol();
+}
+
+function get_expediente_responsables($expediente_nid) {
+  $db = \Drupal::database();
+  $sql = "SELECT field_expediente_responsable_target_id FROM node__field_expediente_responsable WHERE entity_id = :entity_id";
+  return $db->query($sql, array(':entity_id' => $expediente_nid))
+    ->fetchCol();
 }
