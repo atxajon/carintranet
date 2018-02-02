@@ -19,7 +19,6 @@
     </h2>
   {% endif %}
   {{ title_suffix }}
-
   <div{{ content_attributes.addClass('content') }}>
     <div class="row">
       <div class="col-sm-8">
@@ -41,7 +40,10 @@
             {{ content.field_expediente_fecha_alta }}
             <div class="tematica-table margin-top-20 margin-bottom-20">{{ content.view_expediente_tematica }}</div>
             <div class="field--label">Responsable(s):</div>
-            {{ content.exp_responsables }}
+            <div class="margin-bottom-20">
+              {{ content.exp_responsables }}
+            </div>
+            {{ content.field_expediente_pack_de_horas }}
           </div>
         </div>
         <div class="panel panel-default">
