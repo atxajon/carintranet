@@ -150,11 +150,22 @@ class NewActuacionForm extends FormBase {
     // If it's an expediente with pack de horas update remaining time.
     // @todo: test all this!
     if ($is_pack) {
+      // When this actuacion started we had originally stored $actuacion_started_minutes.
+      $actuacion_started_minutes = $is_pack * 60;
+      // The absolute time passed on this current actuacion is:
+      $minutes_passed_on_this_actuacion = $actuacion_started_minutes - $timer;
+
       $expediente = Node::load($expediente_nid);
+      // Currently stored hours in pack (we need to check against this, as another worker could have done an actuacion in paralel while this worker submits his!
       $current_pack_hours = $expediente->get('field_expediente_pack_de_horas')->value;
       $current_pack_minutes = $current_pack_hours * 60;
-      $remaining_mins_after_current_actuacion = $current_pack_minutes - $timer;
-      $expediente->set('field_expediente_pack_de_horas', $remaining_mins_after_current_actuacion);
+
+      $updated_pack_remaining_minutes = $current_pack_minutes - $minutes_passed_on_this_actuacion;
+      $updated_pack_remaining_hours = $updated_pack_remaining_minutes / 60;
+
+      // Store the subtracted minutes in hours for the remaining time in the pack.
+      $expediente->set('field_expediente_pack_de_horas', $updated_pack_remaining_hours);
+      $expediente->save();
     }
 
     drupal_set_message('Actuacion ' . $title . ' ha sido creada');
