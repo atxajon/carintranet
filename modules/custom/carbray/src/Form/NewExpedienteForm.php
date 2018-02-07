@@ -169,7 +169,8 @@ class NewExpedienteForm extends FormBase {
     $captacion_nid = $form_state->getValue('captacion');
     $captacion_node = Node::load($captacion_nid);
     $uid = $form_state->getValue('cliente');
-    $pack = $form_state->getValue('pack');
+    $pack_horas = $form_state->getValue('pack');
+    $pack_minutos = $pack_horas * 60;
     $values = $form_state->getValues();
     $responsable = $form_state->getValue('responsable');
 
@@ -189,7 +190,7 @@ class NewExpedienteForm extends FormBase {
     $expediente->set('field_expediente_captacion', $captacion_nid);
     $expediente->set('field_expediente_responsable', $selected_responsable);
     $expediente->set('field_expediente_tematica', $values['servicios']);
-    $expediente->set('field_expediente_pack_de_horas', $pack);
+    $expediente->set('field_expediente_pack_minutos', $pack_minutos);
     $expediente->enforceIsNew();
     $expediente->save();
 

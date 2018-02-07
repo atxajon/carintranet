@@ -42,15 +42,15 @@ class NewActuacionForm extends FormBase {
     $form['#attached']['library'][] = 'carbray/carbray.carbray_timer';
     // Does this expediente have a pack de horas set? if so pass it to js timer file.
     $expediente = Node::load($expediente_nid);
-    $pack = $expediente->get('field_expediente_pack_de_horas')->value;
-    $form['#attached']['drupalSettings']['pack_horas'] = $pack;
+    $pack = $expediente->get('field_expediente_pack_minutos')->value;
+    $form['#attached']['drupalSettings']['pack_minutos'] = $pack *60;
 
     $form['is_pack'] = array(
       '#type' => 'hidden',
       '#default_value' => $pack,
     );
 
-    $crono_time = ($pack) ? gmdate("H:i:s", $pack * 3600) : '00:00:00';
+    $crono_time = ($pack) ? gmdate("H:i:s", $pack * 60) : '00:00:00';
 
     $form['start'] = array(
       '#type' => 'button',
@@ -129,44 +129,49 @@ class NewActuacionForm extends FormBase {
     $nota = $form_state->getValue('nota');
     $actuacion_file = $form_state->getValue('actuacion_file');
 
+    // If it's an expediente with pack de horas update remaining time.
+    if ($is_pack) {
+      // When this actuacion started we had originally stored $actuacion_started_minutes.
+      $actuacion_started_minutes = $is_pack;
+      // The absolute time passed on this current actuacion is:
+      $minutes_passed_on_this_actuacion = $actuacion_started_minutes - $timer;
+
+      $expediente = Node::load($expediente_nid);
+      // Currently stored pack minutes (we need to check against this, as another worker could have done an actuacion in paralel while this worker submits his!
+      $current_pack_minutes = $expediente->get('field_expediente_pack_minutos')->value;
+
+      $updated_pack_remaining_minutes = $current_pack_minutes - $minutes_passed_on_this_actuacion;
+
+      // Store the subtracted minutes in hours for the remaining time in the pack.
+      $expediente->set('field_expediente_pack_minutos', $updated_pack_remaining_minutes);
+      $expediente->save();
+
+      // $timer instead of being the countdown value, takes the elapsed minutes value.
+      $timer = $minutes_passed_on_this_actuacion;
+    }
+
+
     $actuacion = Node::create(['type' => 'actuacion']);
     $actuacion->set('title', $title);
     $actuacion->set('field_actuacion_expediente', $expediente_nid);
+    // Dont get confused with 'field_actuacion_tiempo_en_seg' machinename, it was originally created
+    // to deal with saving seconds, but in reality it's dealing with minutes...
     $actuacion->set('field_actuacion_tiempo_en_seg', $timer);
     $actuacion->set('field_actuacion_documentacion', $actuacion_file);
     $actuacion->enforceIsNew();
     $actuacion->save();
 
+    // Now that we have an actuacion nid we can create a Nota node that references it.
     $nota_node = Node::create(['type' => 'nota']);
     $nota_node->set('title', 'Nota para id ' . $actuacion->id() . ' creada el ' . date('d-M-Y H:m:s', time()));
     $nota_node->set('field_nota_nota', $nota);
     $nota_node->enforceIsNew();
     $nota_node->save();
 
+    // Now that we have a Nota we can reload our actuacion and save the reference to the Nota.
     $actuacion = Node::load($actuacion->id());
     $actuacion->set('field_actuacion_nota', $nota_node->id());
     $actuacion->save();
-
-    // If it's an expediente with pack de horas update remaining time.
-    // @todo: test all this!
-    if ($is_pack) {
-      // When this actuacion started we had originally stored $actuacion_started_minutes.
-      $actuacion_started_minutes = $is_pack * 60;
-      // The absolute time passed on this current actuacion is:
-      $minutes_passed_on_this_actuacion = $actuacion_started_minutes - $timer;
-
-      $expediente = Node::load($expediente_nid);
-      // Currently stored hours in pack (we need to check against this, as another worker could have done an actuacion in paralel while this worker submits his!
-      $current_pack_hours = $expediente->get('field_expediente_pack_de_horas')->value;
-      $current_pack_minutes = $current_pack_hours * 60;
-
-      $updated_pack_remaining_minutes = $current_pack_minutes - $minutes_passed_on_this_actuacion;
-      $updated_pack_remaining_hours = $updated_pack_remaining_minutes / 60;
-
-      // Store the subtracted minutes in hours for the remaining time in the pack.
-      $expediente->set('field_expediente_pack_de_horas', $updated_pack_remaining_hours);
-      $expediente->save();
-    }
 
     drupal_set_message('Actuacion ' . $title . ' ha sido creada');
   }

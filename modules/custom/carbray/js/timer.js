@@ -1,15 +1,15 @@
 (function ($, Drupal, drupalSettings) {
   Drupal.behaviors.carbray_timer = {
     attach: function (context, settings) {
-      var packHoras = drupalSettings.pack_horas;
+      var packMinutos = drupalSettings.pack_minutos;
 
       $('#edit-start', context).once('carbray_timer').on('click', function () {
-        if (packHoras) {
-          var totalMinutes = packHoras * 3600;
+        if (packMinutos) {
+          // var totalMinutes = packHoras * 3600;
           $('#crono').timer({
             format: '%H:%M:%S',
             countdown: true,
-            duration: totalMinutes,
+            duration: packMinutos,
           });
         }
         else {
