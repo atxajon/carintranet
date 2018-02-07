@@ -75,7 +75,7 @@ class NewExpedienteForm extends FormBase {
       '#description' => t('Introduce el número de horas si es un cliente con pack de horas'),
       '#size' => '20',
       '#min' => 0,
-      '#step' => 0.5,
+      '#step' => 0.1,
     );
 
     $tematica_parent_terms =\Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('tematicas', 0, 1);
