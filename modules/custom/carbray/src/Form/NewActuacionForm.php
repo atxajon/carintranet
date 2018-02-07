@@ -71,10 +71,10 @@ class NewActuacionForm extends FormBase {
       '#attributes' => array('class' => array('hidden', 'pause-timer-btn', 'btn-warning')),
     );
 
-
+    $timer_tooltip = ($pack) ? 'Edita el numero de minutos restantes para concluir el pack de horas' : 'Edita el numero de minutos transcurridos.';
     $form['timer'] = array(
       '#type' => 'textfield',
-      '#description' => 'Edita el numero de minutos transcurridos.',
+      '#description' => $timer_tooltip,
       '#required' => TRUE,
       '#prefix' => '<div class="pull-right timer-textfield">',
       '#attributes' => array('class' => array('hidden')),
