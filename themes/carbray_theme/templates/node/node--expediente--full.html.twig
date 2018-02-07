@@ -56,7 +56,12 @@
             <div class="field"><div class="field--label">Email</div><div class="field--item">{{ content.client_correo }}</div></div>
             <div class="field"><div class="field--label">Telefono</div><div class="field--item">{{ content.client_telefono }}</div></div>
             <div class="field"><div class="field--label">Pais</div><div class="field--item">{{ content.client_pais }}</div></div>
-            <div class="field"><div class="field--label">Persona juridica</div><div class="field--item">{{ content.persona_juridica }}</div></div>
+            {% if content.persona_juridica|render|trim is not empty %}
+              <div class="field"><div class="field--label">Persona juridica</div><div class="field--item">{{ content.persona_juridica }}</div></div>
+            {% endif %}
+            {% if content.pack_horas|render|trim is not empty %}
+              <div class="field"><div class="field--label">Pack de horas (en Horas:Minutos)</div><div class="field--item">{{ content.pack_horas }}</div></div>
+            {% endif %}
           </div>
         </div>
       </div>

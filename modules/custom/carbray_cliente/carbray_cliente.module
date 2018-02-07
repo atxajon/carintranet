@@ -298,6 +298,12 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['node']['expediente']['display']['pack_horas'] = array(
+    'label' => t('Pack de horas'),
+    'description' => t('Pack de horas.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
   $extra['node']['expediente']['display']['new_actuacion'] = array(
     'label' => t('New actuacion'),
     'description' => t('New actuacion.'),
@@ -1121,6 +1127,18 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
           '#markup' => $cleaned_up_string,
         ];
       }
+    }
+
+    if ($display->getComponent('pack_horas')) {
+      $expediente = Node::load($entity->id());
+      $pack_minutos = $expediente->get('field_expediente_pack_minutos')->value;
+      $pack_horas = '';
+      if ($pack_minutos) {
+        $pack_horas =  gmdate("H:i", $pack_minutos * 60);
+      }
+      $build['pack_horas'] = [
+        '#markup' => $pack_horas,
+      ];
     }
 
     if ($display->getComponent('new_actuacion')) {
