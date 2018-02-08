@@ -74,7 +74,7 @@ class NewExpedienteForm extends FormBase {
       '#title' => 'Pack de horas',
       '#description' => t('Introduce el número de horas si es un cliente con pack de horas'),
       '#size' => '20',
-      '#min' => 0,
+      '#min' => -1,
       '#step' => 0.1,
     );
 
@@ -171,6 +171,9 @@ class NewExpedienteForm extends FormBase {
     $uid = $form_state->getValue('cliente');
     $pack_horas = $form_state->getValue('pack');
     $pack_minutos = $pack_horas * 60;
+    if ($pack_minutos == 0) {
+      $pack_minutos = -1;
+    }
     $values = $form_state->getValues();
     $responsable = $form_state->getValue('responsable');
 

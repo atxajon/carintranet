@@ -43,14 +43,21 @@ class NewActuacionForm extends FormBase {
     // Does this expediente have a pack de horas set? if so pass it to js timer file.
     $expediente = Node::load($expediente_nid);
     $pack = $expediente->get('field_expediente_pack_minutos')->value;
-    $form['#attached']['drupalSettings']['pack_minutos'] = $pack *60;
+    // When user does not populate 'pack de horas' form field on new expediente form, default inserted on db is -1.
+    if ($pack > 0) {
+      // If is an actuacion for an expediente with pack de horas, pass the
+      // value to js to set the timer to countdown.
+      $form['#attached']['drupalSettings']['pack_minutos'] = $pack * 60;
+      $crono_time = gmdate("H:i:s", $pack * 60);
+    }
+    else {
+      $crono_time = '00:00:00';
+    }
 
     $form['is_pack'] = array(
       '#type' => 'hidden',
       '#default_value' => $pack,
     );
-
-    $crono_time = ($pack) ? gmdate("H:i:s", $pack * 60) : '00:00:00';
 
     $form['start'] = array(
       '#type' => 'button',
