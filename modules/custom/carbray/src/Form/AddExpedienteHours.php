@@ -41,7 +41,10 @@ class AddExpedienteHours extends FormBase {
     $form['tipo_horas'] = [
       '#type' => 'radios',
       '#title' => t('Tipo de horas'),
-      '#options' => array(0 => $this->t('De cortesía'), 1 => $this->t('Normales')),
+      '#options' => array(
+        0 => $this->t('De cortesía'),
+        1 => $this->t('Facturables')
+      ),
 //      '#default_value' => 1,
       '#required' => TRUE,
     ];
@@ -49,8 +52,6 @@ class AddExpedienteHours extends FormBase {
     // Does this expediente have a pack de horas set? if so pass it to js timer file.
 //    $expediente = Node::load($expediente_nid);
 //    $pack = $expediente->get('field_expediente_pack_minutos')->value;
-
-
 
 
     $form['submit'] = array(
@@ -73,26 +74,44 @@ class AddExpedienteHours extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
 
     $expediente_nid = $form_state->getValue('expediente_nid');
+    $horas_anadidas = $form_state->getValue('horas');
+    $minutos_anadidos = $horas_anadidas * 60;
+    $tipo_horas = $form_state->getValue('tipo_horas');
 
-    // If it's an expediente with pack de horas update remaining time.
-    // When this actuacion started we had originally stored $actuacion_started_minutes.
-    $actuacion_started_minutes = $is_pack;
-    // The absolute time passed on this current actuacion is:
-    $minutes_passed_on_this_actuacion = $actuacion_started_minutes - $timer;
 
-    $expediente = Node::load($expediente_nid);
-    // Currently stored pack minutes (we need to check against this, as another worker could have done an actuacion in paralel while this worker submits his!
-    $current_pack_minutes = $expediente->get('field_expediente_pack_minutos')->value;
+    /**
+     * Insert on custom table carbray_expediente_horas, if this is an expediente with pack de horas set.
+     */
+    if ($minutos_anadidos > 0) {
+      try {
+        $record = \Drupal::database()->insert('carbray_expediente_horas')
+          ->fields([
+            'expediente_nid',
+            'refill_minutes',
+            'refill_type',
+            'author',
+          ])
+          ->values(array(
+            $expediente_nid,
+            $minutos_anadidos,
+            $tipo_horas,
+            \Drupal::currentUser()->id(),
+          ))
+          ->execute();
+        \Drupal::logger('update_pack_horas')
+          ->notice('Expediente with pack de horas ' . $expediente_nid . ' updated, entry ' . $record . ' on table carbray_expediente_horas added.');
+      } catch (DatabaseException $e) {
+        watchdog_exception('update_pack_horas', $e);
+        \Drupal::logger('update_pack_horas')
+          ->notice('Unable to update expediente with pack de horas ' . $expediente_nid . ' with refill hours ' . $horas_anadidas . ' on carbray_expediente_horas table!');
+      }
 
-    $updated_pack_remaining_minutes = $current_pack_minutes - $minutes_passed_on_this_actuacion;
-
-    // Store the subtracted minutes in hours for the remaining time in the pack.
-    $expediente->set('field_expediente_pack_minutos', $updated_pack_remaining_minutes);
-    $expediente->save();
-
-    // $timer instead of being the countdown value, takes the elapsed minutes value.
-    $timer = $minutes_passed_on_this_actuacion;
-
-    drupal_set_message('Actuacion ' . $title . ' ha sido creada');
+      // Update expediente's pack horas time.
+      $expediente = Node::load($expediente_nid);
+      $expediente->set('field_expediente_pack_minutos', $minutos_anadidos);
+      $expediente->save();
+    }
+    
+    drupal_set_message('Expediente actualizado');
   }
 }

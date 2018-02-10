@@ -9,6 +9,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\user\Entity\User;
+use Drupal\Core\Database\DatabaseException;
 
 
 /**
@@ -233,7 +234,31 @@ class NewExpedienteForm extends FormBase {
         ->execute();
     }
 
-    drupal_set_message('Expediente ' . $num_expediente . ' para ' . $captacion_node->label() . ' ha sido creado');
+    /**
+     * Insert on custom table carbray_expediente_horas, if this is an expediente with pack de horas set.
+     */
+    if ($pack_minutos > 0) {
+      try {
+        $record = \Drupal::database()->insert('carbray_expediente_horas')
+          ->fields([
+            'expediente_nid',
+            'original_minutes',
+            'author',
+          ])
+          ->values(array(
+            $expediente->id(),
+            $pack_minutos,
+            $uid,
+          ))
+          ->execute();
+        \Drupal::logger('new_expediente')->notice('New expediente with pack de horas added, entry ' . $record . ' on table carbray_expediente_horas added.');
+      } catch (DatabaseException $e) {
+        watchdog_exception('new_expediente_exception', $e);
+        \Drupal::logger('new_expediente')->notice('New expediente with pack de horas added but unable to add entry on table carbray_expediente_horas!');
+      }
+    }
+
+      drupal_set_message('Expediente ' . $num_expediente . ' para ' . $captacion_node->label() . ' ha sido creado');
 
     // Redirect to the newly created expediente.
     $options = ['absolute' => TRUE];
