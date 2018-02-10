@@ -1136,11 +1136,11 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
     }
 
     if ($display->getComponent('pack_horas')) {
-      $expediente = Node::load($entity->id());
-      $pack_minutos = $expediente->get('field_expediente_pack_minutos')->value;
-      $pack_horas = '';
-      if ($pack_minutos) {
-        $pack_horas =  gmdate("H:i", $pack_minutos * 60);
+      $db = \Drupal::database();
+      $sql = "SELECT original_minutes FROM carbray_expediente_horas WHERE expediente_nid = :nid ORDER BY id ASC LIMIT 1";
+      $original_pack_minutes = $db->query($sql, array(':nid' => $entity->id()))->fetchField();
+      if ($original_pack_minutes) {
+        $pack_horas =  gmdate("H:i", $original_pack_minutes * 60);
       }
       $build['pack_horas'] = [
         '#markup' => $pack_horas,
@@ -1156,6 +1156,8 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
     if ($display->getComponent('add_hours')) {
       // If expediente had a pack de horas, and now the amount of time has run out:
       // show a button to refill the hours.
+      $expediente = Node::load($entity->id());
+      $pack_minutos = $expediente->get('field_expediente_pack_minutos')->value;
       if ($pack_minutos == 0) {
         $add_hours_form = \Drupal::formBuilder()
           ->getForm('Drupal\carbray\Form\AddExpedienteHours', $nid);

@@ -111,7 +111,7 @@ class AddExpedienteHours extends FormBase {
       $expediente->set('field_expediente_pack_minutos', $minutos_anadidos);
       $expediente->save();
     }
-    
+
     drupal_set_message('Expediente actualizado');
   }
 }

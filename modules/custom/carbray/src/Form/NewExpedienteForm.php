@@ -227,7 +227,7 @@ class NewExpedienteForm extends FormBase {
           'expediente_nid',
         ])
         ->values(array(
-          $uid,
+          \Drupal::currentUser()->id(),
           $captacion_nid,
           $expediente->id(),
         ))
