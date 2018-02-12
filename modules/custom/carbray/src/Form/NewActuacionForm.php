@@ -91,7 +91,7 @@ class NewActuacionForm extends FormBase {
     elseif ($pack == '0') {
       // If is an actuacion for an expediente that has a pack the horas that has now run out (e.g === 0 minutes left).
       $form['start'] = array(
-        '#markup' => 'Tiempo agotado',
+        '#markup' => '<div class="pull-left timer-container"></div>',
       );
     }
     else {

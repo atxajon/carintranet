@@ -58,6 +58,11 @@
           }
         }, 60000);
       }
+
+      // $('body').once(function(){
+      //   var clone = $('.add-hours .btn').clone();
+      //   clone.insertAfter('#carbray-new-actuacion .form-item-title');
+      // });
     }
   }
 
@@ -70,6 +75,15 @@
           return false;
         }
       });
+    }
+  }
+
+  Drupal.behaviors.clone_add_hours = {
+    attach: function (context, settings) {
+      if (context == document) {
+        var clone = $('.add-hours > .btn').clone();
+        clone.appendTo('#carbray-new-actuacion .timer-container');
+      }
     }
   }
 

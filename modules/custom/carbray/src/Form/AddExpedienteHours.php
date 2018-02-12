@@ -34,7 +34,8 @@ class AddExpedienteHours extends FormBase {
 
     $form['horas'] = array(
       '#title' => 'Numero de horas que se añaden',
-      '#type' => 'textfield',
+      '#type' => 'number',
+      '#min' => 0,
       '#required' => TRUE,
     );
 
@@ -66,6 +67,11 @@ class AddExpedienteHours extends FormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
+    $horas_anadidas = $form_state->getValue('horas');
+    if (!ctype_digit($horas_anadidas)) {
+      $form_state->setErrorByName('horas', t('El campo horas solo puede contener digitos.'));
+    }
+
   }
 
   /**
