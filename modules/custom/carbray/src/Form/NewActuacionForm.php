@@ -49,9 +49,53 @@ class NewActuacionForm extends FormBase {
       // value to js to set the timer to countdown.
       $form['#attached']['drupalSettings']['pack_minutos'] = $pack * 60;
       $crono_time = gmdate("H:i:s", $pack * 60);
+      $form['start'] = array(
+        '#type' => 'button',
+        '#value' => 'Comenzar',
+        '#prefix' => '<div class="pull-left clearfix timer-container"><div class="pull-left crono-wrapper"><h2 id="crono" class="no-margin crono-heading pull-left">' . $crono_time . '</h2>',
+        '#attributes' => array('class' => array('btn-primary', 'margin-bottom-20', 'start-timer-btn')),
+      );
+    }
+    elseif ($pack === 0) {
+      // If is an actuacion for an expediente that has a pack the horas that has now run out (e.g === 0 minutes left).
+      $crono_time = '00:00:00';
+      $form['start'] = array(
+        '#type' => 'hidden',
+        '#value' => 'Comenzar',
+        '#prefix' => '<div class="pull-left clearfix timer-container"><div class="pull-left crono-wrapper"><h2 id="crono" class="no-margin crono-heading pull-left">' . $crono_time . '</h2>',
+        '#attributes' => array('class' => array('btn-primary', 'margin-bottom-20', 'start-timer-btn')),
+      );
+      $add_hours_form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray\Form\AddExpedienteHours', $expediente_nid);
+      $build['add_hours'] = [
+        '#theme' => 'button_modal',
+        '#unique_id' => 'add-hours-expediente-nid-' . $expediente_nid,
+        '#button_text' => 'Añadir horas',
+        '#button_classes' => 'btn btn-primary',
+        '#modal_title' => t('Añadir horas'),
+        '#modal_content' => $add_hours_form,
+        '#has_plus' => FALSE,
+      ];
+
+      $form['add_hours'] = array(
+        '#markup' => render($build),
+      );
     }
     else {
+      // Expedientes that were created before pack de horas functionality will fall to this (NULL!).
       $crono_time = '00:00:00';
+      $form['start'] = array(
+        '#type' => 'button',
+        '#value' => 'Comenzar',
+        '#prefix' => '<div class="pull-left clearfix timer-container"><div class="pull-left crono-wrapper"><h2 id="crono" class="no-margin crono-heading pull-left">' . $crono_time . '</h2>',
+        '#attributes' => array(
+          'class' => array(
+            'btn-primary',
+            'margin-bottom-20',
+            'start-timer-btn'
+          )
+        ),
+      );
     }
 
     $form['is_pack'] = array(
@@ -59,17 +103,18 @@ class NewActuacionForm extends FormBase {
       '#default_value' => $pack,
     );
 
-    $form['start'] = array(
-      '#type' => 'button',
-      '#value' => 'Comenzar',
-      '#prefix' => '<div class="pull-left clearfix timer-container"><div class="pull-left crono-wrapper"><h2 id="crono" class="no-margin crono-heading pull-left">' . $crono_time . '</h2>',
-      '#attributes' => array('class' => array('btn-primary', 'margin-bottom-20', 'start-timer-btn')),
-    );
 
     $form['resume'] = array(
       '#type' => 'button',
       '#value' => 'Continuar',
-      '#attributes' => array('class' => array('btn-primary', 'margin-bottom-20', 'resume-timer-btn', 'hidden')),
+      '#attributes' => array(
+        'class' => array(
+          'btn-primary',
+          'margin-bottom-20',
+          'resume-timer-btn',
+          'hidden'
+        )
+      ),
     );
 
     $form['pause'] = array(

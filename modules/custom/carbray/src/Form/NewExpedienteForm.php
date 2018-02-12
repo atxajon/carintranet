@@ -227,7 +227,7 @@ class NewExpedienteForm extends FormBase {
           'expediente_nid',
         ])
         ->values(array(
-          \Drupal::currentUser()->id(),
+          $uid,
           $captacion_nid,
           $expediente->id(),
         ))
@@ -248,7 +248,7 @@ class NewExpedienteForm extends FormBase {
           ->values(array(
             $expediente->id(),
             $pack_minutos,
-            $uid,
+            \Drupal::currentUser()->id(),
           ))
           ->execute();
         \Drupal::logger('new_expediente')->notice('New expediente with pack de horas added, entry ' . $record . ' on table carbray_expediente_horas added.');
