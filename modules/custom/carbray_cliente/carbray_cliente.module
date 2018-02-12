@@ -1152,6 +1152,26 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
       $build['new_actuacion'] = $form;
     }
 
+    if ($display->getComponent('add_hours')) {
+      // If expediente had a pack de horas, and now the amount of time has run out:
+      // show a button to refill the hours.
+      $expediente = Node::load($entity->id());
+      $pack_minutos = $expediente->get('field_expediente_pack_minutos')->value;
+      if ($pack_minutos == 0) {
+        $add_hours_form = \Drupal::formBuilder()
+          ->getForm('Drupal\carbray\Form\AddExpedienteHours', $nid);
+        $build['add_hours'] = [
+          '#theme' => 'button_modal',
+          '#unique_id' => 'add-hours-expediente-nid-' . $nid,
+          '#button_text' => 'Añadir horas',
+          '#button_classes' => 'btn btn-primary',
+          '#modal_title' => t('Añadir horas'),
+          '#modal_content' => $add_hours_form,
+          '#has_plus' => FALSE,
+        ];
+      }
+    }
+
     if ($display->getComponent('view_tematica')) {
       $db = \Drupal::database();
       $sql = "SELECT field_expediente_tematica_target_id FROM node__field_expediente_tematica WHERE entity_id = :nid";

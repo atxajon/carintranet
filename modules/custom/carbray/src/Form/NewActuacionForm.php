@@ -43,6 +43,11 @@ class NewActuacionForm extends FormBase {
     // Does this expediente have a pack de horas set? if so pass it to js timer file.
     $expediente = Node::load($expediente_nid);
     $pack = $expediente->get('field_expediente_pack_minutos')->value;
+    $form['is_pack'] = array(
+      '#type' => 'hidden',
+      '#default_value' => $pack,
+    );
+
     // When user does not populate 'pack de horas' form field on new expediente form, default inserted on db is -1.
     if ($pack > 0) {
       // If is an actuacion for an expediente with pack de horas, pass the
@@ -55,30 +60,38 @@ class NewActuacionForm extends FormBase {
         '#prefix' => '<div class="pull-left clearfix timer-container"><div class="pull-left crono-wrapper"><h2 id="crono" class="no-margin crono-heading pull-left">' . $crono_time . '</h2>',
         '#attributes' => array('class' => array('btn-primary', 'margin-bottom-20', 'start-timer-btn')),
       );
-    }
-    elseif ($pack === 0) {
-      // If is an actuacion for an expediente that has a pack the horas that has now run out (e.g === 0 minutes left).
-      $crono_time = '00:00:00';
-      $form['start'] = array(
-        '#type' => 'hidden',
-        '#value' => 'Comenzar',
-        '#prefix' => '<div class="pull-left clearfix timer-container"><div class="pull-left crono-wrapper"><h2 id="crono" class="no-margin crono-heading pull-left">' . $crono_time . '</h2>',
-        '#attributes' => array('class' => array('btn-primary', 'margin-bottom-20', 'start-timer-btn')),
+      $form['resume'] = array(
+        '#type' => 'button',
+        '#value' => 'Continuar',
+        '#attributes' => array(
+          'class' => array(
+            'btn-primary',
+            'margin-bottom-20',
+            'resume-timer-btn',
+            'hidden'
+          )
+        ),
       );
-      $add_hours_form = \Drupal::formBuilder()
-        ->getForm('Drupal\carbray\Form\AddExpedienteHours', $expediente_nid);
-      $build['add_hours'] = [
-        '#theme' => 'button_modal',
-        '#unique_id' => 'add-hours-expediente-nid-' . $expediente_nid,
-        '#button_text' => 'Añadir horas',
-        '#button_classes' => 'btn btn-primary',
-        '#modal_title' => t('Añadir horas'),
-        '#modal_content' => $add_hours_form,
-        '#has_plus' => FALSE,
-      ];
+      $form['pause'] = array(
+        '#type' => 'button',
+        '#value' => 'Pausar',
+        '#attributes' => array('class' => array('hidden', 'pause-timer-btn', 'btn-warning')),
+      );
 
-      $form['add_hours'] = array(
-        '#markup' => render($build),
+      $timer_tooltip = ($pack) ? 'Edita el numero de minutos restantes para concluir el pack de horas' : 'Edita el numero de minutos transcurridos.';
+      $form['timer'] = array(
+        '#type' => 'textfield',
+        '#description' => $timer_tooltip,
+        '#required' => TRUE,
+        '#prefix' => '<div class="pull-right timer-textfield">',
+        '#attributes' => array('class' => array('hidden')),
+        '#suffix' => '</div></div></div>',
+      );
+    }
+    elseif ($pack == '0') {
+      // If is an actuacion for an expediente that has a pack the horas that has now run out (e.g === 0 minutes left).
+      $form['start'] = array(
+        '#markup' => 'Tiempo agotado',
       );
     }
     else {
@@ -96,42 +109,34 @@ class NewActuacionForm extends FormBase {
           )
         ),
       );
+      $form['resume'] = array(
+        '#type' => 'button',
+        '#value' => 'Continuar',
+        '#attributes' => array(
+          'class' => array(
+            'btn-primary',
+            'margin-bottom-20',
+            'resume-timer-btn',
+            'hidden'
+          )
+        ),
+      );
+      $form['pause'] = array(
+        '#type' => 'button',
+        '#value' => 'Pausar',
+        '#attributes' => array('class' => array('hidden', 'pause-timer-btn', 'btn-warning')),
+      );
+
+      $timer_tooltip = ($pack) ? 'Edita el numero de minutos restantes para concluir el pack de horas' : 'Edita el numero de minutos transcurridos.';
+      $form['timer'] = array(
+        '#type' => 'textfield',
+        '#description' => $timer_tooltip,
+        '#required' => TRUE,
+        '#prefix' => '<div class="pull-right timer-textfield">',
+        '#attributes' => array('class' => array('hidden')),
+        '#suffix' => '</div></div></div>',
+      );
     }
-
-    $form['is_pack'] = array(
-      '#type' => 'hidden',
-      '#default_value' => $pack,
-    );
-
-
-    $form['resume'] = array(
-      '#type' => 'button',
-      '#value' => 'Continuar',
-      '#attributes' => array(
-        'class' => array(
-          'btn-primary',
-          'margin-bottom-20',
-          'resume-timer-btn',
-          'hidden'
-        )
-      ),
-    );
-
-    $form['pause'] = array(
-      '#type' => 'button',
-      '#value' => 'Pausar',
-      '#attributes' => array('class' => array('hidden', 'pause-timer-btn', 'btn-warning')),
-    );
-
-    $timer_tooltip = ($pack) ? 'Edita el numero de minutos restantes para concluir el pack de horas' : 'Edita el numero de minutos transcurridos.';
-    $form['timer'] = array(
-      '#type' => 'textfield',
-      '#description' => $timer_tooltip,
-      '#required' => TRUE,
-      '#prefix' => '<div class="pull-right timer-textfield">',
-      '#attributes' => array('class' => array('hidden')),
-      '#suffix' => '</div></div></div>',
-    );
 
     $form['nota_container'] = array(
       '#type' => 'container',
@@ -167,6 +172,10 @@ class NewActuacionForm extends FormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
+    $title = $form_state->getValue('title');
+    if (!$title) {
+      $form_state->setErrorByName('title', t('Por favor añade un texto para dar nombre a la actuacion.'));
+    }
   }
 
   /**
