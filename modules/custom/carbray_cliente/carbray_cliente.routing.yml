@@ -21,3 +21,10 @@ carbray_cliente.clientes_autocomplete:
     _format: json
   requirements:
     _access: 'TRUE'
+carbray_cliente.actuaciones_to_doc:
+  path: '/node/{nid}/pdf'
+  defaults:
+    _controller: '\Drupal\carbray_cliente\Controller\PropuestaToDoc::getPropuestaNode'
+    _title: 'Actuaciones en pdf'
+  requirements:
+    _permission: 'access content'

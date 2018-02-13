@@ -180,12 +180,6 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
-  $extra['node']['propuesta']['display']['link_to_pdf'] = array(
-    'label' => t('Link to download propuesta in pdf'),
-    'description' => t('Shows a link that allows admin to download the propuesta as a pdf file.'),
-    'weight' => 100,
-    'visible' => TRUE,
-  );
   $extra['node']['propuesta']['display']['preprocessed_body'] = array(
     'label' => t('Preprocessed body'),
     'description' => t('Contains propuesta body with embedded variable token replacements.'),
@@ -319,6 +313,12 @@ function carbray_cliente_entity_extra_field_info() {
   $extra['node']['expediente']['display']['actuaciones_csv_link'] = array(
     'label' => t('Download actuaciones'),
     'description' => t('Download actuaciones.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['expediente']['display']['link_to_pdf'] = array(
+    'label' => t('Link to download expediente actuaciones in pdf'),
+    'description' => t('Shows a link that allows admin to download the expediente actuaciones as a pdf file.'),
     'weight' => 100,
     'visible' => TRUE,
   );
@@ -1201,6 +1201,24 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
       $csv_link_markup = Markup::create($link_to_csv_string);
       $build['actuaciones_csv_link'] = [
         '#markup' => $csv_link_markup,
+      ];
+    }
+
+    if ($display->getComponent('link_to_pdf')) {
+      $nid = $entity->id();
+      $url = Url::fromRoute('carbray_cliente.actuaciones_to_doc', array('nid' => $nid));
+
+      $build['link_to_pdf'] = [
+        '#type' => 'link',
+        '#url' => $url,
+        '#title' => t('Exportar DOC'),
+        '#attributes' => array(
+          'target' => '_blank',
+          'class' => array(
+            'btn',
+            'btn-primary',
+          ),
+        ),
       ];
     }
 
