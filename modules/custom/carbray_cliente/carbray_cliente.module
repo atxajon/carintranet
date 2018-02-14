@@ -1227,6 +1227,12 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
       $total_seconds = 0;
       $actuaciones_rows = [];
       if ($actuaciones_nids) {
+        // Work out if this is an exportable path (e.g node/{nid}/pdf) to show/hide edit actuacion button link and form.
+        $current_uri = \Drupal::request()->getRequestUri();
+        $is_expediente_node_view = FALSE;
+        if (strpos($current_uri, 'expediente') !== false) {
+          $is_expediente_node_view = TRUE;
+        }
         foreach ($actuaciones_nids as $actuacion_nid) {
           $file_link = '';
           if ($actuacion_nid->fid) {
@@ -1269,7 +1275,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
             Markup::create($actuacion_nid->field_nota_nota_value),
             $file_link,
             get_cliente_nombre($actuacion_nid->uid),
-            render($build['edit_actuacion_form']),
+            ($is_expediente_node_view) ? render($build['edit_actuacion_form']) : '',
           );
         }
 
@@ -1294,8 +1300,10 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         'Notas',
         'Documentacion',
         'Autor',
-        'Editar',
       );
+      if ($is_expediente_node_view) {
+        $header[] = 'Editar';
+      }
       $build['view_actuaciones'] = [
         '#type' => 'table',
         '#header' => $header,
