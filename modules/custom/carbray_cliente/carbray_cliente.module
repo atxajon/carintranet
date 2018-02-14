@@ -1258,15 +1258,17 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
 
           $edit_form = \Drupal::formBuilder()
             ->getForm('Drupal\carbray\Form\EditActuacionForm', $actuacion_nid->nid);
-          $build['edit_actuacion_form'] = [
-            '#theme' => 'button_modal',
-            '#unique_id' => 'edit-actuacion_nid-' . $actuacion_nid->nid,
-            '#button_text' => 'Editar actuacion',
-            '#button_classes' => 'btn btn-primary btn-sm',
-            '#modal_title' => t('Editar actuacion'),
-            '#modal_content' => $edit_form,
-            '#has_plus' => FALSE,
-          ];
+          if ($is_expediente_node_view) {
+            $build['edit_actuacion_form'] = [
+              '#theme' => 'button_modal',
+              '#unique_id' => 'edit-actuacion_nid-' . $actuacion_nid->nid,
+              '#button_text' => 'Editar actuacion',
+              '#button_classes' => 'btn btn-primary btn-sm',
+              '#modal_title' => t('Editar actuacion'),
+              '#modal_content' => $edit_form,
+              '#has_plus' => FALSE,
+            ];
+          }
 
           $actuaciones_rows[] = array(
             date('d-m-y H:m:s', $actuacion_nid->created),
