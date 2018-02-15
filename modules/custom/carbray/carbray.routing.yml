@@ -28,4 +28,12 @@ carbray.csv:
   requirements:
     _permission: 'access content'
 
+carbray.worker_home:
+  path: '/user/{uid}/home'
+  defaults:
+    _title: 'Home de trabajador'
+    _controller: '\Drupal\carbray\Controller\AdminViewer::WorkerHome'
+  requirements:
+    _role: 'carbray_administrator'
+
 

@@ -69,6 +69,10 @@ class GestionarTrabajadoresBlock extends BlockBase {
       $url = Url::fromRoute('entity.user.canonical', ['user' => $worker_uid]);
       $worker = Link::fromTextAndUrl($user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value, $url);
 
+      // Make captaciones link.
+      $captaciones_url = Url::fromRoute('carbray.worker_home', ['uid' => $worker_uid]);
+      $captaciones_link = Link::fromTextAndUrl('Ver captaciones', $captaciones_url);
+
       $role = '';
       if ($user->hasRole('carbray_administrator')) {
         $role = 'Administrador';
@@ -81,6 +85,7 @@ class GestionarTrabajadoresBlock extends BlockBase {
       }
       $rows[] = array(
         $worker,
+        $captaciones_link,
         $user->getEmail(),
         Markup::create($departamento_nombre),
         $objetivo,
@@ -91,6 +96,7 @@ class GestionarTrabajadoresBlock extends BlockBase {
 
     $header = array(
       'Nombre',
+      'Captaciones',
       'Email',
       'Departamento',
       'Objetivo actual',
