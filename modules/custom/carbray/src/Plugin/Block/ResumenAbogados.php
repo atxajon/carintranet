@@ -16,11 +16,11 @@ use Drupal\Core\Render\Markup;
  *
  * @Block(
  *   id = "ver_captaciones",
- *   admin_label = @Translation("Ver captaciones trabajadores"),
+ *   admin_label = @Translation("Resumen abogados"),
  *   category = @Translation("Trabajadores"),
  * )
  */
-class VerCaptacionesBlock extends BlockBase {
+class ResumenAbogados extends BlockBase {
 
   /**
    * {@inheritdoc}
