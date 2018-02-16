@@ -28,8 +28,10 @@ class ResumenAbogados extends BlockBase {
   public function build() {
     $workers = \Drupal::database()->query('SELECT n.entity_id as uid, field_nombre_value as name, field_apellido_value as surname 
 FROM user__field_nombre n 
+INNER JOIN users_field_data ufd on ufd.uid = n.entity_id
 INNER JOIN user__field_apellido a on n.entity_id = a.entity_id 
 INNER JOIN user__roles ur on n.entity_id = ur.entity_id 
+WHERE ufd.status = 1
 ORDER BY field_apellido_value ASC')->fetchAll();
 
     foreach ($workers as $worker) {
