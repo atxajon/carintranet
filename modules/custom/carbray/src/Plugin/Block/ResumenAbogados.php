@@ -12,7 +12,7 @@ use Drupal\Core\Render\Markup;
 
 
 /**
- * Provides an Gestionar trabajadores Block.
+ * Provides a ResumenAbogados Block.
  *
  * @Block(
  *   id = "ver_captaciones",
@@ -26,33 +26,65 @@ class ResumenAbogados extends BlockBase {
    * {@inheritdoc}
    */
   public function build() {
-    $results = get_carbray_workers();
-    foreach ($results as $worker_uid => $worker_email) {
-      $user = User::load($worker_uid);
-      $departamento_nombre = '';
-      $departamento_terms = $user->get('field_departamento')->getValue();
-      if ($departamento_terms) {
-        foreach ($departamento_terms as $dep_term) {
-          if ($dep_term['target_id']) {
-            $term = Term::load($dep_term['target_id']);
-            $departamento_nombre .= $term->name->value . Markup::create('<br>');
-          }
-        }
-      }
+    $workers = \Drupal::database()->query('SELECT n.entity_id as uid, field_nombre_value as name, field_apellido_value as surname 
+FROM user__field_nombre n 
+INNER JOIN user__field_apellido a on n.entity_id = a.entity_id 
+INNER JOIN user__roles ur on n.entity_id = ur.entity_id 
+ORDER BY field_apellido_value ASC')->fetchAll();
 
+    foreach ($workers as $worker) {
       // Make worker name surname into a link.
-      $url = Url::fromRoute('carbray.worker_home', ['uid' => $worker_uid]);
-      $worker = Link::fromTextAndUrl($user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value, $url);
+      $url = Url::fromRoute('carbray.worker_home', ['uid' => $worker->uid]);
+      $worker_name = Link::fromTextAndUrl($worker->name . ' ' . $worker->surname, $url);
+
+      // Captaciones activas are the ones that are not archived AND the ones that do not have an expediente yet.
+      $count_captaciones_activas = \Drupal::database()->query('SELECT count(cc.entity_id)  
+FROM users u 
+INNER JOIN node__field_captacion_captador cc on cc.field_captacion_captador_target_id = u.uid 
+INNER JOIN node__field_captacion_estado_captacion ec on ec.entity_id = cc.entity_id 
+WHERE u.uid = :uid
+AND cc.entity_id NOT IN (
+	SELECT ec.field_expediente_captacion_target_id FROM node__field_expediente_captacion ec) 
+AND field_captacion_estado_captacion_target_id != :estado_archived', array(':uid' => $worker->uid, ':estado_archived' => CAPTACION_ARCHIVADA))->fetchField();
+
+      $count_captaciones_archivadas = \Drupal::database()->query('SELECT count(cc.entity_id)  
+FROM users u 
+INNER JOIN node__field_captacion_captador cc on cc.field_captacion_captador_target_id = u.uid 
+INNER JOIN node__field_captacion_estado_captacion ec on ec.entity_id = cc.entity_id 
+WHERE u.uid = :uid
+AND ec.field_captacion_estado_captacion_target_id  = :estado_archived', array(':uid' => $worker->uid, ':estado_archived' => CAPTACION_ARCHIVADA))->fetchField();
+
+
+      $count_expedientes_published = \Drupal::database()->query('SELECT count(er.field_expediente_responsable_target_id)
+FROM users u
+INNER JOIN user__roles ur on u.uid = ur.entity_id
+INNER JOIN node__field_expediente_responsable er on er.field_expediente_responsable_target_id = u.uid
+INNER JOIN node_field_data nfd on nfd.nid = er.entity_id
+WHERE u.uid = :uid AND nfd.status = 1', array(':uid' => $worker->uid))->fetchField();
+
+      $count_expedientes_archived = \Drupal::database()->query('SELECT count(er.field_expediente_responsable_target_id)
+FROM users u
+INNER JOIN user__roles ur on u.uid = ur.entity_id
+INNER JOIN node__field_expediente_responsable er on er.field_expediente_responsable_target_id = u.uid
+INNER JOIN node_field_data nfd on nfd.nid = er.entity_id
+WHERE u.uid = :uid AND nfd.status = 0', array(':uid' => $worker->uid))->fetchField();
+
 
       $rows[] = array(
-        $worker,
-        Markup::create($departamento_nombre),
+        $worker_name,
+        $count_captaciones_activas,
+        $count_captaciones_archivadas,
+        $count_expedientes_published,
+        $count_expedientes_archived,
       );
     }
 
     $header = array(
-      'Captaciones de:',
-      'Departamento',
+      'Nombre:',
+      'Captaciones en curso',
+      'Captaciones archivadas',
+      'Expedientes en Curso',
+      'Expedientes Archivados',
     );
 
     $build['table'] = [
