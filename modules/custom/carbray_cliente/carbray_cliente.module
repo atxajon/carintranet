@@ -547,7 +547,7 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
         }
         else {
           // Current logged in user is not carbray admin; but is he responsable of current cliente expediente?
-          $responsables = get_expediente_responsables($captacion->captacion_nid);
+          $responsables = get_expediente_responsables($expediente->expediente_nid);
           if (in_array($logged_in_uid, $responsables)) {
             $expediente_link = print_cliente_expedientes($expediente->expediente_nid);
           }
