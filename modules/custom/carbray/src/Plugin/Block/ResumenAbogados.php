@@ -64,12 +64,25 @@ INNER JOIN node__field_expediente_responsable er on er.field_expediente_responsa
 INNER JOIN node_field_data nfd on nfd.nid = er.entity_id
 WHERE u.uid = :uid AND nfd.status = 1', array(':uid' => $worker->uid))->fetchField();
 
-      $count_expedientes_archived = \Drupal::database()->query('SELECT count(er.field_expediente_responsable_target_id)
+      $count_expedientes_archived = \Drupal::database()
+        ->query('SELECT count(er.field_expediente_responsable_target_id)
 FROM users u
 INNER JOIN user__roles ur on u.uid = ur.entity_id
 INNER JOIN node__field_expediente_responsable er on er.field_expediente_responsable_target_id = u.uid
 INNER JOIN node_field_data nfd on nfd.nid = er.entity_id
-WHERE u.uid = :uid AND nfd.status = 0', array(':uid' => $worker->uid))->fetchField();
+WHERE u.uid = :uid AND nfd.status = 0', array(':uid' => $worker->uid))
+        ->fetchField();
+
+      $count_facturas_emitidas = \Drupal::database()
+        ->query('SELECT COUNT(nid) FROM node_field_data WHERE type = \'factura\' and uid = :uid', array(':uid' => $worker->uid))
+        ->fetchField();
+
+      $count_facturas_pagadas = \Drupal::database()
+        ->query('SELECT COUNT(nid) FROM node_field_data nfd INNER JOIN node__field_factura_pagada fp on nfd.nid = fp.entity_id WHERE type = \'factura\' and uid = :uid AND field_factura_pagada_value = 1', array(':uid' => $worker->uid))
+        ->fetchField();
+
+
+
 
 
       $rows[] = array(
@@ -78,6 +91,8 @@ WHERE u.uid = :uid AND nfd.status = 0', array(':uid' => $worker->uid))->fetchFie
         $count_captaciones_archivadas,
         $count_expedientes_published,
         $count_expedientes_archived,
+        $count_facturas_emitidas,
+        $count_facturas_pagadas,
       );
     }
 
@@ -87,6 +102,8 @@ WHERE u.uid = :uid AND nfd.status = 0', array(':uid' => $worker->uid))->fetchFie
       'Captaciones archivadas',
       'Expedientes en Curso',
       'Expedientes Archivados',
+      'Facturas emitidas',
+      'Facturas pagadas',
     );
 
     $build['table'] = [
