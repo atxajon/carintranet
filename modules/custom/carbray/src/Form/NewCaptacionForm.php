@@ -37,11 +37,16 @@ class NewCaptacionForm extends FormBase {
     );
 
     $internal_users = get_carbray_workers(TRUE);
+    $internal_users_options = [];
+    foreach ($internal_users as $uid => $email) {
+      $user = User::load($uid);
+      $internal_users_options[$uid] = $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value;
+    }
     $form['captador'] = array(
       '#title' => 'Captadores',
       '#type' => 'checkboxes',
       '#empty_option' => ' - Selecciona captador - ',
-      '#options' => $internal_users,
+      '#options' => $internal_users_options,
       '#multiple' => TRUE,
       '#required' => TRUE,
     );

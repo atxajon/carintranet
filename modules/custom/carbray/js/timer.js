@@ -1,11 +1,23 @@
 (function ($, Drupal, drupalSettings) {
   Drupal.behaviors.carbray_timer = {
     attach: function (context, settings) {
+      var packMinutos = drupalSettings.pack_minutos;
+      var timeAlert = false;
 
       $('#edit-start', context).once('carbray_timer').on('click', function () {
-        $('#crono').timer({
-          format: '%H:%M:%S'
-        });
+        if (packMinutos) {
+          $('#crono').timer({
+            format: '%H:%M:%S',
+            countdown: true,
+            duration: packMinutos,
+          });
+          alertPopup();
+        }
+        else {
+          $('#crono').timer({
+            format: '%H:%M:%S'
+          });
+        }
         $('#edit-pause').removeClass('hidden');
         $('#edit-start').addClass('hidden');
         return false;
@@ -28,8 +40,29 @@
         $('#edit-pause').removeClass('hidden');
         $('#edit-resume').addClass('hidden');
         $('#edit-timer').addClass('hidden');
+        alertPopup();
         return false;
       });
+
+      // Run a recurring check every 60 seconds to test if the timer countdown value left
+      // is less than 2 hours (7200 seconds).
+      function alertPopup() {
+        var timerId = setInterval(function () {
+          var total = $('#crono').data('seconds');
+          if (total <= 7200) {
+            if (timeAlert === false) {
+              alert('Aviso: quedan menos de dos horas antes de que el pack de horas se agote.');
+              timeAlert = true;
+              clearInterval(timerId);
+            }
+          }
+        }, 60000);
+      }
+
+      // $('body').once(function(){
+      //   var clone = $('.add-hours .btn').clone();
+      //   clone.insertAfter('#carbray-new-actuacion .form-item-title');
+      // });
     }
   }
 
@@ -42,6 +75,15 @@
           return false;
         }
       });
+    }
+  }
+
+  Drupal.behaviors.clone_add_hours = {
+    attach: function (context, settings) {
+      if (context == document) {
+        var clone = $('.add-hours > .btn').clone();
+        clone.appendTo('#carbray-new-actuacion .timer-container');
+      }
     }
   }
 

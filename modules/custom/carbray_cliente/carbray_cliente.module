@@ -292,9 +292,21 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['node']['expediente']['display']['pack_horas'] = array(
+    'label' => t('Pack de horas'),
+    'description' => t('Pack de horas.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
   $extra['node']['expediente']['display']['new_actuacion'] = array(
     'label' => t('New actuacion'),
     'description' => t('New actuacion.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['expediente']['display']['add_hours'] = array(
+    'label' => t('Anadir horas'),
+    'description' => t('Anadir horas.'),
     'weight' => 100,
     'visible' => TRUE,
   );
@@ -1017,8 +1029,6 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
     $uid = $db->query($sql, array(':expediente_nid' => $entity->id()))
       ->fetchField();
     $user = User::load($uid);
-
-
     if ($display->getComponent('edit_expediente')) {
       $form = \Drupal::formBuilder()
         ->getForm('Drupal\carbray\Form\EditExpediente', $nid);
@@ -1145,10 +1155,51 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
       }
     }
 
+    if ($display->getComponent('pack_horas')) {
+      $db = \Drupal::database();
+      $sql = "SELECT original_minutes, refill_minutes FROM carbray_expediente_horas WHERE expediente_nid = :nid AND (refill_type = 1 OR refill_type IS NULL) ORDER BY id ASC";
+      $pack_minutes = $db->query($sql, array(':nid' => $entity->id()))->fetchAll();
+      $pack_horas = '';
+      if ($pack_minutes) {
+        foreach ($pack_minutes as $inputted_time) {
+          if (isset($inputted_time->original_minutes)) {
+            $pack_horas =  'Horas: ' . gmdate("H:i", $inputted_time->original_minutes * 60);
+
+          }
+          if (isset($inputted_time->refill_minutes)) {
+            $pack_horas .= '<br>Horas facturables añadidas: ' . gmdate("H:i", $inputted_time->refill_minutes * 60);
+          }
+        }
+      }
+      $build['pack_horas'] = [
+        '#markup' => $pack_horas,
+      ];
+    }
+
     if ($display->getComponent('new_actuacion')) {
       $form = \Drupal::formBuilder()
         ->getForm('Drupal\carbray\Form\NewActuacionForm', $nid);
       $build['new_actuacion'] = $form;
+    }
+
+    if ($display->getComponent('add_hours')) {
+      // If expediente had a pack de horas, and now the amount of time has run out:
+      // show a button to refill the hours.
+      $expediente = Node::load($entity->id());
+      $pack_minutos = $expediente->get('field_expediente_pack_minutos')->value;
+      if ($pack_minutos == 0) {
+        $add_hours_form = \Drupal::formBuilder()
+          ->getForm('Drupal\carbray\Form\AddExpedienteHours', $nid);
+        $build['add_hours'] = [
+          '#theme' => 'button_modal',
+          '#unique_id' => 'add-hours-expediente-nid-' . $nid,
+          '#button_text' => 'Añadir horas',
+          '#button_classes' => 'btn btn-primary',
+          '#modal_title' => t('Añadir horas'),
+          '#modal_content' => $add_hours_form,
+          '#has_plus' => FALSE,
+        ];
+      }
     }
 
     if ($display->getComponent('view_tematica')) {
@@ -1256,6 +1307,11 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
           $minutes = floor(($seconds / 60) % 60);
           $total_seconds += $seconds;
 
+          $refill_type = \Drupal::database()->query("SELECT refill_type
+      FROM carbray_expediente_horas eh
+      INNER JOIN carbray_expediente_horas_actuaciones eha on eh.id = eha.expediente_horas_id
+    WHERE 
+     actuacion_nid = :actuacion_nid ", [':actuacion_nid' => $actuacion_node->id()])->fetchField();
           $edit_form = \Drupal::formBuilder()
             ->getForm('Drupal\carbray\Form\EditActuacionForm', $actuacion_nid->nid);
           if ($is_expediente_node_view) {
@@ -1274,6 +1330,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
             date('d-m-y H:m:s', $actuacion_nid->created),
             $actuacion_nid->title,
             $hours . ':' . $minutes,
+            ($refill_type == 0) ? 'Facturables' : 'Cortesia',
             Markup::create($actuacion_nid->field_nota_nota_value),
             $file_link,
             get_cliente_nombre($actuacion_nid->uid),
@@ -1292,6 +1349,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
           '',
           '',
           '',
+          '',
         ];
       }
 
@@ -1299,6 +1357,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         'Fecha creacion',
         'Actuacion',
         'Horas:Minutos',
+        'Tipo horas',
         'Notas',
         'Documentacion',
         'Autor',

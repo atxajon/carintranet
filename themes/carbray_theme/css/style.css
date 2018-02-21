@@ -620,6 +620,9 @@ textarea[rows="3"] + .cke .cke_contents {
   .new-propuesta .form-item {
     width: 40%;
   }
+  .form-item-pack .form-control {
+    display: block;
+  }
   .new-propuesta .js-text-format-wrapper,
   .new-propuesta .js-text-format-wrapper .form-type-textarea {
     width: auto;
@@ -649,9 +652,14 @@ textarea[rows="3"] + .cke .cke_contents {
     border: none;
     margin-bottom: 10px;
   }
+  #edit-tipo-horas--wrapper legend {
+    border: none;
+    margin-bottom: -15px;
+  }
   #edit-captador--wrapper .fieldset-legend,
   #edit-equipo--wrapper .fieldset-legend,
-  #edit-responsable--wrapper .fieldset-legend {
+  #edit-responsable--wrapper .fieldset-legend,
+  #edit-tipo-horas--wrapper .fieldset-legend {
     font-size: 14px;
     line-height: 1.42857143;
     font-weight: bold;
@@ -671,7 +679,8 @@ textarea[rows="3"] + .cke .cke_contents {
   }
 
   .carbray-new-objetivo .form-type-entity-autocomplete,
-  .carbray-new-objetivo .select-wrapper {
+  .carbray-new-objetivo .select-wrapper,
+  #carbray-add-expediente-hours .form-number {
     width: 40%;
     display: block;
   }
