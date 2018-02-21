@@ -8,6 +8,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
 use Drupal\user\Entity\User;
+use Drupal\Core\Database\DatabaseException;
 
 
 /**
@@ -233,6 +234,34 @@ class NewActuacionForm extends FormBase {
     $actuacion = Node::load($actuacion->id());
     $actuacion->set('field_actuacion_nota', $nota_node->id());
     $actuacion->save();
+
+    if ($is_pack) {
+      /**
+       * Store on custom table the reference between this actuacion and the iteration of the expediente pack de horas we're currently on;
+       * This way we can tell current actuacion is for an expediente with pack de horas of type facturables or cortesia.
+       */
+      // Get the current iteration of the expediente's pack de horas, which is the last record on the {carbray_expediente_horas} table.
+      $expediente_horas_id = \Drupal::database()->query("SELECT id
+      FROM carbray_expediente_horas 
+    WHERE 
+     expediente_nid = :expediente_nid ORDER BY id DESC LIMIT 1", [':expediente_nid' => $expediente_nid])->fetchField();
+      try {
+        $record = \Drupal::database()->insert('carbray_expediente_horas_actuaciones')
+          ->fields([
+            'actuacion_nid',
+            'expediente_horas_id',
+          ])
+          ->values(array(
+            $actuacion->id(),
+            $expediente_horas_id,
+          ))
+          ->execute();
+        \Drupal::logger('NewActuacionForm')->notice('New actuacion for expediente with pack de horas added, entry ' . $record . ' on table carbray_expediente_horas_actuaciones added referencing expediente_horas_id: ' . $expediente_horas_id .  ' on table carbray_expediente_horas');
+      } catch (DatabaseException $e) {
+        watchdog_exception('NewActuacionForm', $e);
+        \Drupal::logger('NewActuacionForm')->notice('New actuacion for expediente with pack de horas added but unable to add entry on table carbray_expediente_horas_actuaciones!');
+      }
+    }
 
     drupal_set_message('Actuacion ' . $title . ' ha sido creada');
   }

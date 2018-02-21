@@ -1261,6 +1261,12 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
           $minutes = floor(($seconds / 60) % 60);
           $total_seconds += $seconds;
 
+          $refill_type = \Drupal::database()->query("SELECT refill_type
+      FROM carbray_expediente_horas eh
+      INNER JOIN carbray_expediente_horas_actuaciones eha on eh.id = eha.expediente_horas_id
+    WHERE 
+     :actuacion_nid = 2881 ", [':actuacion_nid' => $actuacion_node->id()])->fetchField();
+
           $edit_form = \Drupal::formBuilder()
             ->getForm('Drupal\carbray\Form\EditActuacionForm', $actuacion_nid->nid);
           $build['edit_actuacion_form'] = [
@@ -1277,6 +1283,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
             date('d-m-y H:m:s', $actuacion_nid->created),
             $actuacion_nid->title,
             $hours . ':' . $minutes,
+            ($refill_type == 0) ? 'Cortesia' : 'Facturables',
             Markup::create($actuacion_nid->field_nota_nota_value),
             $file_link,
             get_cliente_nombre($actuacion_nid->uid),
@@ -1295,6 +1302,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
           '',
           '',
           '',
+          '',
         ];
       }
 
@@ -1302,6 +1310,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         'Fecha creacion',
         'Actuacion',
         'Horas:Minutos',
+        'Tipo horas',
         'Notas',
         'Documentacion',
         'Autor',
