@@ -41,15 +41,19 @@ class NewActuacionForm extends FormBase {
     );
 
     $form['#attached']['library'][] = 'carbray/carbray.carbray_timer';
-    // Does this expediente have a pack de horas set? if so pass it to js timer file.
-    $expediente = Node::load($expediente_nid);
-    $pack = $expediente->get('field_expediente_pack_minutos')->value;
-    $form['is_pack'] = array(
-      '#type' => 'hidden',
-      '#default_value' => $pack,
-    );
+
 
     // When user does not populate 'pack de horas' form field on new expediente form, default inserted on db is -1.
+    $pack = -1;
+
+    // Does this expediente have a pack de horas set? if so pass it to js timer file.
+    $is_pack = \Drupal::database()->query("SELECT expediente_nid FROM carbray_expediente_horas WHERE expediente_nid = :expediente_nid LIMIT 1", array(':expediente_nid' => $expediente_nid))->fetchField();
+    if ($is_pack) {
+      $expediente = Node::load($expediente_nid);
+      $pack = $expediente->get('field_expediente_pack_minutos')->value;
+    }
+
+
     if ($pack > 0) {
       // If is an actuacion for an expediente with pack de horas, pass the
       // value to js to set the timer to countdown.
@@ -139,6 +143,11 @@ class NewActuacionForm extends FormBase {
       );
     }
 
+    $form['is_pack'] = array(
+      '#type' => 'hidden',
+      '#default_value' => $pack,
+    );
+
     $form['nota_container'] = array(
       '#type' => 'container',
       '#attributes' => array('class' => array('margin-bottom-20 margin-top-20')),
@@ -192,7 +201,7 @@ class NewActuacionForm extends FormBase {
     $actuacion_file = $form_state->getValue('actuacion_file');
 
     // If it's an expediente with pack de horas update remaining time.
-    if ($is_pack) {
+    if ($is_pack != -1) {
       // When this actuacion started we had originally stored $actuacion_started_minutes.
       $actuacion_started_minutes = $is_pack;
       // The absolute time passed on this current actuacion is:
@@ -235,7 +244,7 @@ class NewActuacionForm extends FormBase {
     $actuacion->set('field_actuacion_nota', $nota_node->id());
     $actuacion->save();
 
-    if ($is_pack) {
+    if ($is_pack != -1) {
       /**
        * Store on custom table the reference between this actuacion and the iteration of the expediente pack de horas we're currently on;
        * This way we can tell current actuacion is for an expediente with pack de horas of type facturables or cortesia.

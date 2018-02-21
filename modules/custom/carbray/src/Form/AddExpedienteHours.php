@@ -43,8 +43,8 @@ class AddExpedienteHours extends FormBase {
       '#type' => 'radios',
       '#title' => t('Tipo de horas'),
       '#options' => array(
-        0 => $this->t('De cortesía'),
-        1 => $this->t('Facturables')
+        0 => $this->t('Facturables'),
+        1 => $this->t('De cortesía')
       ),
 //      '#default_value' => 1,
       '#required' => TRUE,
