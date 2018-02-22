@@ -1157,7 +1157,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
 
     if ($display->getComponent('pack_horas')) {
       $db = \Drupal::database();
-      $sql = "SELECT original_minutes, refill_minutes FROM carbray_expediente_horas WHERE expediente_nid = :nid AND (refill_type = 1 OR refill_type IS NULL) ORDER BY id ASC";
+      $sql = "SELECT original_minutes, refill_minutes FROM carbray_expediente_horas WHERE expediente_nid = :nid AND (refill_type = 0 OR refill_type IS NULL) ORDER BY id ASC";
       $pack_minutes = $db->query($sql, array(':nid' => $entity->id()))->fetchAll();
       $pack_horas = '';
       if ($pack_minutes) {
