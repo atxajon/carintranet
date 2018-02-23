@@ -74,8 +74,8 @@ class NewWorkerForm extends FormBase {
     $allowed_roles = [
       'worker',
       'secretaria',
-      'carbray_administrator',
       'jefe_departamento',
+      'carbray_administrator',
     ];
     $role_options = [];
     foreach ($roles as $role_name => $role_value) {
