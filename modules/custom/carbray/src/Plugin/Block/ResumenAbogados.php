@@ -5,10 +5,6 @@ namespace Drupal\carbray\Plugin\Block;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Url;
 use Drupal\Core\Link;
-use Drupal\user\Entity\User;
-use Drupal\taxonomy\Entity\Term;
-use Drupal\Core\Render\Markup;
-
 
 
 /**
@@ -39,51 +35,12 @@ ORDER BY field_apellido_value ASC')->fetchAll();
       $url = Url::fromRoute('carbray.worker_home', ['uid' => $worker->uid]);
       $worker_name = Link::fromTextAndUrl($worker->name . ' ' . $worker->surname, $url);
 
-      // Captaciones activas are the ones that are not archived AND the ones that do not have an expediente yet.
-      $count_captaciones_activas = \Drupal::database()->query('SELECT count(cc.entity_id)  
-FROM users u 
-INNER JOIN node__field_captacion_captador cc on cc.field_captacion_captador_target_id = u.uid 
-INNER JOIN node__field_captacion_estado_captacion ec on ec.entity_id = cc.entity_id 
-WHERE u.uid = :uid
-AND cc.entity_id NOT IN (
-	SELECT ec.field_expediente_captacion_target_id FROM node__field_expediente_captacion ec) 
-AND field_captacion_estado_captacion_target_id != :estado_archived', array(':uid' => $worker->uid, ':estado_archived' => CAPTACION_ARCHIVADA))->fetchField();
-
-      $count_captaciones_archivadas = \Drupal::database()->query('SELECT count(cc.entity_id)  
-FROM users u 
-INNER JOIN node__field_captacion_captador cc on cc.field_captacion_captador_target_id = u.uid 
-INNER JOIN node__field_captacion_estado_captacion ec on ec.entity_id = cc.entity_id 
-WHERE u.uid = :uid
-AND ec.field_captacion_estado_captacion_target_id  = :estado_archived', array(':uid' => $worker->uid, ':estado_archived' => CAPTACION_ARCHIVADA))->fetchField();
-
-
-      $count_expedientes_published = \Drupal::database()->query('SELECT count(er.field_expediente_responsable_target_id)
-FROM users u
-INNER JOIN user__roles ur on u.uid = ur.entity_id
-INNER JOIN node__field_expediente_responsable er on er.field_expediente_responsable_target_id = u.uid
-INNER JOIN node_field_data nfd on nfd.nid = er.entity_id
-WHERE u.uid = :uid AND nfd.status = 1', array(':uid' => $worker->uid))->fetchField();
-
-      $count_expedientes_archived = \Drupal::database()
-        ->query('SELECT count(er.field_expediente_responsable_target_id)
-FROM users u
-INNER JOIN user__roles ur on u.uid = ur.entity_id
-INNER JOIN node__field_expediente_responsable er on er.field_expediente_responsable_target_id = u.uid
-INNER JOIN node_field_data nfd on nfd.nid = er.entity_id
-WHERE u.uid = :uid AND nfd.status = 0', array(':uid' => $worker->uid))
-        ->fetchField();
-
-      $count_facturas_emitidas = \Drupal::database()
-        ->query('SELECT COUNT(nid) FROM node_field_data WHERE type = \'factura\' and uid = :uid', array(':uid' => $worker->uid))
-        ->fetchField();
-
-      $count_facturas_pagadas = \Drupal::database()
-        ->query('SELECT COUNT(nid) FROM node_field_data nfd INNER JOIN node__field_factura_pagada fp on nfd.nid = fp.entity_id WHERE type = \'factura\' and uid = :uid AND field_factura_pagada_value = 1', array(':uid' => $worker->uid))
-        ->fetchField();
-
-
-
-
+      $count_captaciones_activas = get_count_captaciones_activas($worker->uid);
+      $count_captaciones_archivadas = get_count_captaciones_archivadas($worker->uid);
+      $count_expedientes_published = get_count_expedientes_published($worker->uid);
+      $count_expedientes_archived = get_count_expedientes_archived($worker->uid);
+      $count_facturas_emitidas = get_count_facturas_emitidas($worker->uid);
+      $count_facturas_pagadas = get_count_facturas_pagadas($worker->uid);
 
       $rows[] = array(
         $worker_name,
@@ -105,7 +62,6 @@ WHERE u.uid = :uid AND nfd.status = 0', array(':uid' => $worker->uid))
       'Facturas emitidas',
       'Facturas pagadas',
     );
-
     $build['table'] = [
       '#theme' => 'table',
       '#header' => $header,
