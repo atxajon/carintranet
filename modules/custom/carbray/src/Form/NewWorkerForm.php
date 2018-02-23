@@ -69,11 +69,12 @@ class NewWorkerForm extends FormBase {
       '#multiple' => TRUE,
     );
 
-    // Only expose internal worker pertinent roles: worker, carbray admin.s
+    // Only expose internal worker pertinent roles: worker, etc...
     $roles = user_role_names();
     $allowed_roles = [
       'worker',
       'secretaria',
+      'jefe_departamento',
       'carbray_administrator',
     ];
     $role_options = [];

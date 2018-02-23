@@ -34,6 +34,6 @@ carbray.worker_home:
     _title: 'Home de trabajador'
     _controller: '\Drupal\carbray\Controller\AdminViewer::WorkerHome'
   requirements:
-    _role: 'carbray_administrator'
+    _permission: 'view worker as admin'
 
 

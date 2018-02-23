@@ -682,7 +682,7 @@ function get_carbray_workers($just_active = FALSE, $by_role = '') {
     $sql .= " WHERE roles_target_id = 'secretaria'";
   }
   else {
-    $sql .= " WHERE (roles_target_id = 'carbray_administrator' OR roles_target_id = 'worker' OR roles_target_id = 'secretaria')";
+    $sql .= " WHERE (roles_target_id = 'carbray_administrator' OR roles_target_id = 'worker' OR roles_target_id = 'secretaria' OR roles_target_id = 'jefe_departamento')";
   }
   if ($just_active) {
     $sql .= ' AND status = 1';
@@ -1178,4 +1178,64 @@ function clientes_expedientes_content($clientes) {
   // Disable caching...
   $build['#cache']['max-age'] = 0;
   return $build;
+}
+
+function get_count_captaciones_activas($uid) {
+  // Captaciones activas are the ones that are not archived AND the ones that do not have an expediente yet.
+  $count_captaciones_activas = \Drupal::database()->query('SELECT count(cc.entity_id)  
+FROM users u 
+INNER JOIN node__field_captacion_captador cc on cc.field_captacion_captador_target_id = u.uid 
+INNER JOIN node__field_captacion_estado_captacion ec on ec.entity_id = cc.entity_id 
+WHERE u.uid = :uid
+AND cc.entity_id NOT IN (
+	SELECT ec.field_expediente_captacion_target_id FROM node__field_expediente_captacion ec) 
+AND field_captacion_estado_captacion_target_id != :estado_archived', array(':uid' => $uid, ':estado_archived' => CAPTACION_ARCHIVADA))->fetchField();
+  return $count_captaciones_activas;
+}
+
+function get_count_captaciones_archivadas($uid) {
+  $count_captaciones_archivadas = \Drupal::database()->query('SELECT count(cc.entity_id)  
+FROM users u 
+INNER JOIN node__field_captacion_captador cc on cc.field_captacion_captador_target_id = u.uid 
+INNER JOIN node__field_captacion_estado_captacion ec on ec.entity_id = cc.entity_id 
+WHERE u.uid = :uid
+AND ec.field_captacion_estado_captacion_target_id  = :estado_archived', array(':uid' => $uid, ':estado_archived' => CAPTACION_ARCHIVADA))->fetchField();
+  return $count_captaciones_archivadas;
+}
+
+function get_count_expedientes_published($uid) {
+  $count_expedientes_published = \Drupal::database()->query('SELECT count(er.field_expediente_responsable_target_id)
+FROM users u
+INNER JOIN user__roles ur on u.uid = ur.entity_id
+INNER JOIN node__field_expediente_responsable er on er.field_expediente_responsable_target_id = u.uid
+INNER JOIN node_field_data nfd on nfd.nid = er.entity_id
+WHERE u.uid = :uid AND nfd.status = 1', array(':uid' => $uid))->fetchField();
+  return $count_expedientes_published;
+}
+
+function get_count_expedientes_archived($uid) {
+  $count_expedientes_archived = \Drupal::database()
+    ->query('SELECT count(er.field_expediente_responsable_target_id)
+FROM users u
+INNER JOIN user__roles ur on u.uid = ur.entity_id
+INNER JOIN node__field_expediente_responsable er on er.field_expediente_responsable_target_id = u.uid
+INNER JOIN node_field_data nfd on nfd.nid = er.entity_id
+WHERE u.uid = :uid AND nfd.status = 0', array(':uid' => $uid))
+    ->fetchField();
+  return $count_expedientes_archived;
+}
+
+function get_count_facturas_emitidas($uid) {
+  $count_facturas_emitidas = \Drupal::database()
+    ->query('SELECT COUNT(nid) FROM node_field_data WHERE type = \'factura\' and uid = :uid', array(':uid' => $uid))
+    ->fetchField();
+  return $count_facturas_emitidas;
+}
+
+function get_count_facturas_pagadas($uid) {
+  $count_facturas_pagadas = \Drupal::database()
+    ->query('SELECT COUNT(nid) FROM node_field_data nfd INNER JOIN node__field_factura_pagada fp on nfd.nid = fp.entity_id WHERE type = \'factura\' and uid = :uid AND field_factura_pagada_value = 1', array(':uid' => $uid))
+    ->fetchField();
+  return $count_facturas_pagadas;
+
 }
