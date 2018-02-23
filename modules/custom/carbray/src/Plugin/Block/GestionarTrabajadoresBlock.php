@@ -83,6 +83,9 @@ class GestionarTrabajadoresBlock extends BlockBase {
       if ($user->hasRole('secretaria')) {
         $role = 'Secretaria';
       }
+      if ($user->hasRole('jefe_departamento')) {
+        $role = 'Jefe Departamento';
+      }
       $rows[] = array(
         $worker,
         $captaciones_link,
