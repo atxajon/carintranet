@@ -34,13 +34,20 @@ class Departamentos extends BlockBase {
       $url = Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $departamento_tid]);
       $dept_link = Link::fromTextAndUrl($departamento_term->label(), $url);
 
-      // @todo: find the jefe.
+      $jefe_uid = \Drupal::database()->query("SELECT uid
+FROM users_field_data ufd
+INNER JOIN user__roles ur on ufd.uid = ur.entity_id
+INNER JOIN user__field_departamento d on d.entity_id = ufd.uid
+WHERE roles_target_id = 'jefe_departamento'
+AND field_departamento_target_id = :tid", [':tid' => $departamento_tid])->fetchField();
+
+      $jefe_user = ($jefe_uid) ? User::load($jefe_uid) : '';
 
       // @todo: load a form that allows changing workers in a departamento and make them jefes.
 
       $rows[] = array(
         $dept_link,
-        'jefe',
+        ($jefe_user) ? $jefe_user->get('field_nombre')->value . ' ' . $jefe_user->get('field_apellido')->value : '',
         'Editar jefe',
       );
     }
