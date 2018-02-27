@@ -1237,5 +1237,15 @@ function get_count_facturas_pagadas($uid) {
     ->query('SELECT COUNT(nid) FROM node_field_data nfd INNER JOIN node__field_factura_pagada fp on nfd.nid = fp.entity_id WHERE type = \'factura\' and uid = :uid AND field_factura_pagada_value = 1', array(':uid' => $uid))
     ->fetchField();
   return $count_facturas_pagadas;
+}
 
+function get_departamento_workers($tid) {
+  $dept_workers = \Drupal::database()
+    ->query('SELECT uid
+FROM users_field_data ufd
+INNER JOIN user__field_departamento d on d.entity_id = ufd.uid
+INNER JOIN user__field_apellido a on ufd.uid = a.entity_id
+WHERE field_departamento_target_id = :tid ORDER BY field_apellido_value ASC', array(':tid' => $tid))
+    ->fetchAll();
+  return $dept_workers;
 }

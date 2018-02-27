@@ -42,20 +42,30 @@ WHERE roles_target_id = 'jefe_departamento'
 AND field_departamento_target_id = :tid", [':tid' => $departamento_tid])->fetchField();
 
       $jefe_user = ($jefe_uid) ? User::load($jefe_uid) : '';
+      $edit_jefe_form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray\Form\AssignJefe', $departamento_tid);
 
-      // @todo: load a form that allows changing workers in a departamento and make them jefes.
+      $build['edit_jefe_form'] = [
+        '#theme' => 'button_modal',
+        '#unique_id' => 'edit-jefe-departamento_tid-' . $departamento_tid,
+        '#button_text' => 'Asignar jefe',
+        '#button_classes' => 'btn btn-primary btn-sm',
+        '#modal_title' => t('Asignar jefe'),
+        '#modal_content' => $edit_jefe_form,
+        '#has_plus' => FALSE,
+      ];
 
       $rows[] = array(
         $dept_link,
         ($jefe_user) ? $jefe_user->get('field_nombre')->value . ' ' . $jefe_user->get('field_apellido')->value : '',
-        'Editar jefe',
+        render($build['edit_jefe_form']),
       );
     }
 
     $header = array(
       'Departamento',
       'Jefe',
-      'Asignar jefe',
+      //'Asignar jefe',
     );
 
     $build['table'] = [

@@ -1281,10 +1281,10 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
       $actuaciones_nids = get_actuaciones_for_expediente($nid);
       $total_seconds = 0;
       $actuaciones_rows = [];
+      $is_expediente_node_view = FALSE;
       if ($actuaciones_nids) {
         // Work out if this is an exportable path (e.g node/{nid}/pdf) to show/hide edit actuacion button link and form.
         $current_uri = \Drupal::request()->getRequestUri();
-        $is_expediente_node_view = FALSE;
         if (strpos($current_uri, 'expediente') !== false) {
           $is_expediente_node_view = TRUE;
         }
