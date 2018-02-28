@@ -43,14 +43,14 @@ AND field_departamento_target_id = :tid", [':tid' => $departamento_tid])->fetchF
 
       $jefe_user = ($jefe_uid) ? User::load($jefe_uid) : '';
       $edit_jefe_form = \Drupal::formBuilder()
-        ->getForm('Drupal\carbray\Form\AssignJefe', $departamento_tid);
+        ->getForm('Drupal\carbray\Form\AssignJefe', $departamento_tid, $jefe_uid);
 
       $build['edit_jefe_form'] = [
         '#theme' => 'button_modal',
         '#unique_id' => 'edit-jefe-departamento_tid-' . $departamento_tid,
-        '#button_text' => 'Asignar jefe',
+        '#button_text' => 'Asignar jefe ' . $departamento_term->label(),
         '#button_classes' => 'btn btn-primary btn-sm',
-        '#modal_title' => t('Asignar jefe'),
+        '#modal_title' => t('Asignar jefe ' . $departamento_term->label()),
         '#modal_content' => $edit_jefe_form,
         '#has_plus' => FALSE,
       ];
@@ -65,7 +65,7 @@ AND field_departamento_target_id = :tid", [':tid' => $departamento_tid])->fetchF
     $header = array(
       'Departamento',
       'Jefe',
-      //'Asignar jefe',
+      'Asignar jefe',
     );
 
     $build['table'] = [
