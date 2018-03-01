@@ -82,6 +82,7 @@ class AssignJefe extends FormBase {
       $worker = User::load($current_jefe_uid);
       if ($worker->hasRole('jefe_departamento')) {
         $worker->removeRole('jefe_departamento');
+        $worker->addRole('worker');
         $worker->save();
       }
     }
@@ -89,6 +90,8 @@ class AssignJefe extends FormBase {
     // And promote the chosen user as new jefe.
     $chosen_user = User::load($chosen_uid);
     $chosen_user->addRole('jefe_departamento');
+    // 'worker' role removal is necessary to avoid duplicated left hand menus...
+    $chosen_user->removeRole('worker');
     $chosen_user->save();
     drupal_set_message('Jefe asignado');
   }
