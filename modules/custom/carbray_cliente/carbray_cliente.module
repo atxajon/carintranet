@@ -457,7 +457,7 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
     }
 
     if ($display->getComponent('captaciones')) {
-      $captacion_nids = db_query("SELECT DISTINCT captacion_nid FROM carbray_user_captacion_expediente WHERE uid = :uid ORDER BY id DESC", array(':uid' => $uid))->fetchAll();
+      $captacion_nids = \Drupal::database()->query("SELECT DISTINCT captacion_nid FROM carbray_user_captacion_expediente WHERE uid = :uid ORDER BY id DESC", array(':uid' => $uid))->fetchAll();
       $rows = [];
       foreach ($captacion_nids as $captacion) {
         $captacion_data = \Drupal::entityTypeManager()->getStorage('node')->load($captacion->captacion_nid);
@@ -474,6 +474,12 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
           $row_class = 'captacion-archivada-row';
         }
         else {
+          // @todo: should nuevo expediente button not be hidden for workers, except when:
+          //  1- worker is captador of cliente,
+          //  2- user is jefe_departamento of a cliente whose captador is on their same departamento,
+          //  3- user is carbray_administrador
+          //  ???
+
           $form = \Drupal::formBuilder()
             ->getForm('Drupal\carbray\Form\NewExpedienteForm', $captacion->captacion_nid, $uid);
           $build['new_expediente'] = [
@@ -553,7 +559,7 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
         // Is the logged in user a carbray admin?
         $logged_in_uid = \Drupal::currentUser()->id();
         $current_user_roles = \Drupal::currentUser()->getRoles();
-        if (in_array('carbray_administrator', $current_user_roles)) {
+        if (in_array('carbray_administrator', $current_user_roles) || in_array('jefe_departamento', $current_user_roles)) {
           // Print the link to expediente.
           $expediente_link = print_cliente_expedientes($expediente->expediente_nid);
         }
@@ -640,6 +646,11 @@ function carbray_cliente_user_view(array &$build, EntityInterface $entity, Entit
       elseif (in_array('carbray_administrator', $roles)) {
         $build['user_role'] = array(
           '#markup' => '<div class="field--label">Rol</div><div class="field--item">Administrador</div>',
+        );
+      }
+      elseif (in_array('jefe_departamento', $roles)) {
+        $build['user_role'] = array(
+          '#markup' => '<div class="field--label">Rol</div><div class="field--item">Jefe departamento</div>',
         );
       }
     }
