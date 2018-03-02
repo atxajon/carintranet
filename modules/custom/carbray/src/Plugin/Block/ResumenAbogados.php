@@ -22,6 +22,8 @@ class ResumenAbogados extends BlockBase {
    * {@inheritdoc}
    */
   public function build() {
+    $filters_form = \Drupal::formBuilder()
+      ->getForm('Drupal\carbray\Form\ResumenAbogadosFilters');
     $workers = \Drupal::database()->query('SELECT n.entity_id as uid, field_nombre_value as name, field_apellido_value as surname 
 FROM user__field_nombre n 
 INNER JOIN users_field_data ufd on ufd.uid = n.entity_id
@@ -62,6 +64,10 @@ ORDER BY field_apellido_value ASC')->fetchAll();
       'Facturas emitidas',
       'Facturas pagadas',
     );
+
+    $build['filters'] = [
+      '#markup' => render($filters_form),
+    ];
     $build['table'] = [
       '#theme' => 'table',
       '#header' => $header,
