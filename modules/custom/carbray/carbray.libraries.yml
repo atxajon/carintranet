@@ -31,3 +31,20 @@ factura_calculator:
     js/factura_calculator.js: {}
   dependencies:
      - core/jquery
+
+tablesorter:
+  version: 2.0.5
+  js:
+    js/jquery.tablesorter.min.js: {}
+  dependencies:
+     - core/jquery
+
+carbray_table_sorter:
+  css:
+    theme:
+      css/tablesorter.css: {}
+  version: 1.x
+  js:
+    js/carbray_table_sorter.js: {}
+  dependencies:
+     - core/jquery

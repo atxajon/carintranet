@@ -22,6 +22,10 @@ class ResumenAbogados extends BlockBase {
    * {@inheritdoc}
    */
   public function build() {
+
+    $build['#attached']['library'][] = 'carbray/tablesorter';
+    $build['#attached']['library'][] = 'carbray/carbray_table_sorter';
+
     // Obtain query string parameters to pass them in to the queries.
     $path = parse_url(\Drupal::request()->getRequestUri());
     $query_array = array();
@@ -79,6 +83,7 @@ ORDER BY field_apellido_value ASC')->fetchAll();
       '#theme' => 'table',
       '#header' => $header,
       '#rows' => $rows,
+      '#attributes' => ['id' => 'resumen-abogados', 'class' => ['tablesorter']],
       '#cache' => [
         'max-age' => 0,
       ],
