@@ -67,6 +67,13 @@ class ResumenAbogadosFilters extends FormBase {
       '#attributes' => array('class' => ['margin-top-20', 'btn-primary']),
     ];
 
+    $form['reset'] = [
+      '#type' => 'submit',
+      '#value' => t('Mostrar todo'),
+      '#submit' => array('::resetValues'),
+      '#attributes' => array('class' => ['margin-top-20', 'btn-warning']),
+    ];
+
     return $form;
   }
 
@@ -96,6 +103,11 @@ class ResumenAbogadosFilters extends FormBase {
     }
 
     $url = Url::fromRoute('<current>', [], ['query' => $options]);
+    $form_state->setRedirectUrl($url);
+  }
+
+  public function resetValues(array &$form, FormStateInterface $form_state) {
+    $url = Url::fromRoute('<current>');
     $form_state->setRedirectUrl($url);
   }
 }
