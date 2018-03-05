@@ -1193,13 +1193,25 @@ AND field_captacion_estado_captacion_target_id != :estado_archived', array(':uid
   return $count_captaciones_activas;
 }
 
-function get_count_captaciones_archivadas($uid) {
-  $count_captaciones_archivadas = \Drupal::database()->query('SELECT count(cc.entity_id)  
-FROM users u 
-INNER JOIN node__field_captacion_captador cc on cc.field_captacion_captador_target_id = u.uid 
-INNER JOIN node__field_captacion_estado_captacion ec on ec.entity_id = cc.entity_id 
-WHERE u.uid = :uid
-AND ec.field_captacion_estado_captacion_target_id  = :estado_archived', array(':uid' => $uid, ':estado_archived' => CAPTACION_ARCHIVADA))->fetchField();
+function get_count_captaciones_archivadas($uid, $filter_by = []) {
+  $carchivadas_query = \Drupal::database()->select('users', 'u');
+  $carchivadas_query->addExpression('count(cc.entity_id)', 'carchivadas');
+  $carchivadas_query->innerJoin('node__field_captacion_captador', 'cc', 'cc.field_captacion_captador_target_id = u.uid');
+  $carchivadas_query->innerJoin('node__field_captacion_estado_captacion', 'ec', 'ec.entity_id = cc.entity_id');
+  $carchivadas_query->condition('u.uid', $uid);
+  $carchivadas_query->condition('ec.field_captacion_estado_captacion_target_id', CAPTACION_ARCHIVADA);
+  // Filter by dates.
+  if (isset($filter_by['date_from']) OR isset($filter_by['date_to'])) {
+    $carchivadas_query->innerJoin('node_field_data', 'nfd', 'nfd.nid = cc.entity_id');
+    if (isset($filter_by['date_from'])) {
+      $carchivadas_query->condition('nfd.created', $filter_by['date_from'], '>');
+    }
+    if (isset($filter_by['date_to'])) {
+      $carchivadas_query->condition('nfd.created', $filter_by['date_to'], '<');
+    }
+  }
+
+  $count_captaciones_archivadas = $carchivadas_query->execute()->fetchField();
   return $count_captaciones_archivadas;
 }
 

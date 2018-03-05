@@ -35,19 +35,17 @@ class ResumenAbogadosFilters extends FormBase {
     }
 
     $form['date_from'] = array(
-//      '#type' => 'date',
       '#type' => 'datelist',
-//      '#description' => t('DOB'),
-//      '#date_timezone' => drupal_get_user_timezone(),
       '#date_format' => 'd-m-Y',
       '#date_flexible' => 0,
       '#date_increment' => 1,
       '#date_year_range' => '-3:+0',
-//      '#date_date_element' => 'datetime',
       '#date_part_order' => array('day', 'month', 'year'),
       '#date_time_element' => 'none',
-      '#title' => t('Fecha inicio'),
+      '#title' => t('Desde'),
       '#default_value' => isset($query_array['date_from']) ? DrupalDateTime::createFromTimestamp($query_array['date_from']) : '',
+//      '#prefix' => '<div class="clearfix"><div class="pull-left">',
+//      '#suffix' => '</div>',
     );
     $form['date_to'] = array(
       '#type' => 'datelist',
@@ -57,14 +55,16 @@ class ResumenAbogadosFilters extends FormBase {
       '#date_year_range' => '-3:+0',
       '#date_part_order' => array('day', 'month', 'year'),
       '#date_time_element' => 'none',
-      '#title' => t('Fecha final'),
+      '#title' => t('Hasta'),
       '#default_value' => isset($query_array['date_to']) ? DrupalDateTime::createFromTimestamp($query_array['date_to']) : '',
+//      '#prefix' => '<div class="pull-left">',
+//      '#suffix' => '</div></div>',
     );
 
     $form['submit'] = [
       '#type' => 'submit',
       '#value' => t('Filtrar por fechas'),
-      '#attributes' => array('class' => ['margin-top-20']),
+      '#attributes' => array('class' => ['margin-top-20', 'btn-primary']),
     ];
 
     return $form;
