@@ -1215,13 +1215,25 @@ function get_count_captaciones_archivadas($uid, $filter_by = []) {
   return $count_captaciones_archivadas;
 }
 
-function get_count_expedientes_published($uid) {
-  $count_expedientes_published = \Drupal::database()->query('SELECT count(er.field_expediente_responsable_target_id)
-FROM users u
-INNER JOIN user__roles ur on u.uid = ur.entity_id
-INNER JOIN node__field_expediente_responsable er on er.field_expediente_responsable_target_id = u.uid
-INNER JOIN node_field_data nfd on nfd.nid = er.entity_id
-WHERE u.uid = :uid AND nfd.status = 1', array(':uid' => $uid))->fetchField();
+function get_count_expedientes_published($uid, $filter_by = []) {
+  $expedientes_published_query = \Drupal::database()->select('users', 'u');
+  $expedientes_published_query->addExpression('count(er.field_expediente_responsable_target_id)', 'expedientes_published');
+  $expedientes_published_query->innerJoin('user__roles', 'ur', 'u.uid = ur.entity_id');
+  $expedientes_published_query->innerJoin('node__field_expediente_responsable', 'er', 'er.field_expediente_responsable_target_id = u.uid');
+  $expedientes_published_query->innerJoin('node_field_data', 'nfd', 'nfd.nid = er.entity_id');
+  $expedientes_published_query->condition('u.uid', $uid);
+  $expedientes_published_query->condition('nfd.status', 1);
+  // Filter by dates.
+  if (isset($filter_by['date_from']) OR isset($filter_by['date_to'])) {
+    if (isset($filter_by['date_from'])) {
+      $expedientes_published_query->condition('nfd.created', $filter_by['date_from'], '>');
+    }
+    if (isset($filter_by['date_to'])) {
+      $expedientes_published_query->condition('nfd.created', $filter_by['date_to'], '<');
+    }
+  }
+
+  $count_expedientes_published = $expedientes_published_query->execute()->fetchField();
   return $count_expedientes_published;
 }
 
