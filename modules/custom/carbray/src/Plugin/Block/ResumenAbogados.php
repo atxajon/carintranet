@@ -46,7 +46,7 @@ ORDER BY field_apellido_value ASC')->fetchAll();
       $url = Url::fromRoute('carbray.worker_home', ['uid' => $worker->uid]);
       $worker_name = Link::fromTextAndUrl($worker->name . ' ' . $worker->surname, $url);
 
-      $count_captaciones_activas = get_count_captaciones_activas($worker->uid);
+      $count_captaciones_activas = get_count_captaciones_activas($worker->uid, $query_array);
       $count_captaciones_archivadas = get_count_captaciones_archivadas($worker->uid, $query_array);
       $count_expedientes_published = get_count_expedientes_published($worker->uid, $query_array);
       $count_expedientes_archived = get_count_expedientes_archived($worker->uid, $query_array);
