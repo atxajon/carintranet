@@ -1258,17 +1258,41 @@ function get_count_expedientes_archived($uid, $filter_by = []) {
   return $count_expedientes_archived;
 }
 
-function get_count_facturas_emitidas($uid) {
-  $count_facturas_emitidas = \Drupal::database()
-    ->query('SELECT COUNT(nid) FROM node_field_data WHERE type = \'factura\' and uid = :uid', array(':uid' => $uid))
-    ->fetchField();
+function get_count_facturas_emitidas($uid, $filter_by = []) {
+  $facturas_emitidas_query = \Drupal::database()->select('node_field_data', 'nfd');
+  $facturas_emitidas_query->addExpression('COUNT(nid)', 'count_facturas');
+  $facturas_emitidas_query->condition('type', 'factura');
+  $facturas_emitidas_query->condition('uid', $uid);
+  // Filter by dates.
+  if (isset($filter_by['date_from']) OR isset($filter_by['date_to'])) {
+    if (isset($filter_by['date_from'])) {
+      $facturas_emitidas_query->condition('nfd.created', $filter_by['date_from'], '>');
+    }
+    if (isset($filter_by['date_to'])) {
+      $facturas_emitidas_query->condition('nfd.created', $filter_by['date_to'], '<');
+    }
+  }
+  $count_facturas_emitidas = $facturas_emitidas_query->execute()->fetchField();
   return $count_facturas_emitidas;
 }
 
-function get_count_facturas_pagadas($uid) {
-  $count_facturas_pagadas = \Drupal::database()
-    ->query('SELECT COUNT(nid) FROM node_field_data nfd INNER JOIN node__field_factura_pagada fp on nfd.nid = fp.entity_id WHERE type = \'factura\' and uid = :uid AND field_factura_pagada_value = 1', array(':uid' => $uid))
-    ->fetchField();
+function get_count_facturas_pagadas($uid, $filter_by = []) {
+  $facturas_pagadas_query = \Drupal::database()->select('node_field_data', 'nfd');
+  $facturas_pagadas_query->addExpression('COUNT(nid)', 'count_facturas');
+  $facturas_pagadas_query->innerJoin('node__field_factura_pagada', 'fp', 'nfd.nid = fp.entity_id');
+  $facturas_pagadas_query->condition('type', 'factura');
+  $facturas_pagadas_query->condition('uid', $uid);
+  $facturas_pagadas_query->condition('field_factura_pagada_value', 1, '=');
+  // Filter by dates.
+  if (isset($filter_by['date_from']) OR isset($filter_by['date_to'])) {
+    if (isset($filter_by['date_from'])) {
+      $facturas_pagadas_query->condition('nfd.created', $filter_by['date_from'], '>');
+    }
+    if (isset($filter_by['date_to'])) {
+      $facturas_pagadas_query->condition('nfd.created', $filter_by['date_to'], '<');
+    }
+  }
+  $count_facturas_pagadas = $facturas_pagadas_query->execute()->fetchField();
   return $count_facturas_pagadas;
 }
 

@@ -64,14 +64,14 @@ class ResumenAbogadosFilters extends FormBase {
     $form['submit'] = [
       '#type' => 'submit',
       '#value' => t('Filtrar por fechas'),
-      '#attributes' => array('class' => ['margin-top-20', 'btn-primary']),
+      '#attributes' => array('class' => ['margin-top-20', 'margin-bottom-20', 'btn-primary']),
     ];
 
     $form['reset'] = [
       '#type' => 'submit',
       '#value' => t('Mostrar todo'),
       '#submit' => array('::resetValues'),
-      '#attributes' => array('class' => ['margin-top-20', 'btn-warning']),
+      '#attributes' => array('class' => ['margin-top-20', 'margin-bottom-20', 'btn-warning']),
     ];
 
     return $form;

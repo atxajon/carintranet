@@ -50,8 +50,8 @@ ORDER BY field_apellido_value ASC')->fetchAll();
       $count_captaciones_archivadas = get_count_captaciones_archivadas($worker->uid, $query_array);
       $count_expedientes_published = get_count_expedientes_published($worker->uid, $query_array);
       $count_expedientes_archived = get_count_expedientes_archived($worker->uid, $query_array);
-      $count_facturas_emitidas = get_count_facturas_emitidas($worker->uid);
-      $count_facturas_pagadas = get_count_facturas_pagadas($worker->uid);
+      $count_facturas_emitidas = get_count_facturas_emitidas($worker->uid, $query_array);
+      $count_facturas_pagadas = get_count_facturas_pagadas($worker->uid, $query_array);
 
       $rows[] = array(
         $worker_name,
