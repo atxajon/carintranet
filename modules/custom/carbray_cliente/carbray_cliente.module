@@ -234,6 +234,12 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['node']['captacion']['display']['new_actuacion_captacion'] = array(
+    'label' => t('New actuacion'),
+    'description' => t('New actuacion.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
   $extra['node']['expediente']['display']['edit_expediente'] = array(
     'label' => t('Edit expediente'),
     'description' => t('Edit expediente.'),
@@ -936,6 +942,12 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
           '#has_plus' => TRUE,
         ];
       }
+    }
+
+    if ($display->getComponent('new_actuacion_captacion')) {
+      $actuacion_captacion_form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray\Form\NewActuacionCaptacionForm', $nid);
+      $build['new_actuacion_captacion'] = $actuacion_captacion_form;
     }
 
     if ($display->getComponent('view_tematica')) {

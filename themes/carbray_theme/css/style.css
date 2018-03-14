@@ -703,7 +703,8 @@ textarea[rows="3"] + .cke .cke_contents {
   #block-views-block-clientes-por-fase-block-5 .form-item-field-user-estado-de-captacion-target-id .form-select {
     width: 240px;
   }
-  .carbray-new-actuacion .form-item-title {
+  .carbray-new-actuacion .form-item-title,
+  .carbray-new-actuacion-captacion .form-item-title {
     float: left;
     width: 50%;
   }
