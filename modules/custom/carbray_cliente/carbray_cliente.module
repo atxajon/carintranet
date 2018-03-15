@@ -976,19 +976,19 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
           $minutes = floor(($seconds / 60) % 60);
           $total_seconds += $seconds;
 
-//          $edit_form = \Drupal::formBuilder()
-//            ->getForm('Drupal\carbray\Form\EditActuacionForm', $actuacion_nid->nid);
-//          if ($is_captacion_node_view) {
-//            $build['edit_actuacion_form'] = [
-//              '#theme' => 'button_modal',
-//              '#unique_id' => 'edit-actuacion_nid-' . $actuacion_nid->nid,
-//              '#button_text' => 'Editar actuacion',
-//              '#button_classes' => 'btn btn-primary btn-sm',
-//              '#modal_title' => t('Editar actuacion'),
-//              '#modal_content' => $edit_form,
-//              '#has_plus' => FALSE,
-//            ];
-//          }
+          $edit_form = \Drupal::formBuilder()
+            ->getForm('Drupal\carbray\Form\EditActuacionCaptacionForm', $actuacion_nid->nid);
+          if ($is_captacion_node_view) {
+            $build['edit_actuacion_captacion_form'] = [
+              '#theme' => 'button_modal',
+              '#unique_id' => 'edit-actuacion_nid-' . $actuacion_nid->nid,
+              '#button_text' => 'Editar actuacion',
+              '#button_classes' => 'btn btn-primary btn-sm',
+              '#modal_title' => t('Editar actuacion'),
+              '#modal_content' => $edit_form,
+              '#has_plus' => FALSE,
+            ];
+          }
 
           $actuaciones_rows[] = array(
             date('d-m-y H:m:s', $actuacion_nid->created),
@@ -996,7 +996,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
             $hours . ':' . $minutes,
             Markup::create($actuacion_nid->field_nota_nota_value),
             get_cliente_nombre($actuacion_nid->uid),
-            //($is_captacion_node_view) ? render($build['edit_actuacion_form']) : '',
+            ($is_captacion_node_view) ? render($build['edit_actuacion_captacion_form']) : '',
           );
         }
 
