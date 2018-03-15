@@ -116,14 +116,14 @@ class NewActuacionCaptacionForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
 
-    $expediente_nid = $form_state->getValue('expediente_nid');
+    $captacion_nid = $form_state->getValue('captacion_nid');
     $title = $form_state->getValue('title');
     $timer = $form_state->getValue('timer');
     $nota = $form_state->getValue('nota');
 
     $actuacion_captacion = Node::create(['type' => 'actuacion_captacion']);
     $actuacion_captacion->set('title', $title);
-    $actuacion_captacion->set('field_actuacion_captacion', $expediente_nid);
+    $actuacion_captacion->set('field_actuacion_captacion', $captacion_nid);
     $actuacion_captacion->set('field_actuacion_captacion_tiempo', $timer);
     $actuacion_captacion->enforceIsNew();
     $actuacion_captacion->save();

@@ -240,6 +240,12 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['node']['captacion']['display']['view_actuaciones_captacion'] = array(
+    'label' => t('New actuacion'),
+    'description' => t('New actuacion.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
   $extra['node']['expediente']['display']['edit_expediente'] = array(
     'label' => t('Edit expediente'),
     'description' => t('Edit expediente.'),
@@ -950,31 +956,78 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
       $build['new_actuacion_captacion'] = $actuacion_captacion_form;
     }
 
-    if ($display->getComponent('view_tematica')) {
-      $db = \Drupal::database();
-      $sql = "SELECT field_captacion_tematica_target_id FROM node__field_captacion_tematica WHERE entity_id = :nid";
-      $servicios_tids = $db->query($sql, array(':nid' => $nid))
-        ->fetchCol();
-      $rows = [];
-      if ($servicios_tids) {
-        foreach ($servicios_tids as $servicio_tid) {
-          $term = Term::load($servicio_tid);
-          $parent_term = get_parent_of_child_term($servicio_tid);
-          $rows[] = array(
-            $parent_term,
-            $term->name->value,
+    if ($display->getComponent('view_actuaciones_captacion')) {
+      $actuaciones_nids = get_actuaciones_for_captacion($nid);
+      $total_seconds = 0;
+      $actuaciones_rows = [];
+      $is_captacion_node_view = FALSE;
+      if ($actuaciones_nids) {
+        // Work out if this is an exportable path (e.g node/{nid}/pdf) to show/hide edit actuacion button link and form.
+        $current_uri = \Drupal::request()->getRequestUri();
+        if (strpos($current_uri, 'captacion') !== false) {
+          $is_captacion_node_view = TRUE;
+        }
+        foreach ($actuaciones_nids as $actuacion_nid) {
+          $actuacion_node = Node::load($actuacion_nid->nid);
+          // Get the minutes values for the actuacion and transform it to seconds for correct display.
+          $minutes = $actuacion_node->get('field_actuacion_captacion_tiempo')->value;
+          $seconds = $minutes * 60;
+          $hours = floor($seconds / 3600);
+          $minutes = floor(($seconds / 60) % 60);
+          $total_seconds += $seconds;
+
+//          $edit_form = \Drupal::formBuilder()
+//            ->getForm('Drupal\carbray\Form\EditActuacionForm', $actuacion_nid->nid);
+//          if ($is_captacion_node_view) {
+//            $build['edit_actuacion_form'] = [
+//              '#theme' => 'button_modal',
+//              '#unique_id' => 'edit-actuacion_nid-' . $actuacion_nid->nid,
+//              '#button_text' => 'Editar actuacion',
+//              '#button_classes' => 'btn btn-primary btn-sm',
+//              '#modal_title' => t('Editar actuacion'),
+//              '#modal_content' => $edit_form,
+//              '#has_plus' => FALSE,
+//            ];
+//          }
+
+          $actuaciones_rows[] = array(
+            date('d-m-y H:m:s', $actuacion_nid->created),
+            $actuacion_nid->title,
+            $hours . ':' . $minutes,
+            Markup::create($actuacion_nid->field_nota_nota_value),
+            get_cliente_nombre($actuacion_nid->uid),
+            //($is_captacion_node_view) ? render($build['edit_actuacion_form']) : '',
           );
         }
+
+        // Add a total row at the bottom.
+        $total_hours = floor($total_seconds / 3600);
+        $total_minutes = floor(($total_seconds / 60) % 60);
+        $actuaciones_rows[] = [
+          Markup::create('<b>Total:</b>'),
+          '',
+          Markup::create('<b>' . $total_hours . ':' . $total_minutes . '</b>'),
+          '',
+          '',
+          '',
+        ];
       }
 
       $header = array(
-        'Tematica',
-        'Servicio',
+        'Fecha creacion',
+        'Actuacion',
+        'Horas:Minutos',
+        'Notas',
+        'Autor',
       );
-      $build['view_tematica'] = [
+      if ($is_captacion_node_view) {
+        $header[] = 'Editar';
+      }
+      $build['view_actuaciones_captacion'] = [
         '#type' => 'table',
         '#header' => $header,
-        '#rows' => $rows,
+        '#rows' => $actuaciones_rows,
+        '#empty' => t('Ninguna actuación creada aún.'),
       ];
     }
 
@@ -1834,6 +1887,13 @@ function get_actuaciones_for_expediente_csv($nid) {
   $query->condition('field_actuacion_expediente', $nid);
   $actuaciones_nids = $query->execute();
   return $actuaciones_nids;
+}
+
+function get_actuaciones_for_captacion($nid) {
+  $db = \Drupal::database();
+  $sql = "SELECT nid, title, created, uid, field_nota_nota_value FROM node_field_data nfd INNER JOIN node__field_actuacion_captacion ac ON nfd.nid = ac.entity_id LEFT JOIN node__field_actuacion_captacion_nota acn ON acn.entity_id = nfd.nid LEFT JOIN node__field_nota_nota nn on acn.field_actuacion_captacion_nota_target_id = nn.entity_id WHERE field_actuacion_captacion_target_id = :nid ORDER BY created DESC";
+  return $db->query($sql, array(':nid' => $nid))
+    ->fetchAll();
 }
 
 function get_captacion_estado_changes($nid) {
