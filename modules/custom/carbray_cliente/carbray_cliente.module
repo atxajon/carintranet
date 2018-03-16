@@ -246,6 +246,18 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['node']['captacion']['display']['actuaciones_csv_link'] = array(
+    'label' => t('Download actuaciones'),
+    'description' => t('Download actuaciones.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['captacion']['display']['link_to_pdf'] = array(
+    'label' => t('Link to download captacion actuaciones in pdf'),
+    'description' => t('Shows a link that allows admin to download the captacion actuaciones as a pdf file.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
   $extra['node']['expediente']['display']['edit_expediente'] = array(
     'label' => t('Edit expediente'),
     'description' => t('Edit expediente.'),
@@ -1031,6 +1043,29 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
       ];
     }
 
+    if ($display->getComponent('actuaciones_csv_link')) {
+      $csv_url = Url::fromRoute('carbray.csv');
+      $link_options = array(
+        'attributes' => array(
+          'class' => array(
+            'btn',
+            'btn-primary',
+          ),
+        ),
+        'query' => array(
+          'nid' => $nid,
+        ),
+      );
+      $csv_url->setOptions($link_options);
+      $link_to_csv_url = Link::fromTextAndUrl('Exportar CSV', $csv_url);
+      $link_to_csv_string = $link_to_csv_url->toString()
+        ->getGeneratedLink();
+      $csv_link_markup = Markup::create($link_to_csv_string);
+      $build['actuaciones_csv_link'] = [
+        '#markup' => $csv_link_markup,
+      ];
+    }
+
     if ($display->getComponent('assign_tematica')) {
       $assign_tematica_form = \Drupal::formBuilder()
         ->getForm('Drupal\carbray\Form\AssignTematicaCaptacion', $nid);
@@ -1042,6 +1077,24 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         '#modal_title' => t('Nueva tematica'),
         '#modal_content' => $assign_tematica_form,
         '#has_plus' => TRUE,
+      ];
+    }
+
+    if ($display->getComponent('link_to_pdf')) {
+      $nid = $entity->id();
+      $url = Url::fromRoute('carbray_cliente.actuaciones_to_doc', array('nid' => $nid));
+
+      $build['link_to_pdf'] = [
+        '#type' => 'link',
+        '#url' => $url,
+        '#title' => t('Exportar DOC'),
+        '#attributes' => array(
+          'target' => '_blank',
+          'class' => array(
+            'btn',
+            'btn-primary',
+          ),
+        ),
       ];
     }
 

@@ -86,8 +86,8 @@
       </div>
     </div>
     <div class="panel panel-default">
-      <div class="panel-heading dark-blue">
-        <h3>{{ 'Actuaciones'|trans }}</h3>
+      <div class="panel-heading red clearfix">
+        <h3 class="pull-left">{{ 'Actuaciones'|trans }}</h3><div class="pull-right">{{ content.actuaciones_csv_link }} {{ content.link_to_pdf }}</div>
       </div>
       <div class="panel-body">
         {{ content.view_actuaciones_captacion }}
