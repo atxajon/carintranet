@@ -40,7 +40,9 @@
         $('#edit-pause').removeClass('hidden');
         $('#edit-resume').addClass('hidden');
         $('#edit-timer').addClass('hidden');
-        alertPopup();
+        if (packMinutos) {
+          alertPopup();
+        }
         return false;
       });
 
