@@ -9,23 +9,26 @@ use Drupal\Core\Render\Markup;
 
 class CsvDownloader extends ControllerBase {
 
-  public function ActuacionesCsv(){
+  public function ActuacionesCsv() {
     // Work out data querying filters by looking at url params.
     $path = parse_url(\Drupal::request()->getRequestUri());
     $query_array = array();
     parse_str($path['query'],$query_array);
 
-    $expediente_node = Node::load($query_array['nid']);
-    $filename = $expediente_node->label() . '.csv';
+    $node = Node::load($query_array['nid']);
+    $filename = $node->label() . '.csv';
 
-    $actuaciones = get_actuaciones_for_expediente_csv($query_array['nid']);
+    $node_type = $node->bundle();
+
+    $actuaciones = get_actuaciones_for_node_csv($query_array['nid'], $node_type);
     $total_seconds = 0;
     $rows = [];
     foreach ($actuaciones as $actuacion) {
       $actuacion_node = Node::load($actuacion);
+      $tiempo_field = ($node_type == 'expediente') ? 'field_actuacion_tiempo_en_seg' : 'field_actuacion_captacion_tiempo';
 
       // Get the minutes values for the actuacion and transform it to seconds for correct display.
-      $minutes = $actuacion_node->get('field_actuacion_tiempo_en_seg')->value;
+      $minutes = $actuacion_node->get($tiempo_field)->value;
       $seconds = $minutes * 60;
       $hours = floor($seconds / 3600);
       $minutes = floor(($seconds / 60) % 60);
@@ -33,7 +36,8 @@ class CsvDownloader extends ControllerBase {
 
       // Load nota for actuacion.
       $nota_text = '';
-      $nota_ref = $actuacion_node->get('field_actuacion_nota')->getValue();
+      $nota_field = ($node_type == 'expediente') ? 'field_actuacion_nota' : 'field_actuacion_captacion_nota';
+      $nota_ref = $actuacion_node->get($nota_field)->getValue();
       if (isset($nota_ref[0]) && isset($nota_ref[0]['target_id'])) {
         $nota_node = Node::load($nota_ref[0]['target_id']);
         $nota_text = $nota_node->get('field_nota_nota')->value;
@@ -72,4 +76,5 @@ class CsvDownloader extends ControllerBase {
     $csvresponse->setFilename($filename);
     return $csvresponse;
   }
+
 }

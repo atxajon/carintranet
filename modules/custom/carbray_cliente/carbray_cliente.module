@@ -241,8 +241,8 @@ function carbray_cliente_entity_extra_field_info() {
     'visible' => TRUE,
   );
   $extra['node']['captacion']['display']['view_actuaciones_captacion'] = array(
-    'label' => t('New actuacion'),
-    'description' => t('New actuacion.'),
+    'label' => t('View captacion actuaciones'),
+    'description' => t('View captacion actuaciones.'),
     'weight' => 100,
     'visible' => TRUE,
   );
@@ -1932,12 +1932,22 @@ function get_actuaciones_for_expediente($nid) {
     ->fetchAll();
 }
 
-function get_actuaciones_for_expediente_csv($nid) {
-  $bundle = 'actuacion';
+/**
+ * Gets actuacion-es for a passed in Expediente nid / or actuacion_captacion-es for a passed in Captacion nid.
+ *
+ * @param $nid
+ *   Int node id of the entity we are finding actuaciones for.
+ * @param $node_type
+ *   String, either 'expediente' or 'captacion'.
+ * @return array|int
+ */
+function get_actuaciones_for_node_csv($nid, $node_type) {
+  $field_name = ($node_type == 'expediente') ? 'field_actuacion_expediente' : 'field_actuacion_captacion';
+  $bundle = ($node_type == 'expediente') ? 'actuacion' : 'actuacion_captacion';
   $query = \Drupal::entityQuery('node');
   $query->condition('status', 1);
   $query->condition('type', $bundle);
-  $query->condition('field_actuacion_expediente', $nid);
+  $query->condition($field_name, $nid);
   $actuaciones_nids = $query->execute();
   return $actuaciones_nids;
 }

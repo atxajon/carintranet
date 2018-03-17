@@ -22,10 +22,11 @@ class PropuestaToDoc extends ControllerBase {
     $view_builder = \Drupal::entityTypeManager()->getViewBuilder($entity_type);
     $storage = \Drupal::entityTypeManager()->getStorage($entity_type);
     $node = $storage->load($nid);
+    $node_type = $node->bundle();
     $build = $view_builder->view($node, $view_mode);
     $output = render($build);
     $node = Node::load($nid);
-    $filename = 'expediente-' . $node->label() . '.doc';
+    $filename = $node_type . '-' . $node->label() . '.doc';
     $c_type = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 //    $c_type = 'application/vnd.msword';
 //    $c_type = 'application/msword';
