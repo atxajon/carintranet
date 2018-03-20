@@ -77,20 +77,26 @@
         </div>
       </div>
     </div>
-    <div class="panel panel-default">
-      <div class="panel-heading dark-blue">
-        <h3>{{ 'Nueva actuacion'|trans }}</h3>
+    <div class="row equal">
+      <div class="col-sm-6">
+        <div class="panel panel-default">
+          <div class="panel-heading dark-blue">
+            <h3>{{ 'Nueva actuacion'|trans }}</h3>
+          </div>
+          <div class="panel-body">
+            {{ content.new_actuacion_captacion }}
+          </div>
+        </div>
       </div>
-      <div class="panel-body">
-        {{ content.new_actuacion_captacion }}
-      </div>
-    </div>
-    <div class="panel panel-default">
-      <div class="panel-heading red clearfix">
-        <h3 class="pull-left">{{ 'Actuaciones'|trans }}</h3><div class="pull-right">{{ content.actuaciones_csv_link }} {{ content.link_to_pdf }}</div>
-      </div>
-      <div class="panel-body">
-        {{ content.view_actuaciones_captacion }}
+      <div class="col-sm-6">
+        <div class="panel panel-default">
+          <div class="panel-heading red clearfix">
+            <h3 class="pull-left">{{ 'Actuaciones'|trans }}</h3><div class="pull-right">{{ content.actuaciones_csv_link }} {{ content.link_to_pdf }}</div>
+          </div>
+          <div class="panel-body">
+            {{ content.view_actuaciones_captacion }}
+          </div>
+        </div>
       </div>
     </div>
     <div class="panel panel-default">
