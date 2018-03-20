@@ -223,6 +223,9 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
       unset($form['field_captacion_nota']);
       $form['title']['#attributes']['class'][] = 'hidden';
       unset($form['field_captacion_cliente']);
+      // Ensure created date can be edited by users.
+      $form['created']['#access'] = TRUE;
+
       // Unset estado captacion entity_autocomplete and use instead a custom defined select.
       unset($form['field_captacion_estado_captacion']);
       // Query for all estados de captaction terms.
@@ -255,6 +258,7 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
           $form['actions'][$action]['#submit'][] = 'captacion_save_estado';
         }
       }
+
       break;
   }
 }
