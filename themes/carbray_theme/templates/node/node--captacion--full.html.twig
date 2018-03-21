@@ -35,16 +35,8 @@
             <h3 class="text-center">{{ 'Estado de la captacion'|trans }}</h3>
           </div>
           <div class="panel-body">
-            {#{{ content.field_captacion_estado_captacion }}#}
+            {{ content.field_captacion_estado_captacion }}
             {{ content.assign_estado_captacion }}
-            <div class="panel panel-default margin-top-20">
-              <div class="panel-heading dark-blue">
-                <p>{{ 'Registro de cambios de estado'|trans }}</p>
-              </div>
-              <div class="panel-body">
-                {{ content.log_estado_captacion }}
-              </div>
-            </div>
             {{ content.take_action }}
           </div>
         </div>
@@ -63,14 +55,6 @@
             <div class="tematica-table margin-top-20">{{ content.view_tematica }}</div>
             <div class="margin-bottom-20">{{ content.assign_tematica }}</div>
             {{ content.field_captacion_ciudad }}
-            <div class="panel panel-default">
-              <div class="panel-heading clearfix dark-blue">
-                <div class="pull-left" style="position: relative; top: 4px;">{{ 'Notas captacion'|trans }}</div><div class="pull-right">{{ content.anadir_nota }}</div>
-              </div>
-              <div class="panel-body">
-                {{ content.notas_table }}
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -112,6 +96,22 @@
             {{ content.view_actuaciones_captacion }}
           </div>
         </div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading dark-blue">
+        <p>{{ 'Registro de cambios de estado'|trans }}</p>
+      </div>
+      <div class="panel-body">
+        {{ content.log_estado_captacion }}
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading clearfix dark-blue">
+        <div class="pull-left" style="position: relative; top: 4px;">{{ 'Notas captacion'|trans }}</div><div class="pull-right">{{ content.anadir_nota }}</div>
+      </div>
+      <div class="panel-body">
+        {{ content.notas_table }}
       </div>
     </div>
   </div>

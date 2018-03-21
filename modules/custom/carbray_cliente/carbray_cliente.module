@@ -14,11 +14,10 @@ use Drupal\Core\Render\Markup;
 use Drupal\node\Entity\Node;
 use Drupal\file\Entity\File;
 use Drupal\taxonomy\Entity\Term;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 
 
 define('CAPTACION_ARCHIVADA', 184);
-
+define('ESTADO_CAPTACION_DEFECTO', 44); // 'En contacto'.
 
 /**
  * Implements hook_theme().
@@ -796,12 +795,10 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
       if ($changes) {
         foreach ($changes as $change) {
           // @todo: convert integers to human friendly format!
-          $previous_term = Term::load($change->previous_status);
           $new_term = Term::load($change->new_status);
           $author = User::load($change->author);
 
           $rows[] = array(
-            $previous_term->label(),
             $new_term->label(),
             $author->get('field_nombre')->value . ' ' . $author->get('field_apellido')->value,
             date('d-m-Y H:i:s', $change->created),
@@ -810,8 +807,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
       }
 
       $header = array(
-        'Estado previo',
-        'Nuevo estado',
+        'Estado',
         'Autor',
         'Fecha del cambio',
       );
@@ -1105,7 +1101,7 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         '#theme' => 'button_modal',
         '#unique_id' => 'anadir-nota-nid-' . $nid,
         '#button_text' => 'Añadir nota',
-        '#button_classes' => 'btn btn-primary btn-sm no-top',
+        '#button_classes' => 'btn btn-primary btn-sm',
         '#modal_title' => t('Nueva nota'),
         '#modal_content' => $form,
         '#has_plus' => TRUE,
@@ -1961,7 +1957,7 @@ function get_actuaciones_for_captacion($nid) {
 
 function get_captacion_estado_changes($nid) {
   $db = \Drupal::database();
-  $sql = "SELECT * FROM carbray_captacion_changes_log WHERE nid = :nid ORDER BY created DESC";
+  $sql = "SELECT * FROM carbray_captacion_changes_log WHERE nid = :nid ORDER BY created ASC";
   return $db->query($sql, array(':nid' => $nid))
     ->fetchAll();
 }
