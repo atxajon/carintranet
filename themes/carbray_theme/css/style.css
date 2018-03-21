@@ -154,7 +154,7 @@ ul {
 .panel-default > .panel-heading {
   color: white;
 }
-.panel-heading .btn {
+.panel-heading .btn:not('no-top') {
   position: relative;
   top: 5px;
 }
