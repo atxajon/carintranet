@@ -1059,7 +1059,7 @@ function carbray_mail_alter(&$message) {
 }
 
 function log_estado_captacion_change($values) {
-  // Currently logged in user is making the estado change, let's log it.
+  // Current logged in user is making the estado change, let's log it.
   $uid = \Drupal::currentUser()->id();
   \Drupal::database()->insert('carbray_captacion_changes_log')
     ->fields([

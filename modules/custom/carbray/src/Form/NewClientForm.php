@@ -212,6 +212,15 @@ class NewClientForm extends FormBase {
       ))
       ->execute();
 
+    // Create an entry on {carbray_captacion_changes_log} with default estado.
+    $values_to_save = [
+      'nid' => $captacion->id(),
+      // For simplicity and to avoid errors instead of making 'previous_status' 0 let's give it the default estado.
+      'previous_status' => ESTADO_CAPTACION_DEFECTO,
+      'new_status' => ESTADO_CAPTACION_DEFECTO,
+    ];
+    log_estado_captacion_change($values_to_save);
+
     drupal_set_message('Cliente ' . $nombre . ' ' . $apellido . ' con uid: ' . $uid . ' ha sido creado');
     $form_state->setRedirectUrl(_carbray_redirecter());
   }
