@@ -78,6 +78,25 @@ class NewClientForm extends FormBase {
       '#empty_option' => ' - Selecciona procedencia - ',
     );
 
+
+    // Field cliente_cuenta only shows for workers of Tax department.
+    $user = User::load(\Drupal::currentUser()->id());
+    $departamentos = $user->get('field_departamento')->getValue();
+    foreach ($departamentos as $departamento) {
+      if ($departamento['target_id'] == DEPARTAMENTO_TAX) {
+        $form['cliente_cuenta'] = [
+          '#type' => 'radios',
+          '#title' => t('Cliente cuenta'),
+          '#options' => array(
+            0 => $this->t('No'),
+            1 => $this->t('Si')
+          ),
+          '#default_value' => 0,
+        ];
+        break;
+      }
+    }
+
     $internal_users = get_carbray_workers(TRUE);
     $internal_users_options = [];
     foreach ($internal_users as $uid => $email) {
@@ -157,6 +176,9 @@ class NewClientForm extends FormBase {
       $selected_captador[$captador_id] = $value;
     }
 
+    $cliente_cuenta = $form_state->getValue('cliente_cuenta');
+
+
     $user = User::create();
 
     // Mandatory settings.
@@ -197,6 +219,9 @@ class NewClientForm extends FormBase {
     $captacion->set('title', $title);
     $captacion->set('field_captacion_cliente', $uid);
     $captacion->set('field_captacion_captador', $selected_captador);
+    if ($cliente_cuenta) {
+      $captacion->set('field_captacion_cliente_cuenta', $cliente_cuenta);
+    }
     $captacion->enforceIsNew();
     $captacion->save();
 

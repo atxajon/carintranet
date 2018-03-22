@@ -65,7 +65,7 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
       }
       $form_owner_user = User::load($form_owner_uid);
       $form_owner_roles = $form_owner_user->getRoles();
-      if (in_array('worker', $form_owner_roles) || in_array('carbray_administrator', $form_owner_roles)) {
+      if (in_array('worker', $form_owner_roles) || in_array('carbray_administrator', $form_owner_roles) || in_array('jefe_departamento', $form_owner_roles)) {
         $is_internal_user = TRUE;
       }
 

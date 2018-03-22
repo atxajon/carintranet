@@ -344,6 +344,10 @@ ul {
     border: none;
     -webkit-box-shadow: none;
   }
+  .carbray-new-client .fieldset-legend {
+    font-size: 14px;
+    font-weight: bold;
+  }
 
   #edit-nota-container {
     clear: both;
@@ -637,6 +641,14 @@ textarea[rows="3"] + .cke .cke_contents {
     -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
     margin-top: 25px;
     margin-bottom: 20px;
+  }
+  .carbray-new-client #edit-cliente-cuenta--wrapper {
+    border: 0;
+    box-shadow: none;
+  }
+  .carbray-new-client #edit-cliente-cuenta--wrapper legend {
+    margin-bottom: 0;
+    border: 0;
   }
   #servicios-wrapper {
     margin-bottom: 20px;
