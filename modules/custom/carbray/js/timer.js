@@ -29,8 +29,20 @@
         $('#edit-pause').addClass('hidden');
         // Get total run of seconds.
         var seconds = $("#crono").data('seconds');
-        var minutes = Math.floor(seconds / 60);
-        document.getElementById('edit-timer').value = minutes;
+
+        // If this is an expediente with pack de horas and its countdown timer,
+        // instead of showing the remaining time in minutes for the expediente on pausing the clock,
+        // show the lapsed time between the current start of the countdown and the pausing.
+        if (packMinutos) {
+          var secondsLapsed = packMinutos - seconds;
+          var minutesLapsed = Math.floor(secondsLapsed / 60);
+          document.getElementById('edit-timer').value = minutesLapsed;
+        }
+        else {
+          var minutes = Math.floor(seconds / 60);
+          document.getElementById('edit-timer').value = minutes;
+        }
+
         $('#edit-timer').removeClass('hidden');
         return false;
       });

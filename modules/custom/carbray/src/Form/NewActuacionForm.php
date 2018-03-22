@@ -82,7 +82,7 @@ class NewActuacionForm extends FormBase {
         '#attributes' => array('class' => array('hidden', 'pause-timer-btn', 'btn-warning')),
       );
 
-      $timer_tooltip = ($pack) ? 'Edita el numero de minutos restantes para concluir el pack de horas' : 'Edita el numero de minutos transcurridos.';
+      $timer_tooltip = 'Edita el numero de minutos transcurridos.';
       $form['timer'] = array(
         '#type' => 'textfield',
         '#description' => $timer_tooltip,
@@ -201,23 +201,15 @@ class NewActuacionForm extends FormBase {
 
     // If it's an expediente with pack de horas update remaining time.
     if ($is_pack != -1) {
-      // When this actuacion started we had originally stored $actuacion_started_minutes.
-      $actuacion_started_minutes = $is_pack;
-      // The absolute time passed on this current actuacion is:
-      $minutes_passed_on_this_actuacion = $actuacion_started_minutes - $timer;
-
       $expediente = Node::load($expediente_nid);
       // Currently stored pack minutes (we need to check against this, as another worker could have done an actuacion in paralel while this worker submits his!
       $current_pack_minutes = $expediente->get('field_expediente_pack_minutos')->value;
 
-      $updated_pack_remaining_minutes = $current_pack_minutes - $minutes_passed_on_this_actuacion;
+      $updated_pack_remaining_minutes = $current_pack_minutes - $timer;
 
       // Store the subtracted minutes in hours for the remaining time in the pack.
       $expediente->set('field_expediente_pack_minutos', $updated_pack_remaining_minutes);
       $expediente->save();
-
-      // $timer instead of being the countdown value, takes the elapsed minutes value.
-      $timer = $minutes_passed_on_this_actuacion;
     }
 
 
