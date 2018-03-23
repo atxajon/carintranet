@@ -21,16 +21,18 @@
   {{ title_suffix }}
   <div{{ content_attributes.addClass('content') }}>
     <div class="row">
-      <div class="col-sm-8">
-        <div class="panel panel-default">
-          <div class="panel-heading grey">
-            <h4>{{ 'Nueva actuacion'|trans }}</h4>
-          </div>
-          <div class="panel-body">
-            {{ content.new_actuacion }}
+      {% if content.new_actuacion|render|trim is not empty %}
+        <div class="col-sm-8">
+          <div class="panel panel-default">
+            <div class="panel-heading grey">
+              <h4>{{ 'Nueva actuacion'|trans }}</h4>
+            </div>
+            <div class="panel-body">
+              {{ content.new_actuacion }}
+            </div>
           </div>
         </div>
-      </div>
+      {% endif %}
       <div class="col-sm-4">
         <div class="panel panel-default">
           <div class="panel-heading green">
@@ -69,14 +71,18 @@
         </div>
       </div>
     </div>
-    <div class="panel panel-default">
-      <div class="panel-heading red clearfix">
-        <h4 class="pull-left">{{ 'Actuaciones'|trans }}</h4><div class="pull-right">{{ content.actuaciones_csv_link }} {{ content.link_to_pdf }}</div>
+
+    {% if content.view_actuaciones|render|trim is not empty %}
+      <div class="panel panel-default">
+        <div class="panel-heading red clearfix">
+          <h4 class="pull-left">{{ 'Actuaciones'|trans }}</h4><div class="pull-right">{{ content.actuaciones_csv_link }} {{ content.link_to_pdf }}</div>
+        </div>
+        <div class="panel-body">
+          {{ content.view_actuaciones }}
+        </div>
       </div>
-      <div class="panel-body">
-        {{ content.view_actuaciones }}
-      </div>
-    </div>
+    {% endif %}
+
     <div class="panel panel-default">
       <div class="panel-heading dark-blue clearfix">
         <h4 class="pull-left">{{ 'Notas expediente'|trans }}</h4><div class="pull-right">{{ content.anadir_nota }}</div>

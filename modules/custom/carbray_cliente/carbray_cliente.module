@@ -1302,35 +1302,192 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
       ];
     }
 
-    if ($display->getComponent('new_actuacion')) {
-      $form = \Drupal::formBuilder()
-        ->getForm('Drupal\carbray\Form\NewActuacionForm', $nid);
-      $build['new_actuacion'] = $form;
-    }
 
-    if ($display->getComponent('add_hours')) {
-      // If expediente had a pack de horas, and now the amount of time has run out:
-      // show a button to refill the hours.
-      // Does this expediente have a pack de horas set?
-      $is_pack = \Drupal::database()->query("SELECT expediente_nid FROM carbray_expediente_horas WHERE expediente_nid = :expediente_nid LIMIT 1", array(':expediente_nid' => $nid))->fetchField();
-      if ($is_pack) {
-        $expediente = Node::load($entity->id());
-        $pack_minutos = $expediente->get('field_expediente_pack_minutos')->value;
-        if ($pack_minutos == 0) {
-          $add_hours_form = \Drupal::formBuilder()
-            ->getForm('Drupal\carbray\Form\AddExpedienteHours', $nid);
-          $build['add_hours'] = [
-            '#theme' => 'button_modal',
-            '#unique_id' => 'add-hours-expediente-nid-' . $nid,
-            '#button_text' => 'Añadir horas',
-            '#button_classes' => 'btn btn-primary',
-            '#modal_title' => t('Añadir horas'),
-            '#modal_content' => $add_hours_form,
-            '#has_plus' => FALSE,
-          ];
+    // Work out whether this expediente node is for a captacion that has cliente cuota.
+    $db = \Drupal::database();
+    $sql = "SELECT ccc.field_captacion_cliente_cuenta_value
+FROM node__field_expediente_captacion ec 
+INNER JOIN node__field_captacion_cliente_cuenta ccc on ec.field_expediente_captacion_target_id = ccc.entity_id
+WHERE ccc.field_captacion_cliente_cuenta_value = 1
+AND ec.entity_id = :expediente_nid";
+    $is_cliente_cuota = $db->query($sql, array(':expediente_nid' => $entity->id()))
+      ->fetchField();
+
+    if (!$is_cliente_cuota) {
+      if ($display->getComponent('new_actuacion')) {
+        $form = \Drupal::formBuilder()
+          ->getForm('Drupal\carbray\Form\NewActuacionForm', $nid);
+        $build['new_actuacion'] = $form;
+      }
+
+      if ($display->getComponent('add_hours')) {
+        // If expediente had a pack de horas, and now the amount of time has run out:
+        // show a button to refill the hours.
+        // Does this expediente have a pack de horas set?
+        $is_pack = \Drupal::database()->query("SELECT expediente_nid FROM carbray_expediente_horas WHERE expediente_nid = :expediente_nid LIMIT 1", array(':expediente_nid' => $nid))->fetchField();
+        if ($is_pack) {
+          $expediente = Node::load($entity->id());
+          $pack_minutos = $expediente->get('field_expediente_pack_minutos')->value;
+          if ($pack_minutos == 0) {
+            $add_hours_form = \Drupal::formBuilder()
+              ->getForm('Drupal\carbray\Form\AddExpedienteHours', $nid);
+            $build['add_hours'] = [
+              '#theme' => 'button_modal',
+              '#unique_id' => 'add-hours-expediente-nid-' . $nid,
+              '#button_text' => 'Añadir horas',
+              '#button_classes' => 'btn btn-primary',
+              '#modal_title' => t('Añadir horas'),
+              '#modal_content' => $add_hours_form,
+              '#has_plus' => FALSE,
+            ];
+          }
         }
       }
+
+
+      if ($display->getComponent('actuaciones_csv_link')) {
+        $csv_url = Url::fromRoute('carbray.csv');
+        $link_options = array(
+          'attributes' => array(
+            'class' => array(
+              'btn',
+              'btn-primary',
+            ),
+          ),
+          'query' => array(
+            'nid' => $nid,
+          ),
+        );
+        $csv_url->setOptions($link_options);
+        $link_to_csv_url = Link::fromTextAndUrl('Exportar CSV', $csv_url);
+        $link_to_csv_string = $link_to_csv_url->toString()
+          ->getGeneratedLink();
+        $csv_link_markup = Markup::create($link_to_csv_string);
+        $build['actuaciones_csv_link'] = [
+          '#markup' => $csv_link_markup,
+        ];
+      }
+
+      if ($display->getComponent('link_to_pdf')) {
+        $nid = $entity->id();
+        $url = Url::fromRoute('carbray_cliente.actuaciones_to_doc', array('nid' => $nid));
+
+        $build['link_to_pdf'] = [
+          '#type' => 'link',
+          '#url' => $url,
+          '#title' => t('Exportar DOC'),
+          '#attributes' => array(
+            'target' => '_blank',
+            'class' => array(
+              'btn',
+              'btn-primary',
+            ),
+          ),
+        ];
+      }
+
+      if ($display->getComponent('view_actuaciones')) {
+        $actuaciones_nids = get_actuaciones_for_expediente($nid);
+        $total_seconds = 0;
+        $actuaciones_rows = [];
+        $is_expediente_node_view = FALSE;
+        if ($actuaciones_nids) {
+          // Work out if this is an exportable path (e.g node/{nid}/pdf) to show/hide edit actuacion button link and form.
+          $current_uri = \Drupal::request()->getRequestUri();
+          if (strpos($current_uri, 'expediente') !== false) {
+            $is_expediente_node_view = TRUE;
+          }
+          foreach ($actuaciones_nids as $actuacion_nid) {
+            $file_link = '';
+            if ($actuacion_nid->fid) {
+              $file = File::load($actuacion_nid->fid);
+              $file_uri = $file->getFileUri();
+              $url = file_create_url($file_uri);
+              $url = Url::fromUri($url, ['absolute' => TRUE], array(
+                'attributes' => array(
+                  'target' => '_blank',
+                  'class' => array('btn', 'btn-primary', 'btn-sm')
+                ),
+              ));
+
+              $file_link = Link::fromTextAndUrl($file->getFilename(), $url);
+            }
+            $actuacion_node = Node::load($actuacion_nid->nid);
+            // Get the minutes values for the actuacion and transform it to seconds for correct display.
+            $minutes = $actuacion_node->get('field_actuacion_tiempo_en_seg')->value;
+            $seconds = $minutes * 60;
+            $hours = floor($seconds / 3600);
+            $minutes = floor(($seconds / 60) % 60);
+            $total_seconds += $seconds;
+
+            $refill_type = \Drupal::database()->query("SELECT refill_type
+      FROM carbray_expediente_horas eh
+      INNER JOIN carbray_expediente_horas_actuaciones eha on eh.id = eha.expediente_horas_id
+    WHERE 
+     actuacion_nid = :actuacion_nid ", [':actuacion_nid' => $actuacion_node->id()])->fetchField();
+            $edit_form = \Drupal::formBuilder()
+              ->getForm('Drupal\carbray\Form\EditActuacionForm', $actuacion_nid->nid);
+            if ($is_expediente_node_view) {
+              $build['edit_actuacion_form'] = [
+                '#theme' => 'button_modal',
+                '#unique_id' => 'edit-actuacion_nid-' . $actuacion_nid->nid,
+                '#button_text' => 'Editar actuacion',
+                '#button_classes' => 'btn btn-primary btn-sm',
+                '#modal_title' => t('Editar actuacion'),
+                '#modal_content' => $edit_form,
+                '#has_plus' => FALSE,
+              ];
+            }
+
+            $actuaciones_rows[] = array(
+              date('d-m-y H:m:s', $actuacion_nid->created),
+              $actuacion_nid->title,
+              $hours . ':' . $minutes,
+              ($refill_type == 0) ? 'Facturables' : 'Cortesia',
+              Markup::create($actuacion_nid->field_nota_nota_value),
+              $file_link,
+              get_cliente_nombre($actuacion_nid->uid),
+              ($is_expediente_node_view) ? render($build['edit_actuacion_form']) : '',
+            );
+          }
+
+          // Add a total row at the bottom.
+          $total_hours = floor($total_seconds / 3600);
+          $total_minutes = floor(($total_seconds / 60) % 60);
+          $actuaciones_rows[] = [
+            Markup::create('<b>Total:</b>'),
+            '',
+            Markup::create('<b>' . $total_hours . ':' . $total_minutes . '</b>'),
+            '',
+            '',
+            '',
+            '',
+            '',
+          ];
+        }
+
+        $header = array(
+          'Fecha creacion',
+          'Actuacion',
+          'Horas:Minutos',
+          'Tipo horas',
+          'Notas',
+          'Documentacion',
+          'Autor',
+        );
+        if ($is_expediente_node_view) {
+          $header[] = 'Editar';
+        }
+        $build['view_actuaciones'] = [
+          '#type' => 'table',
+          '#header' => $header,
+          '#rows' => $actuaciones_rows,
+          '#empty' => t('Ninguna actuación creada aún.'),
+        ];
+      }
     }
+
+
 
     if ($display->getComponent('view_tematica')) {
       $db = \Drupal::database();
@@ -1359,147 +1516,6 @@ function carbray_cliente_node_view(array &$build, EntityInterface $entity, Entit
         '#type' => 'table',
         '#header' => $header,
         '#rows' => $rows,
-      ];
-    }
-
-    if ($display->getComponent('actuaciones_csv_link')) {
-      $csv_url = Url::fromRoute('carbray.csv');
-      $link_options = array(
-        'attributes' => array(
-          'class' => array(
-            'btn',
-            'btn-primary',
-          ),
-        ),
-        'query' => array(
-          'nid' => $nid,
-        ),
-      );
-      $csv_url->setOptions($link_options);
-      $link_to_csv_url = Link::fromTextAndUrl('Exportar CSV', $csv_url);
-      $link_to_csv_string = $link_to_csv_url->toString()
-        ->getGeneratedLink();
-      $csv_link_markup = Markup::create($link_to_csv_string);
-      $build['actuaciones_csv_link'] = [
-        '#markup' => $csv_link_markup,
-      ];
-    }
-
-    if ($display->getComponent('link_to_pdf')) {
-      $nid = $entity->id();
-      $url = Url::fromRoute('carbray_cliente.actuaciones_to_doc', array('nid' => $nid));
-
-      $build['link_to_pdf'] = [
-        '#type' => 'link',
-        '#url' => $url,
-        '#title' => t('Exportar DOC'),
-        '#attributes' => array(
-          'target' => '_blank',
-          'class' => array(
-            'btn',
-            'btn-primary',
-          ),
-        ),
-      ];
-    }
-
-    if ($display->getComponent('view_actuaciones')) {
-      $actuaciones_nids = get_actuaciones_for_expediente($nid);
-      $total_seconds = 0;
-      $actuaciones_rows = [];
-      $is_expediente_node_view = FALSE;
-      if ($actuaciones_nids) {
-        // Work out if this is an exportable path (e.g node/{nid}/pdf) to show/hide edit actuacion button link and form.
-        $current_uri = \Drupal::request()->getRequestUri();
-        if (strpos($current_uri, 'expediente') !== false) {
-          $is_expediente_node_view = TRUE;
-        }
-        foreach ($actuaciones_nids as $actuacion_nid) {
-          $file_link = '';
-          if ($actuacion_nid->fid) {
-            $file = File::load($actuacion_nid->fid);
-            $file_uri = $file->getFileUri();
-            $url = file_create_url($file_uri);
-            $url = Url::fromUri($url, ['absolute' => TRUE], array(
-              'attributes' => array(
-                'target' => '_blank',
-                'class' => array('btn', 'btn-primary', 'btn-sm')
-              ),
-            ));
-
-            $file_link = Link::fromTextAndUrl($file->getFilename(), $url);
-          }
-          $actuacion_node = Node::load($actuacion_nid->nid);
-          // Get the minutes values for the actuacion and transform it to seconds for correct display.
-          $minutes = $actuacion_node->get('field_actuacion_tiempo_en_seg')->value;
-          $seconds = $minutes * 60;
-          $hours = floor($seconds / 3600);
-          $minutes = floor(($seconds / 60) % 60);
-          $total_seconds += $seconds;
-
-          $refill_type = \Drupal::database()->query("SELECT refill_type
-      FROM carbray_expediente_horas eh
-      INNER JOIN carbray_expediente_horas_actuaciones eha on eh.id = eha.expediente_horas_id
-    WHERE 
-     actuacion_nid = :actuacion_nid ", [':actuacion_nid' => $actuacion_node->id()])->fetchField();
-          $edit_form = \Drupal::formBuilder()
-            ->getForm('Drupal\carbray\Form\EditActuacionForm', $actuacion_nid->nid);
-          if ($is_expediente_node_view) {
-            $build['edit_actuacion_form'] = [
-              '#theme' => 'button_modal',
-              '#unique_id' => 'edit-actuacion_nid-' . $actuacion_nid->nid,
-              '#button_text' => 'Editar actuacion',
-              '#button_classes' => 'btn btn-primary btn-sm',
-              '#modal_title' => t('Editar actuacion'),
-              '#modal_content' => $edit_form,
-              '#has_plus' => FALSE,
-            ];
-          }
-
-          $actuaciones_rows[] = array(
-            date('d-m-y H:m:s', $actuacion_nid->created),
-            $actuacion_nid->title,
-            $hours . ':' . $minutes,
-            ($refill_type == 0) ? 'Facturables' : 'Cortesia',
-            Markup::create($actuacion_nid->field_nota_nota_value),
-            $file_link,
-            get_cliente_nombre($actuacion_nid->uid),
-            ($is_expediente_node_view) ? render($build['edit_actuacion_form']) : '',
-          );
-        }
-
-        // Add a total row at the bottom.
-        $total_hours = floor($total_seconds / 3600);
-        $total_minutes = floor(($total_seconds / 60) % 60);
-        $actuaciones_rows[] = [
-          Markup::create('<b>Total:</b>'),
-          '',
-          Markup::create('<b>' . $total_hours . ':' . $total_minutes . '</b>'),
-          '',
-          '',
-          '',
-          '',
-          '',
-        ];
-      }
-
-      $header = array(
-        'Fecha creacion',
-        'Actuacion',
-        'Horas:Minutos',
-        'Tipo horas',
-        'Notas',
-        'Documentacion',
-        'Autor',
-      );
-      if ($is_expediente_node_view) {
-        $header[] = 'Editar';
-      }
-      $build['view_actuaciones'] = [
-        '#type' => 'table',
-        '#header' => $header,
-        '#rows' => $actuaciones_rows,
-        '#empty' => t('Ninguna actuación creada aún.'),
       ];
     }
   }
