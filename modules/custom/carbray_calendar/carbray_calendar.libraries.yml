@@ -9,4 +9,6 @@ fullcalendar:
     js/fullcalendar.min.js: {}
     js/custom.js: {}
   dependencies:
-     - core/jquery
+    - core/jquery
+    - core/drupalSettings
+

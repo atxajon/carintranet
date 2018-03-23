@@ -26,16 +26,23 @@ class CalendarFilters extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
 //    $form['#attributes']['class'][] = 'margin-left-20';
-    $filter_options = [
-      0 => 'Todos los departamentos',
-      1 => 'Departamento 1',
-      2 => 'Departamento 2',
-    ];
+    $sql = "SELECT tid FROM taxonomy_term_field_data WHERE vid= 'departamento'";
+    $departamentos_tids = \Drupal::database()->query($sql)->fetchCol();
+
+    $departamento_terms = \Drupal::entityTypeManager()
+      ->getStorage('taxonomy_term')
+      ->loadMultiple($departamentos_tids);
+
+    foreach ($departamento_terms as $departamento_term) {
+      $options[$departamento_term->id()] = $departamento_term->name->value;
+    }
 
     $form['departamento'] = array(
       '#type' => 'select',
-      '#options' => $filter_options,
+      '#options' => $options,
       '#title' => t('Filtrar por departamento'),
+      '#empty_option' => 'Todos los departamentos',
+
     );
 //    $form['submit'] = array(
 //      '#type' => 'submit',
