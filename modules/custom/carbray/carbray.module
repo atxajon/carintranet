@@ -238,6 +238,14 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
         '#weight' => 25,
       );
 
+      // Captador node form field seems to be erroring on submit, let's hide it for now, as captador
+      // can be edited on its dedicated form modal on node captacion page...
+      unset($form['field_captacion_captador']);
+
+      // Hide 'nueva revision' checkbox for users.
+      hide($form['revision']);
+
+
       // Get this captacion's estado de captacion.
       $db = \Drupal::database();
       $sql = "SELECT field_captacion_estado_captacion_target_id FROM node__field_captacion_estado_captacion WHERE entity_id = :nid";
