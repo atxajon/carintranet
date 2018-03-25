@@ -1,82 +1,30 @@
 var data = drupalSettings.data;
-console.log(data);
 (function ($, Drupal, drupalSettings) {
   Drupal.behaviors.custom = {
     attach: function (context, settings) {
-
-
-
-      var events = [
-        {
-          title: 'All Day Event',
-          start: '2018-03-11',
-          dept: '185'
-        },
-        {
-          title: 'Long Event',
-          start: '2018-03-07',
-          end: '2018-03-10',
-          dept: '186',
-        },
-        {
-          id: 999,
-          title: 'Repeating Event',
-          start: '2018-03-19T16:00:00'
-        },
-        {
-          id: 999,
-          title: 'Repeating Event',
-          start: '2018-03-16T16:00:00'
-        },
-        {
-          title: 'Conference',
-          start: '2018-03-11',
-          end: '2018-03-13'
-        },
-        {
-          title: 'Meeting',
-          start: '2018-03-12T10:30:00',
-          end: '2018-03-12T12:30:00',
-          // rendering: 'background'
-        },
-        {
-          title: 'Pedido extra',
-          start: '2018-03-20T10:30:00',
-          end: '2018-03-20T13:30:00',
-          // rendering: 'background'
-        },
-        {
-          title: 'Lunch',
-          start: '2018-03-21T12:00:00',
-          dept: '186',
-        },
-        {
-          title: 'Meeting',
-          start: '2018-03-22T14:30:00',
-          dept: '189'
-        },
-        {
-          title: 'Happy Hour',
-          start: '2018-03-24T17:30:00',
-          dept: '188'
-        },
-        {
-          title: 'Dinner',
-          start: '2018-03-26T20:00:00',
-          dept: '189'
-        },
-        {
-          title: 'Birthday Party',
-          start: '2018-03-23T07:00:00',
-          dept: '189'
-        },
-        {
-          title: 'Click for Google',
-          url: 'http://google.com/',
-          start: '2018-03-28',
-          dept: '187'
-        }
-      ];
+      // var tooltip = $('<div/>').qtip({
+      //   id: 'fullcalendar',
+      //   prerender: true,
+      //   content: {
+      //     text: ' ',
+      //     title: {
+      //       button: true
+      //     }
+      //   },
+      //   position: {
+      //     my: 'bottom center',
+      //     at: 'top center',
+      //     target: 'mouse',
+      //     viewport: $('#calendar'),
+      //     adjust: {
+      //       mouse: false,
+      //       scroll: false
+      //     }
+      //   },
+      //   show: false,
+      //   hide: false,
+      //   style: 'qtip-light'
+      // }).qtip('api');
 
       $('#calendar').fullCalendar({
         header: {
@@ -97,7 +45,17 @@ console.log(data);
             return ['all', event.dept].indexOf($('#edit-departamento').val()) >= 0
           }
         },
-        eventColor: '#378006'
+        eventColor: '#378006',
+        eventClick: function(data, event, view) {
+          var content = '<h3>'+data.title+'</h3>' +
+            '<p><b>Start:</b> '+data.start+'<br />' +
+            '</p>';
+
+          tooltip.set({
+            'content.text': content
+          })
+            .reposition(event).show(event);
+        },
       });
       $('#edit-departamento').on('change',function(){
         $('#calendar').fullCalendar('rerenderEvents');
