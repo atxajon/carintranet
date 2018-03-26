@@ -34,13 +34,26 @@ class FullCalendar extends BlockBase {
     $data = [];
     foreach ($nodes as $node) {
       $expediente_nid = $node->get('field_actuacion_expediente')->getValue();
+
+      // Work out actuacion start and end date;
+      // We only have actuacion form submission time (node created value in timestamp)
+      // and minutes passed declared by the user.
+      // Start and end date can be misleading as often times a worker submits 2 actuaciones for say 30 mins one after the other.
+      // They plot on the calendar as overlapping time...
+      $actuacion_minutes = $node->get('field_actuacion_tiempo_en_seg')->value;
+      $actuacion_seconds = $actuacion_minutes * 60;
+      $actuacion_created = $node->created->value;
+      $actuacion_started = $actuacion_created - $actuacion_seconds;
+
       // @todo: get expediente responsable's department.
       $data[] = [
         'title' => $node->label(),
-        'start' => date('Y-m-d', $node->created->value),
+        'start' => date("c", $actuacion_started), //converting tiemstamp to ISO 8601 https://stackoverflow.com/questions/5322285/how-do-i-convert-datetime-to-iso-8601-in-php/5322309
+        'end' => date("c", $actuacion_created),
         'url' => Url::fromRoute('entity.node.canonical', ['node' => $expediente_nid[0]['target_id']]
         )->toString(),
         'dept' => 186,
+//        'allDay' => false,
       ];
     }
 
