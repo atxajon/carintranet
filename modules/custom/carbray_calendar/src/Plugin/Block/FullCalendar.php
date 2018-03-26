@@ -46,14 +46,34 @@ WHERE type = 'actuacion'")->fetchAll();
       $actuacion_seconds = $actuacion_minutes * 60;
       $actuacion_created = $actuacion->created;
       $actuacion_started = $actuacion_created - $actuacion_seconds;
+      $color = 'black';
+      if ($actuacion->departamento_tid == 185) {
+        $color = 'black';
+      }
+      elseif ($actuacion->departamento_tid == 186) {
+        $color = 'green';
+      }
+      elseif ($actuacion->departamento_tid == 187) {
+        $color = 'blue';
+      }
+      elseif ($actuacion->departamento_tid == 188) {
+        $color = 'red';
+      }
+      elseif ($actuacion->departamento_tid == 189) {
+        $color = 'indigo';
+      }
+      elseif ($actuacion->departamento_tid == 201) {
+        $color = 'pink';
+      }
 
       $data[] = [
         'title' => $actuacion->title,
-        'start' => date("c", $actuacion_started), //converting tiemstamp to ISO 8601 https://stackoverflow.com/questions/5322285/how-do-i-convert-datetime-to-iso-8601-in-php/5322309
+        'start' => date("c", $actuacion_started), // converting tiemstamp to ISO 8601 https://stackoverflow.com/questions/5322285/how-do-i-convert-datetime-to-iso-8601-in-php/5322309
         'end' => date("c", $actuacion_created),
         'url' => Url::fromRoute('entity.node.canonical', ['node' => $actuacion->expediente_nid]
         )->toString(),
         'dept' => $actuacion->departamento_tid,
+        'color' => $color,
 //        'allDay' => false,
       ];
     }
