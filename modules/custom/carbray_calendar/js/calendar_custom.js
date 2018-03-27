@@ -23,7 +23,7 @@ var data = drupalSettings.data;
           // If dropdown is set to show all (no filtering) it sends a 0.
           var dept = $('#edit-departamento').val();
           if (dept > 0) {
-            return ['all', event.dept].indexOf($('#edit-departamento').val()) >= 0
+            return ['all', event.dept_id].indexOf($('#edit-departamento').val()) >= 0
           }
         },
         eventColor: '#378006'
