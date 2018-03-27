@@ -28,11 +28,14 @@ class FullCalendar extends BlockBase {
       '#markup' => render($form),
     ];
 
-    $actuaciones = \Drupal::database()->query("SELECT field_actuacion_tiempo_en_seg_value as minutes, nid, field_actuacion_expediente_target_id as expediente_nid, created, title, field_departamento_target_id as departamento_tid
+    $actuaciones = \Drupal::database()->query("SELECT field_actuacion_tiempo_en_seg_value as minutes, nid, field_actuacion_expediente_target_id as expediente_nid, created, title, field_departamento_target_id as departamento_tid, uid as author, field_nombre_value as nombre, field_apellido_value as apellido, name as departamento
 FROM node_field_data nfd
 INNER JOIN node__field_actuacion_expediente ac on nfd.nid = ac.entity_id
 INNER JOIN node__field_actuacion_tiempo_en_seg t on nfd.nid = t.entity_id
 INNER JOIN user__field_departamento d on nfd.uid = d.entity_id
+INNER JOIN user__field_nombre n on nfd.uid = n.entity_id
+INNER JOIN user__field_apellido a on nfd.uid = a.entity_id
+INNER JOIN taxonomy_term_field_data term on term.tid = d.field_departamento_target_id
 WHERE type = 'actuacion'")->fetchAll();
     $data = [];
     foreach ($actuaciones as $actuacion) {
@@ -70,10 +73,13 @@ WHERE type = 'actuacion'")->fetchAll();
         'title' => $actuacion->title,
         'start' => date("c", $actuacion_started), // converting tiemstamp to ISO 8601 https://stackoverflow.com/questions/5322285/how-do-i-convert-datetime-to-iso-8601-in-php/5322309
         'end' => date("c", $actuacion_created),
+        'created' => date('d-m-Y H:m:s', $actuacion->created),
         'url' => Url::fromRoute('entity.node.canonical', ['node' => $actuacion->expediente_nid]
         )->toString(),
-        'dept' => $actuacion->departamento_tid,
+        'dept_id' => $actuacion->departamento_tid,
+        'dept' => $actuacion->departamento,
         'color' => $color,
+        'author' => $actuacion->nombre . ' ' . $actuacion->apellido,
 //        'allDay' => false,
       ];
     }

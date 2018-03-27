@@ -8,7 +8,7 @@ fullcalendar:
     js/moment.min.js: {}
     js/fullcalendar.min.js: {}
     js/es.js: {}
-    js/custom.js: {}
+    js/calendar_custom.js: {}
   dependencies:
     - core/jquery
     - core/drupalSettings
