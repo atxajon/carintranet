@@ -37,8 +37,21 @@ INNER JOIN user__field_nombre n on nfd.uid = n.entity_id
 INNER JOIN user__field_apellido a on nfd.uid = a.entity_id
 INNER JOIN taxonomy_term_field_data term on term.tid = d.field_departamento_target_id
 WHERE type = 'actuacion'")->fetchAll();
+    $current_iteration_nid = 0;
     $data = [];
     foreach ($actuaciones as $actuacion) {
+
+      /**
+       * The actuaciones sql query returns duplicated data, because a user can be in multiple departments;
+       * If they do they return an actuacion row for each department they're in.
+       * This could be fixed before mysql 5.7 with 'group by = nid', but now they're enforcing ONLY_FULL_GROUP_BY
+       * and each column needs to be thrown into group by clause. Couldn't get it to work,
+       * so an (ugly) workaround is to check if the current iteration nid is already part of the result set,
+       * and if it is -> skip to next row iteration.
+       */
+      if ($current_iteration_nid == $actuacion->nid) {
+        continue;
+      }
 
       // Work out actuacion start and end date;
       // We only have actuacion form submission time (node created value in timestamp)
@@ -82,6 +95,7 @@ WHERE type = 'actuacion'")->fetchAll();
         'author' => $actuacion->nombre . ' ' . $actuacion->apellido,
 //        'allDay' => false,
       ];
+      $current_iteration_nid = $actuacion->nid;
     }
 
     $build['fullcalendar'] = [
