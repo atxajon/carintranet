@@ -43,18 +43,6 @@ class NewExpedienteForm extends FormBase {
       '#default_value' => (isset($uid)) ? $uid : '',
     );
 
-
-//    $form['factura'] = array(
-//      '#title' => 'Factura',
-//      '#description' => t('Busca la factura tecleando su titulo'),
-//      '#type' => 'entity_autocomplete',
-//      '#target_type' => 'node',
-//      '#selection_handler' => 'default',
-//      '#selection_settings' => array(
-//        'target_bundles' => array('factura'),
-//      ),
-//    );
-
     $internal_users = get_carbray_workers(TRUE);
     $internal_users_options = [];
     foreach ($internal_users as $uid => $email) {
@@ -70,14 +58,43 @@ class NewExpedienteForm extends FormBase {
       '#required' => TRUE,
     );
 
-    $form['pack'] = array(
-      '#type' => 'number',
-      '#title' => 'Pack de horas',
-      '#description' => t('Introduce el número de horas si es un cliente con pack de horas'),
-      '#size' => '20',
-      '#min' => -1,
-      '#step' => 0.1,
-    );
+    $captacion_node = Node::load($captacion_nid);
+    $is_cliente_cuota = $captacion_node->get('field_captacion_cliente_cuenta')->value;
+    if ($is_cliente_cuota) {
+      $modelos_terms =\Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('modelos');
+      foreach ($modelos_terms as $term) {
+        $modelo_options[$term->tid] = $term->name;
+      }
+      $form['modelos'] = array(
+        '#title' => 'Modelos',
+        '#type' => 'checkboxes',
+        '#empty_option' => ' - Selecciona modelo - ',
+        '#options' => $modelo_options,
+        '#multiple' => TRUE,
+        '#required' => TRUE,
+      );
+    }
+    else {
+      $form['pack'] = array(
+        '#type' => 'number',
+        '#title' => 'Pack de horas',
+        '#description' => t('Introduce el número de horas si es un cliente con pack de horas'),
+        '#size' => '20',
+        '#min' => -1,
+        '#step' => 0.1,
+      );
+    }
+
+//    $form['factura'] = array(
+//      '#title' => 'Factura',
+//      '#description' => t('Busca la factura tecleando su titulo'),
+//      '#type' => 'entity_autocomplete',
+//      '#target_type' => 'node',
+//      '#selection_handler' => 'default',
+//      '#selection_settings' => array(
+//        'target_bundles' => array('factura'),
+//      ),
+//    );
 
     $tematica_parent_terms =\Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('tematicas', 0, 1);
     foreach ($tematica_parent_terms as $term) {
@@ -170,6 +187,7 @@ class NewExpedienteForm extends FormBase {
     $captacion_nid = $form_state->getValue('captacion');
     $captacion_node = Node::load($captacion_nid);
     $uid = $form_state->getValue('cliente');
+    $modelos = $form_state->getValue('modelos');
     $pack_horas = $form_state->getValue('pack');
     $pack_minutos = $pack_horas * 60;
     if ($pack_minutos == 0) {
@@ -188,6 +206,16 @@ class NewExpedienteForm extends FormBase {
       $selected_responsable[$responsable_id] = $value;
     }
 
+    // $modelos strangely adds uid 0 for every non selected modelos checkbox;
+    // let's clean those up.
+    $selected_modelos = array();
+    foreach ($modelos as $modelos_id => $value) {
+      if ($value == 0) {
+        continue;
+      }
+      $selected_modelos[$modelos_id] = $value;
+    }
+
     // Create expediente node.
     $expediente = Node::create(['type' => 'expediente']);
     $expediente->set('title', $num_expediente);
@@ -195,6 +223,9 @@ class NewExpedienteForm extends FormBase {
     $expediente->set('field_expediente_responsable', $selected_responsable);
     $expediente->set('field_expediente_tematica', $values['servicios']);
     $expediente->set('field_expediente_pack_minutos', $pack_minutos);
+    if ($modelos) {
+      $expediente->set('field_expediente_modelos', $modelos);
+    }
     $expediente->enforceIsNew();
     $expediente->save();
 
