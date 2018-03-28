@@ -39,11 +39,14 @@ class EditModelos extends FormBase {
       $term = Term::load($expediente_modelo['target_id']);
       $modelos_options[$expediente_modelo['target_id']] = $term->name->value;
     }
+
+    // @todo: need to find a way to keep originally assigned modelos persistent...
+    $current_modelos = get_expediente_modelos($nid);
     $form['modelos'] = array(
       '#type' => 'checkboxes',
       '#title' => 'Modelos',
       '#options' => $modelos_options,
-//      '#default_value' => $current_responsable,
+      '#default_value' => $current_modelos,
       '#multiple' => TRUE,
     );
 

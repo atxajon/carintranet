@@ -1778,6 +1778,19 @@ function get_expediente_responsable($nid) {
 }
 
 /**
+ * Given a expediente nid return its modelo(s).
+ *
+ * @param $nid
+ */
+function get_expediente_modelos($nid) {
+  $db = \Drupal::database();
+  $sql = "SELECT field_expediente_modelos_target_id FROM node__field_expediente_modelos WHERE entity_id = :nid";
+  $data = $db->query($sql, array(':nid' => $nid))->fetchCol();
+  return $data;
+}
+
+
+/**
  * Get notas referenced against a given nid.
  *
  * @param $id
