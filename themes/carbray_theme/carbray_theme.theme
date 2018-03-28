@@ -243,3 +243,15 @@ function carbray_theme_theme_suggestions_page_alter(array &$suggestions, array $
     array_splice($suggestions, 1, 0, 'page__node__' . $node->getType());
   }
 }
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ */
+function carbray_theme_theme_suggestions_form_element_label_alter(&$suggestions, $vars, $hook) {
+  $element = $vars['element'];
+  // Checkboxes for expediente's edit modelos form get dedicated tpl to render HTML differently
+  // and acmodate strike-trhough css styles.
+  if ($element['#form_element_type'] == 'checkbox' && strpos($element['#id'], 'edit-modelos') !== FALSE) {
+    $suggestions[] = 'form_element_label' . '__' . 'modelos__checkbox';
+  }
+}

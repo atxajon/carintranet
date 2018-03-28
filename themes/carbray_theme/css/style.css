@@ -809,6 +809,13 @@ textarea[rows="3"] + .cke .cke_contents {
 
 }
 
+.edit-modelos .form-checkbox:checked ~ .control-label {
+  text-decoration: line-through;
+}
+#edit-modelos .form-checkbox {
+  margin-left: 0;
+}
+
 .form-in-modal .form-type-select {
   width: 50%;
 }
