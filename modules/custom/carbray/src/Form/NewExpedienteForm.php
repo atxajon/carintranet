@@ -223,11 +223,35 @@ class NewExpedienteForm extends FormBase {
     $expediente->set('field_expediente_responsable', $selected_responsable);
     $expediente->set('field_expediente_tematica', $values['servicios']);
     $expediente->set('field_expediente_pack_minutos', $pack_minutos);
-    if ($modelos) {
-      $expediente->set('field_expediente_modelos', $modelos);
-    }
     $expediente->enforceIsNew();
     $expediente->save();
+
+
+    if ($selected_modelos) {
+      /**
+       * Insert on custom table {carbray_expediente_modelos}
+       * Now we have expediente nid and we can store in this custom table, to keep values persistent.
+       */
+      try {
+        foreach ($selected_modelos as $modelo_tid => $value) {
+          \Drupal::database()->insert('carbray_expediente_modelos')
+            ->fields([
+              'expediente_nid',
+              'modelos_tid',
+              'completed',
+            ])
+            ->values(array(
+              $expediente->id(),
+              $modelo_tid,
+              0,
+            ))
+            ->execute();
+        }
+      } catch
+      (DatabaseException $e) {
+        watchdog_exception('carbray_expediente_modelos', $e);
+      }
+    }
 
     /**
      * Update/Insert on custom table carbray_user_captacion_expediente.

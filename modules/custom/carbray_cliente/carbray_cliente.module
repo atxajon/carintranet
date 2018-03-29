@@ -1784,8 +1784,8 @@ function get_expediente_responsable($nid) {
  */
 function get_expediente_modelos($nid) {
   $db = \Drupal::database();
-  $sql = "SELECT field_expediente_modelos_target_id FROM node__field_expediente_modelos WHERE entity_id = :nid";
-  $data = $db->query($sql, array(':nid' => $nid))->fetchCol();
+  $sql = "SELECT modelos_tid, completed FROM carbray_expediente_modelos WHERE expediente_nid = :nid";
+  $data = $db->query($sql, array(':nid' => $nid))->fetchAll(PDO::FETCH_ASSOC);
   return $data;
 }
 
