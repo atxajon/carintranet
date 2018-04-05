@@ -642,6 +642,23 @@ textarea[rows="3"] + .cke .cke_contents {
     margin-top: 25px;
     margin-bottom: 20px;
   }
+  #edit-cliente-cuota--wrapper.fieldgroup {
+    border: none;
+    box-shadow: none;
+  }
+  #edit-cliente-cuota--wrapper.fieldgroup legend {
+    border: none;
+    margin-bottom: 0;
+  }
+  #edit-modelos--wrapper.fieldgroup legend {
+    border: none;
+    margin-bottom: 10px;
+    padding-bottom: 20px;
+  }
+  #edit-modelos--wrapper .fieldset-legend {
+    font-size: 14px;
+    font-weight: bold;
+  }
   .carbray-new-client #edit-cliente-cuenta--wrapper {
     border: 0;
     box-shadow: none;
