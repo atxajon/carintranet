@@ -21,16 +21,16 @@
   {{ title_suffix }}
   <div{{ content_attributes.addClass('content') }}>
     <div class="row">
-        <div class="col-sm-8">
-          <div class="panel panel-default">
-            <div class="panel-heading grey">
-              <h4>{{ 'Nueva actuacion'|trans }}</h4>
-            </div>
-            <div class="panel-body">
-              {{ content.new_actuacion }}
-            </div>
+      <div class="col-sm-4">
+        <div class="panel panel-default">
+          <div class="panel-heading grey">
+            <h4>{{ 'Modelos a presentar'|trans }}</h4>
+          </div>
+          <div class="panel-body">
+            {{ content.view_modelos }}
           </div>
         </div>
+      </div>
       <div class="col-sm-4">
         <div class="panel panel-default">
           <div class="panel-heading green">
@@ -38,45 +38,59 @@
           </div>
           <div class="panel-body">
             {{ content.field_expediente_fecha_alta }}
-            <div class="tematica-table margin-top-20 margin-bottom-20">{{ content.view_expediente_tematica }}</div>
+            <div
+              class="tematica-table margin-top-20 margin-bottom-20">{{ content.view_expediente_tematica }}</div>
             <div class="field--label">Responsable(s):</div>
             <div class="margin-bottom-20">
               {{ content.exp_responsables }}
             </div>
             {% if content.pack_horas|render|trim is not empty %}
-              <div class="field"><div class="field--label">Pack de horas (en Horas:Minutos)</div><div class="field--item">{{ content.pack_horas }}</div></div>
+              <div class="field">
+                <div class="field--label">Pack de horas (en Horas:Minutos)</div>
+                <div class="field--item">{{ content.pack_horas }}</div>
+              </div>
             {% endif %}
             {% if content.add_hours|render|trim is not empty %}
-              <div class="field"><div class="field--label" style="color:red;">Tiempo agotado</div><div class="field--item add-hours">{{ content.add_hours }}</div></div>
+              <div class="field">
+                <div class="field--label" style="color:red;">Tiempo agotado
+                </div>
+                <div class="field--item add-hours">{{ content.add_hours }}</div>
+              </div>
             {% endif %}
-
           </div>
         </div>
+      </div>
+      <div class="col-sm-4">
         <div class="panel panel-default">
           <div class="panel-heading blue">
             <h4>{{ 'Informacion del cliente'|trans }}</h4>
           </div>
           <div class="panel-body">
-            <div class="field"><div class="field--label">Nombre</div><div class="field--item">{{ content.client_name }}</div></div>
+            <div class="field">
+              <div class="field--label">Nombre</div>
+              <div class="field--item">{{ content.client_name }}</div>
+            </div>
             {{ content.field_captacion_cliente }}
-            <div class="field"><div class="field--label">Email</div><div class="field--item">{{ content.client_correo }}</div></div>
-            <div class="field"><div class="field--label">Telefono</div><div class="field--item">{{ content.client_telefono }}</div></div>
-            <div class="field"><div class="field--label">Pais</div><div class="field--item">{{ content.client_pais }}</div></div>
+            <div class="field">
+              <div class="field--label">Email</div>
+              <div class="field--item">{{ content.client_correo }}</div>
+            </div>
+            <div class="field">
+              <div class="field--label">Telefono</div>
+              <div class="field--item">{{ content.client_telefono }}</div>
+            </div>
+            <div class="field">
+              <div class="field--label">Pais</div>
+              <div class="field--item">{{ content.client_pais }}</div>
+            </div>
             {% if content.persona_juridica|render|trim is not empty %}
-              <div class="field"><div class="field--label">Persona juridica</div><div class="field--item">{{ content.persona_juridica }}</div></div>
+              <div class="field">
+                <div class="field--label">Persona juridica</div>
+                <div class="field--item">{{ content.persona_juridica }}</div>
+              </div>
             {% endif %}
           </div>
         </div>
-      </div>
-    </div>
-
-    <div class="panel panel-default">
-      <div class="panel-heading red clearfix">
-        <h4 class="pull-left">{{ 'Actuaciones'|trans }}</h4>
-        <div class="pull-right">{{ content.actuaciones_csv_link }} {{ content.link_to_pdf }}</div>
-      </div>
-      <div class="panel-body">
-        {{ content.view_actuaciones }}
       </div>
     </div>
     <div class="panel panel-default">

@@ -255,3 +255,23 @@ function carbray_theme_theme_suggestions_form_element_label_alter(&$suggestions,
     $suggestions[] = 'form_element_label' . '__' . 'modelos__checkbox';
   }
 }
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ */
+function carbray_theme_theme_suggestions_node_alter(&$suggestions, $vars, $hook) {
+  $node = $vars['elements']['#node'];
+  $nid = $node->id();
+  $bundle = $node->bundle();
+  // Expediente nodes that are for a captacion of cliente cuota get themed differently.
+  if ($bundle == 'expediente') {
+    // If this expediente nid has an entry on custom {carbray_expediente_modelos} table it means it's for a captacion of cliente cuota;
+    // Give it a dedicated template.
+    $is_cliente_cuota = \Drupal::database()
+      ->query("SELECT id from carbray_expediente_modelos WHERE expediente_nid = :nid", [':nid' => $nid])
+      ->fetchAll();
+    if ($is_cliente_cuota) {
+      $suggestions[] = 'node__expediente__full__cliente_cuota';
+    }
+  }
+}
