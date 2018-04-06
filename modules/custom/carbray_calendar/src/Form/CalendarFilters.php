@@ -37,12 +37,19 @@ class CalendarFilters extends FormBase {
       $options[$departamento_term->id()] = $departamento_term->name->value;
     }
 
+    $workers = get_carbray_workers(TRUE);
+
     $form['departamento'] = array(
       '#type' => 'select',
       '#options' => $options,
       '#title' => t('Filtrar por departamento'),
       '#empty_option' => 'Todos los departamentos',
-
+    );
+    $form['trabajador'] = array(
+      '#type' => 'select',
+      '#options' => $workers,
+      '#title' => t('Filtrar por trabajador'),
+      '#empty_option' => 'Todos los trabajadores',
     );
 //    $form['submit'] = array(
 //      '#type' => 'submit',

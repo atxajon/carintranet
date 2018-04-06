@@ -93,6 +93,7 @@ WHERE type = 'actuacion'")->fetchAll();
         'dept' => $actuacion->departamento,
         'color' => $color,
         'author' => $actuacion->nombre . ' ' . $actuacion->apellido,
+        'author_uid' => $actuacion->author,
 //        'allDay' => false,
       ];
       $current_iteration_nid = $actuacion->nid;

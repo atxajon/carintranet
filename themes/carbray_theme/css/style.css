@@ -824,6 +824,15 @@ textarea[rows="3"] + .cke .cke_contents {
     top: 26px;
   }
 
+  .calendar-filters .form-type-select {
+    float: left;
+    width: 30%;
+    margin-right: 1%;
+  }
+  #calendar {
+    clear: both;
+  }
+
 }
 
 .edit-modelos .form-checkbox:checked ~ .control-label {

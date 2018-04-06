@@ -20,17 +20,30 @@ var data = drupalSettings.data;
                 '<h4>Creado: ' + event.created + '<br /><br />' + 'Autor: ' + event.author + '<br /><br />' + 'Departamento: ' + event.dept + '<br /><br />' +
                 '</h4>', 'placement': 'top'});
 
-          // If dropdown is set to show all (no filtering) it sends a 0.
+          // Filter by department tid.
           var dept = $('#edit-departamento').val();
+          // If dropdown is set to show all (no filtering) it sends a 0.
           if (dept > 0) {
             return ['all', event.dept_id].indexOf($('#edit-departamento').val()) >= 0
+          }
+
+          // Filter by worker uid.
+          var worker_uid = $('#edit-trabajador').val();
+          if (worker_uid > 0) {
+            return ['all', event.author_uid].indexOf($('#edit-trabajador').val()) >= 0
           }
         },
         eventColor: '#378006'
       });
+
+      // On filters change rerender the calendar to take into account passed in filter value.
       $('#edit-departamento').on('change',function(){
         $('#calendar').fullCalendar('rerenderEvents');
-      })
+      });
+      $('#edit-trabajador').on('change',function(){
+        $('#calendar').fullCalendar('rerenderEvents');
+      });
+
     }
   }
 })(jQuery, Drupal);
