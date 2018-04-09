@@ -5,6 +5,15 @@
  * Provides functionality needed for Carbray Fullcalendar integration.
  */
 
+define('DEPARTMENT_COLOURS', [
+  185 => 'black',
+  186 => 'green',
+  187 => 'blue',
+  188 => 'red',
+  189 => 'indigo',
+  201 => 'pink',
+]);
+
 function get_calendar_actuaciones($worker_uid = 0) {
 
   $sql = "SELECT field_actuacion_tiempo_en_seg_value as minutes, nid, field_actuacion_expediente_target_id as expediente_nid, created, title, field_departamento_target_id as departamento_tid, uid as author, field_nombre_value as nombre, field_apellido_value as apellido, name as departamento

@@ -22,16 +22,17 @@ class FullCalendar extends BlockBase {
    * {@inheritdoc}
    */
   public function build() {
-    $form = \Drupal::formBuilder()
-      ->getForm('Drupal\carbray_calendar\Form\CalendarFilters');
-    $build['filters'] = [
-      '#markup' => render($form),
-    ];
 
     $current_user_roles = \Drupal::currentUser()->getRoles();
     if (in_array('carbray_administrator', $current_user_roles)) {
       // A carbray admin queries for all calendar data.
       $uid = 0;
+      // And displays filters.
+      $form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray_calendar\Form\CalendarFilters');
+      $build['filters'] = [
+        '#markup' => render($form),
+      ];
     }
     else {
       // A non carbray admin queries for only their specific calendar data.
@@ -65,25 +66,6 @@ class FullCalendar extends BlockBase {
       $actuacion_seconds = $actuacion_minutes * 60;
       $actuacion_created = $actuacion->created;
       $actuacion_started = $actuacion_created - $actuacion_seconds;
-      $color = 'black';
-      if ($actuacion->departamento_tid == 185) {
-        $color = 'black';
-      }
-      elseif ($actuacion->departamento_tid == 186) {
-        $color = 'green';
-      }
-      elseif ($actuacion->departamento_tid == 187) {
-        $color = 'blue';
-      }
-      elseif ($actuacion->departamento_tid == 188) {
-        $color = 'red';
-      }
-      elseif ($actuacion->departamento_tid == 189) {
-        $color = 'indigo';
-      }
-      elseif ($actuacion->departamento_tid == 201) {
-        $color = 'pink';
-      }
 
       $data[] = [
         'title' => $actuacion->title,
@@ -94,7 +76,7 @@ class FullCalendar extends BlockBase {
         )->toString(),
         'dept_id' => $actuacion->departamento_tid,
         'dept' => $actuacion->departamento,
-        'color' => $color,
+        'color' => DEPARTMENT_COLOURS[$actuacion->departamento_tid],
         'author' => $actuacion->nombre . ' ' . $actuacion->apellido,
         'author_uid' => $actuacion->author,
 //        'allDay' => false,
