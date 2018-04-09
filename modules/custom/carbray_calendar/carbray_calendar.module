@@ -1,1 +1,24 @@
 <?php
+
+/**
+ * @file
+ * Provides functionality needed for Carbray Fullcalendar integration.
+ */
+
+function get_calendar_actuaciones($worker_uid = 0) {
+
+  $sql = "SELECT field_actuacion_tiempo_en_seg_value as minutes, nid, field_actuacion_expediente_target_id as expediente_nid, created, title, field_departamento_target_id as departamento_tid, uid as author, field_nombre_value as nombre, field_apellido_value as apellido, name as departamento
+FROM node_field_data nfd
+INNER JOIN node__field_actuacion_expediente ac on nfd.nid = ac.entity_id
+INNER JOIN node__field_actuacion_tiempo_en_seg t on nfd.nid = t.entity_id
+INNER JOIN user__field_departamento d on nfd.uid = d.entity_id
+INNER JOIN user__field_nombre n on nfd.uid = n.entity_id
+INNER JOIN user__field_apellido a on nfd.uid = a.entity_id
+INNER JOIN taxonomy_term_field_data term on term.tid = d.field_departamento_target_id
+WHERE type = 'actuacion'";
+  if ($worker_uid) {
+    $sql .= " AND uid = $worker_uid";
+  }
+  $actuaciones = \Drupal::database()->query($sql)->fetchAll();
+  return $actuaciones;
+}

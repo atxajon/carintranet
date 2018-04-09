@@ -28,15 +28,18 @@ class FullCalendar extends BlockBase {
       '#markup' => render($form),
     ];
 
-    $actuaciones = \Drupal::database()->query("SELECT field_actuacion_tiempo_en_seg_value as minutes, nid, field_actuacion_expediente_target_id as expediente_nid, created, title, field_departamento_target_id as departamento_tid, uid as author, field_nombre_value as nombre, field_apellido_value as apellido, name as departamento
-FROM node_field_data nfd
-INNER JOIN node__field_actuacion_expediente ac on nfd.nid = ac.entity_id
-INNER JOIN node__field_actuacion_tiempo_en_seg t on nfd.nid = t.entity_id
-INNER JOIN user__field_departamento d on nfd.uid = d.entity_id
-INNER JOIN user__field_nombre n on nfd.uid = n.entity_id
-INNER JOIN user__field_apellido a on nfd.uid = a.entity_id
-INNER JOIN taxonomy_term_field_data term on term.tid = d.field_departamento_target_id
-WHERE type = 'actuacion'")->fetchAll();
+    $current_user_roles = \Drupal::currentUser()->getRoles();
+    if (in_array('carbray_administrator', $current_user_roles)) {
+      // A carbray admin queries for all calendar data.
+      $uid = 0;
+    }
+    else {
+      // A non carbray admin queries for only their specific calendar data.
+      $uid = \Drupal::currentUser()->id();
+    }
+
+    $actuaciones = get_calendar_actuaciones($uid);
+
     $current_iteration_nid = 0;
     $data = [];
     foreach ($actuaciones as $actuacion) {
