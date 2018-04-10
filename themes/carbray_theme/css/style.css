@@ -697,7 +697,8 @@ textarea[rows="3"] + .cke .cke_contents {
   }
   .carbray-new-client .form-checkboxes .form-item,
   .new-propuesta .form-checkboxes .form-item,
-  .carbray-new-expediente .form-type-checkbox {
+  .carbray-new-expediente .form-type-checkbox,
+  .new-cita .form-type-checkbox {
     float: left;
     margin: 0 20px 20px 0;
     width: 210px;

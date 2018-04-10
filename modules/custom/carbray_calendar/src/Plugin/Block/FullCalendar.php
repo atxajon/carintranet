@@ -23,6 +23,19 @@ class FullCalendar extends BlockBase {
    */
   public function build() {
 
+    $form = \Drupal::formBuilder()
+      ->getForm('Drupal\carbray_calendar\Form\NewCita');
+    $build['anadir_cita'] = [
+      '#theme' => 'button_modal',
+      '#unique_id' => 'anadir-cita',
+      '#button_text' => 'Crear cita',
+      '#button_classes' => 'btn btn-primary btn-sm margin-bottom-20',
+      '#modal_title' => t('Nueva cita'),
+      '#modal_content' => $form,
+      '#has_plus' => TRUE,
+    ];
+
+
     $current_user_roles = \Drupal::currentUser()->getRoles();
     if (in_array('carbray_administrator', $current_user_roles)) {
       // A carbray admin queries for all calendar data.
