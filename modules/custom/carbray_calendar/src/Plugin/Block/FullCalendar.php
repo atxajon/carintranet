@@ -29,15 +29,21 @@ class FullCalendar extends BlockBase {
       '#theme' => 'button_modal',
       '#unique_id' => 'anadir-cita',
       '#button_text' => 'Crear cita',
-      '#button_classes' => 'btn btn-primary btn-sm margin-bottom-20',
+      '#button_classes' => 'btn btn-primary margin-bottom-20',
       '#modal_title' => t('Nueva cita'),
       '#modal_content' => $form,
       '#has_plus' => TRUE,
     ];
 
-
     $current_user_roles = \Drupal::currentUser()->getRoles();
-    if (in_array('carbray_administrator', $current_user_roles)) {
+    $allowed_roles = [
+      'administrator',
+      'carbray_administrator',
+    ];
+    if (in_array(array_values($allowed_roles), $current_user_roles)) {
+      $build['edit_colours'] = [
+        '#markup' => '<a href="#">Editar colores</a>',
+      ];
       // A carbray admin queries for all calendar data.
       $uid = 0;
       // And displays filters.

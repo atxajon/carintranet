@@ -1,0 +1,10 @@
+carbray_calendar.edit_colours:
+  path: '/editar-colores'
+  defaults:
+    _title: 'Editar paleta de colores para calendario'
+    _form: '\Drupal\carbray_calendar\Form\AssignWorkerColour'
+  requirements:
+    _permission: 'view worker as admin'
+
+
+

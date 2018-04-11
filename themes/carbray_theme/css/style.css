@@ -542,7 +542,8 @@ table tr td {
 .path-user-password .region-content {
   margin-top: 100px;
 }
-#main-col .block {
+#main-col .block,
+.assign-worker-colour {
   border: 1px solid rgba(112, 112, 112, 0.12);
   background: white;
   border-radius: .25rem;
