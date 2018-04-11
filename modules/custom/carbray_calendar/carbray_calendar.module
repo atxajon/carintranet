@@ -15,7 +15,6 @@ define('DEPARTMENT_COLOURS', [
 ]);
 
 function get_calendar_actuaciones($worker_uid = 0, $department_tid = 0) {
-
   $sql = "SELECT field_actuacion_tiempo_en_seg_value as minutes, nid, field_actuacion_expediente_target_id as expediente_nid, created, title, field_departamento_target_id as departamento_tid, uid as author, field_nombre_value as nombre, field_apellido_value as apellido, name as departamento
 FROM node_field_data nfd
 INNER JOIN node__field_actuacion_expediente ac on nfd.nid = ac.entity_id
@@ -28,9 +27,10 @@ WHERE type = 'actuacion'";
   if ($worker_uid) {
     $sql .= " AND uid = $worker_uid";
   }
-//  if ($department_tid) {
-//    $sql .= " AND uid = $worker_uid";
-//  }
+  if ($department_tid) {
+    $tids = implode(',', $department_tid);
+    $sql .= " AND field_departamento_target_id IN ($tids)";
+  }
   $actuaciones = \Drupal::database()->query($sql)->fetchAll();
   return $actuaciones;
 }
