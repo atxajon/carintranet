@@ -11,7 +11,7 @@ define('DEPARTMENT_COLOURS', [
   187 => 'blue',
   188 => 'red',
   189 => 'indigo',
-  201 => 'pink',
+  209 => 'pink',
 ]);
 
 function get_calendar_actuaciones($worker_uid = 0, $department_tid = 0) {
@@ -33,4 +33,25 @@ WHERE type = 'actuacion'";
   }
   $actuaciones = \Drupal::database()->query($sql)->fetchAll();
   return $actuaciones;
+}
+
+function get_calendar_citas($worker_uid = 0, $department_tid = 0) {
+  $sql = "SELECT field_cita_hora_value as hora, nid, field_cita_invitado_target_id as invitado_uid, title, field_departamento_target_id as departamento_tid, uid as author, field_nombre_value as nombre, field_apellido_value as apellido, name as departamento
+FROM node_field_data nfd
+LEFT JOIN node__field_cita_hora ch on nfd.nid = ch.entity_id
+LEFT JOIN node__field_cita_invitado ci on nfd.nid = ci.entity_id
+LEFT JOIN user__field_departamento d on nfd.uid = d.entity_id
+LEFT JOIN user__field_nombre n on nfd.uid = n.entity_id
+LEFT JOIN user__field_apellido a on nfd.uid = a.entity_id
+LEFT JOIN taxonomy_term_field_data term on term.tid = d.field_departamento_target_id
+WHERE type = 'cita'";
+  if ($worker_uid) {
+    $sql .= " AND uid = $worker_uid";
+  }
+//  if ($department_tid) {
+//    $tids = implode(',', $department_tid);
+//    $sql .= " AND field_departamento_target_id IN ($tids)";
+//  }
+  $citas = \Drupal::database()->query($sql)->fetchAll();
+  return $citas;
 }

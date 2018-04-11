@@ -55,6 +55,7 @@ class NewCita extends FormBase {
       '#title' => 'Fecha/hora',
       '#size' => '20',
       '#default_value' => DrupalDateTime::createFromTimestamp(time()),
+      '#required' => TRUE,
     );
 
     $form['submit'] = array(

@@ -113,6 +113,27 @@ class FullCalendar extends BlockBase {
       $current_iteration_nid = $actuacion->nid;
     }
 
+    $citas = get_calendar_citas($uid, $tid);
+    $current_iteration_nid = 0;
+    foreach ($citas as $cita) {
+      if ($current_iteration_nid == $cita->nid) {
+        continue;
+      }
+
+      $data[] = [
+        'title' => $cita->title,
+        'start' => $cita->hora,
+        'url' => Url::fromRoute('entity.node.canonical', ['node' => $cita->nid]
+        )->toString(),
+        'dept_id' => $cita->departamento_tid,
+        'dept' => $cita->departamento,
+        'color' => DEPARTMENT_COLOURS[$cita->departamento_tid],
+        'author' => $cita->nombre . ' ' . $cita->apellido,
+        'author_uid' => $cita->author,
+      ];
+      $current_iteration_nid = $cita->nid;
+    }
+
     $build['fullcalendar'] = [
       '#markup' => '<div id="calendar"></div>',
       '#attached' => array(
