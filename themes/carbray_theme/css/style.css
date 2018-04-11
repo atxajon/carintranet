@@ -831,6 +831,9 @@ textarea[rows="3"] + .cke .cke_contents {
     width: 30%;
     margin-right: 1%;
   }
+  .calendar-filters .form-item-trabajador {
+    width: 38%;
+  }
   #calendar {
     clear: both;
   }
