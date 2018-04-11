@@ -30,8 +30,8 @@ class AssignJefe extends FormBase {
     $dept_workers = get_departamento_workers($tid);
     $options = [];
     foreach ($dept_workers as $dept_worker) {
-      $worker = User::load($dept_worker->uid);
-      $options[$dept_worker->uid] = $worker->get('field_nombre')->value . ' ' . $worker->get('field_apellido')->value;
+      $worker = User::load($dept_worker);
+      $options[$dept_worker] = $worker->get('field_nombre')->value . ' ' . $worker->get('field_apellido')->value;
     }
     $form['dept_workers'] = [
       '#type' => 'radios',

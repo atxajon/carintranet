@@ -36,29 +36,39 @@ class FullCalendar extends BlockBase {
     ];
 
     $current_user_roles = \Drupal::currentUser()->getRoles();
-    $allowed_roles = [
-      'administrator',
-      'carbray_administrator',
-    ];
-    if (in_array(array_values($allowed_roles), $current_user_roles)) {
+    $uid = \Drupal::currentUser()->id();
+    $tid = [];
+
+    if (in_array('administrator', $current_user_roles) || in_array('carbray_administrator', $current_user_roles)) {
+      // An admin sees the edit colours form link.
       $build['edit_colours'] = [
-        '#markup' => '<a href="#">Editar colores</a>',
+        '#markup' => '<a class="btn btn-primary pull-right" href="/editar-colores">Editar colores</a>',
       ];
+
       // A carbray admin queries for all calendar data.
       $uid = 0;
       // And displays filters.
       $form = \Drupal::formBuilder()
-        ->getForm('Drupal\carbray_calendar\Form\CalendarFilters');
+        ->getForm('Drupal\carbray_calendar\Form\CalendarFilters', $current_user_roles);
       $build['filters'] = [
         '#markup' => render($form),
       ];
     }
-    else {
-      // A non carbray admin queries for only their specific calendar data.
-      $uid = \Drupal::currentUser()->id();
+    elseif (in_array('jefe_departamento', $current_user_roles)) {
+      // Jefe departamento queries for their department data.
+      $user = User::load(\Drupal::currentUser()->id());
+      $my_deptms = $user->get('field_departamento')->getValue();
+      foreach ($my_deptms as $my_deptm) {
+        $tid[] = $my_deptm['target_id'];
+      }
+      $form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray_calendar\Form\CalendarFilters', $current_user_roles, $tid);
+      $build['filters'] = [
+        '#markup' => render($form),
+      ];
     }
 
-    $actuaciones = get_calendar_actuaciones($uid);
+    $actuaciones = get_calendar_actuaciones($uid, $tid);
 
     $current_iteration_nid = 0;
     $data = [];

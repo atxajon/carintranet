@@ -1323,12 +1323,9 @@ function get_count_facturas_pagadas($uid, $filter_by = []) {
 }
 
 function get_departamento_workers($tid) {
-  $dept_workers = \Drupal::database()
-    ->query('SELECT uid
-FROM users_field_data ufd
-INNER JOIN user__field_departamento d on d.entity_id = ufd.uid
-INNER JOIN user__field_apellido a on ufd.uid = a.entity_id
-WHERE field_departamento_target_id = :tid ORDER BY field_apellido_value ASC', array(':tid' => $tid))
-    ->fetchAll();
+  $dept_workers = \Drupal::entityQuery('user')
+    ->condition('field_departamento', $tid, 'IN')
+    ->sort('field_nombre', 'ASC')
+    ->execute();
   return $dept_workers;
 }

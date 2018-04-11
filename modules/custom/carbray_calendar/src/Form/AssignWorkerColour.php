@@ -9,6 +9,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\user\Entity\User;
 use Drupal\node\Entity\Node;
 use Drupal\Core\Database\DatabaseException;
+use Drupal\Core\Url;
 
 
 /**
@@ -123,6 +124,9 @@ class AssignWorkerColour extends FormBase {
         return;
       }
     }
+
+    $calendario_uri = Url::fromUri('internal:/calendario/');
+    $form_state->setRedirectUrl($calendario_uri);
     drupal_set_message('Colores guardados.');
   }
 }
