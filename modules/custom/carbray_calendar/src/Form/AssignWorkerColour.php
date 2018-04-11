@@ -97,9 +97,16 @@ class AssignWorkerColour extends FormBase {
 
     foreach ($values['workers_colours_table'] as $key => $value) {
       try {
-        $updated_record = \Drupal::database()->insert('carbray_calendar_colours')
-          ->fields(['uid', 'colour'])
-          ->values([$value['uid'], $value['colour']])
+        $updated_record = \Drupal::database()->merge('carbray_calendar_colours')
+          ->key(array('uid' => $key))
+          ->insertFields(array(
+            'uid' => $key,
+            'colour' => $value['colour'],
+          ))
+          ->updateFields(array(
+            'uid' => $key,
+            'colour' => $value['colour'],
+          ))
           ->execute();
 
         // If query runs but no record gets updated return an error.
@@ -109,8 +116,8 @@ class AssignWorkerColour extends FormBase {
           return;
         }
       } catch (DatabaseException $e) {
-        $mssg = 'Failed to update bm_liquidate_request: ' . $e->getMessage();
-        \Drupal::logger('bm_dashboards')->error($mssg);
+        $mssg = 'No fue posible actualizar tabla carbray_calendar_colours: ' . $e->getMessage();
+        \Drupal::logger('carbray_calendar')->error($mssg);
         $form_state->setRebuild();
         drupal_set_message($mssg, 'error');
         return;
