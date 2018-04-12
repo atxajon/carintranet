@@ -33,6 +33,7 @@ class NewCita extends FormBase {
       '#title' => 'Titulo',
       '#type' => 'textfield',
       '#required' => TRUE,
+      '#attributes' => array('class' => array('margin-bottom-20')),
     );
 
     $internal_users = get_carbray_workers(TRUE);
@@ -49,6 +50,7 @@ class NewCita extends FormBase {
       '#options' => $internal_users_options,
       '#default_value' => array($current_user_uid),
       '#multiple' => TRUE,
+      '#attributes' => array('class' => array('margin-bottom-20')),
     );
     $form['fecha_inicio'] = array(
       '#type' => 'datetime',
@@ -56,12 +58,20 @@ class NewCita extends FormBase {
       '#size' => '20',
       '#default_value' => DrupalDateTime::createFromTimestamp(time()),
       '#required' => TRUE,
+      '#attributes' => array('class' => array('margin-bottom-20')),
+    );
+    $form['body'] = array(
+      '#type' => 'text_format',
+      '#title' => 'Notas de la cita',
+      '#format' => 'basic_html',
+      '#rows' => 5,
+      '#attributes' => array('class' => array('margin-bottom-20')),
     );
 
     $form['submit'] = array(
       '#type' => 'submit',
       '#value' => t('Crear cita'),
-      '#attributes' => array('class' => array('btn-success', 'margin-top-20')),
+      '#attributes' => array('class' => array('btn-success', 'margin-top-20', 'margin-bottom-10')),
     );
 
     return $form;
@@ -80,6 +90,7 @@ class NewCita extends FormBase {
     $title = $form_state->getValue('title');
     $fecha_inicio = $form_state->getValue('fecha_inicio');
     $formatted_fecha_inicio = $fecha_inicio->format('Y-m-d\TH:i:s');
+    $body = $form_state->getValue('body');
     $invitado = $form_state->getValue('invitado');
     // $invitado strangely adds uid 0 for every non selected invitado checkbox;
     // let's clean those up.
@@ -95,6 +106,8 @@ class NewCita extends FormBase {
     $cita->set('title', $title);
     $cita->set('field_cita_invitado', $selected_invitado);
     $cita->set('field_cita_hora', $formatted_fecha_inicio);
+    $cita->set('body', $body);
+//    $cita->body->value = $body;
     $cita->enforceIsNew();
     $cita->save();
     drupal_set_message('Cita creada');

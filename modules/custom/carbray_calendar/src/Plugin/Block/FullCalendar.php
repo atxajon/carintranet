@@ -29,7 +29,7 @@ class FullCalendar extends BlockBase {
       '#theme' => 'button_modal',
       '#unique_id' => 'anadir-cita',
       '#button_text' => 'Crear cita',
-      '#button_classes' => 'btn btn-primary margin-bottom-20',
+      '#button_classes' => 'btn btn-primary margin-bottom-20 margin-top-10',
       '#modal_title' => t('Nueva cita'),
       '#modal_content' => $form,
       '#has_plus' => TRUE,
@@ -110,6 +110,7 @@ class FullCalendar extends BlockBase {
         'color' => (substr($colours[$actuacion->author], 0, 1) === '#') ? $colours[$actuacion->author] : '#' . $colours[$actuacion->author],
         'author' => $actuacion->nombre . ' ' . $actuacion->apellido,
         'author_uid' => $actuacion->author,
+        'type' => 'Actuación',
 //        'allDay' => false,
       ];
       $current_iteration_nid = $actuacion->nid;
@@ -133,6 +134,7 @@ class FullCalendar extends BlockBase {
         'color' => (substr($colours[$actuacion->author], 0, 1) === '#') ? $colours[$actuacion->author] : '#' . $colours[$actuacion->author],
         'author' => $cita->nombre . ' ' . $cita->apellido,
         'author_uid' => $cita->author,
+        'type' => 'Cita',
       ];
       $current_iteration_nid = $cita->nid;
     }

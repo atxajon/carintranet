@@ -17,7 +17,7 @@ var data = drupalSettings.data;
           // Prepare the bootstrap tooltip.
           $(element).attr('data-html', true); // Allows HTML on tooltip.
           $(element).tooltip({title: '<h3>' + event.title + '</h3><br />' +
-                '<h4>Creado: ' + event.created + '<br /><br />' + 'Autor: ' + event.author + '<br /><br />' + 'Departamento: ' + event.dept + '<br /><br />' +
+                '<h4>Creado: ' + event.created + '<br /><br />' + 'Autor: ' + event.author + '<br /><br />' + 'Departamento: ' + event.dept + '<br /><br />' + 'Tipo de evento: ' + event.type + '<br /><br />' +
                 '</h4>', 'placement': 'top'});
 
           // Filter by department tid.
