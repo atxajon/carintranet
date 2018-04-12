@@ -364,6 +364,24 @@ function carbray_cliente_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['node']['cita']['display']['cita_body'] = array(
+    'label' => t('Cita body'),
+    'description' => t('Cita body.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['cita']['display']['cita_invitados'] = array(
+    'label' => t('Cita invitados'),
+    'description' => t('Cita invitados.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['cita']['display']['cita_hora'] = array(
+    'label' => t('Cita hora'),
+    'description' => t('Cita hora.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
 
   return $extra;
 }
@@ -1528,6 +1546,34 @@ AND ec.entity_id = :expediente_nid";
         '#type' => 'table',
         '#header' => $header,
         '#rows' => $rows,
+      ];
+    }
+  }
+  if ($entity->bundle() == 'cita') {
+    $cita_node = Node::load($entity->id());
+    if ($display->getComponent('cita_body')) {
+      $build['cita_body'] = [
+        '#markup' => $cita_node->body->value,
+      ];
+    }
+    if ($display->getComponent('cita_invitados')) {
+      $invitados_uids = $cita_node->get('field_cita_invitado')->getValue();
+      $worker_name = '';
+      foreach ($invitados_uids as $invitado_uid) {
+        $user = User::load($invitado_uid['target_id']);
+        $nombre = $user->get('field_nombre')->value;
+        $apellido = $user->get('field_apellido')->value;
+        $worker_name .= ucfirst($nombre) . ' ' . ucfirst($apellido) . '<br>';
+
+      }
+      $build['cita_invitados'] = [
+        '#markup' => $worker_name,
+      ];
+    }
+    if ($display->getComponent('cita_hora')) {
+      $build['cita_hora'] = [
+        // Convert from date iso to a human friendly date.
+        '#markup' => date('d-m-Y H:i:s', strtotime($cita_node->get('field_cita_hora')->value)),
       ];
     }
   }
