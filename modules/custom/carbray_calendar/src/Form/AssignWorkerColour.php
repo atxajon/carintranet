@@ -27,7 +27,7 @@ class AssignWorkerColour extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $form['#attributes']['class'][] = 'margin-left-20';
+    $form['#attributes']['class'][] = 'margin-left-20 admin-block';
 
     $header = array(
       "",
