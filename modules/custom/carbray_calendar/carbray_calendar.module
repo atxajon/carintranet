@@ -5,14 +5,6 @@
  * Provides functionality needed for Carbray Fullcalendar integration.
  */
 
-define('DEPARTMENT_COLOURS', [
-  185 => 'black',
-  186 => 'green',
-  187 => 'blue',
-  188 => 'red',
-  189 => 'indigo',
-  209 => 'pink',
-]);
 
 function get_calendar_actuaciones($worker_uid = 0, $department_tid = 0) {
   $sql = "SELECT field_actuacion_tiempo_en_seg_value as minutes, nid, field_actuacion_expediente_target_id as expediente_nid, created, title, field_departamento_target_id as departamento_tid, uid as author, field_nombre_value as nombre, field_apellido_value as apellido, name as departamento
@@ -36,7 +28,7 @@ WHERE type = 'actuacion'";
 }
 
 function get_calendar_citas($worker_uid = 0, $department_tid = 0) {
-  $sql = "SELECT field_cita_hora_value as hora, nid, field_cita_invitado_target_id as invitado_uid, title, field_departamento_target_id as departamento_tid, uid as author, field_nombre_value as nombre, field_apellido_value as apellido, name as departamento
+  $sql = "SELECT field_cita_hora_value as hora, nid, field_cita_invitado_target_id as invitado_uid, created, title, field_departamento_target_id as departamento_tid, uid as author, field_nombre_value as nombre, field_apellido_value as apellido, name as departamento
 FROM node_field_data nfd
 LEFT JOIN node__field_cita_hora ch on nfd.nid = ch.entity_id
 LEFT JOIN node__field_cita_invitado ci on nfd.nid = ci.entity_id
@@ -54,4 +46,12 @@ WHERE type = 'cita'";
 //  }
   $citas = \Drupal::database()->query($sql)->fetchAll();
   return $citas;
+}
+
+/**
+ * Gets all worker colours stored in {carbray_calendar_colours}
+ */
+function get_calendar_colours() {
+  $colours = \Drupal::database()->query("SELECT uid, colour from carbray_calendar_colours")->fetchAllKeyed();
+  return $colours;
 }

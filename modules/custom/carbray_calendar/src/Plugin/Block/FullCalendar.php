@@ -68,6 +68,8 @@ class FullCalendar extends BlockBase {
       ];
     }
 
+    $colours = get_calendar_colours();
+
     $actuaciones = get_calendar_actuaciones($uid, $tid);
 
     $current_iteration_nid = 0;
@@ -105,7 +107,7 @@ class FullCalendar extends BlockBase {
         )->toString(),
         'dept_id' => $actuacion->departamento_tid,
         'dept' => $actuacion->departamento,
-        'color' => DEPARTMENT_COLOURS[$actuacion->departamento_tid],
+        'color' => (substr($colours[$actuacion->author], 0, 1) === '#') ? $colours[$actuacion->author] : '#' . $colours[$actuacion->author],
         'author' => $actuacion->nombre . ' ' . $actuacion->apellido,
         'author_uid' => $actuacion->author,
 //        'allDay' => false,
@@ -123,11 +125,12 @@ class FullCalendar extends BlockBase {
       $data[] = [
         'title' => $cita->title,
         'start' => $cita->hora,
+        'created' => date('d-m-Y H:m:s', $cita->created),
         'url' => Url::fromRoute('entity.node.canonical', ['node' => $cita->nid]
         )->toString(),
         'dept_id' => $cita->departamento_tid,
         'dept' => $cita->departamento,
-        'color' => DEPARTMENT_COLOURS[$cita->departamento_tid],
+        'color' => (substr($colours[$actuacion->author], 0, 1) === '#') ? $colours[$actuacion->author] : '#' . $colours[$actuacion->author],
         'author' => $cita->nombre . ' ' . $cita->apellido,
         'author_uid' => $cita->author,
       ];
