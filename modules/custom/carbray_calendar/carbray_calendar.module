@@ -38,12 +38,12 @@ LEFT JOIN user__field_apellido a on nfd.uid = a.entity_id
 LEFT JOIN taxonomy_term_field_data term on term.tid = d.field_departamento_target_id
 WHERE type = 'cita'";
   if ($worker_uid) {
-    $sql .= " AND uid = $worker_uid";
+    $sql .= " AND (uid = $worker_uid OR field_cita_invitado_target_id = $worker_uid)";
   }
-//  if ($department_tid) {
-//    $tids = implode(',', $department_tid);
-//    $sql .= " AND field_departamento_target_id IN ($tids)";
-//  }
+  if ($department_tid) {
+    $tids = implode(',', $department_tid);
+    $sql .= " AND field_departamento_target_id IN ($tids)";
+  }
   $citas = \Drupal::database()->query($sql)->fetchAll();
   return $citas;
 }
