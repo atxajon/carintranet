@@ -157,6 +157,16 @@ ul {
   background-color: #337ab7;
   border-color: #2e6da4;
 }
+.btn-default:hover {
+  color: white;
+  background-color: #337ab7;
+  border-color: #2e6da4;
+}
+.btn-default:focus {
+  color: white;
+  background-color: #337ab7;
+  border-color: #2e6da4;
+}
 .panel-default > .panel-heading {
   color: white;
 }
@@ -870,4 +880,8 @@ textarea[rows="3"] + .cke .cke_contents {
 
 .captacion-archivada-row {
   opacity: 0.5;
+}
+
+.fc-header-toolbar .fc-center {
+  text-transform: capitalize;
 }

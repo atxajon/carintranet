@@ -73,11 +73,6 @@ class CalendarFilters extends FormBase {
         '#empty_option' => 'Todos los trabajadores',
       );
     }
-
-//    $form['submit'] = array(
-//      '#type' => 'submit',
-//      '#value' => t('Mostrar'),
-//    );
     return $form;
   }
 
@@ -91,21 +86,6 @@ class CalendarFilters extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-//    $nid = $form_state->getValue('captacion_nid');
-//    $estado = $form_state->getValue('captacion_estado');
-//
-//    $captacion = Node::load($nid);
-//    if ($estado == 'desarchivada') {
-//      $estado_tid = CAPTACION_ARCHIVADA;
-//      $message = t('Captacion archivada');
-//    }
-//    else {
-//      $estado_tid = 43;
-//      $message = t('Captacion desarchivada');
-//    }
-//    $captacion->set('field_captacion_estado_captacion', $estado_tid);
-//    $captacion->save();
-//
-//    drupal_set_message($message);
+    // No submission: filter value updating is handled through js on the calendar_custom.js file.
   }
 }

@@ -22,6 +22,7 @@ class FullCalendar extends BlockBase {
    * {@inheritdoc}
    */
   public function build() {
+    $colours = get_calendar_colours();
 
     $form = \Drupal::formBuilder()
       ->getForm('Drupal\carbray_calendar\Form\NewCita');
@@ -40,9 +41,24 @@ class FullCalendar extends BlockBase {
     $tid = [];
 
     if (in_array('administrator', $current_user_roles) || in_array('carbray_administrator', $current_user_roles)) {
+      $colours_legend = get_calendar_colours_legend($colours);
+      $build['div_open'] = [
+        '#markup' => '<div class="pull-right margin-top-10">',
+      ];
+      $build['view_colours'] = [
+        '#theme' => 'button_modal',
+        '#unique_id' => 'view-colours',
+        '#button_text' => 'Ver colores',
+        '#button_classes' => 'btn btn-default',
+        '#modal_title' => t('Colores asignados'),
+        '#modal_content' => $colours_legend,
+      ];
       // An admin sees the edit colours form link.
       $build['edit_colours'] = [
-        '#markup' => '<a class="btn btn-primary pull-right" href="/editar-colores">Editar colores</a>',
+        '#markup' => '<a class="btn btn-primary" href="/editar-colores">Editar colores</a>',
+      ];
+      $build['div_close'] = [
+        '#markup' => '</div>',
       ];
 
       // A carbray admin queries for all calendar data.
@@ -67,8 +83,6 @@ class FullCalendar extends BlockBase {
         '#markup' => render($form),
       ];
     }
-
-    $colours = get_calendar_colours();
 
     $actuaciones = get_calendar_actuaciones($uid, $tid);
 

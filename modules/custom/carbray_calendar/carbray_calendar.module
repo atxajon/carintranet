@@ -5,6 +5,8 @@
  * Provides functionality needed for Carbray Fullcalendar integration.
  */
 
+use Drupal\Core\Render\Markup;
+use Drupal\user\Entity\User;
 
 function get_calendar_actuaciones($worker_uid = 0, $department_tid = 0) {
   $sql = "SELECT field_actuacion_tiempo_en_seg_value as minutes, nid, field_actuacion_expediente_target_id as expediente_nid, created, title, field_departamento_target_id as departamento_tid, uid as author, field_nombre_value as nombre, field_apellido_value as apellido, name as departamento
@@ -54,4 +56,34 @@ WHERE type = 'cita'";
 function get_calendar_colours() {
   $colours = \Drupal::database()->query("SELECT uid, colour from carbray_calendar_colours")->fetchAllKeyed();
   return $colours;
+}
+
+/**
+ * Puts in a table workers and their assigned colour to make the colours legend.
+ * @param $colours_array
+ *   Array containing worker uid and its assigned colour string.
+ *
+ * @return array
+ *  Table markup.
+ */
+function get_calendar_colours_legend($colours_array) {
+  $header = [
+    'Trabajador',
+    'Color',
+  ];
+  $rows = [];
+  foreach ($colours_array as $uid => $colour_code) {
+    $colour_code = (substr($colour_code, 0, 1) === '#') ? $colour_code : '#' . $colour_code;
+    $user = User::load($uid);
+    $rows[] = [
+      $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value,
+      Markup::create('<span style="display: inline-block; width: 75px; height: 30px; background-color: ' . $colour_code . '"></span>'),
+    ];
+  }
+  $output = [
+    "#type" => 'table',
+    "#header" => $header,
+    "#rows" => $rows,
+  ];
+  return $output;
 }
