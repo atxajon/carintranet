@@ -33,7 +33,12 @@ var data = drupalSettings.data;
             return ['all', event.author_uid].indexOf($('#edit-trabajador').val()) >= 0
           }
         },
-        eventColor: '#378006'
+        eventColor: '#378006',
+        // Open up link on a new tab.
+        eventClick: function(event) {
+          window.open(event.url);
+          return false;
+        }
       });
 
       // On filters change rerender the calendar to take into account passed in filter value.

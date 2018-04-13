@@ -32,6 +32,8 @@ class NewClientForm extends FormBase {
     $fields = $entityManager->getFieldStorageDefinitions('user', 'user');
 
     $countries = \Drupal::service('country_manager')->getList();
+    // We need to sort translated countries ignoring their accents.
+    uasort($countries,"sort_alphabetically");
     $form['pais'] = array(
       '#type' => 'select',
       '#title' => 'Pais',

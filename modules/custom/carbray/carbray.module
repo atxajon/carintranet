@@ -1329,3 +1329,20 @@ function get_departamento_workers($tid) {
     ->execute();
   return $dept_workers;
 }
+
+/**
+ * Sorts array items ignoring accented text strings.
+ * http://www.andrescampanario.es/es/blog/ordenar_array_alfabeticamente_teniendo_en_cuenta_acentos_en_php
+ */
+function sort_alphabetically($name1, $name2) {
+  $patterns = array(
+    'a' => '(á|à|â|ä|Á|À|Â|Ä)',
+    'e' => '(é|è|ê|ë|É|È|Ê|Ë)',
+    'i' => '(í|ì|î|ï|Í|Ì|Î|Ï)',
+    'o' => '(ó|ò|ô|ö|Ó|Ò|Ô|Ö)',
+    'u' => '(ú|ù|û|ü|Ú|Ù|Û|Ü)'
+  );
+  $name1 = preg_replace(array_values($patterns), array_keys($patterns), $name1);
+  $name2 = preg_replace(array_values($patterns), array_keys($patterns), $name2);
+  return strcasecmp($name1, $name2);
+}
