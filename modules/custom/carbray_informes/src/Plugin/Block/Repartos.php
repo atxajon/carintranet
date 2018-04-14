@@ -25,9 +25,9 @@ class Repartos extends BlockBase {
     $rows = [];
     foreach ($procedencia_clientes as $procedencia_cliente) {
       $rows[] = [
-        ucfirst($procedencia_cliente->name),
-        (float)$procedencia_cliente->amount_count,
-        (float)round($procedencia_cliente->percent, 2),
+        'name' => ucfirst($procedencia_cliente->name),
+        'y' => (float)$procedencia_cliente->amount_count,
+        'percent' => (float)round($procedencia_cliente->percent, 2),
       ];
     }
 
