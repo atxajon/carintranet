@@ -1,0 +1,4 @@
+name: Carbray pseudofields
+type: module
+description: Defines pseudo fields for content type node pages.
+core: 8.x
