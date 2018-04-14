@@ -16,11 +16,6 @@ use Drupal\file\Entity\File;
 use Drupal\taxonomy\Entity\Term;
 
 
-define('CAPTACION_ARCHIVADA', 184);
-define('ESTADO_CAPTACION_DEFECTO', 44); // 'En contacto'.
-define('DEPARTAMENTO_TAX', 189); // user__field_departamento referencing taxonomy term 189 (Tax).
-
-
 /**
  * Implements hook_entity_extra_field_info().
  */

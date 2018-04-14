@@ -1,0 +1,18 @@
+<?php
+
+/**
+ * @file
+ * Provides functionality needed for Carbray informes.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\user\Entity\User;
+use Drupal\Core\Url;
+use Drupal\Core\Link;
+use Drupal\Core\Render\Markup;
+use Drupal\node\Entity\Node;
+use Drupal\file\Entity\File;
+use Drupal\taxonomy\Entity\Term;
+
+
