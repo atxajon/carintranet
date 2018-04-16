@@ -53,7 +53,7 @@ class CalendarFilters extends FormBase {
         '#empty_option' => 'Todos los trabajadores de mi(s) departamento(s)',
       );
     }
-    elseif (in_array('administrator', $current_user_roles) || (in_array('carbray_administrador', $current_user_roles))) {
+    elseif (in_array('administrator', $current_user_roles) || (in_array('carbray_administrator', $current_user_roles))) {
       $form['departamento'] = array(
         '#type' => 'select',
         '#options' => $options,
