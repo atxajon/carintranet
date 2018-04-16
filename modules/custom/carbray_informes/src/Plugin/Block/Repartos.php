@@ -19,8 +19,15 @@ class Repartos extends BlockBase {
    * {@inheritdoc}
    */
   public function build() {
+    // Obtain query string parameters to pass them in to the queries.
+    $path = parse_url(\Drupal::request()->getRequestUri());
+    $query_array = array();
+    if (isset($path['query'])) {
+      parse_str($path['query'], $query_array);
+    }
 
-    $procedencia_clientes = \Drupal::database()->query("SELECT field_procedencia_value as name, Count(field_procedencia_value) as amount_count, (COUNT(*) / (SELECT COUNT(*) FROM user__field_procedencia)) * 100 AS percent FROM user__field_procedencia GROUP BY field_procedencia_value")->fetchAll();
+
+    $procedencia_clientes = get_informe_procedencia_count($query_array);
 
     $rows = [];
     foreach ($procedencia_clientes as $procedencia_cliente) {
@@ -31,9 +38,40 @@ class Repartos extends BlockBase {
       ];
     }
 
+//    $procedencia_clientes = get_informe_procedencia();
+//    $current_iteration_cliente_uid = 0;
+//    foreach ($procedencia_clientes as $procedencia_cliente) {
+//      /**
+//       * The query returns duplicated data;
+//       * This could be fixed before mysql 5.7 with 'group by = cliente_uid', but now they're enforcing ONLY_FULL_GROUP_BY
+//       * and each column needs to be thrown into group by clause. Couldn't get it to work,
+//       * so an (ugly) workaround is to check if the current iteration uid is already part of the result set,
+//       * and if it is -> skip to next row iteration.
+//       */
+//      if ($current_iteration_cliente_uid == $procedencia_cliente->cliente_uid) {
+//        continue;
+//      }
+//
+//      $rows[] = [
+//        'procedencia' => ucfirst($procedencia_cliente->name),
+//        'created' => $procedencia_cliente->created,
+//        'cliente_uid' => $procedencia_cliente->cliente_uid,
+//        'captador_uid' => $procedencia_cliente->captador_uid,
+//        'captacion_nid' => $procedencia_cliente->captacion_nid,
+//        'dept_tid' => $procedencia_cliente->dept_tid,
+//      ];
+//      $current_iteration_cliente_uid = $procedencia_cliente->cliente_uid;
+//    }
+
     $markup = '<h3>Reparto</h3><div id="procedencia-chart"></div>';
 
-    $build = array(
+    $filters_form = \Drupal::formBuilder()
+      ->getForm('Drupal\carbray_informes\Form\InformeProcedenciaFilters');
+    $build['filters'] = [
+      '#markup' => render($filters_form),
+    ];
+
+    $build['chart'] = array(
       '#markup' => $markup,
       '#attached' => array(
         'library' => array(

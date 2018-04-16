@@ -16,3 +16,29 @@ use Drupal\file\Entity\File;
 use Drupal\taxonomy\Entity\Term;
 
 
+function get_informe_procedencia_count($dates = []) {
+  $params = [];
+  $sql = 'SELECT field_procedencia_value as name, Count(field_procedencia_value) as amount_count, (COUNT(*) / (SELECT COUNT(*) FROM user__field_procedencia)) * 100 AS percent FROM user__field_procedencia fp';
+  if ($dates) {
+    $sql .= '  INNER JOIN users_field_data ufd on fp.entity_id = ufd.uid
+ INNER JOIN node__field_captacion_cliente ccliente on ufd.uid = ccliente.field_captacion_cliente_target_id
+ INNER JOIN node_field_data nfd on nfd.nid = ccliente.entity_id
+ WHERE nfd.created BETWEEN :date_from AND :date_to';
+    $params = [':date_from' => $dates['date_from'], ':date_to' => $dates['date_to']];
+  }
+
+  $sql .= ' GROUP BY field_procedencia_value';
+
+  $procedencia_clientes = \Drupal::database()->query($sql, $params)->fetchAll();
+  return $procedencia_clientes;
+}
+
+function get_informe_procedencia() {
+  $procedencia_clientes = \Drupal::database()->query("SELECT field_procedencia_value as name, created, fp.entity_id as cliente_uid, field_captacion_captador_target_id as captador_uid, ccliente.entity_id as captacion_nid, field_departamento_target_id as dept_tid
+ FROM user__field_procedencia fp
+ INNER JOIN users_field_data ufd on fp.entity_id = ufd.uid
+ INNER JOIN node__field_captacion_cliente ccliente on ufd.uid = ccliente.field_captacion_cliente_target_id
+INNER JOIN node__field_captacion_captador cc on cc.entity_id = ccliente.entity_id
+INNER JOIN user__field_departamento dept on dept.entity_id = cc.field_captacion_captador_target_id ORDER BY name ASC, cliente_uid ASC")->fetchAll();
+  return $procedencia_clientes;
+}

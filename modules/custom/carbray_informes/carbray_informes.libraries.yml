@@ -23,4 +23,5 @@ procedencia_piechart:
   js:
     js/procedencia_piechart.js: {}
   dependencies:
+      - core/jquery
       - core/drupalSettings
