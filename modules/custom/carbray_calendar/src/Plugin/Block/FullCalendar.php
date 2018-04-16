@@ -82,6 +82,8 @@ class FullCalendar extends BlockBase {
       $build['filters'] = [
         '#markup' => render($form),
       ];
+      // A carbray jefe_departamento queries for their department data, ignoring what uid is.
+      $uid = 0;
     }
 
     $actuaciones = get_calendar_actuaciones($uid, $tid);
