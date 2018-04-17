@@ -1,0 +1,9 @@
+informes.resumen:
+  route_name: informes.resumen
+  title: 'Resumen abogados'
+  base_route: informes.resumen
+
+informes.procedencia:
+  route_name: informes.procedencia
+  title: 'Procedencia'
+  base_route: informes.resumen

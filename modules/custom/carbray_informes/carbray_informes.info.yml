@@ -1,0 +1,4 @@
+name: Carbray informes
+type: module
+description: Defines informes pages, forms filters and charts for the Informes section.
+core: 8.x

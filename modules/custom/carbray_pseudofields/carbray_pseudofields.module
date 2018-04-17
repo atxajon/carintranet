@@ -1,0 +1,1572 @@
+<?php
+
+/**
+ * @file
+ * Provides functionality needed for Carbray clients.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\user\Entity\User;
+use Drupal\Core\Url;
+use Drupal\Core\Link;
+use Drupal\Core\Render\Markup;
+use Drupal\node\Entity\Node;
+use Drupal\file\Entity\File;
+use Drupal\taxonomy\Entity\Term;
+
+
+/**
+ * Implements hook_entity_extra_field_info().
+ */
+function carbray_pseudofields_entity_extra_field_info() {
+  // Defines extra pseudo fields for display only purposes.
+  // Exposes them to the user manage display ui.
+  $extra = array();
+  $extra['user']['user']['display']['cliente_expediente'] = array(
+    'label' => t('Cliente expedientes'),
+    'description' => t('Muestra los expedientes del cliente.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['user']['user']['display']['anadir_nota'] = array(
+    'label' => t('Añadir nota'),
+    'description' => t('Boton para crear una nueva nota.'),
+    'weight' => 100,
+  );
+  $extra['user']['user']['display']['ver_notas'] = array(
+    'label' => t('Ver notas'),
+    'description' => t('Ver notas.'),
+    'weight' => 100,
+  );
+  $extra['user']['user']['display']['user_role'] = array(
+    'label' => t('User role'),
+    'description' => t('Muestra el rol del usuario.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['captacion']['display']['edit_captacion'] = array(
+    'label' => t('Edit captacion'),
+    'description' => t('Edit captacion.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['captacion']['display']['captacion_captadores'] = array(
+    'label' => t('Captadores'),
+    'description' => t('Captadores.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['captacion']['display']['archive_captacion'] = array(
+    'label' => t('Archive captacion'),
+    'description' => t('Archive captacion.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['captacion']['display']['anadir_nota'] = array(
+    'label' => t('Añadir nota'),
+    'description' => t('Boton para crear una nueva nota.'),
+    'weight' => 100,
+  );
+  $extra['node']['captacion']['display']['ver_notas'] = array(
+    'label' => t('Ver notas'),
+    'description' => t('Ver notas.'),
+    'weight' => 100,
+  );
+  $extra['node']['captacion']['display']['assign_estado_captacion'] = array(
+    'label' => t('Assign estado de captacion to client'),
+    'description' => t('Estado de captacion.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['captacion']['display']['log_estado_captacion'] = array(
+    'label' => t('View log of estado captacion changes'),
+    'description' => t('Log of estado captacion changes.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['user']['user']['display']['take_action'] = array(
+    'label' => t('Client action'),
+    'description' => t('Shows clients actions like generate new propuesta, new factura, new expediente... based on users estado'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['user']['user']['display']['new_captacion'] = array(
+    'label' => t('New captacion'),
+    'description' => t('Shows new captacion button'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['user']['user']['display']['new_expediente'] = array(
+    'label' => t('New expediente'),
+    'description' => t('Shows new expediente button'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['user']['user']['display']['captaciones'] = array(
+    'label' => t('Client captaciones'),
+    'description' => t('Shows clients captaciones'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['user']['user']['display']['expedientes'] = array(
+    'label' => t('Client expedientes'),
+    'description' => t('Shows clients expedientes'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['user']['user']['display']['edit_user'] = array(
+    'label' => t('Edit user link'),
+    'description' => t('Shows a form that allows to edit a user.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['user']['user']['display']['toggle_status'] = array(
+    'label' => t('User status change form'),
+    'description' => t('Shows a form that allows an admin to activate or block a user.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['captacion']['display']['take_action'] = array(
+    'label' => t('Client action'),
+    'description' => t('Shows clients actions like generate new propuesta, new factura, new expediente... based on users estado'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['captacion']['display']['view_tematica'] = array(
+    'label' => t('View tematica'),
+    'description' => t('Shows tematicas and servicios.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['captacion']['display']['assign_tematica'] = array(
+    'label' => t('Assign tematica'),
+    'description' => t('Shows button to assign a tematica for this captacion.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['propuesta']['display']['link_to_download'] = array(
+    'label' => t('Link to download propuesta in doc'),
+    'description' => t('Shows a link that allows admin to download the propuesta as a doc file.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['propuesta']['display']['preprocessed_body'] = array(
+    'label' => t('Preprocessed body'),
+    'description' => t('Contains propuesta body with embedded variable token replacements.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['propuesta']['display']['client_name'] = array(
+    'label' => t('Client name surname'),
+    'description' => t('Client name and surname.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['captacion']['display']['client_name'] = array(
+    'label' => t('Client name surname'),
+    'description' => t('Client name and surname.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['captacion']['display']['client_email'] = array(
+    'label' => t('Client email'),
+    'description' => t('Client email.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['captacion']['display']['client_fecha_alta'] = array(
+    'label' => t('Client fecha alta'),
+    'description' => t('Client fecha alta.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['captacion']['display']['client_telefono'] = array(
+    'label' => t('Client telefono'),
+    'description' => t('Client telefono.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['captacion']['display']['client_pais'] = array(
+    'label' => t('Client pais'),
+    'description' => t('Client pais.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['captacion']['display']['persona_juridica'] = array(
+    'label' => t('Persona juridica'),
+    'description' => t('Client pais.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['captacion']['display']['client_captador_edit_form'] = array(
+    'label' => t('Edit captador'),
+    'description' => t('Edit captador form.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['captacion']['display']['new_actuacion_captacion'] = array(
+    'label' => t('New actuacion'),
+    'description' => t('New actuacion.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['captacion']['display']['view_actuaciones_captacion'] = array(
+    'label' => t('View captacion actuaciones'),
+    'description' => t('View captacion actuaciones.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['captacion']['display']['actuaciones_csv_link'] = array(
+    'label' => t('Download actuaciones'),
+    'description' => t('Download actuaciones.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['captacion']['display']['link_to_pdf'] = array(
+    'label' => t('Link to download captacion actuaciones in pdf'),
+    'description' => t('Shows a link that allows admin to download the captacion actuaciones as a pdf file.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['expediente']['display']['edit_expediente'] = array(
+    'label' => t('Edit expediente'),
+    'description' => t('Edit expediente.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['expediente']['display']['archive_expediente'] = array(
+    'label' => t('Archive expediente'),
+    'description' => t('Archive expediente.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['expediente']['display']['exp_responsables'] = array(
+    'label' => t('Expediente responsables'),
+    'description' => t('Expediente responsables.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['expediente']['display']['anadir_nota'] = array(
+    'label' => t('Añadir nota'),
+    'description' => t('Boton para crear una nueva nota.'),
+    'weight' => 100,
+  );
+  $extra['node']['expediente']['display']['ver_notas'] = array(
+    'label' => t('Ver notas'),
+    'description' => t('Ver notas.'),
+    'weight' => 100,
+  );
+  $extra['node']['expediente']['display']['client_name'] = array(
+    'label' => t('Client name surname'),
+    'description' => t('Client name and surname.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['expediente']['display']['client_correo'] = array(
+    'label' => t('Client fecha alta'),
+    'description' => t('Client fecha alta.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['expediente']['display']['client_telefono'] = array(
+    'label' => t('Client telefono'),
+    'description' => t('Client telefono.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['expediente']['display']['client_pais'] = array(
+    'label' => t('Client pais'),
+    'description' => t('Client pais.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['expediente']['display']['persona_juridica'] = array(
+    'label' => t('Persona juridica'),
+    'description' => t('Persona juridica.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['expediente']['display']['pack_horas'] = array(
+    'label' => t('Pack de horas'),
+    'description' => t('Pack de horas.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['expediente']['display']['new_actuacion'] = array(
+    'label' => t('New actuacion'),
+    'description' => t('New actuacion.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['expediente']['display']['add_hours'] = array(
+    'label' => t('Anadir horas'),
+    'description' => t('Anadir horas.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['expediente']['display']['view_tematica'] = array(
+    'label' => t('View tematica'),
+    'description' => t('Shows tematicas and servicios.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['expediente']['display']['view_modelos'] = array(
+    'label' => t('View modelos'),
+    'description' => t('Shows modelos.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['expediente']['display']['view_actuaciones'] = array(
+    'label' => t('View actuaciones'),
+    'description' => t('Shows actuaciones.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['expediente']['display']['actuaciones_csv_link'] = array(
+    'label' => t('Download actuaciones'),
+    'description' => t('Download actuaciones.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['expediente']['display']['link_to_pdf'] = array(
+    'label' => t('Link to download expediente actuaciones in pdf'),
+    'description' => t('Shows a link that allows admin to download the expediente actuaciones as a pdf file.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['cita']['display']['cita_body'] = array(
+    'label' => t('Cita body'),
+    'description' => t('Cita body.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['cita']['display']['cita_invitados'] = array(
+    'label' => t('Cita invitados'),
+    'description' => t('Cita invitados.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+  $extra['node']['cita']['display']['cita_hora'] = array(
+    'label' => t('Cita hora'),
+    'description' => t('Cita hora.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
+
+  return $extra;
+}
+
+/**
+ * Implements hook_user_view().
+ */
+function carbray_pseudofields_user_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  $uid = $entity->id();
+  // Viewing a client on captacion page.
+  if ($view_mode === 'cliente') {
+    if ($display->getComponent('anadir_nota')) {
+      $form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray_cliente\Form\NewNotaForm', $uid, $entity->bundle());
+      $build['anadir_nota'] = [
+        '#theme' => 'button_modal',
+        '#unique_id' => 'anadir-nota-uid-' . $uid,
+        '#button_text' => 'Añadir nota',
+        '#button_classes' => 'btn btn-primary btn-sm',
+        '#modal_title' => t('Nueva nota'),
+        '#modal_content' => $form,
+        '#has_plus' => TRUE,
+      ];
+    }
+    if ($display->getComponent('ver_notas')) {
+      $notas_nids = get_notas($uid, 'user');
+      $rows = [];
+      foreach ($notas_nids as $notas_nid) {
+        $nota_node = Node::load($notas_nid);
+        $author_uid = $nota_node->getOwnerId();
+        $user = User::load($author_uid);
+
+        $edit_form = \Drupal::formBuilder()
+          ->getForm('Drupal\carbray_cliente\Form\EditNotaForm', $notas_nid);
+        $build['edit_nota_form'] = [
+          '#theme' => 'button_modal',
+          '#unique_id' => 'edit-nota_nid-' . $notas_nid,
+          '#button_text' => 'Editar nota',
+          '#button_classes' => 'btn btn-primary btn-sm',
+          '#modal_title' => t('Editar nota'),
+          '#modal_content' => $edit_form,
+          '#has_plus' => FALSE,
+        ];
+
+        $rows[] = array(
+          Markup::create($nota_node->get('field_nota_nota')->value),
+          $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value,
+          date('d-M-Y H:m:s', $nota_node->created->value),
+          render($build['edit_nota_form']),
+        );
+      }
+      $header = array(
+        'Nota',
+        'Autor',
+        'Fecha creacion',
+        'Editar'
+      );
+      $build['notas_table'] = [
+        '#type' => 'table',
+        '#header' => $header,
+        '#rows' => $rows,
+        '#empty' => t('Ninguna nota creada aún.'),
+      ];
+    }
+
+    if ($display->getComponent('new_captacion')) {
+      $form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray\Form\NewCaptacionForm', $uid);
+      $build['new_captacion'] = [
+        '#theme' => 'button_modal',
+        '#unique_id' => 'new-captacion-uid-' . $uid,
+        '#button_text' => 'Nueva captacion',
+        '#button_classes' => 'btn green btn-lg',
+        '#modal_title' => t('Nueva captacion'),
+        '#modal_content' => $form,
+        '#has_plus' => TRUE,
+      ];
+    }
+
+    if ($display->getComponent('captaciones')) {
+      $captacion_nids = \Drupal::database()->query("SELECT DISTINCT captacion_nid FROM carbray_user_captacion_expediente WHERE uid = :uid ORDER BY id DESC", array(':uid' => $uid))->fetchAll();
+      $rows = [];
+      foreach ($captacion_nids as $captacion) {
+        $captacion_data = \Drupal::entityTypeManager()->getStorage('node')->load($captacion->captacion_nid);
+        $estado_nombre = '';
+        $term_entity = $captacion_data->field_captacion_estado_captacion->entity;
+        if ($term_entity) {
+          $term = Term::load($term_entity->id());
+          $estado_nombre = $term->name->value;
+        }
+
+        $row_class = 'captacion-row';
+        if ($term_entity->id() == CAPTACION_ARCHIVADA) {
+          $build['new_expediente'] = '';
+          $row_class = 'captacion-archivada-row';
+        }
+        else {
+          // @todo: should nuevo expediente button not be hidden for workers, except when:
+          //  1- worker is captador of cliente,
+          //  2- user is jefe_departamento of a cliente whose captador is on their same departamento,
+          //  3- user is carbray_administrador
+          //  ???
+
+          $form = \Drupal::formBuilder()
+            ->getForm('Drupal\carbray\Form\NewExpedienteForm', $captacion->captacion_nid, $uid);
+          $build['new_expediente'] = [
+            '#theme' => 'button_modal',
+            '#unique_id' => 'new-expediente-captacion_nid-' . $captacion->captacion_nid,
+            '#button_text' => 'Nuevo expediente',
+            '#button_classes' => 'btn btn-primary btn-sm',
+            '#modal_title' => t('Nuevo expediente'),
+            '#modal_content' => $form,
+            '#has_plus' => TRUE,
+          ];
+        }
+
+        $rows[] = array(
+          'data' => array(
+            $captacion_data->label(),
+            print_cliente_captadores_responsables($captacion_data->get('field_captacion_captador')
+                ->getValue()),
+            $estado_nombre,
+            print_captacion_link($captacion->captacion_nid),
+            render($build['new_expediente']),
+          ),
+          'class' => [$row_class],
+        );
+      }
+      $header = array(
+        'Captacion',
+        'Captador',
+        'Estado captacion',
+        'Ver captacion',
+        'Crear expediente',
+      );
+      $build['captaciones'] = array(
+        '#type' => 'table',
+        '#header' => $header,
+        '#rows' => $rows,
+        '#empty' => t('El cliente no tiene ninguna captación.'),
+      );
+    }
+
+    if ($display->getComponent('expedientes')) {
+      $expedientes_nids = \Drupal::database()->query("SELECT expediente_nid, captacion_nid FROM carbray_user_captacion_expediente WHERE uid = :uid ORDER BY id DESC", array(':uid' => $uid))->fetchAll();
+      $expedientes_rows = [];
+      foreach ($expedientes_nids as $expediente) {
+        if (is_null($expediente->expediente_nid)) {
+          // Client has a captacion but not an expediente for it yet,
+          // let's move on to next iteration (expediente).
+          continue;
+        }
+        $expediente_data = \Drupal::entityTypeManager()->getStorage('node')->load($expediente->expediente_nid);
+        $servicio_nombre = '';
+        $term_entity = $expediente_data->field_expediente_tematica->entity;
+        if ($term_entity) {
+          $term = Term::load($term_entity->id());
+          $servicio_nombre = $term->name->value;
+          // @todo: work out tematica term name, not servicios...
+        }
+
+        /**
+         * Prepare link to captacion.
+         */
+        $captacion_title = get_node_title($expediente->captacion_nid);
+        $captacion_link = Link::fromTextAndUrl($captacion_title, Url::fromRoute('entity.node.canonical', ['node' => $expediente->captacion_nid]
+        ));
+        $captacion_link_string = $captacion_link->toString()
+            ->getGeneratedLink() . '<br>';
+        $captacion_link_markup = Markup::create($captacion_link_string);
+
+        $row_class = 'captacion-row';
+        if (!$expediente_data->isPublished()) {
+          $row_class = 'captacion-archivada-row';
+        }
+
+        /**
+         * Determine if current user has rights to view expediente link.
+         */
+        // Is the logged in user a carbray admin?
+        $logged_in_uid = \Drupal::currentUser()->id();
+        $current_user_roles = \Drupal::currentUser()->getRoles();
+        if (in_array('carbray_administrator', $current_user_roles) || in_array('jefe_departamento', $current_user_roles)) {
+          // Print the link to expediente.
+          $expediente_link = print_cliente_expedientes($expediente->expediente_nid);
+        }
+        else {
+          // Current logged in user is not carbray admin; but is he responsable of current cliente expediente?
+          $responsables = get_expediente_responsables($expediente->expediente_nid);
+          if (in_array($logged_in_uid, $responsables)) {
+            $expediente_link = print_cliente_expedientes($expediente->expediente_nid);
+          }
+          else {
+            $expediente_link = '';
+          }
+        }
+
+        $expedientes_rows[] = array(
+          'data' => array(
+            $expediente_data->label(),
+            print_cliente_captadores_responsables($expediente_data->get('field_expediente_responsable')
+              ->getValue()),
+            $servicio_nombre,
+            $expediente_link,
+            $captacion_link_markup,
+          ),
+          'class' => [$row_class],
+        );
+      }
+      $header = array(
+        'Expediente',
+        'Responsable',
+        'Tematica',
+        'Ver expediente',
+        'Captacion',
+      );
+      $build['expedientes'] = array(
+        '#type' => 'table',
+        '#header' => $header,
+        '#rows' => $expedientes_rows,
+        '#empty' => t('Ningún expediente.'),
+      );
+    }
+
+  }
+  elseif ($view_mode === 'cliente_produccion') {
+    // @todo: we dont have this view mode anymore, what to do with this?
+    if ($display->getComponent('cliente_expediente')) {
+      $expediente_nids = get_cliente_expediente_nids($uid);
+      $expedientes = get_expedientes_data($expediente_nids);
+      $user = User::load($uid);
+      $nombre = $user->get('field_nombre')->value;
+      $apellido = $user->get('field_apellido')->value;
+      $client_name = ucfirst($nombre) . ' ' . ucfirst($apellido);
+      $build['cliente_expediente'] = [
+        '#theme' => 'cliente_expediente',
+        '#expedientes' => $expedientes,
+        '#client_name' => $client_name,
+        '#uid' => $uid,
+      ];
+    }
+  }
+  // Viewing a carbray admin/worker.
+  elseif ($view_mode === 'full') {
+    if ($display->getComponent('user_role')) {
+      // Look at the url (e.g user/9) and display its role on page.
+      $current_path = \Drupal::service('path.current')->getPath();
+      $path_args = explode('/', $current_path);
+      $uid = 0;
+      foreach ($path_args as $path_arg) {
+        if (is_numeric($path_arg)) {
+          $uid = $path_arg;
+        }
+      }
+      $user = User::load($uid);
+      $roles = $user->getRoles();
+      if (in_array('worker', $roles)) {
+        $build['user_role'] = array(
+          '#markup' => '<div class="field--label">Rol</div><div class="field--item">Abogado</div>',
+        );
+      }
+      elseif (in_array('secretaria', $roles)) {
+        $build['user_role'] = array(
+          '#markup' => '<div class="field--label">Rol</div><div class="field--item">Secretaria</div>',
+        );
+      }
+      elseif (in_array('carbray_administrator', $roles)) {
+        $build['user_role'] = array(
+          '#markup' => '<div class="field--label">Rol</div><div class="field--item">Administrador</div>',
+        );
+      }
+      elseif (in_array('jefe_departamento', $roles)) {
+        $build['user_role'] = array(
+          '#markup' => '<div class="field--label">Rol</div><div class="field--item">Jefe departamento</div>',
+        );
+      }
+    }
+
+    if ($display->getComponent('edit_user')) {
+      // Edit user link shows for:
+      // 1- Form owner (e.g uid 15 on page user/15
+      // 2- User with role carbray_administrator/administrator.
+
+      $current_path = \Drupal::service('path.current')->getPath();
+      $path_args = explode('/', $current_path);
+      $form_owner_uid = 0;
+      foreach ($path_args as $path_arg) {
+        if (is_numeric($path_arg)) {
+          $form_owner_uid = $path_arg;
+        }
+      }
+
+      $current_user = \Drupal::currentUser();
+      $current_user_roles = $current_user->getRoles();
+
+      if ($form_owner_uid == $current_user->id()
+        || in_array('carbray_administrator', $current_user_roles)
+        || in_array('administrator', $current_user_roles)) {
+        $current_path = \Drupal::service('path.current')->getPath();
+        $options = [
+          'query' => [
+            'destination' => $current_path,
+          ],
+        ];
+
+        $url = Url::fromRoute('entity.user.edit_form', array('user' => $form_owner_uid), $options);
+
+        $build['edit_user'] = [
+          '#type' => 'link',
+          '#url' => $url,
+          '#title' => t('Editar usuario'),
+          '#attributes' => array(
+            'target' => '_blank',
+            'class' => array(
+              'btn',
+              'btn-sm',
+              'btn-warning',
+              'margin-bottom-20',
+            ),
+          ),
+        ];
+      }
+    }
+
+    if ($display->getComponent('toggle_status')) {
+      // Show toggle status form only to admins.
+      $current_user = \Drupal::currentUser();
+      $roles = $current_user->getRoles();
+      if (in_array('carbray_administrator', $roles) || in_array('administrator', $roles)) {
+        $form = \Drupal::formBuilder()
+          ->getForm('Drupal\carbray\Form\ToggleUserStatus', $uid);
+        $build['toggle_status'] = $form;
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_node_view().
+ */
+function carbray_pseudofields_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  $nid = $entity->id();
+
+  if ($entity->bundle() == 'captacion') {
+    $captacion_node = Node::load($nid);
+    $cliente_uid = $captacion_node->get('field_captacion_cliente')->getValue();
+    $user = User::load($cliente_uid[0]['target_id']);
+    if ($display->getComponent('edit_captacion')) {
+      /**
+       * Not using the custom editCaptacion form;
+       * It was too complex to assign new tematicas through a custom form.
+       */
+//      $form = \Drupal::formBuilder()
+//        ->getForm('Drupal\carbray\Form\EditCaptacion', $nid);
+//      $build['edit_captacion'] = array(
+//        '#theme' => 'button_modal',
+//        '#unique_id' => 'edit-captacion-' . $nid,
+//        '#button_text' => 'Editar captacion',
+//        '#button_classes' => 'btn btn-warning pull-left',
+//        '#modal_title' => t('Editar captacion'),
+//        '#modal_content' => $form,
+//      );
+      /**
+       * Instead we use drupal's default node edit form
+       * (see carbray.module's form_alter)
+       */
+      $build['edit_captacion'] = [
+        '#markup' => "<a class='btn btn-warning pull-left' href='/node/$nid/edit'>Editar captacion</a>",
+      ];
+    }
+
+    if ($display->getComponent('captacion_captadores')) {
+      $captadores = print_cliente_captadores_responsables($entity->get('field_captacion_captador')->getValue());
+      $build['captacion_captadores'] = [
+        '#markup' => $captadores,
+      ];
+    }
+
+    if ($display->getComponent('archive_captacion')) {
+      $form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray\Form\ArchiveCaptacion', $nid);
+      $build['archive_captacion'] = $form;
+    }
+
+    if ($display->getComponent('assign_estado_captacion')) {
+      $form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray\Form\AssignEstadoCaptacion', $nid);
+      $build['assign_estado_captacion'] = $form;
+    }
+    if ($display->getComponent('log_estado_captacion')) {
+      $changes = get_captacion_estado_changes($nid);
+      $rows = [];
+      if ($changes) {
+        foreach ($changes as $change) {
+          // @todo: convert integers to human friendly format!
+          $new_term = Term::load($change->new_status);
+          $author = User::load($change->author);
+
+          $rows[] = array(
+            $new_term->label(),
+            $author->get('field_nombre')->value . ' ' . $author->get('field_apellido')->value,
+            date('d-m-Y H:i:s', $change->created),
+          );
+        }
+      }
+
+      $header = array(
+        'Estado',
+        'Autor',
+        'Fecha del cambio',
+      );
+      $build['log_estado_captacion'] = [
+        '#type' => 'table',
+        '#header' => $header,
+        '#rows' => $rows,
+        '#empty' => t('Ninguna cambio de estado aún.'),
+      ];
+    }
+    if ($display->getComponent('client_name')) {
+      $cliente_nombre = $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value;
+      $url = Url::fromRoute('entity.user.canonical', ['user' => $user->id()]);
+      $user_link = Link::fromTextAndUrl($cliente_nombre, $url);
+      $user_link = $user_link->toRenderable();
+      $build['client_name'] = [
+        '#markup' => render($user_link),
+      ];
+    }
+    if ($display->getComponent('client_email')) {
+      $client_email = $user->getEmail();
+      $build['client_email'] = [
+        '#markup' => $client_email,
+      ];
+    }
+
+
+    if ($display->getComponent('client_fecha_alta')) {
+      $fecha_alta_timestamp = strtotime($user->get('field_fecha_alta')->value);
+      $cliente_fecha_alta = date('d-m-y',$fecha_alta_timestamp);
+      $build['client_fecha_alta'] = [
+        '#markup' => $cliente_fecha_alta,
+      ];
+    }
+    if ($display->getComponent('client_telefono')) {
+      $cliente_telefono = $user->get('field_telefono')->value;
+      $build['client_telefono'] = [
+        '#markup' => $cliente_telefono,
+      ];
+    }
+    if ($display->getComponent('client_pais')) {
+      $cliente_pais = $user->get('field_pais')->value;
+      if ($cliente_pais) {
+        $build['client_pais'] = [
+          '#markup' => code_to_country($cliente_pais),
+        ];
+      }
+    }
+    if ($display->getComponent('persona_juridica')) {
+      $persona = $user->get('field_persona_juridica')->value;
+      $cleaned_up_string = str_replace("_"," ",$persona);
+      $cleaned_up_string = ucfirst($cleaned_up_string);
+      $build['persona_juridica'] = [
+        '#markup' => $cleaned_up_string,
+      ];
+    }
+
+    if ($display->getComponent('client_captador_edit_form')) {
+      $form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray_cliente\Form\EditCaptadores', $captacion_node->id());
+      $build['client_captador_edit_form'] = [
+        '#theme' => 'button_modal',
+        '#unique_id' => 'edit-captador-' . $nid,
+        '#button_text' => 'Editar captadores',
+        '#button_classes' => 'btn btn-primary btn-sm',
+        '#modal_title' => t('Editar captadores'),
+        '#modal_content' => $form,
+      ];
+    }
+
+    if ($display->getComponent('take_action')) {
+      // Is the estado de captacion on estado '1'?
+
+      $estado_term = $captacion_node->get('field_captacion_estado_captacion')->entity;
+      $estados_tids_that_show_propuesta = array(43, 44, 45, 46, 193);
+      $estados_tids_that_show_factura = array(52);
+      $estados_tids_that_show_expediente = array(52, 53, 54, 55);
+
+      if (in_array($estado_term->id(), $estados_tids_that_show_propuesta)) {
+        // Client is on estado captacion '1'; deal with propuestas.
+        // Show button to download propuesta plantilla.
+        $form = \Drupal::formBuilder()
+          ->getForm('Drupal\carbray_cliente\Form\PropuestaPlantillaRef');
+        $build['take_action'] = $form;
+      }
+      elseif (in_array($estado_term->id(), $estados_tids_that_show_factura)) {
+        // Client is on estado captacion '2'; deal with facturas.
+        // Show button to create a factura.
+
+        /**
+         * Old code to render in a modal the custom form NewFacturaForm.
+         * Abandoned the idea because of complexity in creating
+         * ajaxed (on demand) servicio key/value pairs.
+         */
+        //$form = \Drupal::formBuilder()
+//          ->getForm('Drupal\carbray_cliente\Form\NewFacturaForm', $nid);
+//        $build['take_action']['factura'] = [
+//          '#theme' => 'button_modal',
+//          '#unique_id' => 'new-factura-for-captacion-' . $nid,
+//          '#button_text' => 'Crear Factura / Proforma',
+//          '#button_classes' => 'btn btn-primary btn-sm margin-top-20',
+//          '#modal_title' => t('Nueva factura / proforma'),
+//          '#modal_content' => $form,
+//          '#has_plus' => TRUE,
+//        ];
+
+        /**
+         * Creates link to add new factura node form.
+         * Favoured this approach of redirecting the user to a new
+         * page with the form, rather than summoning a modal with
+         * the form, as it is less complex.
+         * Links to add a new factura are going to sit on captacion
+         * node pages.
+         */
+        // Add captacion nid as query string parameter.
+        $current_path = \Drupal::service('path.current')->getPath();
+        $path_args = explode('/', $current_path);
+        $nid = 0;
+        foreach ($path_args as $path_arg) {
+          if (is_numeric($path_arg)) {
+            $nid = $path_arg;
+          }
+        }
+        $build['take_action']['factura'] = [
+          '#markup' => "<a class='btn btn-primary btn-sm margin-top-20' href='/node/add/factura?captacion_nid=$nid&destination=captacion/$nid'><span class='glyphicon glyphicon-plus-sign'></span>Nueva factura / proforma</a>",
+        ];
+      }
+      elseif (in_array($estado_term->id(), $estados_tids_that_show_expediente)) {
+        // Client is on estado captacion '3'; deal with expedientes.
+        // Show button to create a expediente.
+
+        $db = \Drupal::database();
+        $sql = "SELECT uid FROM carbray_user_captacion_expediente WHERE captacion_nid = :nid";
+        $uid = $db->query($sql, array(':nid' => $captacion_node->id()))
+          ->fetchCol();
+
+        $new_exp_form = \Drupal::formBuilder()
+          ->getForm('Drupal\carbray\Form\NewExpedienteForm', $captacion_node->id(), reset($uid));
+        $build['take_action']['expediente'] = [
+          '#theme' => 'button_modal',
+          '#unique_id' => 'new-expediente-captacion_nid-' . $captacion_node->id(),
+          '#button_text' => 'Nuevo expediente',
+          '#button_classes' => 'btn btn-primary btn-sm margin-top-10',
+          '#modal_title' => t('Nuevo expediente'),
+          '#modal_content' => $new_exp_form,
+          '#has_plus' => TRUE,
+        ];
+      }
+    }
+
+    if ($display->getComponent('new_actuacion_captacion')) {
+      $actuacion_captacion_form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray\Form\NewActuacionCaptacionForm', $nid);
+      $build['new_actuacion_captacion'] = $actuacion_captacion_form;
+    }
+
+    if ($display->getComponent('view_actuaciones_captacion')) {
+      $actuaciones_nids = get_actuaciones_for_captacion($nid);
+      $total_seconds = 0;
+      $actuaciones_rows = [];
+      $is_captacion_node_view = FALSE;
+      if ($actuaciones_nids) {
+        // Work out if this is an exportable path (e.g node/{nid}/pdf) to show/hide edit actuacion button link and form.
+        $current_uri = \Drupal::request()->getRequestUri();
+        if (strpos($current_uri, 'captacion') !== false) {
+          $is_captacion_node_view = TRUE;
+        }
+        foreach ($actuaciones_nids as $actuacion_nid) {
+          $actuacion_node = Node::load($actuacion_nid->nid);
+          // Get the minutes values for the actuacion and transform it to seconds for correct display.
+          $minutes = $actuacion_node->get('field_actuacion_captacion_tiempo')->value;
+          $seconds = $minutes * 60;
+          $hours = floor($seconds / 3600);
+          $minutes = floor(($seconds / 60) % 60);
+          $total_seconds += $seconds;
+
+          $edit_form = \Drupal::formBuilder()
+            ->getForm('Drupal\carbray\Form\EditActuacionCaptacionForm', $actuacion_nid->nid);
+          if ($is_captacion_node_view) {
+            $build['edit_actuacion_captacion_form'] = [
+              '#theme' => 'button_modal',
+              '#unique_id' => 'edit-actuacion_nid-' . $actuacion_nid->nid,
+              '#button_text' => 'Editar actuacion',
+              '#button_classes' => 'btn btn-primary btn-sm',
+              '#modal_title' => t('Editar actuacion'),
+              '#modal_content' => $edit_form,
+              '#has_plus' => FALSE,
+            ];
+          }
+
+          $actuaciones_rows[] = array(
+            date('d-m-y H:m:s', $actuacion_nid->created),
+            $actuacion_nid->title,
+            $hours . ':' . $minutes,
+            Markup::create($actuacion_nid->field_nota_nota_value),
+            get_cliente_nombre($actuacion_nid->uid),
+            ($is_captacion_node_view) ? render($build['edit_actuacion_captacion_form']) : '',
+          );
+        }
+
+        // Add a total row at the bottom.
+        $total_hours = floor($total_seconds / 3600);
+        $total_minutes = floor(($total_seconds / 60) % 60);
+        $actuaciones_rows[] = [
+          Markup::create('<b>Total:</b>'),
+          '',
+          Markup::create('<b>' . $total_hours . ':' . $total_minutes . '</b>'),
+          '',
+          '',
+          '',
+        ];
+      }
+
+      $header = array(
+        'Fecha creacion',
+        'Actuacion',
+        'Horas:Minutos',
+        'Notas',
+        'Autor',
+      );
+      if ($is_captacion_node_view) {
+        $header[] = 'Editar';
+      }
+      $build['view_actuaciones_captacion'] = [
+        '#type' => 'table',
+        '#header' => $header,
+        '#rows' => $actuaciones_rows,
+        '#empty' => t('Ninguna actuación creada aún.'),
+      ];
+    }
+
+    if ($display->getComponent('actuaciones_csv_link')) {
+      $csv_url = Url::fromRoute('carbray.csv');
+      $link_options = array(
+        'attributes' => array(
+          'class' => array(
+            'btn',
+            'btn-primary',
+          ),
+        ),
+        'query' => array(
+          'nid' => $nid,
+        ),
+      );
+      $csv_url->setOptions($link_options);
+      $link_to_csv_url = Link::fromTextAndUrl('Exportar CSV', $csv_url);
+      $link_to_csv_string = $link_to_csv_url->toString()
+        ->getGeneratedLink();
+      $csv_link_markup = Markup::create($link_to_csv_string);
+      $build['actuaciones_csv_link'] = [
+        '#markup' => $csv_link_markup,
+      ];
+    }
+
+    if ($display->getComponent('assign_tematica')) {
+      $assign_tematica_form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray\Form\AssignTematicaCaptacion', $nid);
+      $build['assign_tematica'] = [
+        '#theme' => 'button_modal',
+        '#unique_id' => 'assign-tematica-captacion-nid-' . $nid,
+        '#button_text' => 'Asignar tematica',
+        '#button_classes' => 'btn btn-primary btn-sm',
+        '#modal_title' => t('Nueva tematica'),
+        '#modal_content' => $assign_tematica_form,
+        '#has_plus' => TRUE,
+      ];
+    }
+
+    if ($display->getComponent('link_to_pdf')) {
+      $nid = $entity->id();
+      $url = Url::fromRoute('carbray_cliente.actuaciones_to_doc', array('nid' => $nid));
+
+      $build['link_to_pdf'] = [
+        '#type' => 'link',
+        '#url' => $url,
+        '#title' => t('Exportar DOC'),
+        '#attributes' => array(
+          'target' => '_blank',
+          'class' => array(
+            'btn',
+            'btn-primary',
+          ),
+        ),
+      ];
+    }
+
+    if ($display->getComponent('anadir_nota')) {
+      $form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray_cliente\Form\NewNotaForm', $nid, $entity->bundle());
+      $build['anadir_nota'] = [
+        '#theme' => 'button_modal',
+        '#unique_id' => 'anadir-nota-nid-' . $nid,
+        '#button_text' => 'Añadir nota',
+        '#button_classes' => 'btn btn-primary btn-sm',
+        '#modal_title' => t('Nueva nota'),
+        '#modal_content' => $form,
+        '#has_plus' => TRUE,
+      ];
+    }
+
+    if ($display->getComponent('ver_notas')) {
+      $notas_nids = get_notas($nid, $entity->bundle());
+      $rows = [];
+      foreach ($notas_nids as $notas_nid) {
+        $nota_node = Node::load($notas_nid);
+        $author_uid = $nota_node->getOwnerId();
+        $user = User::load($author_uid);
+        $edit_form = \Drupal::formBuilder()
+          ->getForm('Drupal\carbray_cliente\Form\EditNotaForm', $notas_nid);
+        $build['edit_nota_form'] = [
+          '#theme' => 'button_modal',
+          '#unique_id' => 'edit-nota_nid-' . $notas_nid,
+          '#button_text' => 'Editar nota',
+          '#button_classes' => 'btn btn-primary btn-sm',
+          '#modal_title' => t('Editar nota'),
+          '#modal_content' => $edit_form,
+          '#has_plus' => FALSE,
+        ];
+        $rows[] = array(
+          Markup::create($nota_node->get('field_nota_nota')->value),
+          $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value,
+          date('d-M-Y H:m:s', $nota_node->created->value),
+          render($build['edit_nota_form']),
+        );
+      }
+      $header = array(
+        'Nota',
+        'Autor',
+        'Fecha creacion',
+        'Editar',
+      );
+      $build['notas_table'] = [
+        '#type' => 'table',
+        '#header' => $header,
+        '#rows' => $rows,
+        '#empty' => t('Ninguna nota creada aún.'),
+      ];
+    }
+  }
+
+  if ($entity->bundle() == 'expediente') {
+    $db = \Drupal::database();
+    $sql = "SELECT uid FROM carbray_user_captacion_expediente WHERE expediente_nid = :expediente_nid";
+    $uid = $db->query($sql, array(':expediente_nid' => $entity->id()))
+      ->fetchField();
+    $user = User::load($uid);
+    if ($display->getComponent('edit_expediente')) {
+      $form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray\Form\EditExpediente', $nid);
+      $build['edit_expediente'] = array(
+        '#theme' => 'button_modal',
+        '#unique_id' => 'edit-captacion-' . $nid,
+        '#button_text' => 'Editar expediente',
+        '#button_classes' => 'btn btn-warning pull-left',
+        '#modal_title' => t('Editar expediente'),
+        '#modal_content' => $form,
+      );
+    }
+
+    if ($display->getComponent('archive_expediente')) {
+      $archive_exp_form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray\Form\ArchiveExpediente', $entity->id());
+      $build['archive_expediente'] = $archive_exp_form;
+    }
+
+    if ($display->getComponent('exp_responsables')) {
+      $responsables = print_cliente_captadores_responsables($entity->get('field_expediente_responsable')->getValue());
+      $build['exp_responsables'] = [
+        '#markup' => $responsables,
+      ];
+    }
+
+    if ($display->getComponent('anadir_nota')) {
+      $form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray_cliente\Form\NewNotaForm', $nid, $entity->bundle());
+      $build['anadir_nota'] = [
+        '#theme' => 'button_modal',
+        '#unique_id' => 'anadir-nota-nid-' . $nid,
+        '#button_text' => 'Añadir nota a expediente',
+        '#button_classes' => 'btn btn-primary btn-sm',
+        '#modal_title' => t('Nueva nota para expediente'),
+        '#modal_content' => $form,
+        '#has_plus' => TRUE,
+      ];
+    }
+
+    if ($display->getComponent('ver_notas')) {
+      $notas_nids = get_notas($nid, $entity->bundle());
+      $rows = [];
+      foreach ($notas_nids as $notas_nid) {
+        $nota_node = Node::load($notas_nid);
+        $author_uid = $nota_node->getOwnerId();
+        $author = User::load($author_uid);
+        $edit_form = \Drupal::formBuilder()
+          ->getForm('Drupal\carbray_cliente\Form\EditNotaForm', $notas_nid);
+        $build['edit_nota_form'] = [
+          '#theme' => 'button_modal',
+          '#unique_id' => 'edit-nota_nid-' . $notas_nid,
+          '#button_text' => 'Editar nota',
+          '#button_classes' => 'btn btn-primary btn-sm',
+          '#modal_title' => t('Editar nota'),
+          '#modal_content' => $edit_form,
+          '#has_plus' => FALSE,
+        ];
+        $rows[] = array(
+          Markup::create($nota_node->get('field_nota_nota')->value),
+          $author->get('field_nombre')->value . ' ' . $author->get('field_apellido')->value,
+          date('d-M-Y H:m:s', $nota_node->created->value),
+          render($build['edit_nota_form']),
+        );
+      }
+      $header = array(
+        'Nota',
+        'Autor',
+        'Fecha creacion',
+        'Editar',
+      );
+      $build['notas_table'] = [
+        '#type' => 'table',
+        '#header' => $header,
+        '#rows' => $rows,
+        '#empty' => t('Ninguna nota creada aún.'),
+      ];
+    }
+    if ($display->getComponent('client_name')) {
+      if ($user) {
+        $cliente_nombre = $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value;
+        $url = Url::fromRoute('entity.user.canonical', ['user' => $user->id()]);
+        $user_link = Link::fromTextAndUrl($cliente_nombre, $url);
+        $user_link = $user_link->toRenderable();
+        $build['client_name'] = [
+          '#markup' => render($user_link),
+        ];
+      }
+    }
+    if ($display->getComponent('client_correo')) {
+      if ($user) {
+        $build['client_correo'] = [
+          '#markup' => $user->getEmail(),
+        ];
+      }
+    }
+    if ($display->getComponent('client_telefono')) {
+      if ($user) {
+        $cliente_telefono = $user->get('field_telefono')->value;
+        $build['client_telefono'] = [
+          '#markup' => $cliente_telefono,
+        ];
+      }
+    }
+    if ($display->getComponent('client_pais')) {
+      if ($user) {
+        $cliente_pais = $user->get('field_pais')->value;
+        if ($cliente_pais) {
+          $build['client_pais'] = [
+            '#markup' => code_to_country($cliente_pais),
+          ];
+        }
+      }
+    }
+
+    if ($display->getComponent('persona_juridica')) {
+      if ($user) {
+        $persona = $user->get('field_persona_juridica')->value;
+        $cleaned_up_string = str_replace("_"," ",$persona);
+        $cleaned_up_string = ucfirst($cleaned_up_string);
+        $build['persona_juridica'] = [
+          '#markup' => $cleaned_up_string,
+        ];
+      }
+    }
+
+    if ($display->getComponent('pack_horas')) {
+      $db = \Drupal::database();
+      $sql = "SELECT original_minutes, refill_minutes FROM carbray_expediente_horas WHERE expediente_nid = :nid AND (refill_type = 0 OR refill_type IS NULL) ORDER BY id ASC";
+      $pack_minutes = $db->query($sql, array(':nid' => $entity->id()))->fetchAll();
+      $pack_horas = '';
+      if ($pack_minutes) {
+        foreach ($pack_minutes as $inputted_time) {
+          if (isset($inputted_time->original_minutes)) {
+            $pack_horas =  'Horas: ' . gmdate("H:i", $inputted_time->original_minutes * 60);
+
+          }
+          if (isset($inputted_time->refill_minutes)) {
+            $pack_horas .= '<br>Horas facturables añadidas: ' . gmdate("H:i", $inputted_time->refill_minutes * 60);
+          }
+        }
+      }
+      $build['pack_horas'] = [
+        '#markup' => $pack_horas,
+      ];
+    }
+
+
+    // Work out whether this expediente node is for a captacion that has cliente cuota.
+    $db = \Drupal::database();
+    $sql = "SELECT ccc.field_captacion_cliente_cuenta_value
+FROM node__field_expediente_captacion ec 
+INNER JOIN node__field_captacion_cliente_cuenta ccc on ec.field_expediente_captacion_target_id = ccc.entity_id
+WHERE ccc.field_captacion_cliente_cuenta_value = 1
+AND ec.entity_id = :expediente_nid";
+    $is_cliente_cuota = $db->query($sql, array(':expediente_nid' => $entity->id()))
+      ->fetchField();
+
+    if (!$is_cliente_cuota) {
+      if ($display->getComponent('new_actuacion')) {
+        $form = \Drupal::formBuilder()
+          ->getForm('Drupal\carbray\Form\NewActuacionForm', $nid);
+        $build['new_actuacion'] = $form;
+      }
+
+      if ($display->getComponent('add_hours')) {
+        // If expediente had a pack de horas, and now the amount of time has run out:
+        // show a button to refill the hours.
+        // Does this expediente have a pack de horas set?
+        $is_pack = \Drupal::database()->query("SELECT expediente_nid FROM carbray_expediente_horas WHERE expediente_nid = :expediente_nid LIMIT 1", array(':expediente_nid' => $nid))->fetchField();
+        if ($is_pack) {
+          $expediente = Node::load($entity->id());
+          $pack_minutos = $expediente->get('field_expediente_pack_minutos')->value;
+          if ($pack_minutos == 0) {
+            $add_hours_form = \Drupal::formBuilder()
+              ->getForm('Drupal\carbray\Form\AddExpedienteHours', $nid);
+            $build['add_hours'] = [
+              '#theme' => 'button_modal',
+              '#unique_id' => 'add-hours-expediente-nid-' . $nid,
+              '#button_text' => 'Añadir horas',
+              '#button_classes' => 'btn btn-primary',
+              '#modal_title' => t('Añadir horas'),
+              '#modal_content' => $add_hours_form,
+              '#has_plus' => FALSE,
+            ];
+          }
+        }
+      }
+
+
+      if ($display->getComponent('actuaciones_csv_link')) {
+        $csv_url = Url::fromRoute('carbray.csv');
+        $link_options = array(
+          'attributes' => array(
+            'class' => array(
+              'btn',
+              'btn-primary',
+            ),
+          ),
+          'query' => array(
+            'nid' => $nid,
+          ),
+        );
+        $csv_url->setOptions($link_options);
+        $link_to_csv_url = Link::fromTextAndUrl('Exportar CSV', $csv_url);
+        $link_to_csv_string = $link_to_csv_url->toString()
+          ->getGeneratedLink();
+        $csv_link_markup = Markup::create($link_to_csv_string);
+        $build['actuaciones_csv_link'] = [
+          '#markup' => $csv_link_markup,
+        ];
+      }
+
+      if ($display->getComponent('link_to_pdf')) {
+        $nid = $entity->id();
+        $url = Url::fromRoute('carbray_cliente.actuaciones_to_doc', array('nid' => $nid));
+
+        $build['link_to_pdf'] = [
+          '#type' => 'link',
+          '#url' => $url,
+          '#title' => t('Exportar DOC'),
+          '#attributes' => array(
+            'target' => '_blank',
+            'class' => array(
+              'btn',
+              'btn-primary',
+            ),
+          ),
+        ];
+      }
+
+      if ($display->getComponent('view_actuaciones')) {
+        $actuaciones_nids = get_actuaciones_for_expediente($nid);
+        $total_seconds = 0;
+        $actuaciones_rows = [];
+        $is_expediente_node_view = FALSE;
+        if ($actuaciones_nids) {
+          // Work out if this is an exportable path (e.g node/{nid}/pdf) to show/hide edit actuacion button link and form.
+          $current_uri = \Drupal::request()->getRequestUri();
+          if (strpos($current_uri, 'expediente') !== FALSE) {
+            $is_expediente_node_view = TRUE;
+          }
+          foreach ($actuaciones_nids as $actuacion_nid) {
+            $file_link = '';
+            if ($actuacion_nid->fid) {
+              $file = File::load($actuacion_nid->fid);
+              $file_uri = $file->getFileUri();
+              $url = file_create_url($file_uri);
+              $url = Url::fromUri($url, ['absolute' => TRUE], array(
+                'attributes' => array(
+                  'target' => '_blank',
+                  'class' => array('btn', 'btn-primary', 'btn-sm')
+                ),
+              ));
+
+              $file_link = Link::fromTextAndUrl($file->getFilename(), $url);
+            }
+            $actuacion_node = Node::load($actuacion_nid->nid);
+            // Get the minutes values for the actuacion and transform it to seconds for correct display.
+            $minutes = $actuacion_node->get('field_actuacion_tiempo_en_seg')->value;
+            $seconds = $minutes * 60;
+            $hours = floor($seconds / 3600);
+            $minutes = floor(($seconds / 60) % 60);
+            $total_seconds += $seconds;
+
+            $refill_type = \Drupal::database()
+              ->query("SELECT refill_type
+      FROM carbray_expediente_horas eh
+      INNER JOIN carbray_expediente_horas_actuaciones eha on eh.id = eha.expediente_horas_id
+    WHERE 
+     actuacion_nid = :actuacion_nid ", [':actuacion_nid' => $actuacion_node->id()])
+              ->fetchField();
+            $edit_form = \Drupal::formBuilder()
+              ->getForm('Drupal\carbray\Form\EditActuacionForm', $actuacion_nid->nid);
+            if ($is_expediente_node_view) {
+              $build['edit_actuacion_form'] = [
+                '#theme' => 'button_modal',
+                '#unique_id' => 'edit-actuacion_nid-' . $actuacion_nid->nid,
+                '#button_text' => 'Editar actuacion',
+                '#button_classes' => 'btn btn-primary btn-sm',
+                '#modal_title' => t('Editar actuacion'),
+                '#modal_content' => $edit_form,
+                '#has_plus' => FALSE,
+              ];
+            }
+
+            $actuaciones_rows[] = array(
+              date('d-m-y H:m:s', $actuacion_nid->created),
+              $actuacion_nid->title,
+              $hours . ':' . $minutes,
+              ($refill_type == 0) ? 'Facturables' : 'Cortesia',
+              Markup::create($actuacion_nid->field_nota_nota_value),
+              $file_link,
+              get_cliente_nombre($actuacion_nid->uid),
+              ($is_expediente_node_view) ? render($build['edit_actuacion_form']) : '',
+            );
+          }
+
+          // Add a total row at the bottom.
+          $total_hours = floor($total_seconds / 3600);
+          $total_minutes = floor(($total_seconds / 60) % 60);
+          $actuaciones_rows[] = [
+            Markup::create('<b>Total:</b>'),
+            '',
+            Markup::create('<b>' . $total_hours . ':' . $total_minutes . '</b>'),
+            '',
+            '',
+            '',
+            '',
+            '',
+          ];
+        }
+
+        $header = array(
+          'Fecha creacion',
+          'Actuacion',
+          'Horas:Minutos',
+          'Tipo horas',
+          'Notas',
+          'Documentacion',
+          'Autor',
+        );
+        if ($is_expediente_node_view) {
+          $header[] = 'Editar';
+        }
+        $build['view_actuaciones'] = [
+          '#type' => 'table',
+          '#header' => $header,
+          '#rows' => $actuaciones_rows,
+          '#empty' => t('Ninguna actuación creada aún.'),
+        ];
+      }
+    }
+
+    if ($display->getComponent('view_modelos')) {
+      $form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray\Form\EditModelos', $entity->id());
+      $build['view_modelos'] = $form;
+    }
+
+    if ($display->getComponent('view_tematica')) {
+      $db = \Drupal::database();
+      $sql = "SELECT field_expediente_tematica_target_id FROM node__field_expediente_tematica WHERE entity_id = :nid";
+      $servicios_tids = $db->query($sql, array(':nid' => $nid))
+        ->fetchCol();
+      if ($servicios_tids) {
+        $rows = [];
+        foreach ($servicios_tids as $servicio_tid) {
+          $term = Term::load($servicio_tid);
+          if ($term) {
+            $parent_term = get_parent_of_child_term($servicio_tid);
+            $rows[] = array(
+              $parent_term,
+              $term->name->value,
+            );
+          }
+        }
+      }
+
+      $header = array(
+        'Tematica',
+        'Servicio',
+      );
+      $build['view_expediente_tematica'] = [
+        '#type' => 'table',
+        '#header' => $header,
+        '#rows' => $rows,
+      ];
+    }
+  }
+  if ($entity->bundle() == 'cita') {
+    $cita_node = Node::load($entity->id());
+    if ($display->getComponent('cita_body')) {
+      $build['cita_body'] = [
+        '#markup' => $cita_node->body->value,
+      ];
+    }
+    if ($display->getComponent('cita_invitados')) {
+      $invitados_uids = $cita_node->get('field_cita_invitado')->getValue();
+      $worker_name = '';
+      foreach ($invitados_uids as $invitado_uid) {
+        $user = User::load($invitado_uid['target_id']);
+        $nombre = $user->get('field_nombre')->value;
+        $apellido = $user->get('field_apellido')->value;
+        $worker_name .= ucfirst($nombre) . ' ' . ucfirst($apellido) . '<br>';
+
+      }
+      $build['cita_invitados'] = [
+        '#markup' => $worker_name,
+      ];
+    }
+    if ($display->getComponent('cita_hora')) {
+      $build['cita_hora'] = [
+        // Convert from date iso to a human friendly date.
+        '#markup' => date('d-m-Y H:i:s', strtotime($cita_node->get('field_cita_hora')->value)),
+      ];
+    }
+  }
+}
+
+
+/**
+ * Helper function to obtain expedientes for the given user uid.
+ *
+ * @param string $uid
+ */
+function get_cliente_expediente_nids($uid) {
+  $bundle = 'expediente';
+  $query = \Drupal::entityQuery('node');
+  $query->condition('status', 1);
+  $query->condition('type', $bundle);
+  $query->condition('field_expediente_cliente', $uid);
+  $expediente_nids = $query->execute();
+  return $expediente_nids;
+}
+
+/**
+ * Helper function to obtain all expedientes data from the nids.
+ *
+ * @param array $expediente_nids
+ */
+function get_expedientes_data($expediente_nids) {
+  $db = \Drupal::database();
+  $expedientes = [];
+  foreach ($expediente_nids as $expediente_nid) {
+    $sql = "SELECT title, DATE_FORMAT(field_expediente_fecha_alta_value, '%d-%m-%Y') as fecha_alta FROM node_field_data nfd INNER JOIN node__field_expediente_fecha_alta fa ON nfd.nid = fa.entity_id WHERE nfd.nid = :expediente_nid";
+    $data = $db->query($sql, array(':expediente_nid' => $expediente_nid))
+      ->fetchAssoc();
+    $alias = \Drupal::service('path.alias_manager')
+      ->getAliasByPath('/node/' . $expediente_nid);
+    $data['link'] = $alias;
+    $expedientes[] = $data;
+  }
+  return $expedientes;
+}
+
+function get_actuaciones_for_expediente($nid) {
+  $db = \Drupal::database();
+  $sql = "SELECT nid, title, created, uid, field_nota_nota_value, field_actuacion_documentacion_target_id as fid FROM node_field_data nfd INNER JOIN node__field_actuacion_expediente ae ON nfd.nid = ae.entity_id LEFT JOIN node__field_actuacion_nota an ON an.entity_id = nfd.nid LEFT JOIN node__field_nota_nota nn on an.field_actuacion_nota_target_id = nn.entity_id LEFT JOIN node__field_actuacion_documentacion ad on ad.entity_id = nfd.nid  WHERE field_actuacion_expediente_target_id = :nid ORDER BY created DESC";
+  return $db->query($sql, array(':nid' => $nid))
+    ->fetchAll();
+}
+
+function get_actuaciones_for_captacion($nid) {
+  $db = \Drupal::database();
+  $sql = "SELECT nid, title, created, uid, field_nota_nota_value FROM node_field_data nfd INNER JOIN node__field_actuacion_captacion ac ON nfd.nid = ac.entity_id LEFT JOIN node__field_actuacion_captacion_nota acn ON acn.entity_id = nfd.nid LEFT JOIN node__field_nota_nota nn on acn.field_actuacion_captacion_nota_target_id = nn.entity_id WHERE field_actuacion_captacion_target_id = :nid ORDER BY created DESC";
+  return $db->query($sql, array(':nid' => $nid))
+    ->fetchAll();
+}
+
+function get_captacion_estado_changes($nid) {
+  $db = \Drupal::database();
+  $sql = "SELECT * FROM carbray_captacion_changes_log WHERE nid = :nid ORDER BY created ASC";
+  return $db->query($sql, array(':nid' => $nid))
+    ->fetchAll();
+}
+
+function get_expediente_responsables($expediente_nid) {
+  $db = \Drupal::database();
+  $sql = "SELECT field_expediente_responsable_target_id FROM node__field_expediente_responsable WHERE entity_id = :entity_id";
+  return $db->query($sql, array(':entity_id' => $expediente_nid))
+    ->fetchCol();
+}

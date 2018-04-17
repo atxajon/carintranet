@@ -1,0 +1,18 @@
+informes.resumen:
+  path: '/informes'
+  defaults:
+    _title: 'Informes - Resumen Abogados'
+    _controller: '\Drupal\carbray_informes\Controller\InformesController::resumen'
+  requirements:
+    _role: 'authenticated'
+
+informes.procedencia:
+  path: '/informes/procedencia'
+  defaults:
+    _title: 'Informes - Resumen Procedencia'
+    _controller: '\Drupal\carbray_informes\Controller\InformesController::procedencia'
+  requirements:
+    _role: 'authenticated'
+
+
+
