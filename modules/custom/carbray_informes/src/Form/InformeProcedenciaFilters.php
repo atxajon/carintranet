@@ -29,6 +29,7 @@ class InformeProcedenciaFilters extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form['#attached']['library'][] = 'carbray_informes/date_autosubmit';
+    $form['#attributes']['class'][] = 'informe-filters';
 
     // Obtain query string values to set default_value in filters.
     $path = parse_url(\Drupal::request()->getRequestUri());
@@ -47,7 +48,7 @@ class InformeProcedenciaFilters extends FormBase {
       '#date_time_element' => 'none',
       '#title' => t('Desde'),
       '#default_value' => isset($query_array['date_from']) ? DrupalDateTime::createFromTimestamp($query_array['date_from']) : '',
-//      '#prefix' => '<div class="clearfix"><div class="pull-left">',
+//      '#prefix' => '<div class="clearfix">',
 //      '#suffix' => '</div>',
     );
     $form['date_to'] = array(
@@ -61,7 +62,7 @@ class InformeProcedenciaFilters extends FormBase {
       '#title' => t('Hasta'),
       '#default_value' => isset($query_array['date_to']) ? DrupalDateTime::createFromTimestamp($query_array['date_to']) : '',
 //      '#prefix' => '<div class="pull-left">',
-//      '#suffix' => '</div></div>',
+//      '#suffix' => '</div>',
     );
 
     // Get last 12 months relative to current one in spanish.

@@ -192,9 +192,23 @@ ul {
 }
 
 /*Hides primary tabs; internal workers have the right to view unpublished content by permission 'bypass content rules...', and this makes view/edit tabs visible!*/
-.tabs--primary {
-  display: none;
+/*.tabs--primary {*/
+  /*display: none;*/
+/*}*/
+.nav-tabs {
+ border: none;
 }
+.tabs--primary {
+  font-family: 'Oswald', sans-serif;
+}
+.tabs--primary a {
+  font-size: 18px;
+}
+
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+  color: black !important;
+}
+
 
 /* collapsed sidebar styles */
 @media screen and (max-width: 767px) {
@@ -267,27 +281,27 @@ ul {
     background: #f7f8fa;
   }
 
-  #sidebar .nav a {
+  #sidebar .menu a {
     padding: 17px 25px;
     color: #c5c5c5;
     font-weight: 500;
   }
 
-  .nav > li > a:hover, .nav > li > a:focus {
+  .menu > li > a:hover, .menu > li > a:focus {
     text-decoration: none;
     background-color: transparent;
     color: #ffffff !important;
     font-weight: 700 !important;
   }
 
-  #sidebar .nav li.active {
+  #sidebar .menu li.active {
     text-decoration: none;
     background-color: none;
     color: #23527c !important;
     font-weight: 700;
   }
 
-  #sidebar .nav li.active a {
+  #sidebar .menu li.active a {
 
     color: #FFFFFF !important;
     font-weight: 700;
@@ -884,4 +898,14 @@ textarea[rows="3"] + .cke .cke_contents {
 
 .fc-header-toolbar .fc-center {
   text-transform: capitalize;
+}
+
+.form-item-last-months {
+  position: absolute;
+  top: 10px;
+  left: 300px;
+}
+
+.informe-filters {
+  position: relative;
 }
