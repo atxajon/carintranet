@@ -92,7 +92,7 @@ class InformeProcedenciaFilters extends FormBase {
       '#type' => 'submit',
       '#value' => t('Mostrar total'),
       '#submit' => array('::resetValues'),
-      '#attributes' => array('class' => ['margin-top-20', 'margin-bottom-20', 'btn-warning', 'reset']),
+      '#attributes' => array('class' => ['margin-top-20', 'margin-bottom-20', 'margin-left-10', 'btn-warning', 'reset']),
     ];
 
     return $form;

@@ -71,7 +71,7 @@ class ResumenAbogadosFilters extends FormBase {
       '#type' => 'submit',
       '#value' => t('Mostrar todo'),
       '#submit' => array('::resetValues'),
-      '#attributes' => array('class' => ['margin-top-20', 'margin-bottom-20', 'btn-warning']),
+      '#attributes' => array('class' => ['margin-top-20', 'margin-bottom-20', 'margin-left-10', 'btn-warning']),
     ];
 
     return $form;

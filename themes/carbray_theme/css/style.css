@@ -192,9 +192,9 @@ ul {
 }
 
 /*Hides primary tabs; internal workers have the right to view unpublished content by permission 'bypass content rules...', and this makes view/edit tabs visible!*/
-/*.tabs--primary {*/
-  /*display: none;*/
-/*}*/
+.path-node .tabs--primary {
+  display: none;
+}
 .nav-tabs {
  border: none;
 }
