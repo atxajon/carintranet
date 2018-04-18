@@ -14,5 +14,13 @@ informes.procedencia:
   requirements:
     _role: 'authenticated'
 
+informes.tematica:
+  path: '/informes/tematica'
+  defaults:
+    _title: 'Informes - Resumen Tematica/Servicios'
+    _controller: '\Drupal\carbray_informes\Controller\InformesController::tematica'
+  requirements:
+    _role: 'authenticated'
+
 
 

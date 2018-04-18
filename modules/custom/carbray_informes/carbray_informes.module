@@ -42,3 +42,21 @@ INNER JOIN node__field_captacion_captador cc on cc.entity_id = ccliente.entity_i
 INNER JOIN user__field_departamento dept on dept.entity_id = cc.field_captacion_captador_target_id ORDER BY name ASC, cliente_uid ASC")->fetchAll();
   return $procedencia_clientes;
 }
+
+function get_informe_servicios_count($dates = []) {
+  $params = [];
+  $sql = 'SELECT name, Count(field_expediente_tematica_target_id) as amount_count,
+(COUNT(*) / (SELECT COUNT(*) FROM node__field_expediente_tematica)) * 100 AS percent
+ FROM node__field_expediente_tematica et 
+ INNER JOIN taxonomy_term_field_data tfd on et.field_expediente_tematica_target_id = tfd.tid';
+  if ($dates) {
+    $sql .= '  INNER JOIN node_field_data nfd on et.entity_id = nfd.nid
+ WHERE nfd.created BETWEEN :date_from AND :date_to';
+    $params = [':date_from' => $dates['date_from'], ':date_to' => $dates['date_to']];
+  }
+
+  $sql .= ' GROUP BY field_expediente_tematica_target_id, name';
+
+  $servicios_count = \Drupal::database()->query($sql, $params)->fetchAll();
+  return $servicios_count;
+}

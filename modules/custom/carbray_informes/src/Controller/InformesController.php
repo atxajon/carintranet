@@ -134,7 +134,7 @@ ORDER BY field_apellido_value ASC')->fetchAll();
 //      $current_iteration_cliente_uid = $procedencia_cliente->cliente_uid;
 //    }
 
-    $markup = '<h3>Reparto</h3><div id="procedencia-chart"></div>';
+    $markup = '<h3>Reparto</h3><div id="chart"></div>';
 
     $filters_form = \Drupal::formBuilder()
       ->getForm('Drupal\carbray_informes\Form\InformeProcedenciaFilters');
@@ -161,7 +161,59 @@ ORDER BY field_apellido_value ASC')->fetchAll();
     ];
 
     return $build;
+  }
 
+  function tematica() {
+    $build['div_open'] = [
+      '#markup' => '<div class="admin-block">',
+    ];
+
+    // Obtain query string parameters to pass them in to the queries.
+    $path = parse_url(\Drupal::request()->getRequestUri());
+    $query_array = array();
+    if (isset($path['query'])) {
+      parse_str($path['query'], $query_array);
+    }
+
+
+    $servicios = get_informe_servicios_count($query_array);
+
+    $rows = [];
+    foreach ($servicios as $servicio) {
+      $rows[] = [
+        'name' => ucfirst($servicio->name),
+        'y' => (float)$servicio->amount_count,
+        'percent' => (float)round($servicio->percent, 2),
+      ];
+    }
+
+    $markup = '<h3>Reparto por tematica/servicios</h3><div id="chart"></div>';
+
+    $filters_form = \Drupal::formBuilder()
+      ->getForm('Drupal\carbray_informes\Form\InformeProcedenciaFilters');
+    $build['filters'] = [
+      '#markup' => render($filters_form),
+    ];
+
+    $build['chart'] = array(
+      '#markup' => $markup,
+      '#attached' => array(
+        'library' => array(
+          'carbray_informes/highcharts',
+          'carbray_informes/exporting',
+          'carbray_informes/tematicas_piechart',
+        ),
+        // Pass php var content to js.
+        'drupalSettings' => array(
+          'data' => $rows,
+        ),
+      ),
+    );
+    $build['div_close'] = [
+      '#markup' => '</div>',
+    ];
+
+    return $build;
   }
 
 }

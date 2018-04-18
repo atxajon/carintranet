@@ -3,7 +3,7 @@ Highcharts.chart('chart', {
     type: 'pie'
   },
   title: {
-    text: 'Total clientes por procedencia'
+    text: 'Total expedientes por tematicas/servicios'
   },
   // subtitle: {
   //   text: 'Click the slices to view versions. Source: <a href="http://statcounter.com" target="_blank">statcounter.com</a>'
@@ -24,9 +24,9 @@ Highcharts.chart('chart', {
 
   series: [
     {
-      "name": "Procedencia",
+      "name": "Tematica/Servicios",
       "colorByPoint": true,
-      "data": drupalSettings.procedencia_data
+      "data": drupalSettings.data
     }
   ]
 });

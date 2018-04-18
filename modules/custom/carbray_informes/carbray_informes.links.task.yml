@@ -7,3 +7,8 @@ informes.procedencia:
   route_name: informes.procedencia
   title: 'Procedencia'
   base_route: informes.resumen
+
+informes.tematica:
+  route_name: informes.tematica
+  title: 'Tematica/Servicios'
+  base_route: informes.resumen

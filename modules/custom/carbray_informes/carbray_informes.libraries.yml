@@ -25,6 +25,9 @@ procedencia_piechart:
   dependencies:
       - core/jquery
       - core/drupalSettings
+tematicas_piechart:
+  js:
+    js/tematicas_piechart.js: {}
 
 date_autosubmit:
   js:
