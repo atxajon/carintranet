@@ -65,7 +65,7 @@ ORDER BY field_apellido_value ASC')->fetchAll();
     );
 
     $filters_form = \Drupal::formBuilder()
-      ->getForm('Drupal\carbray\Form\ResumenAbogadosFilters');
+      ->getForm('Drupal\carbray_informes\Form\InformeAbogadosFilters');
     $build['filters'] = [
       '#markup' => render($filters_form),
     ];

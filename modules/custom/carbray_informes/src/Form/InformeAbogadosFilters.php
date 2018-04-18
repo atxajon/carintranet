@@ -4,7 +4,7 @@
  * Contains \Drupal\carbray\Form\NewClientForm.
  */
 
-namespace Drupal\carbray\Form;
+namespace Drupal\carbray_informes\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -13,14 +13,14 @@ use Drupal\Core\Url;
 use Drupal\Core\Datetime\DrupalDateTime;
 
 /**
- * ResumenAbogadosFilters form.
+ * InformeAbogadosFilters form.
  */
-class ResumenAbogadosFilters extends FormBase {
+class InformeAbogadosFilters extends FormBase {
   /**
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'toggle_user_status';
+    return 'informe_abogados_filters';
   }
 
   /**
