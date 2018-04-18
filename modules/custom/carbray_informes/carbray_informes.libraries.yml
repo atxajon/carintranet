@@ -18,6 +18,16 @@ exporting:
   js:
     https://code.highcharts.com/modules/exporting.js: { type: external, minified: true }
 
+drilldown:
+  remote: https://www.highcharts.com/
+  version: 5.0.14
+  license:
+    name: MIT
+    url: https://github.com/highcharts/highcharts/blob/master/license.txt
+    gpl-compatible: true
+  js:
+    https://code.highcharts.com/modules/drilldown.js: { type: external, minified: true }
+
 
 procedencia_piechart:
   js:

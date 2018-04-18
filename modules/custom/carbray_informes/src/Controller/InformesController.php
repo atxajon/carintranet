@@ -5,6 +5,7 @@ namespace Drupal\carbray_informes\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Url;
 use Drupal\Core\Link;
+use Drupal\taxonomy\Entity\Term;
 
 
 class InformesController extends ControllerBase {
@@ -104,8 +105,8 @@ ORDER BY field_apellido_value ASC')->fetchAll();
     foreach ($procedencia_clientes as $procedencia_cliente) {
       $rows[] = [
         'name' => ucfirst($procedencia_cliente->name),
-        'y' => (float)$procedencia_cliente->amount_count,
-        'percent' => (float)round($procedencia_cliente->percent, 2),
+        'y' => (float) $procedencia_cliente->amount_count,
+        'percent' => (float) round($procedencia_cliente->percent, 2),
       ];
     }
 
@@ -175,15 +176,55 @@ ORDER BY field_apellido_value ASC')->fetchAll();
       parse_str($path['query'], $query_array);
     }
 
-
     $servicios = get_informe_servicios_count($query_array);
 
-    $rows = [];
+    $servicios_data = [];
+    $tematicas_tids = [];
     foreach ($servicios as $servicio) {
-      $rows[] = [
+      // Skip if somebody accidentally tagged an expediente with tematica (1st level parent term in hierarchy) and not servicio (2nd level or child of tematica.
+      // Especially valid for old expedientes migrated that may not have been tagged with this hierarchy.
+      if ($servicio->parent == 0) {
+        continue;
+      }
+      // Format the array as Highcharts expects it: http://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/demo/pie-drilldown/
+      $servicios_data[] = [
         'name' => ucfirst($servicio->name),
-        'y' => (float)$servicio->amount_count,
-        'percent' => (float)round($servicio->percent, 2),
+        'id' => $servicio->parent,
+        'data' => [
+          [
+            ucfirst($servicio->name),
+            (float) $servicio->amount_count,
+          ],
+        ],
+      ];
+      $tematicas_tids[] = $servicio->parent;
+    }
+
+    $tematicas = array_count_values($tematicas_tids);
+    $count_tematicas_total = count($tematicas_tids);
+    foreach ($tematicas as $tematica_tid => $tematica_amount) {
+      $term = Term::load($tematica_tid);
+      if (!$term) {
+        continue;
+      }
+      $tematicas_data[] = [
+        'name' => ucfirst($term->getName()),
+        'y' => (float) $tematica_amount,
+        'percent' => (float) round($tematica_amount / $count_tematicas_total * 100, 2),
+        'drilldown' => (string)$tematica_tid,
+      ];
+      $servicios_for_tematica = get_informe_servicios_for_tematica($tematica_tid, $query_array);
+      $servicios_drilldown_series = [];
+      foreach ($servicios_for_tematica as $servicio_for_tematica) {
+        $servicios_drilldown_series[] = [
+          $servicio_for_tematica->name,
+          (int) $servicio_for_tematica->amount_count,
+        ];
+      }
+      $highcharts_drilldown_series[] = [
+        'name' => ucfirst($term->getName()),
+        'id' => (string)$tematica_tid,
+        'data' => $servicios_drilldown_series,
       ];
     }
 
@@ -201,11 +242,13 @@ ORDER BY field_apellido_value ASC')->fetchAll();
         'library' => array(
           'carbray_informes/highcharts',
           'carbray_informes/exporting',
+          'carbray_informes/drilldown',
           'carbray_informes/tematicas_piechart',
         ),
         // Pass php var content to js.
         'drupalSettings' => array(
-          'data' => $rows,
+          'tematicas_data' => $tematicas_data,
+          'servicios_data' => $highcharts_drilldown_series,
         ),
       ),
     );
