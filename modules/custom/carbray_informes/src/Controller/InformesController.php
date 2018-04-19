@@ -149,6 +149,7 @@ ORDER BY field_apellido_value ASC')->fetchAll();
         'library' => array(
           'carbray_informes/highcharts',
           'carbray_informes/exporting',
+          'carbray_informes/export_data',
           'carbray_informes/procedencia_piechart',
         ),
         // Pass php var content to js.
@@ -227,9 +228,9 @@ ORDER BY field_apellido_value ASC')->fetchAll();
         'name' => ucfirst($term->getName()),
         'id' => (string)$tematica_tid,
         'data' => $servicios_drilldown_series,
+        'percent' => (float) round((int) $servicio_for_tematica->amount_count / $total_expedientes * 100, 2),
       ];
     }
-
     $markup = '<h3>Reparto por tematica/servicios</h3><div id="chart"></div>';
 
     $filters_form = \Drupal::formBuilder()
@@ -245,6 +246,7 @@ ORDER BY field_apellido_value ASC')->fetchAll();
           'carbray_informes/highcharts',
           'carbray_informes/exporting',
           'carbray_informes/drilldown',
+          'carbray_informes/export_data',
           'carbray_informes/tematicas_piechart',
         ),
         // Pass php var content to js.
