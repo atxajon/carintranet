@@ -17,10 +17,10 @@ informes.procedencia:
 informes.tematica:
   path: '/informes/tematica'
   defaults:
-    _title: 'Informes - Resumen Tematica/Servicios'
+    _title: 'Informes - Resumen Expedientes por Tematicas/Servicios'
     _controller: '\Drupal\carbray_informes\Controller\InformesController::tematica'
   requirements:
-    _role: 'authenticated'
+    _role: 'carbray_administrator + administrator'
 
 
 

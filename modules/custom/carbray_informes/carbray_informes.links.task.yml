@@ -5,10 +5,10 @@ informes.resumen:
 
 informes.procedencia:
   route_name: informes.procedencia
-  title: 'Procedencia'
+  title: 'Procedencia clientes'
   base_route: informes.resumen
 
 informes.tematica:
   route_name: informes.tematica
-  title: 'Tematica/Servicios'
+  title: 'Expedientes por Tematicas/Servicios'
   base_route: informes.resumen

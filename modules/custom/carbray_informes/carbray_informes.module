@@ -79,3 +79,20 @@ function get_informe_servicios_for_tematica($tematica_tid, $dates = []) {
   $servicios_for_tematica_count = \Drupal::database()->query($sql, $params)->fetchAll();
   return $servicios_for_tematica_count;
 }
+
+function get_count_expedientes_for_tematica($tematica_tid, $dates = []) {
+  $params = [];
+  $sql = "SELECT Count(field_expediente_tematica_target_id) as total_expedientes_for_tematica
+ FROM node__field_expediente_tematica et 
+  INNER JOIN taxonomy_term_field_data tfd on et.field_expediente_tematica_target_id = tfd.tid
+ INNER JOIN node_field_data nfd on et.entity_id = nfd.nid
+ INNER JOIN taxonomy_term_hierarchy th on th.tid = tfd.tid
+ WHERE parent = $tematica_tid";
+  if ($dates) {
+    $sql .= ' AND nfd.created BETWEEN :date_from AND :date_to';
+    $params = [':date_from' => $dates['date_from'], ':date_to' => $dates['date_to']];
+  }
+
+  $count_expedientes = \Drupal::database()->query($sql, $params)->fetchField();
+  return $count_expedientes;
+}

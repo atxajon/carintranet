@@ -180,6 +180,7 @@ ORDER BY field_apellido_value ASC')->fetchAll();
 
     $servicios_data = [];
     $tematicas_tids = [];
+    $total_expedientes = 0;
     foreach ($servicios as $servicio) {
       // Skip if somebody accidentally tagged an expediente with tematica (1st level parent term in hierarchy) and not servicio (2nd level or child of tematica.
       // Especially valid for old expedientes migrated that may not have been tagged with this hierarchy.
@@ -198,19 +199,20 @@ ORDER BY field_apellido_value ASC')->fetchAll();
         ],
       ];
       $tematicas_tids[] = $servicio->parent;
+      $total_expedientes += $servicio->amount_count;
     }
 
     $tematicas = array_count_values($tematicas_tids);
-    $count_tematicas_total = count($tematicas_tids);
-    foreach ($tematicas as $tematica_tid => $tematica_amount) {
+    foreach ($tematicas as $tematica_tid => $servicios_for_tematica_count) {
       $term = Term::load($tematica_tid);
       if (!$term) {
         continue;
       }
+      $count_expedientes_for_tematica = get_count_expedientes_for_tematica($tematica_tid, $query_array);
       $tematicas_data[] = [
         'name' => ucfirst($term->getName()),
-        'y' => (float) $tematica_amount,
-        'percent' => (float) round($tematica_amount / $count_tematicas_total * 100, 2),
+        'y' => (float) $count_expedientes_for_tematica,
+        'percent' => (float) round($count_expedientes_for_tematica / $total_expedientes * 100, 2),
         'drilldown' => (string)$tematica_tid,
       ];
       $servicios_for_tematica = get_informe_servicios_for_tematica($tematica_tid, $query_array);
