@@ -16,6 +16,7 @@ INNER JOIN node__field_actuacion_tiempo_en_seg t on nfd.nid = t.entity_id
 INNER JOIN user__field_departamento d on nfd.uid = d.entity_id
 INNER JOIN user__field_nombre n on nfd.uid = n.entity_id
 INNER JOIN user__field_apellido a on nfd.uid = a.entity_id
+INNER JOIN user__roles ur on ur.entity_id = nfd.uid
 INNER JOIN taxonomy_term_field_data term on term.tid = d.field_departamento_target_id
 WHERE type = 'actuacion'";
   if ($worker_uid) {
@@ -23,7 +24,7 @@ WHERE type = 'actuacion'";
   }
   if ($department_tid) {
     $tids = implode(',', $department_tid);
-    $sql .= " AND field_departamento_target_id IN ($tids)";
+    $sql .= " AND field_departamento_target_id IN ($tids) AND roles_target_id != 'carbray_administrator'";
   }
   $actuaciones = \Drupal::database()->query($sql)->fetchAll();
   return $actuaciones;
@@ -37,6 +38,7 @@ LEFT JOIN node__field_cita_invitado ci on nfd.nid = ci.entity_id
 LEFT JOIN user__field_departamento d on nfd.uid = d.entity_id
 LEFT JOIN user__field_nombre n on nfd.uid = n.entity_id
 LEFT JOIN user__field_apellido a on nfd.uid = a.entity_id
+INNER JOIN user__roles ur on ur.entity_id = nfd.uid
 LEFT JOIN taxonomy_term_field_data term on term.tid = d.field_departamento_target_id
 WHERE type = 'cita'";
   if ($worker_uid) {
@@ -44,7 +46,7 @@ WHERE type = 'cita'";
   }
   if ($department_tid) {
     $tids = implode(',', $department_tid);
-    $sql .= " AND field_departamento_target_id IN ($tids)";
+    $sql .= " AND field_departamento_target_id IN ($tids) AND roles_target_id != 'carbray_administrator'";
   }
   $citas = \Drupal::database()->query($sql)->fetchAll();
   return $citas;

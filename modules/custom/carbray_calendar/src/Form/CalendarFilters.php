@@ -44,6 +44,11 @@ class CalendarFilters extends FormBase {
       $dept_workers_options = [];
       foreach ($dept_workers as $dept_worker) {
         $worker = User::load($dept_worker);
+        $roles = $worker->getRoles();
+        if (in_array('carbray_administrator', $roles)) {
+          // Skip carbray administrators if they are part of jefe_departamento's departamento.
+          continue;
+        }
         $dept_workers_options[$dept_worker] = $worker->get('field_nombre')->value . ' ' . $worker->get('field_apellido')->value;
       }
       $form['trabajador'] = array(
