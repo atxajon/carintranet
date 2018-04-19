@@ -26,6 +26,8 @@ WHERE type = 'actuacion'";
     $tids = implode(',', $department_tid);
     $sql .= " AND field_departamento_target_id IN ($tids) AND roles_target_id != 'carbray_administrator'";
   }
+
+  $sql .= " ORDER BY nid ASC";
   $actuaciones = \Drupal::database()->query($sql)->fetchAll();
   return $actuaciones;
 }
