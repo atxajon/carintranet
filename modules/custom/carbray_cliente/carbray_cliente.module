@@ -308,6 +308,17 @@ function get_expediente_modelos($nid) {
   return $data;
 }
 
+/**
+ * Given a expediente nid return its modelo tids.
+ *
+ * @param $nid
+ */
+function get_expediente_modelos_tids($nid) {
+  $db = \Drupal::database();
+  $sql = "SELECT modelos_tid FROM carbray_expediente_modelos WHERE expediente_nid = :nid";
+  $data = $db->query($sql, array(':nid' => $nid))->fetchCol();
+  return $data;
+}
 
 /**
  * Get notas referenced against a given nid.
