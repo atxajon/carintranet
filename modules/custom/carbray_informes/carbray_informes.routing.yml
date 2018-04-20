@@ -22,5 +22,13 @@ informes.tematica:
   requirements:
     _role: 'carbray_administrator + administrator'
 
+informes.paises:
+  path: '/informes/paises'
+  defaults:
+    _title: 'Informes - Resumen por pais'
+    _controller: '\Drupal\carbray_informes\Controller\InformesController::paises'
+  requirements:
+    _role: 'carbray_administrator + administrator'
+
 
 

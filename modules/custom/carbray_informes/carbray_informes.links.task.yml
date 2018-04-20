@@ -12,3 +12,8 @@ informes.tematica:
   route_name: informes.tematica
   title: 'Expedientes por Tematicas/Servicios'
   base_route: informes.resumen
+
+informes.paises:
+  route_name: informes.paises
+  title: 'Resumen por paises'
+  base_route: informes.resumen

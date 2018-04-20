@@ -263,4 +263,81 @@ ORDER BY field_apellido_value ASC')->fetchAll();
     return $build;
   }
 
+  public function paises() {
+    $build['#attached']['library'][] = 'carbray/tablesorter';
+    $build['#attached']['library'][] = 'carbray/carbray_table_sorter';
+
+    $build['div_open'] = [
+      '#markup' => '<div class="admin-block">',
+    ];
+
+    // Obtain query string parameters to pass them in to the queries.
+    $path = parse_url(\Drupal::request()->getRequestUri());
+    $query_array = array();
+    if (isset($path['query'])) {
+      parse_str($path['query'], $query_array);
+    }
+
+    $countries = \Drupal::service('country_manager')->getList();
+    // We need to sort translated countries ignoring their accents.
+    uasort($countries,"sort_alphabetically");
+
+    foreach ($countries as $country_code => $translatableMarkup) {
+      $count_captaciones_activas = get_count_captaciones_activas_by_country($country_code, $query_array);
+
+
+//      $count_captaciones_archivadas = get_count_captaciones_archivadas($worker->uid, $query_array);
+//      $count_expedientes_published = get_count_expedientes_published($worker->uid, $query_array);
+//      $count_expedientes_archived = get_count_expedientes_archived($worker->uid, $query_array);
+//      $count_facturas_emitidas = get_count_facturas_emitidas($worker->uid, $query_array);
+//      $count_facturas_pagadas = get_count_facturas_pagadas($worker->uid, $query_array);
+
+      $rows[] = array(
+        $translatableMarkup,
+        $count_captaciones_activas,
+        get_count_captaciones_archivadas_by_country($country_code, $query_array),
+//        $count_captaciones_activas,
+//        $count_captaciones_archivadas,
+//        $count_expedientes_published,
+//        $count_expedientes_archived,
+//        $count_facturas_emitidas,
+//        $count_facturas_pagadas,
+      );
+    }
+
+    $header = array(
+      'Pais',
+      'Captaciones en curso',
+      'Captaciones archivadas',
+//      'Expedientes en Curso',
+//      'Expedientes Archivados',
+//      'Facturas emitidas',
+//      'Facturas pagadas',
+    );
+
+    $filters_form = \Drupal::formBuilder()
+      ->getForm('Drupal\carbray_informes\Form\InformeAbogadosFilters');
+    $build['filters'] = [
+      '#markup' => render($filters_form),
+    ];
+    $build['table'] = [
+      '#theme' => 'table',
+      '#header' => $header,
+      '#rows' => $rows,
+      '#attributes' => ['id' => 'resumen-abogados', 'class' => ['tablesorter']],
+      '#cache' => [
+        'max-age' => 0,
+      ],
+    ];
+    $build['div_close'] = [
+      '#markup' => '</div>',
+    ];
+
+    return $build;
+  }
+
+}
+
+function get_all_countries() {
+
 }
