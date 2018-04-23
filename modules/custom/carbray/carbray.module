@@ -19,6 +19,15 @@ use Drupal\carbray\ProgressBar;
 define('REROUTE_EMAIL_ADDRESS', 'marc.mozos@carbray.es');
 
 
+define('CAPTACION_ARCHIVADA', 184);
+define('ESTADO_CAPTACION_DEFECTO', 44); // 'En contacto'.
+define('DEPARTAMENTO_CORPORATE', 185);
+define('DEPARTAMENTO_FRANCES', 186);
+define('DEPARTAMENTO_INMIGRATION', 187);
+define('DEPARTAMENTO_LITIGATION', 188);
+define('DEPARTAMENTO_TAX', 189);
+define('DEPARTAMENTO_REALESTATE', 209);
+
 /**
  * Implements hook_theme().
  */

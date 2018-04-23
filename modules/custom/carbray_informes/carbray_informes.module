@@ -71,6 +71,31 @@ function get_count_captaciones_activas_by_country($country, $filter_by = []) {
   return $count_captaciones_activas;
 }
 
+function get_captaciones_activas_by_country($country, $filter_by = []) {
+  $sql = "SELECT DISTINCT cc.entity_id as captacion_nid
+FROM node__field_captacion_cliente cc
+INNER JOIN node__field_captacion_estado_captacion ec ON ec.entity_id = cc.entity_id
+INNER JOIN node__field_captacion_captador captador on cc.entity_id = captador.entity_id 
+WHERE field_captacion_cliente_target_id IN (SELECT entity_id as cliente_uid FROM user__field_pais fpais WHERE fpais.field_pais_value = :country)
+AND cc.entity_id NOT IN (SELECT ec.field_expediente_captacion_target_id AS field_expediente_captacion_target_id
+FROM 
+node__field_expediente_captacion ec) 
+AND field_captacion_estado_captacion_target_id != '184'";
+  $captaciones_activas = \Drupal::database()->query($sql, [':country' => $country])->fetchCol();
+  return $captaciones_activas;
+}
+
+function get_departamento_for_captacion($captacion_nid) {
+  // @todo: should this not be 'get_departamentoS_for_captacion? there could be many captadores from many departamentos. Should be fetchAll()...
+  $sql = "SELECT field_departamento_target_id as dept_tid
+FROM user__field_departamento dep 
+INNER JOIN node__field_captacion_captador capt on capt.field_captacion_captador_target_id = dep.entity_id
+WHERE capt.entity_id = $captacion_nid";
+  $captaciones_activas = \Drupal::database()->query($sql)->fetchField();
+  return $captaciones_activas;
+}
+
+
 function get_count_captaciones_archivadas($uid, $filter_by = []) {
   $carchivadas_query = \Drupal::database()->select('users', 'u');
   $carchivadas_query->addExpression('count(cc.entity_id)', 'carchivadas');

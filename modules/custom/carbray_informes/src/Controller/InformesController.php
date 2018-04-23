@@ -283,7 +283,25 @@ ORDER BY field_apellido_value ASC')->fetchAll();
     uasort($countries,"sort_alphabetically");
 
     foreach ($countries as $country_code => $translatableMarkup) {
-      $count_captaciones_activas = get_count_captaciones_activas_by_country($country_code, $query_array);
+      //$count_captaciones_activas = get_count_captaciones_activas_by_country($country_code, $query_array);
+      $captaciones_activas = get_captaciones_activas_by_country($country_code, $query_array);
+      $departamentos_count = [];
+
+      foreach ($captaciones_activas as $captacion_activa) {
+        $departamento = get_departamento_for_captacion($captacion_activa);
+        if (!$departamento) {
+          // Skip workers not assigned to a departamento.
+          continue;
+        }
+        if (!array_key_exists($departamento, $departamentos_count)) {
+          // Initialise the count for this department.
+          $departamentos_count[$departamento] = 1;
+        }
+        else {
+          // Increment count for this department.
+          $departamentos_count[$departamento]++;
+        }
+      }
 
 
 //      $count_captaciones_archivadas = get_count_captaciones_archivadas($worker->uid, $query_array);
@@ -294,9 +312,11 @@ ORDER BY field_apellido_value ASC')->fetchAll();
 
       $rows[] = array(
         $translatableMarkup,
-        $count_captaciones_activas,
-        get_count_captaciones_archivadas_by_country($country_code, $query_array),
-//        $count_captaciones_activas,
+        (isset($departamentos_count[DEPARTAMENTO_CORPORATE])) ? $departamentos_count[DEPARTAMENTO_CORPORATE] : 0,
+        (isset($departamentos_count[DEPARTAMENTO_REALESTATE])) ? $departamentos_count[DEPARTAMENTO_REALESTATE] : 0,
+        (isset($departamentos_count[DEPARTAMENTO_LITIGATION])) ? $departamentos_count[DEPARTAMENTO_LITIGATION] : 0,
+        (isset($departamentos_count[DEPARTAMENTO_INMIGRATION])) ? $departamentos_count[DEPARTAMENTO_INMIGRATION] : 0,
+        //        $count_captaciones_activas,
 //        $count_captaciones_archivadas,
 //        $count_expedientes_published,
 //        $count_expedientes_archived,
@@ -307,12 +327,25 @@ ORDER BY field_apellido_value ASC')->fetchAll();
 
     $header = array(
       'Pais',
-      'Captaciones en curso',
-      'Captaciones archivadas',
-//      'Expedientes en Curso',
-//      'Expedientes Archivados',
-//      'Facturas emitidas',
-//      'Facturas pagadas',
+      'Corporate - Captaciones en curso',
+//      'Corporate - Captaciones archivadas',
+//      'Corporate - Expedientes en curso',
+//      'Corporate - Facturas emitidas',
+//      'Corporate - Facturas pagadas',
+      'Real Estate - Captaciones en curso',
+//      'Real Estate - Captaciones archivadas',
+//      'Real Estate - Facturas emitidas',
+//      'Real Estate - Facturas pagadas',
+      'Litigation - Captaciones en curso',
+//      'Litigation - Captaciones archivadas',
+//      'Litigation - Expedientes en curso',
+//      'Litigation - Facturas emitidas',
+//      'Litigation - Facturas pagadas',
+      'Inmigration - Captaciones en curso',
+//      'Inmigration - Captaciones archivadas',
+//      'Inmigration - Expedientes en curso',
+//      'Inmigration - Facturas emitidas',
+//      'Inmigration - Facturas pagadas',
     );
 
     $filters_form = \Drupal::formBuilder()
