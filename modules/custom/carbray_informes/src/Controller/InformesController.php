@@ -285,7 +285,9 @@ ORDER BY field_apellido_value ASC')->fetchAll();
     foreach ($countries as $country_code => $translatableMarkup) {
       //$count_captaciones_activas = get_count_captaciones_activas_by_country($country_code, $query_array);
       $captaciones_activas = get_captaciones_activas_by_country($country_code, $query_array);
-      $departamentos_count = [];
+      $expedientes_activos = get_expedientes_activos_by_country($country_code, $query_array);
+      $captaciones_activas_departamentos_count = [];
+      $expedientes_activos_departamentos_count = [];
 
       foreach ($captaciones_activas as $captacion_activa) {
         $departamento = get_departamento_for_captacion($captacion_activa);
@@ -293,29 +295,42 @@ ORDER BY field_apellido_value ASC')->fetchAll();
           // Skip workers not assigned to a departamento.
           continue;
         }
-        if (!array_key_exists($departamento, $departamentos_count)) {
+        if (!array_key_exists($departamento, $captaciones_activas_departamentos_count)) {
           // Initialise the count for this department.
-          $departamentos_count[$departamento] = 1;
+          $captaciones_activas_departamentos_count[$departamento] = 1;
         }
         else {
           // Increment count for this department.
-          $departamentos_count[$departamento]++;
+          $captaciones_activas_departamentos_count[$departamento]++;
         }
       }
 
-
-//      $count_captaciones_archivadas = get_count_captaciones_archivadas($worker->uid, $query_array);
-//      $count_expedientes_published = get_count_expedientes_published($worker->uid, $query_array);
-//      $count_expedientes_archived = get_count_expedientes_archived($worker->uid, $query_array);
-//      $count_facturas_emitidas = get_count_facturas_emitidas($worker->uid, $query_array);
-//      $count_facturas_pagadas = get_count_facturas_pagadas($worker->uid, $query_array);
+      foreach ($expedientes_activos as $expediente_activo) {
+        $departamento = get_departamento_for_expediente($expediente_activo);
+        if (!$departamento) {
+          // Skip workers not assigned to a departamento.
+          continue;
+        }
+        if (!array_key_exists($departamento, $expedientes_activos_departamentos_count)) {
+          // Initialise the count for this department.
+          $expedientes_activos_departamentos_count[$departamento] = 1;
+        }
+        else {
+          // Increment count for this department.
+          $expedientes_activos_departamentos_count[$departamento]++;
+        }
+      }
 
       $rows[] = array(
         $translatableMarkup,
-        (isset($departamentos_count[DEPARTAMENTO_CORPORATE])) ? $departamentos_count[DEPARTAMENTO_CORPORATE] : 0,
-        (isset($departamentos_count[DEPARTAMENTO_REALESTATE])) ? $departamentos_count[DEPARTAMENTO_REALESTATE] : 0,
-        (isset($departamentos_count[DEPARTAMENTO_LITIGATION])) ? $departamentos_count[DEPARTAMENTO_LITIGATION] : 0,
-        (isset($departamentos_count[DEPARTAMENTO_INMIGRATION])) ? $departamentos_count[DEPARTAMENTO_INMIGRATION] : 0,
+        (isset($captaciones_activas_departamentos_count[DEPARTAMENTO_CORPORATE])) ? $captaciones_activas_departamentos_count[DEPARTAMENTO_CORPORATE] : 0,
+        (isset($expedientes_activos_departamentos_count[DEPARTAMENTO_CORPORATE])) ? $expedientes_activos_departamentos_count[DEPARTAMENTO_CORPORATE] : 0,
+        (isset($captaciones_activas_departamentos_count[DEPARTAMENTO_REALESTATE])) ? $captaciones_activas_departamentos_count[DEPARTAMENTO_REALESTATE] : 0,
+        (isset($expedientes_activos_departamentos_count[DEPARTAMENTO_REALESTATE])) ? $expedientes_activos_departamentos_count[DEPARTAMENTO_REALESTATE] : 0,
+        (isset($captaciones_activas_departamentos_count[DEPARTAMENTO_LITIGATION])) ? $captaciones_activas_departamentos_count[DEPARTAMENTO_LITIGATION] : 0,
+        (isset($expedientes_activos_departamentos_count[DEPARTAMENTO_LITIGATION])) ? $expedientes_activos_departamentos_count[DEPARTAMENTO_LITIGATION] : 0,
+        (isset($captaciones_activas_departamentos_count[DEPARTAMENTO_INMIGRATION])) ? $captaciones_activas_departamentos_count[DEPARTAMENTO_INMIGRATION] : 0,
+        (isset($expedientes_activos_departamentos_count[DEPARTAMENTO_INMIGRATION])) ? $expedientes_activos_departamentos_count[DEPARTAMENTO_INMIGRATION] : 0,
         //        $count_captaciones_activas,
 //        $count_captaciones_archivadas,
 //        $count_expedientes_published,
@@ -328,22 +343,19 @@ ORDER BY field_apellido_value ASC')->fetchAll();
     $header = array(
       'Pais',
       'Corporate - Captaciones en curso',
-//      'Corporate - Captaciones archivadas',
-//      'Corporate - Expedientes en curso',
+      'Corporate - Expedientes en curso',
 //      'Corporate - Facturas emitidas',
 //      'Corporate - Facturas pagadas',
       'Real Estate - Captaciones en curso',
-//      'Real Estate - Captaciones archivadas',
+      'Real Estate - Expedientes en curso',
 //      'Real Estate - Facturas emitidas',
 //      'Real Estate - Facturas pagadas',
       'Litigation - Captaciones en curso',
-//      'Litigation - Captaciones archivadas',
-//      'Litigation - Expedientes en curso',
+      'Litigation - Expedientes en curso',
 //      'Litigation - Facturas emitidas',
 //      'Litigation - Facturas pagadas',
       'Inmigration - Captaciones en curso',
-//      'Inmigration - Captaciones archivadas',
-//      'Inmigration - Expedientes en curso',
+      'Inmigration - Expedientes en curso',
 //      'Inmigration - Facturas emitidas',
 //      'Inmigration - Facturas pagadas',
     );
