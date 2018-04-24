@@ -105,11 +105,30 @@ WHERE field_captacion_cliente_target_id IN (SELECT entity_id as cliente_uid FROM
   return $expedientes_activos;
 }
 
+function get_facturas_emitidas_by_country($country, $filter_by = []) {
+  $sql = "SELECT DISTINCT f.entity_id
+ FROM node__field_factura f 
+INNER JOIN node__field_captacion_cliente cc on cc.entity_id = f.field_factura_target_id WHERE field_captacion_cliente_target_id IN (SELECT entity_id as cliente_uid FROM user__field_pais fpais WHERE fpais.field_pais_value = :country)";
+  $facturas_emitidas = \Drupal::database()->query($sql, [':country' => $country])->fetchCol();
+  return $facturas_emitidas;
+}
+
+function get_facturas_pagadas_by_country($country, $filter_by = []) {
+  $sql = "SELECT DISTINCT f.entity_id
+ FROM node__field_factura f 
+ INNER JOIN node__field_factura_pagada fp on f.entity_id = fp.entity_id
+INNER JOIN node__field_captacion_cliente cc on cc.entity_id = f.field_factura_target_id 
+WHERE field_captacion_cliente_target_id IN (SELECT entity_id as cliente_uid FROM user__field_pais fpais WHERE fpais.field_pais_value = :country) 
+AND field_factura_pagada_value = 1";
+  $facturas_pagadas = \Drupal::database()->query($sql, [':country' => $country])->fetchCol();
+  return $facturas_pagadas;
+}
+
 function get_departamento_for_captacion($captacion_nid) {
   // Should this not be 'get_departamentoS_for_captacion? there could be many captadores from many departamentos. Should be fetchAll()...
   // Update: leaving this as it is, in a strange case that a captacion has many captadores from many departments we only grab the first one found in the system.
   $sql = "SELECT field_departamento_target_id as dept_tid
-FROM user__field_departamento dep 
+FROM user__field_departamento dep
 INNER JOIN node__field_captacion_captador capt on capt.field_captacion_captador_target_id = dep.entity_id
 WHERE capt.entity_id = $captacion_nid";
   $departamento = \Drupal::database()->query($sql)->fetchField();
@@ -118,12 +137,23 @@ WHERE capt.entity_id = $captacion_nid";
 
 function get_departamento_for_expediente($expediente_nid) {
   $sql = "SELECT DISTINCT field_departamento_target_id as dept_tid
-FROM user__field_departamento dep 
+FROM user__field_departamento dep
 INNER JOIN node__field_expediente_responsable resp on resp.field_expediente_responsable_target_id = dep.entity_id
 WHERE resp.entity_id = $expediente_nid";
   $departamento = \Drupal::database()->query($sql)->fetchField();
   return $departamento;
 }
+
+function get_departamento_for_factura($factura_nid) {
+  $sql = "SELECT DISTINCT field_departamento_target_id as dept_tid
+FROM user__field_departamento dep
+INNER JOIN node__field_captacion_captador capt on capt.field_captacion_captador_target_id = dep.entity_id
+INNER JOIN node__field_factura fact on fact.field_factura_target_id = capt.entity_id
+WHERE fact.entity_id = $factura_nid";
+  $departamento = \Drupal::database()->query($sql)->fetchField();
+  return $departamento;
+}
+
 
 function get_count_captaciones_archivadas($uid, $filter_by = []) {
   $carchivadas_query = \Drupal::database()->select('users', 'u');
@@ -306,7 +336,7 @@ function get_informe_servicios_count($dates = []) {
 function get_informe_servicios_for_tematica($tematica_tid, $dates = []) {
   $params = [];
   $sql = "SELECT name, Count(field_expediente_tematica_target_id) as amount_count
- FROM node__field_expediente_tematica et 
+ FROM node__field_expediente_tematica et
  INNER JOIN taxonomy_term_field_data tfd on et.field_expediente_tematica_target_id = tfd.tid
  INNER JOIN node_field_data nfd on et.entity_id = nfd.nid
  INNER JOIN taxonomy_term_hierarchy th on th.tid = tfd.tid
@@ -325,7 +355,7 @@ function get_informe_servicios_for_tematica($tematica_tid, $dates = []) {
 function get_count_expedientes_for_tematica($tematica_tid, $dates = []) {
   $params = [];
   $sql = "SELECT Count(field_expediente_tematica_target_id) as total_expedientes_for_tematica
- FROM node__field_expediente_tematica et 
+ FROM node__field_expediente_tematica et
   INNER JOIN taxonomy_term_field_data tfd on et.field_expediente_tematica_target_id = tfd.tid
  INNER JOIN node_field_data nfd on et.entity_id = nfd.nid
  INNER JOIN taxonomy_term_hierarchy th on th.tid = tfd.tid
