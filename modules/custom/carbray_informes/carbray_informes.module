@@ -76,12 +76,14 @@ function get_captaciones_activas_by_country($country, $filter_by = []) {
 FROM node__field_captacion_cliente cc
 INNER JOIN node__field_captacion_estado_captacion ec ON ec.entity_id = cc.entity_id
 INNER JOIN node__field_captacion_captador captador on cc.entity_id = captador.entity_id 
+INNER JOIN node_field_data nfd on nfd.nid = cc.entity_id
 WHERE field_captacion_cliente_target_id IN (SELECT entity_id as cliente_uid FROM user__field_pais fpais WHERE fpais.field_pais_value = :country)
 AND cc.entity_id NOT IN (SELECT ec.field_expediente_captacion_target_id AS field_expediente_captacion_target_id
 FROM 
 node__field_expediente_captacion ec) 
 AND field_captacion_estado_captacion_target_id != '184'";
-  $captaciones_activas = \Drupal::database()->query($sql, [':country' => $country])->fetchCol();
+  $params = get_country_date_params($country, $sql, $filter_by);
+  $captaciones_activas = \Drupal::database()->query($params['sql'], $params['params'])->fetchCol();
   return $captaciones_activas;
 }
 
@@ -90,9 +92,11 @@ function get_captaciones_archivadas_by_country($country, $filter_by = []) {
 FROM node__field_captacion_cliente cc
 INNER JOIN node__field_captacion_estado_captacion ec ON ec.entity_id = cc.entity_id
 INNER JOIN node__field_captacion_captador captador on cc.entity_id = captador.entity_id 
+INNER JOIN node_field_data nfd on nfd.nid = cc.entity_id
 WHERE field_captacion_cliente_target_id IN (SELECT entity_id as cliente_uid FROM user__field_pais fpais WHERE fpais.field_pais_value = :country)
 AND field_captacion_estado_captacion_target_id = '184'";
-  $captaciones_archivadas = \Drupal::database()->query($sql, [':country' => $country])->fetchCol();
+  $params = get_country_date_params($country, $sql, $filter_by);
+  $captaciones_archivadas = \Drupal::database()->query($params['sql'], $params['params'])->fetchCol();
   return $captaciones_archivadas;
 }
 
@@ -100,16 +104,21 @@ function get_expedientes_activos_by_country($country, $filter_by = []) {
   $sql = "SELECT DISTINCT ec.entity_id as expediente_nid
 FROM node__field_expediente_captacion ec 
 INNER JOIN node__field_captacion_cliente cc on cc.entity_id = ec.field_expediente_captacion_target_id
+INNER JOIN node_field_data nfd on nfd.nid = cc.entity_id
 WHERE field_captacion_cliente_target_id IN (SELECT entity_id as cliente_uid FROM user__field_pais fpais WHERE fpais.field_pais_value = :country)";
-  $expedientes_activos = \Drupal::database()->query($sql, [':country' => $country])->fetchCol();
+  $params = get_country_date_params($country, $sql, $filter_by);
+  $expedientes_activos = \Drupal::database()->query($params['sql'], $params['params'])->fetchCol();
   return $expedientes_activos;
 }
 
 function get_facturas_emitidas_by_country($country, $filter_by = []) {
   $sql = "SELECT DISTINCT f.entity_id
  FROM node__field_factura f 
-INNER JOIN node__field_captacion_cliente cc on cc.entity_id = f.field_factura_target_id WHERE field_captacion_cliente_target_id IN (SELECT entity_id as cliente_uid FROM user__field_pais fpais WHERE fpais.field_pais_value = :country)";
-  $facturas_emitidas = \Drupal::database()->query($sql, [':country' => $country])->fetchCol();
+INNER JOIN node__field_captacion_cliente cc on cc.entity_id = f.field_factura_target_id
+INNER JOIN node_field_data nfd on nfd.nid = cc.entity_id 
+WHERE field_captacion_cliente_target_id IN (SELECT entity_id as cliente_uid FROM user__field_pais fpais WHERE fpais.field_pais_value = :country)";
+  $params = get_country_date_params($country, $sql, $filter_by);
+  $facturas_emitidas = \Drupal::database()->query($params['sql'], $params['params'])->fetchCol();
   return $facturas_emitidas;
 }
 
@@ -118,10 +127,28 @@ function get_facturas_pagadas_by_country($country, $filter_by = []) {
  FROM node__field_factura f 
  INNER JOIN node__field_factura_pagada fp on f.entity_id = fp.entity_id
 INNER JOIN node__field_captacion_cliente cc on cc.entity_id = f.field_factura_target_id 
+INNER JOIN node_field_data nfd on nfd.nid = cc.entity_id 
 WHERE field_captacion_cliente_target_id IN (SELECT entity_id as cliente_uid FROM user__field_pais fpais WHERE fpais.field_pais_value = :country) 
 AND field_factura_pagada_value = 1";
-  $facturas_pagadas = \Drupal::database()->query($sql, [':country' => $country])->fetchCol();
+  $params = get_country_date_params($country, $sql, $filter_by);
+  $facturas_pagadas = \Drupal::database()->query($params['sql'], $params['params'])->fetchCol();
   return $facturas_pagadas;
+}
+
+function get_country_date_params($country, $sql, $date_filters = []) {
+  $return['params'][':country'] = $country;
+  if ($date_filters) {
+    if (isset($date_filters['date_from'])) {
+      $sql .= " AND created > :date_from";
+      $return['params'][':date_from'] = $date_filters['date_from'];
+    }
+    if (isset($date_filters['date_to'])) {
+      $sql .= " AND created < :date_to";
+      $return['params'][':date_to'] = $date_filters['date_to'];
+    }
+  }
+  $return['sql'] = $sql;
+  return $return;
 }
 
 function get_departamento_for_captacion($captacion_nid) {
@@ -369,6 +396,44 @@ function get_count_expedientes_for_tematica($tematica_tid, $dates = []) {
   return $count_expedientes;
 }
 
-function get_count_for_paises() {
-
+/**
+ * Given a selection of nids queries for the departamento they're for
+ * and iterates through results to add them as total count.
+ * @param $items
+ *   Array with nids found for a country.
+ * @param $type
+ *   String referring to node type ('captacion', 'expediente'...
+ *
+ * @return $total
+ *   Array mapping the department tid as key and the total acumulated items as value.
+ */
+function get_total_count_for_departamento($items, $type) {
+  $total = [];
+  $function_call = '';
+  if ($type == 'captacion') {
+    $function_call = 'get_departamento_for_captacion';
+  }
+  elseif ($type == 'expediente') {
+    $function_call = 'get_departamento_for_expediente';
+  }
+  elseif ($type == 'factura') {
+    $function_call = 'get_departamento_for_factura';
+  }
+  foreach ($items as $item) {
+    $departamento = $function_call($item);
+    if (!$departamento) {
+      // Skip workers not assigned to a departamento.
+      continue;
+    }
+    if (!array_key_exists($departamento, $total)) {
+      // Initialise the count for this department.
+      $total[$departamento] = 1;
+    }
+    else {
+      // Increment count for this department.
+      $total[$departamento]++;
+    }
+  }
+  $jon = '';
+  return $total;
 }

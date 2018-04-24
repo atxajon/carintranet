@@ -287,93 +287,38 @@ ORDER BY field_apellido_value ASC')->fetchAll();
       $expedientes_activos = get_expedientes_activos_by_country($country_code, $query_array);
       $facturas_emitidas = get_facturas_emitidas_by_country($country_code, $query_array);
       $facturas_pagadas = get_facturas_pagadas_by_country($country_code, $query_array);
-      $captaciones_activas_departamentos_count = [];
-      $expedientes_activos_departamentos_count = [];
-      $facturas_emitidas_departamento_count = [];
-      $facturas_pagadas_departamento_count = [];
 
-      foreach ($captaciones_activas as $captacion_activa) {
-        $departamento = get_departamento_for_captacion($captacion_activa);
-        if (!$departamento) {
-          // Skip workers not assigned to a departamento.
-          continue;
-        }
-        if (!array_key_exists($departamento, $captaciones_activas_departamentos_count)) {
-          // Initialise the count for this department.
-          $captaciones_activas_departamentos_count[$departamento] = 1;
-        }
-        else {
-          // Increment count for this department.
-          $captaciones_activas_departamentos_count[$departamento]++;
-        }
-      }
-
-      foreach ($expedientes_activos as $expediente_activo) {
-        $departamento = get_departamento_for_expediente($expediente_activo);
-        if (!$departamento) {
-          // Skip workers not assigned to a departamento.
-          continue;
-        }
-        if (!array_key_exists($departamento, $expedientes_activos_departamentos_count)) {
-          // Initialise the count for this department.
-          $expedientes_activos_departamentos_count[$departamento] = 1;
-        }
-        else {
-          // Increment count for this department.
-          $expedientes_activos_departamentos_count[$departamento]++;
-        }
-      }
-
-      foreach ($facturas_emitidas as $factura_emitida) {
-        $departamento = get_departamento_for_factura($factura_emitida);
-        if (!$departamento) {
-          // Skip workers not assigned to a departamento.
-          continue;
-        }
-        if (!array_key_exists($departamento, $facturas_emitidas_departamento_count)) {
-          // Initialise the count for this department.
-          $facturas_emitidas_departamento_count[$departamento] = 1;
-        }
-        else {
-          // Increment count for this department.
-          $facturas_emitidas_departamento_count[$departamento]++;
-        }
-      }
-
-      foreach ($facturas_pagadas as $factura_pagada) {
-        $departamento = get_departamento_for_factura($factura_pagada);
-        if (!$departamento) {
-          // Skip workers not assigned to a departamento.
-          continue;
-        }
-        if (!array_key_exists($departamento, $facturas_pagadas_departamento_count)) {
-          // Initialise the count for this department.
-          $facturas_pagadas_departamento_count[$departamento] = 1;
-        }
-        else {
-          // Increment count for this department.
-          $facturas_pagadas_departamento_count[$departamento]++;
-        }
-      }
+      $c_activas_dept_count = get_total_count_for_departamento($captaciones_activas, 'captacion');
+      $e_activos_dept_count = get_total_count_for_departamento($expedientes_activos, 'expediente');
+      $f_emitidas_dept_count = get_total_count_for_departamento($facturas_emitidas, 'factura');
+      $f_pagadas_dept_count = get_total_count_for_departamento($facturas_pagadas, 'factura');
 
       $rows[] = array(
         $translatableMarkup,
-        (isset($captaciones_activas_departamentos_count[DEPARTAMENTO_CORPORATE])) ? $captaciones_activas_departamentos_count[DEPARTAMENTO_CORPORATE] : 0,
-        (isset($expedientes_activos_departamentos_count[DEPARTAMENTO_CORPORATE])) ? $expedientes_activos_departamentos_count[DEPARTAMENTO_CORPORATE] : 0,
-        (isset($facturas_emitidas_departamento_count[DEPARTAMENTO_CORPORATE])) ? $facturas_emitidas_departamento_count[DEPARTAMENTO_CORPORATE] : 0,
-        (isset($facturas_pagadas_departamento_count[DEPARTAMENTO_CORPORATE])) ? $facturas_pagadas_departamento_count[DEPARTAMENTO_CORPORATE] : 0,
-        (isset($captaciones_activas_departamentos_count[DEPARTAMENTO_REALESTATE])) ? $captaciones_activas_departamentos_count[DEPARTAMENTO_REALESTATE] : 0,
-        (isset($expedientes_activos_departamentos_count[DEPARTAMENTO_REALESTATE])) ? $expedientes_activos_departamentos_count[DEPARTAMENTO_REALESTATE] : 0,
-        (isset($facturas_emitidas_departamento_count[DEPARTAMENTO_REALESTATE])) ? $facturas_emitidas_departamento_count[DEPARTAMENTO_REALESTATE] : 0,
-        (isset($facturas_pagadas_departamento_count[DEPARTAMENTO_REALESTATE])) ? $facturas_pagadas_departamento_count[DEPARTAMENTO_REALESTATE] : 0,
-        (isset($captaciones_activas_departamentos_count[DEPARTAMENTO_LITIGATION])) ? $captaciones_activas_departamentos_count[DEPARTAMENTO_LITIGATION] : 0,
-        (isset($expedientes_activos_departamentos_count[DEPARTAMENTO_LITIGATION])) ? $expedientes_activos_departamentos_count[DEPARTAMENTO_LITIGATION] : 0,
-        (isset($facturas_emitidas_departamento_count[DEPARTAMENTO_LITIGATION])) ? $facturas_emitidas_departamento_count[DEPARTAMENTO_LITIGATION] : 0,
-        (isset($facturas_pagadas_departamento_count[DEPARTAMENTO_LITIGATION])) ? $facturas_pagadas_departamento_count[DEPARTAMENTO_LITIGATION] : 0,
-        (isset($captaciones_activas_departamentos_count[DEPARTAMENTO_INMIGRATION])) ? $captaciones_activas_departamentos_count[DEPARTAMENTO_INMIGRATION] : 0,
-        (isset($expedientes_activos_departamentos_count[DEPARTAMENTO_INMIGRATION])) ? $expedientes_activos_departamentos_count[DEPARTAMENTO_INMIGRATION] : 0,
-        (isset($facturas_emitidas_departamento_count[DEPARTAMENTO_INMIGRATION])) ? $facturas_emitidas_departamento_count[DEPARTAMENTO_INMIGRATION] : 0,
-        (isset($facturas_pagadas_departamento_count[DEPARTAMENTO_INMIGRATION])) ? $facturas_pagadas_departamento_count[DEPARTAMENTO_INMIGRATION] : 0,
+        (isset($c_activas_dept_count[DEPARTAMENTO_CORPORATE])) ? $c_activas_dept_count[DEPARTAMENTO_CORPORATE] : 0,
+        (isset($e_activos_dept_count[DEPARTAMENTO_CORPORATE])) ? $e_activos_dept_count[DEPARTAMENTO_CORPORATE] : 0,
+        (isset($f_emitidas_dept_count[DEPARTAMENTO_CORPORATE])) ? $f_emitidas_dept_count[DEPARTAMENTO_CORPORATE] : 0,
+        (isset($f_pagadas_dept_count[DEPARTAMENTO_CORPORATE])) ? $f_pagadas_dept_count[DEPARTAMENTO_CORPORATE] : 0,
+        (isset($c_activas_dept_count[DEPARTAMENTO_REALESTATE])) ? $c_activas_dept_count[DEPARTAMENTO_REALESTATE] : 0,
+        (isset($e_activos_dept_count[DEPARTAMENTO_REALESTATE])) ? $e_activos_dept_count[DEPARTAMENTO_REALESTATE] : 0,
+        (isset($f_emitidas_dept_count[DEPARTAMENTO_REALESTATE])) ? $f_emitidas_dept_count[DEPARTAMENTO_REALESTATE] : 0,
+        (isset($f_pagadas_dept_count[DEPARTAMENTO_REALESTATE])) ? $f_pagadas_dept_count[DEPARTAMENTO_REALESTATE] : 0,
+        (isset($c_activas_dept_count[DEPARTAMENTO_LITIGATION])) ? $c_activas_dept_count[DEPARTAMENTO_LITIGATION] : 0,
+        (isset($e_activos_dept_count[DEPARTAMENTO_LITIGATION])) ? $e_activos_dept_count[DEPARTAMENTO_LITIGATION] : 0,
+        (isset($f_emitidas_dept_count[DEPARTAMENTO_LITIGATION])) ? $f_emitidas_dept_count[DEPARTAMENTO_LITIGATION] : 0,
+        (isset($f_pagadas_dept_count[DEPARTAMENTO_LITIGATION])) ? $f_pagadas_dept_count[DEPARTAMENTO_LITIGATION] : 0,
+        (isset($c_activas_dept_count[DEPARTAMENTO_INMIGRATION])) ? $c_activas_dept_count[DEPARTAMENTO_INMIGRATION] : 0,
+        (isset($e_activos_dept_count[DEPARTAMENTO_INMIGRATION])) ? $e_activos_dept_count[DEPARTAMENTO_INMIGRATION] : 0,
+        (isset($f_emitidas_dept_count[DEPARTAMENTO_INMIGRATION])) ? $f_emitidas_dept_count[DEPARTAMENTO_INMIGRATION] : 0,
+        (isset($f_pagadas_dept_count[DEPARTAMENTO_INMIGRATION])) ? $f_pagadas_dept_count[DEPARTAMENTO_INMIGRATION] : 0,
+        (isset($c_activas_dept_count[DEPARTAMENTO_FRANCES])) ? $c_activas_dept_count[DEPARTAMENTO_FRANCES] : 0,
+        (isset($e_activos_dept_count[DEPARTAMENTO_FRANCES])) ? $e_activos_dept_count[DEPARTAMENTO_FRANCES] : 0,
+        (isset($f_emitidas_dept_count[DEPARTAMENTO_FRANCES])) ? $f_emitidas_dept_count[DEPARTAMENTO_FRANCES] : 0,
+        (isset($f_pagadas_dept_count[DEPARTAMENTO_FRANCES])) ? $f_pagadas_dept_count[DEPARTAMENTO_FRANCES] : 0,
+        (isset($c_activas_dept_count[DEPARTAMENTO_TAX])) ? $c_activas_dept_count[DEPARTAMENTO_TAX] : 0,
+        (isset($e_activos_dept_count[DEPARTAMENTO_TAX])) ? $e_activos_dept_count[DEPARTAMENTO_TAX] : 0,
+        (isset($f_emitidas_dept_count[DEPARTAMENTO_TAX])) ? $f_emitidas_dept_count[DEPARTAMENTO_TAX] : 0,
+        (isset($f_pagadas_dept_count[DEPARTAMENTO_TAX])) ? $f_pagadas_dept_count[DEPARTAMENTO_TAX] : 0,
       );
     }
 
@@ -395,10 +340,18 @@ ORDER BY field_apellido_value ASC')->fetchAll();
       'Inmigration - Expedientes en curso',
       'Inmigration - Facturas emitidas',
       'Inmigration - Facturas pagadas',
+      'Frances - Captaciones en curso',
+      'Frances - Expedientes en curso',
+      'Frances - Facturas emitidas',
+      'Frances - Facturas pagadas',
+      'Tax - Captaciones en curso',
+      'Tax - Expedientes en curso',
+      'Tax - Facturas emitidas',
+      'Tax - Facturas pagadas',
     );
 
     $filters_form = \Drupal::formBuilder()
-      ->getForm('Drupal\carbray_informes\Form\InformeAbogadosFilters');
+      ->getForm('Drupal\carbray_informes\Form\InformeProcedenciaFilters');
     $build['filters'] = [
       '#markup' => render($filters_form),
     ];
@@ -406,7 +359,7 @@ ORDER BY field_apellido_value ASC')->fetchAll();
       '#theme' => 'table',
       '#header' => $header,
       '#rows' => $rows,
-      '#attributes' => ['id' => 'resumen-abogados', 'class' => ['tablesorter']],
+      '#attributes' => ['id' => 'resumen-abogados', 'class' => ['tablesorter', 'table-condensed']],
       '#cache' => [
         'max-age' => 0,
       ],
