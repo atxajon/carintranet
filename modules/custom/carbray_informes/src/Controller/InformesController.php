@@ -293,6 +293,11 @@ ORDER BY field_apellido_value ASC')->fetchAll();
       $f_emitidas_dept_count = get_total_count_for_departamento($facturas_emitidas, 'factura');
       $f_pagadas_dept_count = get_total_count_for_departamento($facturas_pagadas, 'factura');
 
+      if (!$c_activas_dept_count && !$e_activos_dept_count && !$f_emitidas_dept_count && !$f_pagadas_dept_count) {
+        // Country has no content (all 0's). Do not show it on the table, skip to next iteration.
+        continue;
+      }
+
       $rows[] = array(
         $translatableMarkup,
         (isset($c_activas_dept_count[DEPARTAMENTO_CORPORATE])) ? $c_activas_dept_count[DEPARTAMENTO_CORPORATE] : 0,

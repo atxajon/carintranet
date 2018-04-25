@@ -251,6 +251,7 @@ function get_count_expedientes_published($uid, $filter_by = []) {
     }
   }
   else {
+    // Exclude expedientes dated on migration from global count numbers.
     $expedientes_published_query->condition('nfd.created', 1500070102, '!=');
   }
 
@@ -437,6 +438,5 @@ function get_total_count_for_departamento($items, $type) {
       $total[$departamento]++;
     }
   }
-  $jon = '';
   return $total;
 }
