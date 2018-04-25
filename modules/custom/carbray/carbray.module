@@ -1225,3 +1225,23 @@ function sort_alphabetically($name1, $name2) {
   $name2 = preg_replace(array_values($patterns), array_keys($patterns), $name2);
   return strcasecmp($name1, $name2);
 }
+
+/**
+ * Helper to retrieve taxonomy term as options for a form select list.
+ *
+ * @param $vocabulary
+ *   String referencing taxonomy vocabulary.
+ */
+function get_departamento_options($vocabulary) {
+  $sql = "SELECT tid FROM taxonomy_term_field_data WHERE vid = :vocabulary ";
+  $tids = \Drupal::database()->query($sql, [':vocabulary' => $vocabulary])->fetchCol();
+
+  $terms = \Drupal::entityTypeManager()
+    ->getStorage('taxonomy_term')
+    ->loadMultiple($tids);
+
+  foreach ($terms as $term) {
+    $options[$term->id()] = $term->name->value;
+  }
+  return $options;
+}

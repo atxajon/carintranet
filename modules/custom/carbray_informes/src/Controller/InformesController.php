@@ -271,6 +271,20 @@ ORDER BY field_apellido_value ASC')->fetchAll();
       '#markup' => '<div class="admin-block">',
     ];
 
+    $filters_form = \Drupal::formBuilder()
+      ->getForm('Drupal\carbray_informes\Form\InformeFechasDepartamentosFilters');
+    $build['filters'] = [
+      '#markup' => render($filters_form),
+    ];
+
+    $header = array(
+      'Pais',
+      'Captaciones en curso',
+      'Expedientes en curso',
+      'Facturas emitidas',
+      'Facturas pagadas',
+    );
+
     // Obtain query string parameters to pass them in to the queries.
     $path = parse_url(\Drupal::request()->getRequestUri());
     $query_array = array();
@@ -278,15 +292,33 @@ ORDER BY field_apellido_value ASC')->fetchAll();
       parse_str($path['query'], $query_array);
     }
 
+    if (!$query_array) {
+      // Show no results by default until admin makes filter choices and submits form.
+      $build['table'] = [
+        '#theme' => 'table',
+        '#header' => $header,
+        '#rows' => [],
+        '#empty' => t('Ningun resultado - usa los filtros para establecer los criterios de selección.'),
+        '#attributes' => ['id' => 'resumen-abogados', 'class' => ['tablesorter', 'table-condensed']],
+        '#cache' => [
+          'max-age' => 0,
+        ],
+      ];
+      $build['div_close'] = [
+        '#markup' => '</div>',
+      ];
+      return $build;
+    }
+
     $countries = \Drupal::service('country_manager')->getList();
     // We need to sort translated countries ignoring their accents.
     uasort($countries,"sort_alphabetically");
 
     foreach ($countries as $country_code => $translatableMarkup) {
-      $captaciones_activas = get_captaciones_activas_by_country($country_code, $query_array);
+      $captaciones_activas = get_captaciones_activas_by_country_and_dept($country_code, $query_array);
       $expedientes_activos = get_expedientes_activos_by_country($country_code, $query_array);
-      $facturas_emitidas = get_facturas_emitidas_by_country($country_code, $query_array);
-      $facturas_pagadas = get_facturas_pagadas_by_country($country_code, $query_array);
+      $facturas_emitidas = get_facturas_emitidas_by_country_and_dept($country_code, $query_array);
+      $facturas_pagadas = get_facturas_pagadas_by_country_and_dept($country_code, $query_array);
 
       $c_activas_dept_count = get_total_count_for_departamento($captaciones_activas, 'captacion');
       $e_activos_dept_count = get_total_count_for_departamento($expedientes_activos, 'expediente');
@@ -300,66 +332,13 @@ ORDER BY field_apellido_value ASC')->fetchAll();
 
       $rows[] = array(
         $translatableMarkup,
-        (isset($c_activas_dept_count[DEPARTAMENTO_CORPORATE])) ? $c_activas_dept_count[DEPARTAMENTO_CORPORATE] : 0,
-        (isset($e_activos_dept_count[DEPARTAMENTO_CORPORATE])) ? $e_activos_dept_count[DEPARTAMENTO_CORPORATE] : 0,
-        (isset($f_emitidas_dept_count[DEPARTAMENTO_CORPORATE])) ? $f_emitidas_dept_count[DEPARTAMENTO_CORPORATE] : 0,
-        (isset($f_pagadas_dept_count[DEPARTAMENTO_CORPORATE])) ? $f_pagadas_dept_count[DEPARTAMENTO_CORPORATE] : 0,
-        (isset($c_activas_dept_count[DEPARTAMENTO_REALESTATE])) ? $c_activas_dept_count[DEPARTAMENTO_REALESTATE] : 0,
-        (isset($e_activos_dept_count[DEPARTAMENTO_REALESTATE])) ? $e_activos_dept_count[DEPARTAMENTO_REALESTATE] : 0,
-        (isset($f_emitidas_dept_count[DEPARTAMENTO_REALESTATE])) ? $f_emitidas_dept_count[DEPARTAMENTO_REALESTATE] : 0,
-        (isset($f_pagadas_dept_count[DEPARTAMENTO_REALESTATE])) ? $f_pagadas_dept_count[DEPARTAMENTO_REALESTATE] : 0,
-        (isset($c_activas_dept_count[DEPARTAMENTO_LITIGATION])) ? $c_activas_dept_count[DEPARTAMENTO_LITIGATION] : 0,
-        (isset($e_activos_dept_count[DEPARTAMENTO_LITIGATION])) ? $e_activos_dept_count[DEPARTAMENTO_LITIGATION] : 0,
-        (isset($f_emitidas_dept_count[DEPARTAMENTO_LITIGATION])) ? $f_emitidas_dept_count[DEPARTAMENTO_LITIGATION] : 0,
-        (isset($f_pagadas_dept_count[DEPARTAMENTO_LITIGATION])) ? $f_pagadas_dept_count[DEPARTAMENTO_LITIGATION] : 0,
-        (isset($c_activas_dept_count[DEPARTAMENTO_INMIGRATION])) ? $c_activas_dept_count[DEPARTAMENTO_INMIGRATION] : 0,
-        (isset($e_activos_dept_count[DEPARTAMENTO_INMIGRATION])) ? $e_activos_dept_count[DEPARTAMENTO_INMIGRATION] : 0,
-        (isset($f_emitidas_dept_count[DEPARTAMENTO_INMIGRATION])) ? $f_emitidas_dept_count[DEPARTAMENTO_INMIGRATION] : 0,
-        (isset($f_pagadas_dept_count[DEPARTAMENTO_INMIGRATION])) ? $f_pagadas_dept_count[DEPARTAMENTO_INMIGRATION] : 0,
-        (isset($c_activas_dept_count[DEPARTAMENTO_FRANCES])) ? $c_activas_dept_count[DEPARTAMENTO_FRANCES] : 0,
-        (isset($e_activos_dept_count[DEPARTAMENTO_FRANCES])) ? $e_activos_dept_count[DEPARTAMENTO_FRANCES] : 0,
-        (isset($f_emitidas_dept_count[DEPARTAMENTO_FRANCES])) ? $f_emitidas_dept_count[DEPARTAMENTO_FRANCES] : 0,
-        (isset($f_pagadas_dept_count[DEPARTAMENTO_FRANCES])) ? $f_pagadas_dept_count[DEPARTAMENTO_FRANCES] : 0,
-        (isset($c_activas_dept_count[DEPARTAMENTO_TAX])) ? $c_activas_dept_count[DEPARTAMENTO_TAX] : 0,
-        (isset($e_activos_dept_count[DEPARTAMENTO_TAX])) ? $e_activos_dept_count[DEPARTAMENTO_TAX] : 0,
-        (isset($f_emitidas_dept_count[DEPARTAMENTO_TAX])) ? $f_emitidas_dept_count[DEPARTAMENTO_TAX] : 0,
-        (isset($f_pagadas_dept_count[DEPARTAMENTO_TAX])) ? $f_pagadas_dept_count[DEPARTAMENTO_TAX] : 0,
+        (isset($c_activas_dept_count[$query_array['departamento']])) ? $c_activas_dept_count[$query_array['departamento']] : 0,
+        (isset($e_activos_dept_count[$query_array['departamento']])) ? $e_activos_dept_count[$query_array['departamento']] : 0,
+        (isset($f_emitidas_dept_count[$query_array['departamento']])) ? $f_emitidas_dept_count[$query_array['departamento']] : 0,
+        (isset($f_pagadas_dept_count[$query_array['departamento']])) ? $f_pagadas_dept_count[$query_array['departamento']] : 0,
       );
     }
 
-    $header = array(
-      'Pais',
-      'Corporate - Captaciones en curso',
-      'Corporate - Expedientes en curso',
-      'Corporate - Facturas emitidas',
-      'Corporate - Facturas pagadas',
-      'Real Estate - Captaciones en curso',
-      'Real Estate - Expedientes en curso',
-      'Real Estate - Facturas emitidas',
-      'Real Estate - Facturas pagadas',
-      'Litigation - Captaciones en curso',
-      'Litigation - Expedientes en curso',
-      'Litigation - Facturas emitidas',
-      'Litigation - Facturas pagadas',
-      'Inmigration - Captaciones en curso',
-      'Inmigration - Expedientes en curso',
-      'Inmigration - Facturas emitidas',
-      'Inmigration - Facturas pagadas',
-      'Frances - Captaciones en curso',
-      'Frances - Expedientes en curso',
-      'Frances - Facturas emitidas',
-      'Frances - Facturas pagadas',
-      'Tax - Captaciones en curso',
-      'Tax - Expedientes en curso',
-      'Tax - Facturas emitidas',
-      'Tax - Facturas pagadas',
-    );
-
-    $filters_form = \Drupal::formBuilder()
-      ->getForm('Drupal\carbray_informes\Form\InformeProcedenciaFilters');
-    $build['filters'] = [
-      '#markup' => render($filters_form),
-    ];
     $build['table'] = [
       '#theme' => 'table',
       '#header' => $header,
@@ -375,9 +354,4 @@ ORDER BY field_apellido_value ASC')->fetchAll();
 
     return $build;
   }
-
-}
-
-function get_all_countries() {
-
 }

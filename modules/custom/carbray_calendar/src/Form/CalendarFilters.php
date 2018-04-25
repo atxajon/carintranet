@@ -26,18 +26,6 @@ class CalendarFilters extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state, $current_user_roles = [], $dept_tid = []) {
 //    $form['#attributes']['class'][] = 'margin-left-20';
-    $sql = "SELECT tid FROM taxonomy_term_field_data WHERE vid= 'departamento'";
-    $departamentos_tids = \Drupal::database()->query($sql)->fetchCol();
-
-    $departamento_terms = \Drupal::entityTypeManager()
-      ->getStorage('taxonomy_term')
-      ->loadMultiple($departamentos_tids);
-
-    foreach ($departamento_terms as $departamento_term) {
-      $options[$departamento_term->id()] = $departamento_term->name->value;
-    }
-
-
 
     if (in_array('jefe_departamento', $current_user_roles)) {
       $dept_workers = get_departamento_workers($dept_tid);
@@ -61,7 +49,7 @@ class CalendarFilters extends FormBase {
     elseif (in_array('administrator', $current_user_roles) || (in_array('carbray_administrator', $current_user_roles))) {
       $form['departamento'] = array(
         '#type' => 'select',
-        '#options' => $options,
+        '#options' => get_departamento_options('departamento'),
         '#title' => t('Filtrar por departamento'),
         '#empty_option' => 'Todos los departamentos',
       );
@@ -91,6 +79,6 @@ class CalendarFilters extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    // No submission: filter value updating is handled through js on the calendar_custom.js file.
+    // This form does not get submitted, filter value updating is handled through js on the calendar_custom.js file.
   }
 }
