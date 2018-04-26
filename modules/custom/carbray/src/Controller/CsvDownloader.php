@@ -5,7 +5,8 @@ namespace Drupal\carbray\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\carbray\CsvResponse;
 use Drupal\node\Entity\Node;
-use Drupal\Core\Render\Markup;
+use Drupal\taxonomy\Entity\Term;
+
 
 class CsvDownloader extends ControllerBase {
 
@@ -69,6 +70,72 @@ class CsvDownloader extends ControllerBase {
       'Notas',
       'Autor',
     );
+    $all_data = array_merge($header, $rows);
+
+    // Instantiate obj CsvResponse to leverage data to csv conversion.
+    $csvresponse = new CsvResponse($all_data);
+    $csvresponse->setFilename($filename);
+    return $csvresponse;
+  }
+
+  public function informePaisesCSV() {
+    // Obtain query string parameters to pass them in to the queries.
+    $path = parse_url(\Drupal::request()->getRequestUri());
+    $query_array = array();
+    if (isset($path['query'])) {
+      parse_str($path['query'], $query_array);
+    }
+
+    $countries = \Drupal::service('country_manager')->getList();
+    // We need to sort translated countries ignoring their accents.
+    uasort($countries,"sort_alphabetically");
+
+    foreach ($countries as $country_code => $translatableMarkup) {
+      $captaciones_activas = get_captaciones_activas_by_country_and_dept($country_code, $query_array);
+      $expedientes_activos = get_expedientes_activos_by_country_and_dept($country_code, $query_array);
+      $facturas_emitidas = get_facturas_emitidas_by_country_and_dept($country_code, $query_array);
+      $facturas_pagadas = get_facturas_pagadas_by_country_and_dept($country_code, $query_array);
+
+      $c_activas_dept_count = get_total_count_for_departamento($captaciones_activas, 'captacion');
+      $e_activos_dept_count = get_total_count_for_departamento($expedientes_activos, 'expediente');
+      $f_emitidas_dept_count = get_total_count_for_departamento($facturas_emitidas, 'factura');
+      $f_pagadas_dept_count = get_total_count_for_departamento($facturas_pagadas, 'factura');
+
+      if (!$c_activas_dept_count && !$e_activos_dept_count && !$f_emitidas_dept_count && !$f_pagadas_dept_count) {
+        // Country has no content (all 0's). Do not show it on the table, skip to next iteration.
+        continue;
+      }
+
+      $rows[] = array(
+        $translatableMarkup,
+        (isset($c_activas_dept_count[$query_array['departamento']])) ? $c_activas_dept_count[$query_array['departamento']] : 0,
+        (isset($e_activos_dept_count[$query_array['departamento']])) ? $e_activos_dept_count[$query_array['departamento']] : 0,
+        (isset($f_emitidas_dept_count[$query_array['departamento']])) ? $f_emitidas_dept_count[$query_array['departamento']] : 0,
+        (isset($f_pagadas_dept_count[$query_array['departamento']])) ? $f_pagadas_dept_count[$query_array['departamento']] : 0,
+      );
+    }
+    $header[] = array(
+      'Pais',
+      'Captaciones en curso',
+      'Expedientes en curso',
+      'Facturas emitidas',
+      'Facturas pagadas',
+    );
+
+    $filename = 'informe-paises-';
+    if (isset($query_array['departamento'])) {
+      $term = Term::load($query_array['departamento']);
+      $filename .= strtolower($term->name->value);
+    }
+    if (isset($query_array['date_from'])) {
+      $filename .= '-desde:' . date('d-m-Y', $query_array['date_from']);
+    }
+    if (isset($query_array['date_to'])) {
+      $filename .= '-hasta:' . date('d-m-Y', $query_array['date_to']);
+    }
+
+    $filename .= '.csv';
+
     $all_data = array_merge($header, $rows);
 
     // Instantiate obj CsvResponse to leverage data to csv conversion.

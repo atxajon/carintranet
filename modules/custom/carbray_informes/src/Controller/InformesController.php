@@ -6,6 +6,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Url;
 use Drupal\Core\Link;
 use Drupal\taxonomy\Entity\Term;
+use Drupal\Core\Render\Markup;
 
 
 class InformesController extends ControllerBase {
@@ -338,6 +339,28 @@ ORDER BY field_apellido_value ASC')->fetchAll();
         (isset($f_pagadas_dept_count[$query_array['departamento']])) ? $f_pagadas_dept_count[$query_array['departamento']] : 0,
       );
     }
+
+    $csv_url = Url::fromRoute('informe_paises.csv');
+    $link_options = array(
+      'attributes' => array(
+        'class' => array(
+          'btn',
+          'btn-warning',
+        ),
+      ),
+      'query' => array(
+        $query_array,
+      ),
+    );
+    $csv_url->setOptions($link_options);
+    $link_to_csv_url = Link::fromTextAndUrl('Exportar CSV', $csv_url);
+    $link_to_csv_string = $link_to_csv_url->toString()
+      ->getGeneratedLink();
+    $csv_link_markup = Markup::create($link_to_csv_string);
+    $build['csv_link'] = [
+      '#markup' => $csv_link_markup,
+    ];
+
 
     $build['table'] = [
       '#theme' => 'table',

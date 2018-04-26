@@ -30,5 +30,10 @@ informes.paises:
   requirements:
     _role: 'carbray_administrator + administrator'
 
-
-
+informe_paises.csv:
+  path: '/download-informe-paises-csv'
+  defaults:
+    _title: 'Informe paises'
+    _controller: '\Drupal\carbray\Controller\CsvDownloader::informePaisesCSV'
+  requirements:
+    _permission: 'access content'
