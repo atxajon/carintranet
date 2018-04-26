@@ -867,6 +867,11 @@ textarea[rows="3"] + .cke .cke_contents {
   #calendar {
     clear: both;
   }
+  .floated-col {
+    float: left;
+    margin-left: 20px;
+    max-width: 240px;
+  }
 
 }
 
@@ -898,12 +903,6 @@ textarea[rows="3"] + .cke .cke_contents {
 
 .fc-header-toolbar .fc-center {
   text-transform: capitalize;
-}
-
-.form-item-last-months {
-  position: absolute;
-  top: 10px;
-  left: 300px;
 }
 
 .informe-filters {

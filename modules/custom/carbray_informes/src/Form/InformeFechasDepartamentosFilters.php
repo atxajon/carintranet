@@ -38,7 +38,15 @@ class InformeFechasDepartamentosFilters extends FormBase {
       parse_str($path['query'], $query_array);
     }
 
-    $form['date_from'] = array(
+    $form['dates'] = [
+      '#type' => 'container',
+      '#attributes' => [
+        'class' => ['floated-col'],
+      ],
+      '#prefix' => '<div class="row margin-top-20">',
+    ];
+
+    $form['dates']['date_from'] = array(
       '#type' => 'datelist',
       '#date_format' => 'd-m-Y',
       '#date_flexible' => 0,
@@ -48,10 +56,8 @@ class InformeFechasDepartamentosFilters extends FormBase {
       '#date_time_element' => 'none',
       '#title' => t('Desde'),
       '#default_value' => isset($query_array['date_from']) ? DrupalDateTime::createFromTimestamp($query_array['date_from']) : '',
-//      '#prefix' => '<div class="clearfix">',
-//      '#suffix' => '</div>',
     );
-    $form['date_to'] = array(
+    $form['dates']['date_to'] = array(
       '#type' => 'datelist',
       '#date_format' => 'd-m-Y',
       '#date_flexible' => 0,
@@ -61,8 +67,6 @@ class InformeFechasDepartamentosFilters extends FormBase {
       '#date_time_element' => 'none',
       '#title' => t('Hasta'),
       '#default_value' => isset($query_array['date_to']) ? DrupalDateTime::createFromTimestamp($query_array['date_to']) : '',
-//      '#prefix' => '<div class="pull-left">',
-//      '#suffix' => '</div>',
     );
 
     // Get last 12 months relative to current one in spanish.
@@ -75,32 +79,45 @@ class InformeFechasDepartamentosFilters extends FormBase {
       $mes = $meses[date($date_parts[0])];
       $last_12_months[$month_year] = $mes . ' ' . $date_parts[1];
     }
-    $form['last_months'] = array(
-      '#type' => 'select',
-      '#title' => 'Ultimos 12 meses',
-      '#options' => $last_12_months,
-      '#empty_option' => ' - Elegir més - ',
-    );
 
     $form['departamento'] = array(
       '#type' => 'select',
       '#options' => get_departamento_options('departamento'),
       '#title' => t('Filtrar por departamento'),
+      '#prefix' => '<div class="floated-col">',
+      '#suffix' => '</div>',
+//      '#attributes' => [
+//        'class' => ['col-sm-3'],
+//      ],
 //      '#empty_option' => 'Todos los departamentos',
     );
 
+    $form['last_months'] = array(
+      '#type' => 'select',
+      '#title' => 'Ultimos 12 meses',
+      '#options' => $last_12_months,
+//      '#attributes' => [
+//        'class' => ['col-sm-3'],
+//      ],
+      '#empty_option' => ' - Elegir més - ',
+      '#prefix' => '<div class="floated-col">',
+      '#suffix' => '</div></div>',
+//      '#suffix' => '</div>',
+    );
+
+
     $form['submit'] = [
       '#type' => 'submit',
-      '#value' => t('Buscar'),
+      '#value' => t('Buscar por departamento y fecha'),
       '#attributes' => array('class' => ['margin-top-20', 'margin-bottom-20', 'btn-primary', 'filter']),
     ];
 
-    $form['reset'] = [
-      '#type' => 'submit',
-      '#value' => t('Mostrar total'),
-      '#submit' => array('::resetValues'),
-      '#attributes' => array('class' => ['margin-top-20', 'margin-bottom-20', 'margin-left-10', 'btn-warning', 'reset']),
-    ];
+//    $form['reset'] = [
+//      '#type' => 'submit',
+//      '#value' => t('Mostrar total'),
+//      '#submit' => array('::resetValues'),
+//      '#attributes' => array('class' => ['margin-top-20', 'margin-bottom-20', 'margin-left-10', 'btn-warning', 'reset']),
+//    ];
 
     return $form;
   }
