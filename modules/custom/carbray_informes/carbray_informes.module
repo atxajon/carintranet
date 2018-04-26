@@ -206,7 +206,6 @@ function get_country_date_params($country, $sql, $filter_by = []) {
       $return['params'][':date_to'] = $filter_by['date_to'];
     }
     if (isset($filter_by['departamento'])) {
-      $sql .= " AND created < :date_to";
       $return['params'][':dept'] = $filter_by['departamento'];
     }
   }

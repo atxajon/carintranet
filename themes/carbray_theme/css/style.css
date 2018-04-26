@@ -872,7 +872,6 @@ textarea[rows="3"] + .cke .cke_contents {
     margin-left: 20px;
     max-width: 240px;
   }
-
 }
 
 .edit-modelos .form-checkbox:checked ~ .control-label {

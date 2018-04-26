@@ -316,7 +316,7 @@ ORDER BY field_apellido_value ASC')->fetchAll();
 
     foreach ($countries as $country_code => $translatableMarkup) {
       $captaciones_activas = get_captaciones_activas_by_country_and_dept($country_code, $query_array);
-      $expedientes_activos = get_expedientes_activos_by_country($country_code, $query_array);
+      $expedientes_activos = get_expedientes_activos_by_country_and_dept($country_code, $query_array);
       $facturas_emitidas = get_facturas_emitidas_by_country_and_dept($country_code, $query_array);
       $facturas_pagadas = get_facturas_pagadas_by_country_and_dept($country_code, $query_array);
 

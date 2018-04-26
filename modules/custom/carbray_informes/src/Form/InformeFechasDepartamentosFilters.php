@@ -110,6 +110,8 @@ class InformeFechasDepartamentosFilters extends FormBase {
       '#type' => 'submit',
       '#value' => t('Buscar por departamento y fecha'),
       '#attributes' => array('class' => ['margin-top-20', 'margin-bottom-20', 'btn-primary', 'filter']),
+//      '#type' => 'inline_template',
+//      '#template' => '<button type="button" class="btn btn-primary margin-top-20 margin-bottom-20 filter"><span class="glyphicon glyphicon-plus-sign"></span>Buscar por departamento y fecha</button>',
     ];
 
 //    $form['reset'] = [
