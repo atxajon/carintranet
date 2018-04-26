@@ -316,6 +316,9 @@ ORDER BY field_apellido_value ASC')->fetchAll();
     uasort($countries,"sort_alphabetically");
 
     foreach ($countries as $country_code => $translatableMarkup) {
+      if ($country_code == 'LB') {
+        $jon = '';
+      }
       $captaciones_activas = get_captaciones_activas_by_country_and_dept($country_code, $query_array);
       $expedientes_activos = get_expedientes_activos_by_country_and_dept($country_code, $query_array);
       $facturas_emitidas = get_facturas_emitidas_by_country_and_dept($country_code, $query_array);
@@ -326,7 +329,7 @@ ORDER BY field_apellido_value ASC')->fetchAll();
       $f_emitidas_dept_count = get_total_count_for_departamento($facturas_emitidas, 'factura');
       $f_pagadas_dept_count = get_total_count_for_departamento($facturas_pagadas, 'factura');
 
-      if (!$c_activas_dept_count && !$e_activos_dept_count && !$f_emitidas_dept_count && !$f_pagadas_dept_count) {
+      if (!isset($c_activas_dept_count[$query_array['departamento']]) && !isset($e_activos_dept_count[$query_array['departamento']]) && !isset($f_emitidas_dept_count[$query_array['departamento']]) && !isset($f_pagadas_dept_count[$query_array['departamento']])) {
         // Country has no content (all 0's). Do not show it on the table, skip to next iteration.
         continue;
       }
