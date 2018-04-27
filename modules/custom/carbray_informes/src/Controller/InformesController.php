@@ -185,15 +185,19 @@ ORDER BY field_apellido_value ASC')->fetchAll();
       parse_str($path['query'], $query_array);
     }
 
+    $current_path = \Drupal::service('path.current')->getPath();
+    $path_args = explode('/', $current_path);
+    $tid = $path_args[3];
 
-// @todo get workers only for a given tid!
     $workers = \Drupal::database()->query('SELECT n.entity_id as uid, field_nombre_value as name, field_apellido_value as surname 
 FROM user__field_nombre n 
 INNER JOIN users_field_data ufd on ufd.uid = n.entity_id
 INNER JOIN user__field_apellido a on n.entity_id = a.entity_id 
 INNER JOIN user__roles ur on n.entity_id = ur.entity_id 
+INNER JOIN user__field_departamento d on d.entity_id = ufd.uid
 WHERE ufd.status = 1
-ORDER BY field_apellido_value ASC')->fetchAll();
+AND field_departamento_target_id = :tid
+ORDER BY field_apellido_value ASC', [':tid' => $tid])->fetchAll();
 
     foreach ($workers as $worker) {
       // Make worker name surname into a link.
