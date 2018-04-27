@@ -169,12 +169,13 @@ AND captador.field_captacion_captador_target_id IN (SELECT departamento.entity_i
 }
 
 function get_expedientes_activos_by_dept($dept_tid, $filter_by = []) {
-  $sql = "SELECT count(DISTINCT ec.entity_id)
+  $sql = "SELECT count(DISTINCT nid)
 FROM node_field_data nfd
 INNER JOIN node__field_expediente_captacion ec 
-INNER JOIN node__field_captacion_cliente cc on cc.entity_id = ec.field_expediente_captacion_target_id
-INNER JOIN node__field_captacion_captador captador on cc.entity_id = captador.entity_id 
-WHERE captador.field_captacion_captador_target_id IN (SELECT departamento.entity_id FROM user__field_departamento departamento WHERE field_departamento_target_id = :dept)";
+INNER JOIN node__field_expediente_responsable er on er.entity_id = nfd.nid
+WHERE er.field_expediente_responsable_target_id IN (SELECT departamento.entity_id FROM user__field_departamento departamento WHERE field_departamento_target_id = :dept)
+AND type = 'expediente'
+ AND created != 1500070102";
   $params = get_dept_date_params($dept_tid, $sql, $filter_by);
   $expedientes_activos = \Drupal::database()->query($params['sql'], $params['params'])->fetchField();
   return $expedientes_activos;
@@ -184,10 +185,9 @@ function get_expedientes_archivados_by_dept($dept_tid, $filter_by = []) {
   $sql = "SELECT count(DISTINCT nid)
 FROM node_field_data nfd
 INNER JOIN node__field_expediente_captacion ec on ec.entity_id = nfd.nid
-INNER JOIN node__field_captacion_captador captador on captador.entity_id = ec.field_expediente_captacion_target_id
 INNER JOIN node__field_expediente_responsable er on er.entity_id = nfd.nid
 WHERE er.field_expediente_responsable_target_id IN (SELECT departamento.entity_id FROM user__field_departamento departamento WHERE field_departamento_target_id = :dept)
-AND status = 0";
+AND status = 0 AND created != 1500070102";
   $params = get_dept_date_params($dept_tid, $sql, $filter_by);
   $expedientes_activos = \Drupal::database()->query($params['sql'], $params['params'])->fetchField();
   return $expedientes_activos;

@@ -6,22 +6,20 @@
 namespace Drupal\carbray_informes\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\user\Entity\User;
-use Drupal\node\Entity\Node;
 use Drupal\Core\Url;
 use Drupal\Core\Datetime\DrupalDateTime;
 
 
 
 /**
- * InformeProcedenciaFilters form.
+ * InformeFechasFilters form.
  */
-class InformeProcedenciaFilters extends FormBase {
+class InformeFechasFilters extends FormBase {
   /**
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'informe_procedencia_filters';
+    return 'informe_fechas_filters';
   }
 
   /**
@@ -38,7 +36,15 @@ class InformeProcedenciaFilters extends FormBase {
       parse_str($path['query'], $query_array);
     }
 
-    $form['date_from'] = array(
+    $form['dates'] = [
+      '#type' => 'container',
+      '#attributes' => [
+        'class' => ['floated-col'],
+      ],
+      '#prefix' => '<div class="row margin-top-20">',
+    ];
+
+    $form['dates']['date_from'] = array(
       '#type' => 'datelist',
       '#date_format' => 'd-m-Y',
       '#date_flexible' => 0,
@@ -51,7 +57,7 @@ class InformeProcedenciaFilters extends FormBase {
 //      '#prefix' => '<div class="clearfix">',
 //      '#suffix' => '</div>',
     );
-    $form['date_to'] = array(
+    $form['dates']['date_to'] = array(
       '#type' => 'datelist',
       '#date_format' => 'd-m-Y',
       '#date_flexible' => 0,
@@ -80,6 +86,8 @@ class InformeProcedenciaFilters extends FormBase {
       '#title' => 'Ultimos 12 meses',
       '#options' => $last_12_months,
       '#empty_option' => ' - Elegir més - ',
+      '#prefix' => '<div class="floated-col">',
+      '#suffix' => '</div></div>',
     );
 
     $form['submit'] = [
@@ -90,7 +98,7 @@ class InformeProcedenciaFilters extends FormBase {
 
     $form['reset'] = [
       '#type' => 'submit',
-      '#value' => t('Mostrar total'),
+      '#value' => t('Mostrar todo'),
       '#submit' => array('::resetValues'),
       '#attributes' => array('class' => ['margin-top-20', 'margin-bottom-20', 'margin-left-10', 'btn-warning', 'reset']),
     ];

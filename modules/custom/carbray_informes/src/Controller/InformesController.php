@@ -137,7 +137,7 @@ ORDER BY field_apellido_value ASC')->fetchAll();
     );
 
     $filters_form = \Drupal::formBuilder()
-      ->getForm('Drupal\carbray_informes\Form\InformeAbogadosFilters');
+      ->getForm('Drupal\carbray_informes\Form\InformeFechasFilters');
     $build['filters'] = [
       '#markup' => render($filters_form),
     ];
@@ -212,7 +212,7 @@ ORDER BY field_apellido_value ASC')->fetchAll();
     $markup = '<h3>Reparto</h3><div id="chart"></div>';
 
     $filters_form = \Drupal::formBuilder()
-      ->getForm('Drupal\carbray_informes\Form\InformeProcedenciaFilters');
+      ->getForm('Drupal\carbray_informes\Form\InformeFechasFilters');
     $build['filters'] = [
       '#markup' => render($filters_form),
     ];
@@ -308,7 +308,7 @@ ORDER BY field_apellido_value ASC')->fetchAll();
     $markup = '<h3>Reparto por tematica/servicios</h3><div id="chart"></div>';
 
     $filters_form = \Drupal::formBuilder()
-      ->getForm('Drupal\carbray_informes\Form\InformeProcedenciaFilters');
+      ->getForm('Drupal\carbray_informes\Form\InformeFechasFilters');
     $build['filters'] = [
       '#markup' => render($filters_form),
     ];
