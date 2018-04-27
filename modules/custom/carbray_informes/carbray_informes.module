@@ -217,6 +217,18 @@ AND captador.field_captacion_captador_target_id IN (SELECT departamento.entity_i
   return $facturas_emitidas;
 }
 
+function get_facturas_emitidas_by_dept($dept_tid, $filter_by = []) {
+  $sql = "SELECT count(DISTINCT f.entity_id)
+ FROM node__field_factura f 
+INNER JOIN node__field_captacion_cliente cc on cc.entity_id = f.field_factura_target_id
+INNER JOIN node__field_captacion_captador captador on cc.entity_id = captador.entity_id 
+INNER JOIN node_field_data nfd on nfd.nid = cc.entity_id 
+WHERE captador.field_captacion_captador_target_id IN (SELECT departamento.entity_id FROM user__field_departamento departamento WHERE field_departamento_target_id = :dept)";
+  $params = get_dept_date_params($dept_tid, $sql, $filter_by);
+  $facturas_emitidas = \Drupal::database()->query($params['sql'], $params['params'])->fetchField();
+  return $facturas_emitidas;
+}
+
 function get_facturas_pagadas_by_country($country, $filter_by = []) {
   $sql = "SELECT DISTINCT f.entity_id
  FROM node__field_factura f 
@@ -243,6 +255,20 @@ AND captador.field_captacion_captador_target_id IN (SELECT departamento.entity_i
   $params = get_country_date_params($country, $sql, $filter_by);
   $facturas_pagadas = \Drupal::database()->query($params['sql'], $params['params'])->fetchCol();
   return $facturas_pagadas;
+}
+
+function get_facturas_pagadas_by_dept($dept_tid, $filter_by = []) {
+  $sql = "SELECT count(DISTINCT f.entity_id)
+ FROM node__field_factura f 
+ INNER JOIN node__field_factura_pagada fp on f.entity_id = fp.entity_id
+INNER JOIN node__field_captacion_cliente cc on cc.entity_id = f.field_factura_target_id
+INNER JOIN node__field_captacion_captador captador on cc.entity_id = captador.entity_id 
+INNER JOIN node_field_data nfd on nfd.nid = cc.entity_id 
+WHERE captador.field_captacion_captador_target_id IN (SELECT departamento.entity_id FROM user__field_departamento departamento WHERE field_departamento_target_id = :dept)
+AND field_factura_pagada_value = 1";
+  $params = get_dept_date_params($dept_tid, $sql, $filter_by);
+  $facturas_emitidas = \Drupal::database()->query($params['sql'], $params['params'])->fetchField();
+  return $facturas_emitidas;
 }
 
 function get_country_date_params($country, $sql, $filter_by = []) {

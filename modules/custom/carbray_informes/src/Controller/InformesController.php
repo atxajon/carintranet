@@ -112,8 +112,8 @@ ORDER BY field_apellido_value ASC')->fetchAll();
       $count_captaciones_archivadas = get_captaciones_archivadas_by_dept($department_tid, $query_array);
       $count_expedientes_published = get_expedientes_activos_by_dept($department_tid, $query_array);
       $count_expedientes_archived = get_expedientes_archivados_by_dept($department_tid, $query_array);
-      $count_facturas_emitidas = get_count_facturas_emitidas($department_tid, $query_array);
-      $count_facturas_pagadas = get_count_facturas_pagadas($department_tid, $query_array);
+      $count_facturas_emitidas = get_facturas_emitidas_by_dept($department_tid, $query_array);
+      $count_facturas_pagadas = get_facturas_pagadas_by_dept($department_tid, $query_array);
 
       $rows[] = array(
         $department_name,
@@ -125,7 +125,6 @@ ORDER BY field_apellido_value ASC')->fetchAll();
         $count_facturas_pagadas,
       );
     }
-
 
     $header = array(
       'Departamento:',
