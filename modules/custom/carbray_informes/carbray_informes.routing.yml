@@ -4,7 +4,15 @@ informes.resumen:
     _title: 'Informes - Resumen Abogados'
     _controller: '\Drupal\carbray_informes\Controller\InformesController::resumen'
   requirements:
-    _role: 'authenticated'
+    _role: 'carbray_administrator + administrator'
+
+informes.departamento:
+  path: '/informes/departamento'
+  defaults:
+    _title: 'Informes - Resumen por departamento'
+    _controller: '\Drupal\carbray_informes\Controller\InformesController::resumenDepartamento'
+  requirements:
+    _role: 'carbray_administrator + administrator'
 
 informes.procedencia:
   path: '/informes/procedencia'
@@ -12,7 +20,7 @@ informes.procedencia:
     _title: 'Informes - Resumen Procedencia'
     _controller: '\Drupal\carbray_informes\Controller\InformesController::procedencia'
   requirements:
-    _role: 'authenticated'
+    _role: 'carbray_administrator + administrator'
 
 informes.tematica:
   path: '/informes/tematica'
@@ -36,4 +44,4 @@ informe_paises.csv:
     _title: 'Informe paises'
     _controller: '\Drupal\carbray\Controller\CsvDownloader::informePaisesCSV'
   requirements:
-    _permission: 'access content'
+    _role: 'carbray_administrator + administrator'

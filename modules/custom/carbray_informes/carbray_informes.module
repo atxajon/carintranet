@@ -104,6 +104,21 @@ AND field_captacion_estado_captacion_target_id != '184'";
   return $captaciones_activas;
 }
 
+function get_captaciones_activas_by_dept($dept_tid, $filter_by = []) {
+  $sql = "SELECT count(nid)
+FROM node_field_data nfd
+INNER JOIN node__field_captacion_estado_captacion ec ON ec.entity_id = nfd.nid
+INNER JOIN node__field_captacion_captador captador on nfd.nid = captador.entity_id 
+WHERE captador.field_captacion_captador_target_id IN (SELECT departamento.entity_id FROM user__field_departamento departamento WHERE field_departamento_target_id = :dept)
+AND nid NOT IN (SELECT ec.field_expediente_captacion_target_id AS field_expediente_captacion_target_id
+FROM 
+node__field_expediente_captacion ec) 
+AND field_captacion_estado_captacion_target_id != '184'";
+  $params = get_dept_date_params($dept_tid, $sql, $filter_by);
+  $captaciones_activas = \Drupal::database()->query($params['sql'], $params['params'])->fetchField();
+  return $captaciones_activas;
+}
+
 function get_captaciones_archivadas_by_country($country, $filter_by = []) {
   $sql = "SELECT DISTINCT cc.entity_id as captacion_nid
 FROM node__field_captacion_cliente cc
@@ -114,6 +129,18 @@ WHERE field_captacion_cliente_target_id IN (SELECT entity_id as cliente_uid FROM
 AND field_captacion_estado_captacion_target_id = '184'";
   $params = get_country_date_params($country, $sql, $filter_by);
   $captaciones_archivadas = \Drupal::database()->query($params['sql'], $params['params'])->fetchCol();
+  return $captaciones_archivadas;
+}
+
+function get_captaciones_archivadas_by_dept($dept_tid, $filter_by = []) {
+  $sql = "SELECT count(nid)
+FROM node_field_data nfd
+INNER JOIN node__field_captacion_estado_captacion ec ON ec.entity_id = nfd.nid
+INNER JOIN node__field_captacion_captador captador on nfd.nid = captador.entity_id 
+WHERE captador.field_captacion_captador_target_id IN (SELECT departamento.entity_id FROM user__field_departamento departamento WHERE field_departamento_target_id = :dept)
+AND field_captacion_estado_captacion_target_id = '184'";
+  $params = get_dept_date_params($dept_tid, $sql, $filter_by);
+  $captaciones_archivadas = \Drupal::database()->query($params['sql'], $params['params'])->fetchField();
   return $captaciones_archivadas;
 }
 
@@ -138,6 +165,31 @@ WHERE field_captacion_cliente_target_id IN (SELECT entity_id as cliente_uid FROM
 AND captador.field_captacion_captador_target_id IN (SELECT departamento.entity_id FROM user__field_departamento departamento WHERE field_departamento_target_id = :dept)";
   $params = get_country_date_params($country, $sql, $filter_by);
   $expedientes_activos = \Drupal::database()->query($params['sql'], $params['params'])->fetchCol();
+  return $expedientes_activos;
+}
+
+function get_expedientes_activos_by_dept($dept_tid, $filter_by = []) {
+  $sql = "SELECT count(DISTINCT ec.entity_id)
+FROM node_field_data nfd
+INNER JOIN node__field_expediente_captacion ec 
+INNER JOIN node__field_captacion_cliente cc on cc.entity_id = ec.field_expediente_captacion_target_id
+INNER JOIN node__field_captacion_captador captador on cc.entity_id = captador.entity_id 
+WHERE captador.field_captacion_captador_target_id IN (SELECT departamento.entity_id FROM user__field_departamento departamento WHERE field_departamento_target_id = :dept)";
+  $params = get_dept_date_params($dept_tid, $sql, $filter_by);
+  $expedientes_activos = \Drupal::database()->query($params['sql'], $params['params'])->fetchField();
+  return $expedientes_activos;
+}
+
+function get_expedientes_archivados_by_dept($dept_tid, $filter_by = []) {
+  $sql = "SELECT count(DISTINCT nid)
+FROM node_field_data nfd
+INNER JOIN node__field_expediente_captacion ec on ec.entity_id = nfd.nid
+INNER JOIN node__field_captacion_captador captador on captador.entity_id = ec.field_expediente_captacion_target_id
+INNER JOIN node__field_expediente_responsable er on er.entity_id = nfd.nid
+WHERE er.field_expediente_responsable_target_id IN (SELECT departamento.entity_id FROM user__field_departamento departamento WHERE field_departamento_target_id = :dept)
+AND status = 0";
+  $params = get_dept_date_params($dept_tid, $sql, $filter_by);
+  $expedientes_activos = \Drupal::database()->query($params['sql'], $params['params'])->fetchField();
   return $expedientes_activos;
 }
 
@@ -207,6 +259,23 @@ function get_country_date_params($country, $sql, $filter_by = []) {
     }
     if (isset($filter_by['departamento'])) {
       $return['params'][':dept'] = $filter_by['departamento'];
+    }
+  }
+  $return['sql'] = $sql;
+  return $return;
+}
+
+
+function get_dept_date_params($dept_tid, $sql, $filter_by = []) {
+  $return['params'][':dept'] = $dept_tid;
+  if ($filter_by) {
+    if (isset($filter_by['date_from'])) {
+      $sql .= " AND created > :date_from";
+      $return['params'][':date_from'] = $filter_by['date_from'];
+    }
+    if (isset($filter_by['date_to'])) {
+      $sql .= " AND created < :date_to";
+      $return['params'][':date_to'] = $filter_by['date_to'];
     }
   }
   $return['sql'] = $sql;

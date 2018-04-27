@@ -25,6 +25,7 @@ class InformesController extends ControllerBase {
     if (isset($path['query'])) {
       parse_str($path['query'], $query_array);
     }
+
     $workers = \Drupal::database()->query('SELECT n.entity_id as uid, field_nombre_value as name, field_apellido_value as surname 
 FROM user__field_nombre n 
 INNER JOIN users_field_data ufd on ufd.uid = n.entity_id
@@ -58,6 +59,76 @@ ORDER BY field_apellido_value ASC')->fetchAll();
 
     $header = array(
       'Nombre:',
+      'Captaciones en curso',
+      'Captaciones archivadas',
+      'Expedientes en Curso',
+      'Expedientes Archivados',
+      'Facturas emitidas',
+      'Facturas pagadas',
+    );
+
+    $filters_form = \Drupal::formBuilder()
+      ->getForm('Drupal\carbray_informes\Form\InformeAbogadosFilters');
+    $build['filters'] = [
+      '#markup' => render($filters_form),
+    ];
+    $build['table'] = [
+      '#theme' => 'table',
+      '#header' => $header,
+      '#rows' => $rows,
+      '#attributes' => ['id' => 'resumen-abogados', 'class' => ['tablesorter']],
+      '#cache' => [
+        'max-age' => 0,
+      ],
+    ];
+    $build['div_close'] = [
+      '#markup' => '</div>',
+    ];
+
+    return $build;
+  }
+
+  function resumenDepartamento() {
+    $build['#attached']['library'][] = 'carbray/tablesorter';
+    $build['#attached']['library'][] = 'carbray/carbray_table_sorter';
+
+    $build['div_open'] = [
+      '#markup' => '<div class="admin-block">',
+    ];
+
+    // Obtain query string parameters to pass them in to the queries.
+    $path = parse_url(\Drupal::request()->getRequestUri());
+    $query_array = array();
+    if (isset($path['query'])) {
+      parse_str($path['query'], $query_array);
+    }
+
+    $departments = get_vocabulary_term_options('departamento');
+    foreach ($departments as $department_tid => $department_name) {
+//      $url = Url::fromRoute('carbray.worker_home', ['uid' => $worker->uid]);
+//      $worker_name = Link::fromTextAndUrl($worker->name . ' ' . $worker->surname, $url);
+
+      $count_captaciones_activas = get_captaciones_activas_by_dept($department_tid, $query_array);
+      $count_captaciones_archivadas = get_captaciones_archivadas_by_dept($department_tid, $query_array);
+      $count_expedientes_published = get_expedientes_activos_by_dept($department_tid, $query_array);
+      $count_expedientes_archived = get_expedientes_archivados_by_dept($department_tid, $query_array);
+      $count_facturas_emitidas = get_count_facturas_emitidas($department_tid, $query_array);
+      $count_facturas_pagadas = get_count_facturas_pagadas($department_tid, $query_array);
+
+      $rows[] = array(
+        $department_name,
+        $count_captaciones_activas,
+        $count_captaciones_archivadas,
+        $count_expedientes_published,
+        $count_expedientes_archived,
+        $count_facturas_emitidas,
+        $count_facturas_pagadas,
+      );
+    }
+
+
+    $header = array(
+      'Departamento:',
       'Captaciones en curso',
       'Captaciones archivadas',
       'Expedientes en Curso',
@@ -316,9 +387,6 @@ ORDER BY field_apellido_value ASC')->fetchAll();
     uasort($countries,"sort_alphabetically");
 
     foreach ($countries as $country_code => $translatableMarkup) {
-      if ($country_code == 'LB') {
-        $jon = '';
-      }
       $captaciones_activas = get_captaciones_activas_by_country_and_dept($country_code, $query_array);
       $expedientes_activos = get_expedientes_activos_by_country_and_dept($country_code, $query_array);
       $facturas_emitidas = get_facturas_emitidas_by_country_and_dept($country_code, $query_array);

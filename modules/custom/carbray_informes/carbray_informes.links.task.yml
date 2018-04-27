@@ -3,6 +3,11 @@ informes.resumen:
   title: 'Resumen abogados'
   base_route: informes.resumen
 
+informes.departamento:
+  route_name: informes.departamento
+  title: 'Resumen por departamento'
+  base_route: informes.resumen
+
 informes.procedencia:
   route_name: informes.procedencia
   title: 'Procedencia clientes'

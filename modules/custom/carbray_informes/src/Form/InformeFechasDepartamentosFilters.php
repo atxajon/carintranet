@@ -82,7 +82,7 @@ class InformeFechasDepartamentosFilters extends FormBase {
 
     $form['departamento'] = array(
       '#type' => 'select',
-      '#options' => get_departamento_options('departamento'),
+      '#options' => get_vocabulary_term_options('departamento'),
       '#title' => t('Filtrar por departamento'),
       '#prefix' => '<div class="floated-col">',
       '#suffix' => '</div>',

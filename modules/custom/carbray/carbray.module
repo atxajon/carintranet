@@ -1232,7 +1232,7 @@ function sort_alphabetically($name1, $name2) {
  * @param $vocabulary
  *   String referencing taxonomy vocabulary.
  */
-function get_departamento_options($vocabulary) {
+function get_vocabulary_term_options($vocabulary) {
   $sql = "SELECT tid FROM taxonomy_term_field_data WHERE vid = :vocabulary ";
   $tids = \Drupal::database()->query($sql, [':vocabulary' => $vocabulary])->fetchCol();
 

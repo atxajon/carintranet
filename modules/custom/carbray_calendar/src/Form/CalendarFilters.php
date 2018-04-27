@@ -49,7 +49,7 @@ class CalendarFilters extends FormBase {
     elseif (in_array('administrator', $current_user_roles) || (in_array('carbray_administrator', $current_user_roles))) {
       $form['departamento'] = array(
         '#type' => 'select',
-        '#options' => get_departamento_options('departamento'),
+        '#options' => get_vocabulary_term_options('departamento'),
         '#title' => t('Filtrar por departamento'),
         '#empty_option' => 'Todos los departamentos',
       );
