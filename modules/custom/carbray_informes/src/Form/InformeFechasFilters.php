@@ -93,14 +93,14 @@ class InformeFechasFilters extends FormBase {
     $form['submit'] = [
       '#type' => 'submit',
       '#value' => t('Filtrar por fechas'),
-      '#attributes' => array('class' => ['margin-top-20', 'margin-bottom-20', 'btn-primary', 'filter']),
+      '#attributes' => array('class' => ['margin-bottom-20', 'btn-primary', 'filter']),
     ];
 
     $form['reset'] = [
       '#type' => 'submit',
       '#value' => t('Mostrar todo'),
       '#submit' => array('::resetValues'),
-      '#attributes' => array('class' => ['margin-top-20', 'margin-bottom-20', 'margin-left-10', 'btn-warning', 'reset']),
+      '#attributes' => array('class' => ['margin-bottom-20', 'margin-left-10', 'btn-warning', 'reset']),
     ];
 
     return $form;
