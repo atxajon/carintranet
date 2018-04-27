@@ -144,6 +144,9 @@ ORDER BY field_apellido_value ASC')->fetchAll();
     $build['csv_link'] = [
       '#markup' => get_csv_link('informe_dept.csv', $query_array),
     ];
+    $build['clearer'] = [
+      '#markup' => '<div class="clearfix"></div>',
+    ];
     $build['table'] = [
       '#theme' => 'table',
       '#header' => $header,
@@ -415,6 +418,9 @@ ORDER BY field_apellido_value ASC')->fetchAll();
 
     $build['csv_link'] = [
       '#markup' => get_csv_link('informe_paises.csv', $query_array),
+    ];
+    $build['clearer'] = [
+      '#markup' => '<div class="clearfix"></div>',
     ];
 
     $build['table'] = [
