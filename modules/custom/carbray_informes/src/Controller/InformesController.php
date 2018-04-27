@@ -141,6 +141,9 @@ ORDER BY field_apellido_value ASC')->fetchAll();
     $build['filters'] = [
       '#markup' => render($filters_form),
     ];
+    $build['csv_link'] = [
+      '#markup' => get_csv_link('informe_dept.csv', $query_array),
+    ];
     $build['table'] = [
       '#theme' => 'table',
       '#header' => $header,
@@ -410,27 +413,9 @@ ORDER BY field_apellido_value ASC')->fetchAll();
       );
     }
 
-    $csv_url = Url::fromRoute('informe_paises.csv');
-    $link_options = array(
-      'attributes' => array(
-        'class' => array(
-          'btn',
-          'btn-warning',
-        ),
-      ),
-      'query' => array(
-        $query_array,
-      ),
-    );
-    $csv_url->setOptions($link_options);
-    $link_to_csv_url = Link::fromTextAndUrl('Exportar CSV', $csv_url);
-    $link_to_csv_string = $link_to_csv_url->toString()
-      ->getGeneratedLink();
-    $csv_link_markup = Markup::create($link_to_csv_string);
     $build['csv_link'] = [
-      '#markup' => $csv_link_markup,
+      '#markup' => get_csv_link('informe_paises.csv', $query_array),
     ];
-
 
     $build['table'] = [
       '#theme' => 'table',

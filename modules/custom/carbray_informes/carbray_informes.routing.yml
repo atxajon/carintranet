@@ -45,3 +45,11 @@ informe_paises.csv:
     _controller: '\Drupal\carbray\Controller\CsvDownloader::informePaisesCSV'
   requirements:
     _role: 'carbray_administrator + administrator'
+
+informe_dept.csv:
+  path: '/download-informe-departamento-csv'
+  defaults:
+    _title: 'Informe departamento'
+    _controller: '\Drupal\carbray\Controller\CsvDownloader::informeDepartamentoCSV'
+  requirements:
+    _role: 'carbray_administrator + administrator'

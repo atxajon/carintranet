@@ -15,6 +15,8 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\user\Entity\User;
 use Drupal\node\Entity\Node;
 use Drupal\carbray\ProgressBar;
+use Drupal\Core\Render\Markup;
+
 
 define('REROUTE_EMAIL_ADDRESS', 'marc.mozos@carbray.es');
 
@@ -1244,4 +1246,35 @@ function get_vocabulary_term_options($vocabulary) {
     $options[$term->id()] = $term->name->value;
   }
   return $options;
+}
+
+/**
+ * Builds a link to the CSV downloader.
+ *
+ * @param $routename
+ *   String of route pointing to csv downloader.
+ * @param $query_array
+ *   Array containing query string arguments.
+ *
+ * @return \Drupal\Component\Render\MarkupInterface|string
+ */
+function get_csv_link($routename, $query_array) {
+  $csv_url = Url::fromRoute($routename);
+  $link_options = array(
+    'attributes' => array(
+      'class' => array(
+        'btn',
+        'btn-warning',
+      ),
+    ),
+    'query' => array(
+      $query_array,
+    ),
+  );
+  $csv_url->setOptions($link_options);
+  $link_to_csv_url = Link::fromTextAndUrl('Exportar CSV', $csv_url);
+  $link_to_csv_string = $link_to_csv_url->toString()
+    ->getGeneratedLink();
+  $csv_link_markup = Markup::create($link_to_csv_string);
+  return $csv_link_markup;
 }

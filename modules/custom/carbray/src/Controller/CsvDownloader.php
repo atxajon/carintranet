@@ -144,4 +144,63 @@ class CsvDownloader extends ControllerBase {
     return $csvresponse;
   }
 
+  public function informeDepartamentoCSV() {
+    // Obtain query string parameters to pass them in to the queries.
+    $path = parse_url(\Drupal::request()->getRequestUri());
+    $query_array = array();
+    if (isset($path['query'])) {
+      parse_str($path['query'], $query_array);
+    }
+
+    $departments = get_vocabulary_term_options('departamento');
+    foreach ($departments as $department_tid => $department_name) {
+//      $url = Url::fromRoute('carbray.worker_home', ['uid' => $worker->uid]);
+//      $worker_name = Link::fromTextAndUrl($worker->name . ' ' . $worker->surname, $url);
+
+      $count_captaciones_activas = get_captaciones_activas_by_dept($department_tid, $query_array);
+      $count_captaciones_archivadas = get_captaciones_archivadas_by_dept($department_tid, $query_array);
+      $count_expedientes_published = get_expedientes_activos_by_dept($department_tid, $query_array);
+      $count_expedientes_archived = get_expedientes_archivados_by_dept($department_tid, $query_array);
+      $count_facturas_emitidas = get_facturas_emitidas_by_dept($department_tid, $query_array);
+      $count_facturas_pagadas = get_facturas_pagadas_by_dept($department_tid, $query_array);
+
+      $rows[] = array(
+        $department_name,
+        $count_captaciones_activas,
+        $count_captaciones_archivadas,
+        $count_expedientes_published,
+        $count_expedientes_archived,
+        $count_facturas_emitidas,
+        $count_facturas_pagadas,
+      );
+    }
+
+    $header[] = array(
+      'Departamento:',
+      'Captaciones en curso',
+      'Captaciones archivadas',
+      'Expedientes en Curso',
+      'Expedientes Archivados',
+      'Facturas emitidas',
+      'Facturas pagadas',
+    );
+
+    $filename = 'informe-departamentos';
+
+    if (isset($query_array['date_from'])) {
+      $filename .= '-desde:' . date('d-m-Y', $query_array['date_from']);
+    }
+    if (isset($query_array['date_to'])) {
+      $filename .= '-hasta:' . date('d-m-Y', $query_array['date_to']);
+    }
+
+    $filename .= '.csv';
+
+    $all_data = array_merge($header, $rows);
+
+    // Instantiate obj CsvResponse to leverage data to csv conversion.
+    $csvresponse = new CsvResponse($all_data);
+    $csvresponse->setFilename($filename);
+    return $csvresponse;
+  }
 }
