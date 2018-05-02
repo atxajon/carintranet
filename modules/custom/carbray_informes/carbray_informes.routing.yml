@@ -60,3 +60,12 @@ informe_dept.csv:
     _controller: '\Drupal\carbray\Controller\CsvDownloader::informeDepartamentoCSV'
   requirements:
     _role: 'carbray_administrator + administrator'
+
+informe_workers.csv:
+  path: '/download-informe-abogados-csv'
+  defaults:
+    _title: 'Informe abogados'
+    _controller: '\Drupal\carbray\Controller\CsvDownloader::informeAbogadosCSV'
+  requirements:
+    _role: 'carbray_administrator + administrator'
+

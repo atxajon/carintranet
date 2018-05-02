@@ -232,9 +232,11 @@ ORDER BY field_apellido_value ASC', [':tid' => $tid])->fetchAll();
       'Facturas pagadas',
     );
 
+    $query_array['tid'] = $tid;
     $build['csv_link'] = [
-      '#markup' => get_csv_link('informe_dept.csv', $query_array),
+      '#markup' => get_csv_link('informe_workers.csv', $query_array),
     ];
+
     $build['clearer'] = [
       '#markup' => '<div class="clearfix"></div>',
     ];

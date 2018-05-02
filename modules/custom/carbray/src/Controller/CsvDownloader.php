@@ -203,4 +203,66 @@ class CsvDownloader extends ControllerBase {
     $csvresponse->setFilename($filename);
     return $csvresponse;
   }
+
+  /**
+   * Works out the CSV file for the abogados inside a departamento (i.e /informes/departamento/185)
+   * @return CsvResponse
+   */
+  public function informeAbogadosCSV() {
+    // Obtain query string parameters to pass them in to the queries.
+    $path = parse_url(\Drupal::request()->getRequestUri());
+    $query_array = array();
+    if (isset($path['query'])) {
+      parse_str($path['query'], $query_array);
+    }
+
+    $workers = \Drupal::database()->query('SELECT n.entity_id as uid, field_nombre_value as name, field_apellido_value as surname 
+FROM user__field_nombre n 
+INNER JOIN users_field_data ufd on ufd.uid = n.entity_id
+INNER JOIN user__field_apellido a on n.entity_id = a.entity_id 
+INNER JOIN user__roles ur on n.entity_id = ur.entity_id 
+INNER JOIN user__field_departamento d on d.entity_id = ufd.uid
+WHERE ufd.status = 1
+AND field_departamento_target_id = :tid
+ORDER BY field_apellido_value ASC', [':tid' => $query_array['tid']])->fetchAll();
+
+    $rows = [];
+    foreach ($workers as $worker) {
+      $rows[] = array(
+        $worker->name . ' ' . $worker->surname,
+        get_count_captaciones_activas($worker->uid, $query_array),
+        get_count_captaciones_archivadas($worker->uid, $query_array),
+        get_count_expedientes_published($worker->uid, $query_array),
+        get_count_expedientes_archived($worker->uid, $query_array),
+        get_count_facturas_emitidas($worker->uid, $query_array),
+        get_count_facturas_pagadas($worker->uid, $query_array),
+      );
+    }
+
+    $header[] = array(
+      'Nombre:',
+      'Captaciones en curso',
+      'Captaciones archivadas',
+      'Expedientes en Curso',
+      'Expedientes Archivados',
+      'Facturas emitidas',
+      'Facturas pagadas',
+    );
+
+    $filename = 'informe-abogados';
+    if (isset($query_array['date_from'])) {
+      $filename .= '-desde:' . date('d-m-Y', $query_array['date_from']);
+    }
+    if (isset($query_array['date_to'])) {
+      $filename .= '-hasta:' . date('d-m-Y', $query_array['date_to']);
+    }
+    $filename .= '.csv';
+
+    $all_data = array_merge($header, $rows);
+
+    // Instantiate obj CsvResponse to leverage data to csv conversion.
+    $csvresponse = new CsvResponse($all_data);
+    $csvresponse->setFilename($filename);
+    return $csvresponse;
+  }
 }
