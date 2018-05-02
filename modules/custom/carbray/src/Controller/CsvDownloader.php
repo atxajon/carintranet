@@ -154,9 +154,6 @@ class CsvDownloader extends ControllerBase {
 
     $departments = get_vocabulary_term_options('departamento');
     foreach ($departments as $department_tid => $department_name) {
-//      $url = Url::fromRoute('carbray.worker_home', ['uid' => $worker->uid]);
-//      $worker_name = Link::fromTextAndUrl($worker->name . ' ' . $worker->surname, $url);
-
       $count_captaciones_activas = get_captaciones_activas_by_dept($department_tid, $query_array);
       $count_captaciones_archivadas = get_captaciones_archivadas_by_dept($department_tid, $query_array);
       $count_expedientes_published = get_expedientes_activos_by_dept($department_tid, $query_array);

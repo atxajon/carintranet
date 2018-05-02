@@ -6,7 +6,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Url;
 use Drupal\Core\Link;
 use Drupal\taxonomy\Entity\Term;
-
+use Drupal\Core\Render\Markup;
 
 class InformesController extends ControllerBase {
 
@@ -240,8 +240,14 @@ ORDER BY field_apellido_value ASC', [':tid' => $tid])->fetchAll();
     $build['clearer'] = [
       '#markup' => '<div class="clearfix"></div>',
     ];
+
+    $term = Term::load($tid);
+    $department_name = ucfirst($term->getName());
+
+
     $build['table'] = [
       '#theme' => 'table',
+      '#caption' => Markup::create('<h3>' . $department_name . ':</h3>'),
       '#header' => $header,
       '#rows' => $rows,
       '#attributes' => ['id' => 'resumen-abogados', 'class' => ['tablesorter']],
