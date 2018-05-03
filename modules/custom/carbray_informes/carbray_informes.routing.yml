@@ -13,13 +13,6 @@ informes.departamento:
     _controller: '\Drupal\carbray_informes\Controller\InformesController::resumenDepartamento'
   requirements:
     _role: 'carbray_administrator + administrator'
-informe.departamento:
-  path: '/informes/departamento/{tid}'
-  defaults:
-    _title: 'Informes - Abogados del departamento'
-    _controller: '\Drupal\carbray_informes\Controller\InformesController::resumenDepartamentoTid'
-  requirements:
-    _role: 'carbray_administrator + administrator'
 
 informes.procedencia:
   path: '/informes/procedencia'

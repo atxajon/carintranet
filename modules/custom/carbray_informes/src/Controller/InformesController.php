@@ -76,7 +76,7 @@ ORDER BY field_apellido_value ASC')->fetchAll();
       '#theme' => 'table',
       '#header' => $header,
       '#rows' => $rows,
-      '#attributes' => ['id' => 'resumen-abogados', 'class' => ['tablesorter']],
+      '#attributes' => ['class' => ['tablesorter']],
       '#cache' => [
         'max-age' => 0,
       ],
@@ -91,7 +91,6 @@ ORDER BY field_apellido_value ASC')->fetchAll();
   function resumenDepartamento() {
     $build['#attached']['library'][] = 'carbray/tablesorter';
     $build['#attached']['library'][] = 'carbray/carbray_table_sorter';
-    $build['#attached']['library'][] = 'carbray_informes/informes_reload';
 
     $build['div_open'] = [
       '#markup' => '<div class="admin-block">',
@@ -104,16 +103,23 @@ ORDER BY field_apellido_value ASC')->fetchAll();
       parse_str($path['query'], $query_array);
     }
 
-    // Link to department options: open in new tab, append query string.
-    $options = array(
-      'query'      => $query_array,
-      'absolute'   => TRUE,
-    );
+    // Flag whether user is drilling down into department workers view.
+    $is_dept_view = FALSE;
+    if (isset($query_array['tid'])) {
+      $is_dept_view = TRUE;
+      $tid = $query_array['tid'];
+    }
 
     $departments = get_vocabulary_term_options('departamento');
     foreach ($departments as $department_tid => $department_name) {
+      // Link to department options: append query string.
+      $query_array['tid'] = $department_tid;
+      $options = array(
+        'query' => $query_array,
+        'fragment' => 'dept-table',
+      );
 
-      $url = Url::fromRoute('informe.departamento', ['tid' => $department_tid], $options);
+      $url = Url::fromRoute('informes.departamento', [], $options);
       $department_link = Link::fromTextAndUrl($department_name, $url);
 
       $count_captaciones_activas = get_captaciones_activas_by_dept($department_tid, $query_array);
@@ -152,6 +158,7 @@ ORDER BY field_apellido_value ASC')->fetchAll();
     $build['csv_link'] = [
       '#markup' => get_csv_link('informe_dept.csv', $query_array),
     ];
+
     $build['clearer'] = [
       '#markup' => '<div class="clearfix"></div>',
     ];
@@ -159,111 +166,16 @@ ORDER BY field_apellido_value ASC')->fetchAll();
       '#theme' => 'table',
       '#header' => $header,
       '#rows' => $rows,
-      '#attributes' => ['id' => 'resumen-abogados', 'class' => ['tablesorter']],
-      '#cache' => [
-        'max-age' => 0,
-      ],
-    ];
-    $build['div_close'] = [
-      '#markup' => '</div>',
-    ];
-
-    $build['departamento_data'] = [
-      '#markup' => '<div id="departamento-data"></div>',
-    ];
-
-    return $build;
-  }
-
-  public function resumenDepartamentoTid($tid) {
-    $build['#attached']['library'][] = 'carbray/tablesorter';
-    $build['#attached']['library'][] = 'carbray/carbray_table_sorter';
-
-    $build['div_open'] = [
-      '#markup' => '<div class="admin-block">',
-    ];
-
-    // Obtain query string parameters to pass them in to the queries.
-    $path = parse_url(\Drupal::request()->getRequestUri());
-    $query_array = array();
-    if (isset($path['query'])) {
-      parse_str($path['query'], $query_array);
-    }
-
-
-
-
-
-
-
-    // Link to department options: open in new tab, append query string.
-    $options = array(
-      'query'      => $query_array,
-//      'attributes' => ['target' => '_blank'],
-      'absolute'   => TRUE,
-    );
-
-    $departments = get_vocabulary_term_options('departamento');
-    foreach ($departments as $department_tid => $department_name) {
-      // @todo: replace this url (/informes/departamento/185?date_from=15123... ) with /informes/departamento?tid=185&date_from=...
-      $url = Url::fromRoute('informe.departamento', ['tid' => $department_tid], $options);
-      $department_link = Link::fromTextAndUrl($department_name, $url);
-
-      $count_captaciones_activas = get_captaciones_activas_by_dept($department_tid, $query_array);
-      $count_captaciones_archivadas = get_captaciones_archivadas_by_dept($department_tid, $query_array);
-      $count_expedientes_published = get_expedientes_activos_by_dept($department_tid, $query_array);
-      $count_expedientes_archived = get_expedientes_archivados_by_dept($department_tid, $query_array);
-      $count_facturas_emitidas = get_facturas_emitidas_by_dept($department_tid, $query_array);
-      $count_facturas_pagadas = get_facturas_pagadas_by_dept($department_tid, $query_array);
-
-      $rows[] = array(
-        $department_link,
-        $count_captaciones_activas,
-        $count_captaciones_archivadas,
-        $count_expedientes_published,
-        $count_expedientes_archived,
-        $count_facturas_emitidas,
-        $count_facturas_pagadas,
-      );
-    }
-
-    $header = array(
-      'Departamento:',
-      'Captaciones en curso',
-      'Captaciones archivadas',
-      'Expedientes en Curso',
-      'Expedientes Archivados',
-      'Facturas emitidas',
-      'Facturas pagadas',
-    );
-
-    $filters_form = \Drupal::formBuilder()
-      ->getForm('Drupal\carbray_informes\Form\InformeFechasFilters');
-    $build['filters'] = [
-      '#markup' => render($filters_form),
-    ];
-    $build['dept_csv_link'] = [
-      '#markup' => get_csv_link('informe_dept.csv', $query_array),
-    ];
-    $build['dept_clearer'] = [
-      '#markup' => '<div class="clearfix"></div>',
-    ];
-    $build['dept_table'] = [
-      '#theme' => 'table',
-      '#header' => $header,
-      '#rows' => $rows,
-      '#attributes' => ['id' => 'resumen-abogados', 'class' => ['tablesorter']],
+      '#attributes' => ['class' => ['tablesorter', 'margin-bottom-70']],
       '#cache' => [
         'max-age' => 0,
       ],
     ];
 
 
-    $current_path = \Drupal::service('path.current')->getPath();
-    $path_args = explode('/', $current_path);
-    $tid = $path_args[3];
-
-    $workers = \Drupal::database()->query('SELECT n.entity_id as uid, field_nombre_value as name, field_apellido_value as surname 
+    // If URL contains tid as a query string arg show workers for that dept.
+    if ($is_dept_view) {
+      $workers = \Drupal::database()->query('SELECT n.entity_id as uid, field_nombre_value as name, field_apellido_value as surname 
 FROM user__field_nombre n 
 INNER JOIN users_field_data ufd on ufd.uid = n.entity_id
 INNER JOIN user__field_apellido a on n.entity_id = a.entity_id 
@@ -272,63 +184,64 @@ INNER JOIN user__field_departamento d on d.entity_id = ufd.uid
 WHERE ufd.status = 1
 AND field_departamento_target_id = :tid
 ORDER BY field_apellido_value ASC', [':tid' => $tid])->fetchAll();
-    $rows = [];
-    foreach ($workers as $worker) {
-      // Make worker name surname into a link.
-      $url = Url::fromRoute('carbray.worker_home', ['uid' => $worker->uid]);
-      $worker_name = Link::fromTextAndUrl($worker->name . ' ' . $worker->surname, $url);
+      $rows = [];
+      foreach ($workers as $worker) {
+        // Make worker name surname into a link.
+        $url = Url::fromRoute('carbray.worker_home', ['uid' => $worker->uid]);
+        $worker_name = Link::fromTextAndUrl($worker->name . ' ' . $worker->surname, $url);
 
-      $count_captaciones_activas = get_count_captaciones_activas($worker->uid, $query_array);
-      $count_captaciones_archivadas = get_count_captaciones_archivadas($worker->uid, $query_array);
-      $count_expedientes_published = get_count_expedientes_published($worker->uid, $query_array);
-      $count_expedientes_archived = get_count_expedientes_archived($worker->uid, $query_array);
-      $count_facturas_emitidas = get_count_facturas_emitidas($worker->uid, $query_array);
-      $count_facturas_pagadas = get_count_facturas_pagadas($worker->uid, $query_array);
+        $count_captaciones_activas = get_count_captaciones_activas($worker->uid, $query_array);
+        $count_captaciones_archivadas = get_count_captaciones_archivadas($worker->uid, $query_array);
+        $count_expedientes_published = get_count_expedientes_published($worker->uid, $query_array);
+        $count_expedientes_archived = get_count_expedientes_archived($worker->uid, $query_array);
+        $count_facturas_emitidas = get_count_facturas_emitidas($worker->uid, $query_array);
+        $count_facturas_pagadas = get_count_facturas_pagadas($worker->uid, $query_array);
 
-      $rows[] = array(
-        $worker_name,
-        $count_captaciones_activas,
-        $count_captaciones_archivadas,
-        $count_expedientes_published,
-        $count_expedientes_archived,
-        $count_facturas_emitidas,
-        $count_facturas_pagadas,
+        $rows[] = array(
+          $worker_name,
+          $count_captaciones_activas,
+          $count_captaciones_archivadas,
+          $count_expedientes_published,
+          $count_expedientes_archived,
+          $count_facturas_emitidas,
+          $count_facturas_pagadas,
+        );
+      }
+
+      $header = array(
+        'Trabajador/a:',
+        'Captaciones en curso',
+        'Captaciones archivadas',
+        'Expedientes en Curso',
+        'Expedientes Archivados',
+        'Facturas emitidas',
+        'Facturas pagadas',
       );
+
+      $build['dept_csv_link'] = [
+        '#markup' => get_csv_link('informe_workers.csv', $query_array),
+      ];
+
+      $build['dept_clearer'] = [
+        '#markup' => '<div class="clearfix"></div>',
+      ];
+
+      $term = Term::load($tid);
+      $department_name = ucfirst($term->getName());
+
+      $build['dept_table'] = [
+        '#theme' => 'table',
+        '#caption' => Markup::create('<h3>' . $department_name . ':</h3>'),
+        '#header' => $header,
+        '#rows' => $rows,
+        '#attributes' => ['id' => 'dept-table', 'class' => ['tablesorter']],
+        '#cache' => [
+          'max-age' => 0,
+        ],
+      ];
+
     }
 
-    $header = array(
-      'Trabajador/a:',
-      'Captaciones en curso',
-      'Captaciones archivadas',
-      'Expedientes en Curso',
-      'Expedientes Archivados',
-      'Facturas emitidas',
-      'Facturas pagadas',
-    );
-
-    $query_array['tid'] = $tid;
-    $build['csv_link'] = [
-      '#markup' => get_csv_link('informe_workers.csv', $query_array),
-    ];
-
-    $build['clearer'] = [
-      '#markup' => '<div class="clearfix"></div>',
-    ];
-
-    $term = Term::load($tid);
-    $department_name = ucfirst($term->getName());
-
-
-    $build['table'] = [
-      '#theme' => 'table',
-      '#caption' => Markup::create('<h3>' . $department_name . ':</h3>'),
-      '#header' => $header,
-      '#rows' => $rows,
-      '#attributes' => ['id' => 'resumen-abogados', 'class' => ['tablesorter']],
-      '#cache' => [
-        'max-age' => 0,
-      ],
-    ];
     $build['div_close'] = [
       '#markup' => '</div>',
     ];
@@ -549,7 +462,7 @@ ORDER BY field_apellido_value ASC', [':tid' => $tid])->fetchAll();
         '#header' => $header,
         '#rows' => [],
         '#empty' => t('Ningun resultado - usa los filtros para establecer los criterios de selección.'),
-        '#attributes' => ['id' => 'resumen-abogados', 'class' => ['tablesorter', 'table-condensed']],
+        '#attributes' => ['class' => ['tablesorter', 'table-condensed']],
         '#cache' => [
           'max-age' => 0,
         ],
@@ -600,7 +513,7 @@ ORDER BY field_apellido_value ASC', [':tid' => $tid])->fetchAll();
       '#theme' => 'table',
       '#header' => $header,
       '#rows' => $rows,
-      '#attributes' => ['id' => 'resumen-abogados', 'class' => ['tablesorter', 'table-condensed']],
+      '#attributes' => ['class' => ['tablesorter', 'table-condensed']],
       '#cache' => [
         'max-age' => 0,
       ],

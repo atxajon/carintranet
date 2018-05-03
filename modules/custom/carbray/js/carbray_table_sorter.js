@@ -3,7 +3,7 @@
     attach: function (context, settings) {
       // Prevent js code from double firing.
       if (context == document) {
-        $("#resumen-abogados").tablesorter({
+        $(".tablesorter").tablesorter({
           sortInitialOrder: "desc"
         });
       }
