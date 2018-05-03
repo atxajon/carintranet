@@ -8,6 +8,7 @@ use Drupal\Core\Link;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\Core\Render\Markup;
 
+
 class InformesController extends ControllerBase {
 
   public function resumen() {
@@ -90,6 +91,7 @@ ORDER BY field_apellido_value ASC')->fetchAll();
   function resumenDepartamento() {
     $build['#attached']['library'][] = 'carbray/tablesorter';
     $build['#attached']['library'][] = 'carbray/carbray_table_sorter';
+    $build['#attached']['library'][] = 'carbray_informes/informes_reload';
 
     $build['div_open'] = [
       '#markup' => '<div class="admin-block">',
@@ -105,7 +107,6 @@ ORDER BY field_apellido_value ASC')->fetchAll();
     // Link to department options: open in new tab, append query string.
     $options = array(
       'query'      => $query_array,
-      'attributes' => ['target' => '_blank'],
       'absolute'   => TRUE,
     );
 
@@ -167,6 +168,10 @@ ORDER BY field_apellido_value ASC')->fetchAll();
       '#markup' => '</div>',
     ];
 
+    $build['departamento_data'] = [
+      '#markup' => '<div id="departamento-data"></div>',
+    ];
+
     return $build;
   }
 
@@ -185,6 +190,75 @@ ORDER BY field_apellido_value ASC')->fetchAll();
       parse_str($path['query'], $query_array);
     }
 
+
+
+
+
+
+
+    // Link to department options: open in new tab, append query string.
+    $options = array(
+      'query'      => $query_array,
+//      'attributes' => ['target' => '_blank'],
+      'absolute'   => TRUE,
+    );
+
+    $departments = get_vocabulary_term_options('departamento');
+    foreach ($departments as $department_tid => $department_name) {
+      // @todo: replace this url (/informes/departamento/185?date_from=15123... ) with /informes/departamento?tid=185&date_from=...
+      $url = Url::fromRoute('informe.departamento', ['tid' => $department_tid], $options);
+      $department_link = Link::fromTextAndUrl($department_name, $url);
+
+      $count_captaciones_activas = get_captaciones_activas_by_dept($department_tid, $query_array);
+      $count_captaciones_archivadas = get_captaciones_archivadas_by_dept($department_tid, $query_array);
+      $count_expedientes_published = get_expedientes_activos_by_dept($department_tid, $query_array);
+      $count_expedientes_archived = get_expedientes_archivados_by_dept($department_tid, $query_array);
+      $count_facturas_emitidas = get_facturas_emitidas_by_dept($department_tid, $query_array);
+      $count_facturas_pagadas = get_facturas_pagadas_by_dept($department_tid, $query_array);
+
+      $rows[] = array(
+        $department_link,
+        $count_captaciones_activas,
+        $count_captaciones_archivadas,
+        $count_expedientes_published,
+        $count_expedientes_archived,
+        $count_facturas_emitidas,
+        $count_facturas_pagadas,
+      );
+    }
+
+    $header = array(
+      'Departamento:',
+      'Captaciones en curso',
+      'Captaciones archivadas',
+      'Expedientes en Curso',
+      'Expedientes Archivados',
+      'Facturas emitidas',
+      'Facturas pagadas',
+    );
+
+    $filters_form = \Drupal::formBuilder()
+      ->getForm('Drupal\carbray_informes\Form\InformeFechasFilters');
+    $build['filters'] = [
+      '#markup' => render($filters_form),
+    ];
+    $build['dept_csv_link'] = [
+      '#markup' => get_csv_link('informe_dept.csv', $query_array),
+    ];
+    $build['dept_clearer'] = [
+      '#markup' => '<div class="clearfix"></div>',
+    ];
+    $build['dept_table'] = [
+      '#theme' => 'table',
+      '#header' => $header,
+      '#rows' => $rows,
+      '#attributes' => ['id' => 'resumen-abogados', 'class' => ['tablesorter']],
+      '#cache' => [
+        'max-age' => 0,
+      ],
+    ];
+
+
     $current_path = \Drupal::service('path.current')->getPath();
     $path_args = explode('/', $current_path);
     $tid = $path_args[3];
@@ -198,7 +272,7 @@ INNER JOIN user__field_departamento d on d.entity_id = ufd.uid
 WHERE ufd.status = 1
 AND field_departamento_target_id = :tid
 ORDER BY field_apellido_value ASC', [':tid' => $tid])->fetchAll();
-
+    $rows = [];
     foreach ($workers as $worker) {
       // Make worker name surname into a link.
       $url = Url::fromRoute('carbray.worker_home', ['uid' => $worker->uid]);

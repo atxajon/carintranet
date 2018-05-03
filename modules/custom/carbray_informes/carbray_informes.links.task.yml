@@ -22,3 +22,4 @@ informes.paises:
   route_name: informes.paises
   title: 'Resumen por paises'
   base_route: informes.resumen
+
