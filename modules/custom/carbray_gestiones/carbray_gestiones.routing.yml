@@ -1,0 +1,19 @@
+gestiones.trabajadores:
+  path: '/gestiones/trabajadores'
+  defaults:
+    _title: 'Gestionar trabajadores'
+    _controller: '\Drupal\carbray_gestiones\Controller\gestionesController::trabajadores'
+  requirements:
+    _role: 'carbray_administrator + administrator'
+
+gestiones.prop_plantillas:
+  path: '/gestiones/propuesta-plantillas'
+  defaults:
+    _title: 'Gestionar propuesta plantillas'
+    _controller: '\Drupal\carbray_gestiones\Controller\gestionesController::plantillas'
+  requirements:
+    _role: 'carbray_administrator + administrator'
+
+
+
+

@@ -1,0 +1,4 @@
+name: Carbray gestiones
+type: module
+description: Defines routes and local tasks for admin related structure/terms/users etc editing.
+core: 8.x

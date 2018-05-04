@@ -1,0 +1,30 @@
+gestiones.trabajadores:
+  route_name: gestiones.trabajadores
+  title: 'Gestionar trabajadores'
+  base_route: gestiones.trabajadores
+
+gestiones.prop_plantillas:
+  route_name: gestiones.prop_plantillas
+  title: 'Gestionar propuesta plantillas'
+  base_route: gestiones.trabajadores
+
+gestiones.estados_captacion:
+  route_name: entity.taxonomy_vocabulary.overview_form
+  title: 'Estados captación'
+  base_route: gestiones.trabajadores
+  route_parameters:
+      taxonomy_vocabulary:  'estado_de_captacion'
+
+gestiones.tematicas:
+  route_name: entity.taxonomy_vocabulary.overview_form
+  title: 'Temáticas/Servicios'
+  base_route: gestiones.trabajadores
+  route_parameters:
+      taxonomy_vocabulary:  'tematicas'
+
+gestiones.modelos:
+  route_name: entity.taxonomy_vocabulary.overview_form
+  title: 'Modelos'
+  base_route: gestiones.trabajadores
+  route_parameters:
+      taxonomy_vocabulary:  'modelos'
