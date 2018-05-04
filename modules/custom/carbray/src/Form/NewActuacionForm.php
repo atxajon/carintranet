@@ -57,7 +57,16 @@ class NewActuacionForm extends FormBase {
       // If is an actuacion for an expediente with pack de horas, pass the
       // value to js to set the timer to countdown.
       $form['#attached']['drupalSettings']['pack_minutos'] = $pack * 60;
-      $crono_time = gmdate("H:i:s", $pack * 60);
+      // Convert values higher than 24 hours to valid crono time; https://stackoverflow.com/questions/3172332/convert-seconds-to-hourminutesecond
+      $seconds = $pack * 60;
+      if ($pack > 1440) {
+        // Pack de horas over 24h: format remaining crono timer as totalMinutes:seconds;
+        // We avoid Hours in the formatting as we can't use it as a string in js later for the countdown (range is 0 to 23 in a clock!)
+        $crono_time = sprintf('%02d:%02d', $pack, floor($seconds % 60));
+      }
+      else {
+        $crono_time = floor($seconds / 3600) . gmdate(":i:s", $seconds % 3600);
+      }
       $form['start'] = array(
         '#type' => 'button',
         '#value' => 'Comenzar',

@@ -206,15 +206,8 @@ class NewExpedienteForm extends FormBase {
       $selected_responsable[$responsable_id] = $value;
     }
 
-    // $modelos strangely adds uid 0 for every non selected modelos checkbox;
-    // let's clean those up.
-    $selected_modelos = array();
-    foreach ($modelos as $modelos_id => $value) {
-      if ($value == 0) {
-        continue;
-      }
-      $selected_modelos[$modelos_id] = $value;
-    }
+
+
 
     // Create expediente node.
     $expediente = Node::create(['type' => 'expediente']);
@@ -227,7 +220,16 @@ class NewExpedienteForm extends FormBase {
     $expediente->save();
 
 
-    if ($selected_modelos) {
+    if ($modelos) {
+      $selected_modelos = array();
+      // $modelos strangely adds uid 0 for every non selected modelos checkbox;
+      // let's clean those up.
+      foreach ($modelos as $modelos_id => $value) {
+        if ($value == 0) {
+          continue;
+        }
+        $selected_modelos[$modelos_id] = $value;
+      }
       /**
        * Insert on custom table {carbray_expediente_modelos}
        * Now we have expediente nid and we can store in this custom table, to keep values persistent.

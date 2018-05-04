@@ -1,13 +1,19 @@
 (function ($, Drupal, drupalSettings) {
   Drupal.behaviors.carbray_timer = {
     attach: function (context, settings) {
+      // packMinutos stores the seconds available for this expediente with pack de horas.
       var packMinutos = drupalSettings.pack_minutos;
       var timeAlert = false;
 
       $('#edit-start', context).once('carbray_timer').on('click', function () {
+        var formatString = '%H:%M:%S';
         if (packMinutos) {
+          // If pack de horas is over 24h format the date as TotalMinutes:seconds.
+          if (packMinutos > 86400) {
+            formatString = '%G:%S';
+          }
           $('#crono').timer({
-            format: '%H:%M:%S',
+            format: formatString,
             countdown: true,
             duration: packMinutos,
           });
@@ -15,7 +21,7 @@
         }
         else {
           $('#crono').timer({
-            format: '%H:%M:%S'
+            format: formatString
           });
         }
         $('#edit-pause').removeClass('hidden');
