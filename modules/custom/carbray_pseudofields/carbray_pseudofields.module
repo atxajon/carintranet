@@ -1241,8 +1241,8 @@ function carbray_pseudofields_node_view(array &$build, EntityInterface $entity, 
       if ($pack_minutes) {
         foreach ($pack_minutes as $inputted_time) {
           if (isset($inputted_time->original_minutes)) {
-            $pack_horas =  'Horas: ' . gmdate("H:i", $inputted_time->original_minutes * 60);
-
+            $seconds = $inputted_time->original_minutes * 60;
+            $pack_horas =  'Horas: ' . floor($seconds / 3600) . gmdate(":i:s", $seconds % 3600);
           }
           if (isset($inputted_time->refill_minutes)) {
             $pack_horas .= '<br>Horas facturables añadidas: ' . gmdate("H:i", $inputted_time->refill_minutes * 60);
