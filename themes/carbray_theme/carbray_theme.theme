@@ -171,7 +171,7 @@ function carbray_theme_preprocess_taxonomy_term(&$variables) {
             LEFT JOIN {user__field_nombre} user__field_nombre ON users_field_data.uid = user__field_nombre.entity_id AND (user__field_nombre.deleted = '0' AND user__field_nombre.langcode = users_field_data.langcode)
             LEFT JOIN {user__field_apellido} user__field_apellido ON users_field_data.uid = user__field_apellido.entity_id AND (user__field_apellido.deleted = '0' AND user__field_apellido.langcode = users_field_data.langcode)
             LEFT JOIN {node__field_objetivo_cifra} oc ON nfd.nid = oc.entity_id
-            WHERE (((user__roles.roles_target_id IN('worker', 'carbray_administrator')))
+            WHERE (((user__roles.roles_target_id IN('worker', 'carbray_administrator', 'jefe_departamento')))
             AND ((taxonomy_term_field_data_user__field_departamento.tid = :tid )))
             AND (users_field_data.status = '1')
             ORDER BY apellido ASC";
