@@ -18,7 +18,8 @@ use Drupal\carbray\ProgressBar;
 use Drupal\Core\Render\Markup;
 
 
-define('REROUTE_EMAIL_ADDRESS', 'marc.mozos@carbray.es');
+//define('REROUTE_EMAIL_ADDRESS', 'marc.mozos@carbray.es');
+define('REROUTE_EMAIL_ADDRESS', 'jon.atxa@bondmason.com');
 
 
 define('CAPTACION_ARCHIVADA', 184);
@@ -205,12 +206,16 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
       // a factura with multiple servicios (paragraph type)
       // the form prompts you to confirm removal of first servicio added!
 //      $form['actions']['submit']['#value'] = t('Crear factura / proforma');
-
+    // @todo: custom handler does not kick in h=when user clicks on adding extra service...
       foreach (array_keys($form['actions']) as $action) {
         if ($action != 'preview' && isset($form['actions'][$action]['#type']) && $form['actions'][$action]['#type'] === 'submit') {
           array_unshift($form['actions'][$action]['#submit'], 'send_email_secretaria');
         }
       }
+
+
+      // @todo: work out if this is the first factura for the captacion;
+      //
 
       break;
     case 'node-propuesta-plantilla-form':
@@ -287,19 +292,37 @@ function send_email_secretaria(array &$form, FormStateInterface $form_state){
   $captador_user = User::load($captador_uid);
   $nif = $form_state->getValue('field_factura_nif');
 
+  $all_values = $form_state->getValues();
   // Send email to notify users with role secretaria.
   $precio = $form_state->getValue('field_factura_precio');
   $direccion = $form_state->getValue('field_factura_direccion');
   $proforma = $form_state->getValue('field_factura_proforma');
+  $prov_fondo = $form_state->getValue('field_factura_provision_de_fondo');
+  $iva = $form_state->getValue('field_factura_iva');
+  $in_house_client = $form_state->getValue('field_factura_in_house_client');
+
+  $servicios = $form_state->getValue('field_factura_servicios');
+  $all_servicios = [];
+  foreach ($servicios as $servicio) {
+    if (is_numeric($servicio)) {
+      $all_servicios[] = [
+        $servicio['subform']['field_nombre_servicio'][0]['value'] => $servicio['subform']['field_coste_servicio'][0]['value'],
+      ];
+    }
+  }
   $params = [
     'nif' => $nif[0]['value'],
     'captador' => $captador_user->get('field_nombre')->value . ' ' . $captador_user->get('field_apellido')->value,
     'cliente' => $form_state->getValue('cliente'),
     'email' => $form_state->getValue('email'),
     'telefono' => $form_state->getValue('telefono'),
-    'precio' => $precio[0]['value'],
+    'total' => $precio[0]['value'],
     'proforma' => $proforma['value'],
     'direccion' => $direccion[0]['value'],
+    'provision_fondos' => $prov_fondo[0]['value'],
+    'servicios' => $all_servicios,
+    'iva' => $iva['value'],
+    'in_house' => $in_house_client['value'],
   ];
 
   $secretarias = get_carbray_workers(TRUE, 'secretaria');
@@ -309,8 +332,12 @@ function send_email_secretaria(array &$form, FormStateInterface $form_state){
     $module = 'carbray';
     $langcode = \Drupal::currentUser()->getPreferredLangcode();
     $sent = $mailManager->mail($module, 'notify_secretaria_new_factura', $to, $langcode, $params);
-    $mssg = ($sent) ? 'Email sent to users of role secretaria as a new factura has been created' : '';
+    $mssg = ($sent) ? 'Email sent to ' . $secretaria . ' user of role secretaria as a new factura has been created' : '';
     \Drupal::logger('carbray')->warning($mssg);
+    \Drupal::logger('carbray')->warning(print_r($all_values, TRUE));
+    \Drupal::logger('carbray')->warning(print_r($params, TRUE));
+    \Drupal::logger('carbray')->warning(print_r($all_servicios, TRUE));
+
   }
 }
 
@@ -1056,9 +1083,37 @@ function carbray_mail($key, &$message, $params) {
 }
 
 function carbray_emailer_new_factura($params) {
+  $output = '<h3><b><u>INVOICE REQUEST</u></b></h3>';
+  $output .= '<br><br><br>';
+  $output .= '<p><b>CLIENT: </b>' . $params['cliente'] . '</p>';
+  $output .= '<p><b>ADDRESS: </b>' . $params['direccion'] . '</p>';
+  $output .= '<p><b>NIF / NIE / PASSPORT: </b>' . $params['nif'] . '</p>';
+  $output .= '<br><br><br>';
+  $output .= '<p><b>FIRST OR SECOND PAYMENT: </b>' . $params['nif'] . '</p>';
+  $output .= '<br><br><br>';
+  $output .= '<p><b>REFERENCE(S) + AMOUNT: </b></p>';
+  $output .= '<ol>';
+  foreach ($params['servicios'] as $servicio_name => $servicio_cost) {
+    $output .= '<li>' . $servicio_name . ': ' . $servicio_cost . '</li>';
+  }
+  $output .= '</ol>';
+  $output .= '<br><br><br>';
+  $output .= '<p><b>Total: </b>' . $params['total'] . '€</p>';
+  $output .= '<br><br><br>';
+  $output .= '<p><b>VAT (21% or 0%) </b>' . $params['precio'] . '€</p>';
+  $output .= '<br><br><br>';
+  $output .= '<p><b>PROVISION OF FUNDS: </b>' . $params['precio'] . '€</p>';
+  $output .= '<br><br><br>';
+  $output .= '<p><b>Client email: </b>' . $params['email'] . '</p>';
+  $output .= '<p><b>Client phone: </b>' . $params['telefono'] . '</p>';
+  $output .= '<br><br><br>';
+  $output .= '<p><b>Type of client: </b></p>';
+  $output .= '<p><b>Date of reception of the contact/landing: </b></p>';
+  $output .= '<p><b>In house client: </b></p>';
+  $output .= '<p><b>Second invoice: </b></p>';
+
   $proforma_factura_text = ($params['proforma']) ? 'Proforma' : 'Factura';
-  $output = $proforma_factura_text . " creada por " . $params['captador'] . " para ser revisada. Detalles: ";
-  $output .= '<br><br>' . 'NIF: ' . $params['nif'] . '<br>Nombre cliente: ' . $params['cliente'] . ', email: ' . $params['email'] . ', telefono: ' . $params['telefono'] . '<br>Precio: ' . $params['precio'] . '<br>Direccion: ' . $params['direccion'];
+  $output .= $proforma_factura_text . " creada por " . $params['captador'] . " para ser revisada. Detalles: ";
   return $output;
 }
 
@@ -1072,9 +1127,9 @@ function carbray_emailer_factura_paid($params) {
  */
 function carbray_mail_alter(&$message) {
 
-  //$message['subject'] .= ' {Email para usuario ' . $message['to'] . ' }';
+  $message['subject'] .= ' {Email para usuario ' . $message['to'] . ' }';
   // set 'To' field to dev email account, so Drupal won't email live users.
-  //$message['to'] = REROUTE_EMAIL_ADDRESS;
+  $message['to'] = REROUTE_EMAIL_ADDRESS;
 }
 
 function log_estado_captacion_change($values) {
