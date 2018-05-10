@@ -1083,33 +1083,31 @@ function carbray_emailer_new_factura($params) {
   $output = '<h3>INVOICE REQUEST</h3>';
   $output .= '<br><br><br>';
   $output .= '<p style="color:blue;font-weigh: bold;">CLIENT: ' . $params['cliente'] . '</p>';
-  $output .= '<p><b>ADDRESS: </b>' . $params['direccion'] . '</p>';
-  $output .= '<p><b>NIF / NIE / PASSPORT: </b>' . $params['nif'] . '</p>';
+  $output .= '<p>ADDRESS: ' . $params['direccion'] . '</p>';
+  $output .= '<p>NIF / NIE / PASSPORT: ' . $params['nif'] . '</p>';
   $output .= '<br><br><br>';
-  $output .= '<p><b>FIRST OR SECOND PAYMENT: </b>' . $params['nif'] . '</p>';
+  $output .= '<p>FIRST OR SECOND PAYMENT: ' . $params['nif'] . '</p>';
   $output .= '<br><br><br>';
-  $output .= '<p><b>REFERENCE(S) + AMOUNT: </b></p>';
+  $output .= '<p>REFERENCE(S) + AMOUNT: </p>';
   $output .= '<ol>';
-  foreach ($params['servicios'] as $servicio_name => $servicio_cost) {
-    \Drupal::logger('carbray')->warning(print_r($servicio_name, TRUE));
-    \Drupal::logger('carbray')->warning(print_r($servicio_cost, TRUE));
-    $output .= '<li>' . $servicio_name . ': ' . $servicio_cost . '€</li>';
+  foreach ($params['servicios'] as $key => $value) {
+    $output .= '<li>' . key($value) . ': ' . current($value) . '€</li>';
   }
   $output .= '</ol>';
   $output .= '<br><br><br>';
-  $output .= '<p><b>Total: </b>' . $params['total'] . '€</p>';
+  $output .= '<p>Total: ' . $params['total'] . '€</p>';
   $output .= '<br><br><br>';
-  $output .= '<p><b>VAT:</b>' . ($params['iva']) ?  '21%' : '0%' . '</p>';
+  $output .= '<p>VAT: ' . ($params['iva']) ?  '21%' : '0%' . '</p>';
   $output .= '<br><br><br>';
   $output .= '<p>PROVISION OF FUNDS: ' . $params['provision_fondos'] . '€</p>';
   $output .= '<br><br><br>';
-  $output .= '<p><b>Client email: </b>' . $params['email'] . '</p>';
-  $output .= '<p><b>Client phone: </b>' . $params['telefono'] . '</p>';
+  $output .= '<p>Client email: ' . $params['email'] . '</p>';
+  $output .= '<p>Client phone: ' . $params['telefono'] . '</p>';
   $output .= '<br><br><br>';
-  $output .= '<p><b>Type of client: </b></p>';
-  $output .= '<p><b>Date of reception of the contact/landing: </b></p>';
-  $output .= '<p><b>In house client: </b></p>';
-  $output .= '<p><b>Second invoice: </b></p>';
+  $output .= '<p>Type of client: </p>';
+  $output .= '<p>Date of reception of the contact/landing: </p>';
+  $output .= '<p>In house client: </p>';
+  $output .= '<p>Second invoice: </p>';
 
   $proforma_factura_text = ($params['proforma']) ? 'Proforma' : 'Factura';
   $output .= $proforma_factura_text . " creada por " . $params['captador'] . " para ser revisada. ";
