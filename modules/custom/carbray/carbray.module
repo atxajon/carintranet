@@ -206,7 +206,7 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
       // a factura with multiple servicios (paragraph type)
       // the form prompts you to confirm removal of first servicio added!
 //      $form['actions']['submit']['#value'] = t('Crear factura / proforma');
-    // @todo: custom handler does not kick in h=when user clicks on adding extra service...
+    // @todo: custom handler does not kick in when user clicks on adding extra service...
       foreach (array_keys($form['actions']) as $action) {
         if ($action != 'preview' && isset($form['actions'][$action]['#type']) && $form['actions'][$action]['#type'] === 'submit') {
           array_unshift($form['actions'][$action]['#submit'], 'send_email_secretaria');
@@ -304,7 +304,7 @@ function send_email_secretaria(array &$form, FormStateInterface $form_state){
   $servicios = $form_state->getValue('field_factura_servicios');
   $all_servicios = [];
   foreach ($servicios as $servicio) {
-    if (is_numeric($servicio)) {
+    if (isset($servicio['subform'])) {
       $all_servicios[] = [
         $servicio['subform']['field_nombre_servicio'][0]['value'] => $servicio['subform']['field_coste_servicio'][0]['value'],
       ];
@@ -334,10 +334,6 @@ function send_email_secretaria(array &$form, FormStateInterface $form_state){
     $sent = $mailManager->mail($module, 'notify_secretaria_new_factura', $to, $langcode, $params);
     $mssg = ($sent) ? 'Email sent to ' . $secretaria . ' user of role secretaria as a new factura has been created' : '';
     \Drupal::logger('carbray')->warning($mssg);
-    \Drupal::logger('carbray')->warning(print_r($all_values, TRUE));
-    \Drupal::logger('carbray')->warning(print_r($params, TRUE));
-    \Drupal::logger('carbray')->warning(print_r($all_servicios, TRUE));
-
   }
 }
 
@@ -1083,9 +1079,9 @@ function carbray_mail($key, &$message, $params) {
 }
 
 function carbray_emailer_new_factura($params) {
-  $output = '<h3><b><u>INVOICE REQUEST</u></b></h3>';
+  $output = '<h3>INVOICE REQUEST</h3>';
   $output .= '<br><br><br>';
-  $output .= '<p><b>CLIENT: </b>' . $params['cliente'] . '</p>';
+  $output .= '<p style="color:blue;font-weigh: bold;">CLIENT: ' . $params['cliente'] . '</p>';
   $output .= '<p><b>ADDRESS: </b>' . $params['direccion'] . '</p>';
   $output .= '<p><b>NIF / NIE / PASSPORT: </b>' . $params['nif'] . '</p>';
   $output .= '<br><br><br>';
@@ -1094,15 +1090,15 @@ function carbray_emailer_new_factura($params) {
   $output .= '<p><b>REFERENCE(S) + AMOUNT: </b></p>';
   $output .= '<ol>';
   foreach ($params['servicios'] as $servicio_name => $servicio_cost) {
-    $output .= '<li>' . $servicio_name . ': ' . $servicio_cost . '</li>';
+    $output .= '<li>' . $servicio_name . ': ' . $servicio_cost . '€</li>';
   }
   $output .= '</ol>';
   $output .= '<br><br><br>';
   $output .= '<p><b>Total: </b>' . $params['total'] . '€</p>';
   $output .= '<br><br><br>';
-  $output .= '<p><b>VAT (21% or 0%) </b>' . $params['precio'] . '€</p>';
+  $output .= '<p><b>VAT:</b>' . ($params['iva']) ?  '21%' : '0%' . '</p>';
   $output .= '<br><br><br>';
-  $output .= '<p><b>PROVISION OF FUNDS: </b>' . $params['precio'] . '€</p>';
+  $output .= '<p>PROVISION OF FUNDS: ' . $params['provision_fondos'] . '€</p>';
   $output .= '<br><br><br>';
   $output .= '<p><b>Client email: </b>' . $params['email'] . '</p>';
   $output .= '<p><b>Client phone: </b>' . $params['telefono'] . '</p>';
@@ -1113,7 +1109,7 @@ function carbray_emailer_new_factura($params) {
   $output .= '<p><b>Second invoice: </b></p>';
 
   $proforma_factura_text = ($params['proforma']) ? 'Proforma' : 'Factura';
-  $output .= $proforma_factura_text . " creada por " . $params['captador'] . " para ser revisada. Detalles: ";
+  $output .= $proforma_factura_text . " creada por " . $params['captador'] . " para ser revisada. ";
   return $output;
 }
 
