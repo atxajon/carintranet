@@ -50,6 +50,93 @@ function carbray_theme($existing, $type, $theme, $path) {
   ];
 }
 
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter.
+ * @param $form
+ * @param $form_state
+ * @param $form_id
+ * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+ */
+function carbray_form_node_form_alter(&$form, &$form_state, $form_id) {
+
+  if ($form['#form_id'] == 'node_factura_form') {
+    $form['#attributes']['class'][] = 'block';
+    $form['#attached']['library'][] = 'carbray/factura_calculator';
+
+    // Get captacion nid from url arg.
+    $captacion_nid = \Drupal::request()->query->get('captacion_nid');
+    $captacion_node = Node::load($captacion_nid);
+    $captacion_uid = $captacion_node->get('field_captacion_cliente')
+      ->getValue();
+    $cliente_data = \Drupal::entityTypeManager()
+      ->getStorage('user')
+      ->load($captacion_uid[0]['target_id']);
+
+    $form['cliente'] = array(
+      '#type' => 'textfield',
+      '#title' => 'Cliente',
+      '#default_value' => $cliente_data->get('field_nombre')->value . ' ' . $cliente_data->get('field_apellido')->value,
+      '#disabled' => TRUE,
+      '#prefix' => '<div class="clearfix">',
+    );
+    $form['email'] = array(
+      '#type' => 'textfield',
+      '#title' => 'Email',
+      '#default_value' => $cliente_data->getEmail(),
+      '#disabled' => TRUE,
+    );
+    $form['telefono'] = array(
+      '#type' => 'textfield',
+      '#title' => 'Telefono',
+      '#default_value' => $cliente_data->get('field_telefono')->value,
+      '#disabled' => TRUE,
+      '#suffix' => '</div>',
+    );
+
+    $form['captacion_nid'] = array(
+      '#type' => 'hidden',
+      '#value' => $captacion_nid,
+    );
+    $form['captador_uid'] = array(
+      '#type' => 'hidden',
+      '#value' => $uid = \Drupal::currentUser()->id(),
+    );
+    $form['captacion_date'] = array(
+      '#type' => 'hidden',
+      '#value' => $captacion_node->created->value,
+    );
+
+    $form['field_factura_servicios']['widget']['add_more_button_servicio']['#value'] = t('Añadir otro servicio');
+
+    $form['title']['widget'][0]['value']['#default_value'] = t('Factura  para captacion id ' . $captacion_nid);
+    $form['title']['#attributes']['class'][] = 'hidden';
+
+    // Set default for current captacion and css hide it.
+    $form['field_factura']['widget'][0]['target_id']['#default_value'] = \Drupal\node\Entity\Node::load($captacion_nid);
+    $form['field_factura']['#attributes']['class'][] = 'hidden';
+    $form['field_factura_pagada']['#access'] = FALSE;
+
+    unset($form['revision_information']);
+    unset($form['revision_log']);
+    // following causes a nasty bug: when submitting
+    // a factura with multiple servicios (paragraph type)
+    // the form prompts you to confirm removal of first servicio added!
+    // Let's leave it then commented out...
+    // $form['actions']['submit']['#value'] = t('Crear factura / proforma');
+
+    foreach (array_keys($form['actions']) as $action) {
+      if ($action != 'preview' && isset($form['actions'][$action]['#type']) && $form['actions'][$action]['#type'] === 'submit') {
+        array_unshift($form['actions'][$action]['#submit'], 'send_email_secretaria');
+
+        // Store in custom carbray_facturas table.
+        $form['actions'][$action]['#submit'][] = 'store_carbray_facturas';
+      }
+    }
+  }
+}
+
+
 /**
  * Implements hook_form_alter().
  */
@@ -144,80 +231,6 @@ function carbray_form_alter(&$form, FormStateInterface $form_state) {
       $form['revision_log']['#access'] = FALSE;
       $form['#attributes']['class'][] = 'block';
       break;
-    case 'node-factura-form':
-      // @todo: if carbray request opening up editing factura nodes, will need to uncomment the following and work out
-      // a way to assume the editing path contains query string parameters that allow loading captacion and cliente data...
-//    case 'node-factura-edit-form':
-      $form['#attributes']['class'][] = 'block';
-      $form['#attached']['library'][] = 'carbray/factura_calculator';
-
-      // Get captacion nid from url arg.
-      $captacion_nid = \Drupal::request()->query->get('captacion_nid');
-      $captacion_node = Node::load($captacion_nid);
-      $captacion_uid = $captacion_node->get('field_captacion_cliente')
-        ->getValue();
-      $cliente_data = \Drupal::entityTypeManager()
-        ->getStorage('user')
-        ->load($captacion_uid[0]['target_id']);
-
-      $form['cliente'] = array(
-        '#type' => 'textfield',
-        '#title' => 'Cliente',
-        '#default_value' => $cliente_data->get('field_nombre')->value . ' ' . $cliente_data->get('field_apellido')->value,
-        '#disabled' => TRUE,
-        '#prefix' => '<div class="clearfix">',
-      );
-      $form['email'] = array(
-        '#type' => 'textfield',
-        '#title' => 'Email',
-        '#default_value' => $cliente_data->getEmail(),
-        '#disabled' => TRUE,
-      );
-      $form['telefono'] = array(
-        '#type' => 'textfield',
-        '#title' => 'Telefono',
-        '#default_value' => $cliente_data->get('field_telefono')->value,
-        '#disabled' => TRUE,
-        '#suffix' => '</div>',
-      );
-
-      $form['captacion_nid'] = array(
-        '#type' => 'hidden',
-        '#value' => $captacion_nid,
-      );
-      $form['captador_uid'] = array(
-        '#type' => 'hidden',
-        '#value' => $uid = \Drupal::currentUser()->id(),
-      );
-
-      $form['field_factura_servicios']['widget']['add_more_button_servicio']['#value'] = t('Añadir otro servicio');
-
-      $form['title']['widget'][0]['value']['#default_value'] = t('Factura  para captacion id ' . $captacion_nid);
-      $form['title']['#attributes']['class'][] = 'hidden';
-
-      // Set default for current captacion and css hide it.
-      $form['field_factura']['widget'][0]['target_id']['#default_value'] = \Drupal\node\Entity\Node::load($captacion_nid);
-      $form['field_factura']['#attributes']['class'][] = 'hidden';
-      $form['field_factura_pagada']['#access'] = FALSE;
-
-      unset($form['revision_information']);
-      unset($form['revision_log']);
-      // @todo: following causes a nasty bug: when submitting
-      // a factura with multiple servicios (paragraph type)
-      // the form prompts you to confirm removal of first servicio added!
-//      $form['actions']['submit']['#value'] = t('Crear factura / proforma');
-    // @todo: custom handler does not kick in when user clicks on adding extra service...
-      foreach (array_keys($form['actions']) as $action) {
-        if ($action != 'preview' && isset($form['actions'][$action]['#type']) && $form['actions'][$action]['#type'] === 'submit') {
-          array_unshift($form['actions'][$action]['#submit'], 'send_email_secretaria');
-        }
-      }
-
-
-      // @todo: work out if this is the first factura for the captacion;
-      //
-
-      break;
     case 'node-propuesta-plantilla-form':
     case 'node-propuesta-plantilla-edit-form':
     foreach (array_keys($form['actions']) as $action) {
@@ -291,8 +304,8 @@ function send_email_secretaria(array &$form, FormStateInterface $form_state){
   $captador_uid = $form_state->getValue('captador_uid');
   $captador_user = User::load($captador_uid);
   $nif = $form_state->getValue('field_factura_nif');
+  $captacion_date = $form_state->getValue('captacion_date');
 
-  $all_values = $form_state->getValues();
   // Send email to notify users with role secretaria.
   $precio = $form_state->getValue('field_factura_precio');
   $direccion = $form_state->getValue('field_factura_direccion');
@@ -323,6 +336,7 @@ function send_email_secretaria(array &$form, FormStateInterface $form_state){
     'servicios' => $all_servicios,
     'iva' => $iva['value'],
     'in_house' => $in_house_client['value'],
+    'captacion_date' => $captacion_date,
   ];
 
   $secretarias = get_carbray_workers(TRUE, 'secretaria');
@@ -334,6 +348,32 @@ function send_email_secretaria(array &$form, FormStateInterface $form_state){
     $sent = $mailManager->mail($module, 'notify_secretaria_new_factura', $to, $langcode, $params);
     $mssg = ($sent) ? 'Email sent to ' . $secretaria . ' user of role secretaria as a new factura has been created' : '';
     \Drupal::logger('carbray')->warning($mssg);
+  }
+}
+
+function store_carbray_facturas(array &$form, FormStateInterface $form_state) {
+  $factura_nid = $form_state->getValue('nid');
+  if ($factura_nid) {
+    try {
+      \Drupal::database()->insert('carbray_facturas')
+        ->fields([
+          'factura_nid',
+          'captacion_nid',
+          'expediente_nid',
+          'comision',
+          'author_uid',
+        ])
+        ->values(array(
+          $factura_nid,
+          $form_state->getValue('captacion_nid'),
+          111111,
+          0.6,
+          $form_state->getValue('captador_uid'),
+        ))
+        ->execute();
+    } catch (Exception $e) {
+      watchdog_exception('carbray', $e);
+    }
   }
 }
 
@@ -1091,22 +1131,22 @@ function carbray_emailer_new_factura($params) {
   $output .= '<p>REFERENCE(S) + AMOUNT: </p>';
   $output .= '<ol>';
   foreach ($params['servicios'] as $key => $value) {
-    $output .= '<li>' . key($value) . ': ' . current($value) . '€</li>';
+    $output .= '<li>' . key($value) . ': ' . current($value) . '&euro;</li>';
   }
   $output .= '</ol>';
   $output .= '<br><br><br>';
-  $output .= '<p>Total: ' . $params['total'] . '€</p>';
+  $output .= '<p>Total: ' . $params['total'] . '&euro;</p>';
   $output .= '<br><br><br>';
   $output .= '<p>VAT: ' . ($params['iva']) ?  '21%' : '0%' . '</p>';
   $output .= '<br><br><br>';
-  $output .= '<p>PROVISION OF FUNDS: ' . $params['provision_fondos'] . '€</p>';
+  $output .= '<p>PROVISION OF FUNDS: ' . $params['provision_fondos'] . '&euro;</p>';
   $output .= '<br><br><br>';
   $output .= '<p>Client email: ' . $params['email'] . '</p>';
   $output .= '<p>Client phone: ' . $params['telefono'] . '</p>';
   $output .= '<br><br><br>';
   $output .= '<p>Type of client: </p>';
-  $output .= '<p>Date of reception of the contact/landing: </p>';
-  $output .= '<p>In house client: </p>';
+  $output .= '<p>Date of reception of the contact/landing: ' . date('d-m-Y', $params['captacion_date']) . '</p>';
+  $output .= '<p>In house client: ' . ($params['in_house']) ? 'Si' : 'No' . '</p>';
   $output .= '<p>Second invoice: </p>';
 
   $proforma_factura_text = ($params['proforma']) ? 'Proforma' : 'Factura';
