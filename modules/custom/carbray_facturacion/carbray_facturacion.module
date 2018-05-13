@@ -11,3 +11,18 @@ WHERE field_factura_target_id IN (SELECT entity_id FROM node__field_captacion_ca
   $my_facturas = $db->query($sql, [':captador_uid' => $captador_uid])->fetchAll();
   return $my_facturas;
 }
+
+function get_facturas_pagadas_mis_clientes($captador_uid) {
+  $db = \Drupal::database();
+  $sql = "SELECT nid, title FROM node__field_factura ff INNER JOIN node__field_factura_pagada fp on fp.entity_id = ff.entity_id INNER JOIN node_field_data nfd on nfd.nid = ff.entity_id
+WHERE field_factura_target_id IN (SELECT entity_id FROM node__field_captacion_captador WHERE field_captacion_captador_target_id = :captador_uid) AND field_factura_pagada_value = 1  ORDER BY nid DESC";
+  $my_paid_facturas = $db->query($sql, [':captador_uid' => $captador_uid])->fetchAllKeyed();
+  return $my_paid_facturas;
+}
+
+function get_captacion_for_factura($factura_nid) {
+  $db = \Drupal::database();
+  $sql = "SELECT field_factura_target_id FROM node__field_factura ff WHERE entity_id = :factura_nid";
+  $captacion_nid = $db->query($sql, [':factura_nid' => $factura_nid])->fetchField();
+  return $captacion_nid;
+}

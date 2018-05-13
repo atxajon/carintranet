@@ -1,0 +1,15 @@
+carbray_facturacion.excel_facturacion:
+  path: '/excel-facturacion'
+  defaults:
+    _title: 'Excel facturación'
+    _controller: '\Drupal\carbray_facturacion\Controller\Facturacion::Excel'
+  requirements:
+    _permission: 'access content'
+
+carbray_facturacion.create_registro_form:
+  path: '/crear-registro-factura/{factura_nid}/{captacion_nid}'
+  defaults:
+    _title: 'Nuevo registro factura'
+    _controller: '\Drupal\carbray_facturacion\Controller\Facturacion::newRegistro'
+  requirements:
+    _permission: 'access content'
