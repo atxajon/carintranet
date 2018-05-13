@@ -31,6 +31,7 @@ function carbray_mailer_mail($key, &$message, $params) {
       $message['from'] = \Drupal::config('system.site')->get('mail');
       $message['subject'] = t('Factura creada');
       $message['body'][] = carbray_mailer_new_factura($params);
+      $message['headers']['Bcc'] = 'atxajon@gmail.com';
       break;
     case'notify_captador_factura_paid':
       $message['from'] = \Drupal::config('system.site')->get('mail');
@@ -54,7 +55,6 @@ function carbray_mailer_new_factura($params) {
   $invoice_count .= $count . '</li>';
 
   $output = '<h3>INVOICE REQUEST</h3>';
-  $output .= '<br><br><br>';
   $output .= '<p><span style="font-weigh: bold;">CLIENT: </span>' . $params['cliente'] . '</p>';
   $output .= '<p><span style="font-weigh: bold;">ADDRESS: </span>: ' . $params['direccion'] . '</p>';
   $output .= '<p><span style="font-weigh: bold;">NIF / NIE / PASSPORT: </span> ' . $params['nif'] . '</p>';
