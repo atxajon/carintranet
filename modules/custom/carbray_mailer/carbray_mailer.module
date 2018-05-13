@@ -88,3 +88,56 @@ function carbray_mailer_factura_paid($params) {
   $output = "La factura " . $params['nif'] . " del cliente " . $params['cliente'] . " ha sido pagada.";
   return $output;
 }
+
+function send_email_secretaria(array &$form, FormStateInterface $form_state){
+  $captador_uid = $form_state->getValue('captador_uid');
+  $captador_user = User::load($captador_uid);
+  $nif = $form_state->getValue('field_factura_nif');
+  $captacion_date = $form_state->getValue('captacion_date');
+
+  // Send email to notify users with role secretaria.
+  $precio = $form_state->getValue('field_factura_precio');
+  $direccion = $form_state->getValue('field_factura_direccion');
+  $proforma = $form_state->getValue('field_factura_proforma');
+  $prov_fondo = $form_state->getValue('field_factura_provision_de_fondo');
+  $iva = $form_state->getValue('field_factura_iva');
+  $in_house_client = $form_state->getValue('field_factura_in_house_client');
+
+  $servicios = $form_state->getValue('field_factura_servicios');
+  $all_servicios = [];
+  foreach ($servicios as $servicio) {
+    if (isset($servicio['subform'])) {
+      $all_servicios[] = [
+        $servicio['subform']['field_nombre_servicio'][0]['value'] => $servicio['subform']['field_coste_servicio'][0]['value'],
+      ];
+    }
+  }
+  $params = [
+    'nif' => $nif[0]['value'],
+    'captador' => $captador_user->get('field_nombre')->value . ' ' . $captador_user->get('field_apellido')->value,
+    'cliente' => $form_state->getValue('cliente'),
+    'email' => $form_state->getValue('email'),
+    'telefono' => $form_state->getValue('telefono'),
+    'total' => $precio[0]['value'],
+    'proforma' => $proforma['value'],
+    'direccion' => $direccion[0]['value'],
+    'provision_fondos' => $prov_fondo[0]['value'],
+    'servicios' => $all_servicios,
+    'iva' => $iva['value'],
+    'in_house' => $in_house_client['value'],
+    'captacion_date' => $captacion_date,
+    'invoice_count' => 'count of invoice',
+  ];
+
+  $secretarias = get_carbray_workers(TRUE, 'secretaria');
+  foreach ($secretarias as $secretaria) {
+    $to = $secretaria;
+    $mailManager = \Drupal::service('plugin.manager.mail');
+    $module = 'carbray_mailer';
+    $langcode = \Drupal::currentUser()->getPreferredLangcode();
+    $sent = $mailManager->mail($module, 'notify_secretaria_new_factura', $to, $langcode, $params);
+    $mssg = ($sent) ? 'Email sent to ' . $secretaria . ' user of role secretaria as a new factura has been created' : '';
+    \Drupal::logger('carbray')->warning($mssg);
+  }
+}
+

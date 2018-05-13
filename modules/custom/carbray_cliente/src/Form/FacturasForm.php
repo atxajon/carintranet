@@ -166,7 +166,7 @@ class FacturasForm extends FormBase {
         $captador_email = $captador_user->getEmail();
         $to = $captador_email;
         $mailManager = \Drupal::service('plugin.manager.mail');
-        $module = 'carbray';
+        $module = 'carbray_mailer';
         $langcode = \Drupal::currentUser()->getPreferredLangcode();
         $sent = $mailManager->mail($module, 'notify_captador_factura_paid', $to, $langcode, $params);
         $mssg = ($sent) ? 'Email sent to abogado captador as a factura has been marked as paid by secretaria' : '';
