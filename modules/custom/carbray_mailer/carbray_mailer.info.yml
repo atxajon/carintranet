@@ -1,0 +1,4 @@
+name: Carbray Mailer
+type: module
+description: Deals with custom emails.
+core: 8.x

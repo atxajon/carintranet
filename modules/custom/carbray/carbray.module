@@ -18,10 +18,6 @@ use Drupal\carbray\ProgressBar;
 use Drupal\Core\Render\Markup;
 
 
-//define('REROUTE_EMAIL_ADDRESS', 'marc.mozos@carbray.es');
-define('REROUTE_EMAIL_ADDRESS', 'jon.atxa@bondmason.com');
-
-
 define('CAPTACION_ARCHIVADA', 184);
 define('ESTADO_CAPTACION_DEFECTO', 44); // 'En contacto'.
 define('DEPARTAMENTO_CORPORATE', 185);
@@ -1096,91 +1092,6 @@ function code_to_country($code) {
   else {
     return $countryList[$code];
   }
-}
-
-/**
- * Implements hook_mail().
- */
-function carbray_mail($key, &$message, $params) {
-
-  $message['headers']['MIME-Version'] = '1.0';
-  $message['headers']['Content-Type'] = 'multipart/mixed; text/html; charset=UTF-8; format=flowed;';
-
-  switch ($key) {
-    case'notify_secretaria_new_factura':
-      $message['from'] = \Drupal::config('system.site')->get('mail');
-      $message['subject'] = t('Factura creada');
-      $message['body'][] = carbray_emailer_new_factura($params);
-      break;
-    case'notify_captador_factura_paid':
-      $message['from'] = \Drupal::config('system.site')->get('mail');
-      $message['subject'] = t('Factura pagada');
-      $message['body'][] = carbray_emailer_factura_paid($params);
-      break;
-  }
-}
-
-function carbray_emailer_new_factura($params) {
-  $vat_string =  '<p>VAT: ';
-  $is_vat = ($params['iva']) ? '21%' : '0%';
-  $vat_string .= $is_vat . '</p>';
-
-  $in_house_client_string =  '<li>In house client: ';
-  $is_in_house = ($params['in_house']) ? 'Si' : 'No';
-  $in_house_client_string .= $is_in_house . '</li>';
-
-  $invoice_count =  '<li>';
-  $count = ($params['invoice_count'] == 1) ? 'First invoice' : 'Second invoice';
-  $invoice_count .= $count . '</li>';
-
-  $output = '<h3>INVOICE REQUEST</h3>';
-  $output .= '<br><br><br>';
-  $output .= '<p style="color:blue;font-weigh: bold;">CLIENT: ' . $params['cliente'] . '</p>';
-  $output .= '<p>ADDRESS: ' . $params['direccion'] . '</p>';
-  $output .= '<p>NIF / NIE / PASSPORT: ' . $params['nif'] . '</p>';
-  $output .= '<br><br><br>';
-  $output .= '<p>FIRST OR SECOND PAYMENT: ' . $params['nif'] . '</p>';
-  $output .= '<br><br><br>';
-  $output .= '<p>REFERENCE(S) + AMOUNT: </p>';
-  $output .= '<ol>';
-  foreach ($params['servicios'] as $key => $value) {
-    $output .= '<li>' . key($value) . ': ' . current($value) . '&euro;</li>';
-  }
-  $output .= '</ol>';
-  $output .= '<br><br><br>';
-  $output .= '<p>Total: ' . $params['total'] . '&euro;</p>';
-  $output .= '<br><br><br>';
-  $output .= $vat_string;
-  $output .= '<br><br><br>';
-  $output .= '<p>PROVISION OF FUNDS: ' . $params['provision_fondos'] . '&euro;</p>';
-  $output .= '<br><br><br>';
-  $output .= '<p>Client email: ' . $params['email'] . '</p>';
-  $output .= '<p>Client phone: ' . $params['telefono'] . '</p>';
-  $output .= '<br><br><br>';
-  $output .= '<p>Type of client: </p><ul>';
-  $output .= '<li>Date of reception of the contact/landing: ' . date('d-m-Y', $params['captacion_date']) . '</li>';
-  $output .= $in_house_client_string;
-  $output .= $invoice_count;
-  $output .= '</ul>';
-
-  $proforma_factura_text = ($params['proforma']) ? 'Proforma' : 'Factura';
-  $output .= $proforma_factura_text . " creada por " . $params['captador'] . " para ser revisada. ";
-  return $output;
-}
-
-function carbray_emailer_factura_paid($params) {
-  $output = "La factura " . $params['nif'] . " del cliente " . $params['cliente'] . " ha sido pagada.";
-  return $output;
-}
-
-/**
- * Implements hook_mail_alter().
- */
-function carbray_mail_alter(&$message) {
-
-  $message['subject'] .= ' {Email para usuario ' . $message['to'] . ' }';
-  // set 'To' field to dev email account, so Drupal won't email live users.
-  $message['to'] = REROUTE_EMAIL_ADDRESS;
 }
 
 function log_estado_captacion_change($values) {
