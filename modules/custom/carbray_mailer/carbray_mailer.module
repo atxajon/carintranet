@@ -41,7 +41,7 @@ function carbray_mailer_mail($key, &$message, $params) {
 }
 
 function carbray_mailer_new_factura($params) {
-  $vat_string =  '<p>VAT: ';
+  $vat_string =  '<p><span style="font-weigh: bold;">VAT: </span>';
   $is_vat = ($params['iva']) ? '21%' : '0%';
   $vat_string .= $is_vat . '</p>';
 
@@ -55,29 +55,22 @@ function carbray_mailer_new_factura($params) {
 
   $output = '<h3>INVOICE REQUEST</h3>';
   $output .= '<br><br><br>';
-  $output .= '<p style="color:blue;font-weigh: bold;">CLIENT: ' . $params['cliente'] . '</p>';
-  $output .= '<p>ADDRESS: ' . $params['direccion'] . '</p>';
-  $output .= '<p>NIF / NIE / PASSPORT: ' . $params['nif'] . '</p>';
-  $output .= '<br><br><br>';
-  $output .= '<p>FIRST OR SECOND PAYMENT: ' . $params['nif'] . '</p>';
-  $output .= '<br><br><br>';
-  $output .= '<p>REFERENCE(S) + AMOUNT: </p>';
+  $output .= '<p><span style="font-weigh: bold;">CLIENT: </span>' . $params['cliente'] . '</p>';
+  $output .= '<p><span style="font-weigh: bold;">ADDRESS: </span>: ' . $params['direccion'] . '</p>';
+  $output .= '<p><span style="font-weigh: bold;">NIF / NIE / PASSPORT: </span> ' . $params['nif'] . '</p>';
+  $output .= '<p><span style="font-weigh: bold;">FIRST OR SECOND PAYMENT: </span>' . $params['nif'] . '</p>';
+  $output .= '<p><span style="font-weigh: bold;">REFERENCE(S) + AMOUNT: </span></p>';
   $output .= '<ol>';
   foreach ($params['servicios'] as $key => $value) {
     $output .= '<li>' . key($value) . ': ' . current($value) . '&euro;</li>';
   }
   $output .= '</ol>';
-  $output .= '<br><br><br>';
-  $output .= '<p>Total: ' . $params['total'] . '&euro;</p>';
-  $output .= '<br><br><br>';
+  $output .= '<p><span style="font-weigh: bold;">Total: </span>' . $params['total'] . '&euro;</p>';
   $output .= $vat_string;
-  $output .= '<br><br><br>';
-  $output .= '<p>PROVISION OF FUNDS: ' . $params['provision_fondos'] . '&euro;</p>';
-  $output .= '<br><br><br>';
-  $output .= '<p>Client email: ' . $params['email'] . '</p>';
-  $output .= '<p>Client phone: ' . $params['telefono'] . '</p>';
-  $output .= '<br><br><br>';
-  $output .= '<p>Type of client: </p><ul>';
+  $output .= '<p><span style="font-weigh: bold;">PROVISION OF FUNDS: </span>' . $params['provision_fondos'] . '&euro;</p>';
+  $output .= '<p><span style="font-weigh: bold;">Client email: </span>' . $params['email'] . '</p>';
+  $output .= '<p><span style="font-weigh: bold;">Client phone: </span>' . $params['telefono'] . '</p>';
+  $output .= '<p><span style="font-weigh: bold;">Type of client: </span></p><ul>';
   $output .= '<li>Date of reception of the contact/landing: ' . date('d-m-Y', $params['captacion_date']) . '</li>';
   $output .= $in_house_client_string;
   $output .= $invoice_count;
