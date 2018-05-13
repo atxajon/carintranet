@@ -337,6 +337,7 @@ function send_email_secretaria(array &$form, FormStateInterface $form_state){
     'iva' => $iva['value'],
     'in_house' => $in_house_client['value'],
     'captacion_date' => $captacion_date,
+    'invoice_count' => 'count of invoice',
   ];
 
   $secretarias = get_carbray_workers(TRUE, 'secretaria');
@@ -734,7 +735,7 @@ function carbray_preprocess_node(&$variables) {
  */
 function email_already_in_system($email) {
 
-  $found = db_query("SELECT mail from {users_field_data} WHERE mail = :mail", array(
+  $found = \Drupal::database()->query("SELECT mail from {users_field_data} WHERE mail = :mail", array(
     ':mail' => $email
   ))->fetchAssoc();
 
@@ -749,7 +750,7 @@ function email_already_in_system($email) {
  */
 function phone_already_in_system($phone) {
 
-  $found = db_query("SELECT entity_id from {user__field_telefono} WHERE field_telefono_value = :phone", array(
+  $found = \Drupal::database()->query("SELECT entity_id from {user__field_telefono} WHERE field_telefono_value = :phone", array(
     ':phone' => $phone
   ))->fetchAssoc();
 
@@ -807,7 +808,7 @@ function get_parent_of_child_term($tid) {
  * Helper function to get the node title without loading the whole node object.
  */
 function get_node_title($nid) {
-  return db_query('SELECT title FROM node_field_data WHERE nid = :nid', array(':nid' => $nid))->fetchField();
+  return \Drupal::database()->query('SELECT title FROM node_field_data WHERE nid = :nid', array(':nid' => $nid))->fetchField();
 }
 
 /**
@@ -1120,6 +1121,18 @@ function carbray_mail($key, &$message, $params) {
 }
 
 function carbray_emailer_new_factura($params) {
+  $vat_string =  '<p>VAT: ';
+  $is_vat = ($params['iva']) ? '21%' : '0%';
+  $vat_string .= $is_vat . '</p>';
+
+  $in_house_client_string =  '<li>In house client: ';
+  $is_in_house = ($params['in_house']) ? 'Si' : 'No';
+  $in_house_client_string .= $is_in_house . '</li>';
+
+  $invoice_count =  '<li>';
+  $count = ($params['invoice_count'] == 1) ? 'First invoice' : 'Second invoice';
+  $invoice_count .= $count . '</li>';
+
   $output = '<h3>INVOICE REQUEST</h3>';
   $output .= '<br><br><br>';
   $output .= '<p style="color:blue;font-weigh: bold;">CLIENT: ' . $params['cliente'] . '</p>';
@@ -1137,17 +1150,18 @@ function carbray_emailer_new_factura($params) {
   $output .= '<br><br><br>';
   $output .= '<p>Total: ' . $params['total'] . '&euro;</p>';
   $output .= '<br><br><br>';
-  $output .= '<p>VAT: ' . ($params['iva']) ?  '21%' : '0%' . '</p>';
+  $output .= $vat_string;
   $output .= '<br><br><br>';
   $output .= '<p>PROVISION OF FUNDS: ' . $params['provision_fondos'] . '&euro;</p>';
   $output .= '<br><br><br>';
   $output .= '<p>Client email: ' . $params['email'] . '</p>';
   $output .= '<p>Client phone: ' . $params['telefono'] . '</p>';
   $output .= '<br><br><br>';
-  $output .= '<p>Type of client: </p>';
-  $output .= '<p>Date of reception of the contact/landing: ' . date('d-m-Y', $params['captacion_date']) . '</p>';
-  $output .= '<p>In house client: ' . ($params['in_house']) ? 'Si' : 'No' . '</p>';
-  $output .= '<p>Second invoice: </p>';
+  $output .= '<p>Type of client: </p><ul>';
+  $output .= '<li>Date of reception of the contact/landing: ' . date('d-m-Y', $params['captacion_date']) . '</li>';
+  $output .= $in_house_client_string;
+  $output .= $invoice_count;
+  $output .= '</ul>';
 
   $proforma_factura_text = ($params['proforma']) ? 'Proforma' : 'Factura';
   $output .= $proforma_factura_text . " creada por " . $params['captador'] . " para ser revisada. ";
