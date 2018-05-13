@@ -307,13 +307,11 @@ function store_carbray_facturas(array &$form, FormStateInterface $form_state) {
         ->fields([
           'factura_nid',
           'captacion_nid',
-          'expediente_nid',
           'author_uid',
         ])
         ->values(array(
           $factura_nid,
           $form_state->getValue('captacion_nid'),
-          111111,
           $form_state->getValue('captador_uid'),
         ))
         ->execute();

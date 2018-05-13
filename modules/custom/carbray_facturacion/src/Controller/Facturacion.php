@@ -20,7 +20,7 @@ class Facturacion extends ControllerBase {
       '#theme' => 'button_modal',
       '#unique_id' => 'anadir-nuevo-registro',
       '#button_text' => 'Nuevo Registro',
-      '#button_classes' => 'btn btn-primary',
+      '#button_classes' => 'btn btn-primary margin-bottom-20 margin-top-10',
       '#modal_title' => t('Nuevo registro'),
       '#modal_content' => $new_registro_form,
       '#has_plus' => TRUE,
@@ -35,21 +35,26 @@ class Facturacion extends ControllerBase {
       'Porcentaje base imponible',
       'Total reparto comision',
       'Porcentaje comision',
+      'Comision',
       'Fecha cobro factura ',
       'Comentarios',
     );
 
     $my_facturas_registradas = get_my_facturas_registradas(\Drupal::currentUser()->id());
     foreach ($my_facturas_registradas as $my_factura_registrada) {
+      $mi_comision = $my_factura_registrada->field_factura_precio_value * $my_factura_registrada->comision;
+      $perc_comision = 0.05;
+      $total_reparto_comision = $mi_comision * $perc_comision;
       $rows[] = array(
         date('d-m-Y', $my_factura_registrada->factura_created),
         'Numero factura',
         $my_factura_registrada->field_nombre_value . ' ' . $my_factura_registrada->field_apellido_value,
         $my_factura_registrada->field_captacion_captador_target_id,
         $my_factura_registrada->field_factura_precio_value,
-        'porcentaje aqui',
-        'total repartyo comision',
-        '% comision',
+        $my_factura_registrada->comision * 100 . '%',
+        $mi_comision,
+        $perc_comision * 100 . '%',
+        $total_reparto_comision,
         'fecha cobro factura',
         'Comentarios',
       );
