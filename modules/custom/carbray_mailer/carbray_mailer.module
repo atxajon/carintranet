@@ -31,7 +31,8 @@ function carbray_mailer_mail($key, &$message, $params) {
       $message['from'] = \Drupal::config('system.site')->get('mail');
       $message['subject'] = t('Factura creada');
       $message['body'][] = carbray_mailer_new_factura($params);
-      $message['headers']['Bcc'] = 'atxajon@gmail.com';
+      // @todo: enable this when production ready.
+//      $message['headers']['Bcc'] = 'admin@carbray.es';
       break;
     case'notify_captador_factura_paid':
       $message['from'] = \Drupal::config('system.site')->get('mail');

@@ -1,0 +1,4 @@
+name: Carbray facturacion
+type: module
+description: Does general processing for all Carbray related facturacion.
+core: 8.x

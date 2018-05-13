@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\carbray_cliente\Plugin\Block;
+namespace Drupal\carbray_facturacion\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
 

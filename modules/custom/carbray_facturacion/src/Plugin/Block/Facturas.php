@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\carbray_cliente\Plugin\Block;
+namespace Drupal\carbray_facturacion\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
 
@@ -19,7 +19,7 @@ class Facturas extends BlockBase {
    * {@inheritdoc}
    */
   public function build() {
-    $form = \Drupal::formBuilder()->getForm('Drupal\carbray_cliente\Form\FacturasForm');
+    $form = \Drupal::formBuilder()->getForm('Drupal\carbray_facturacion\Form\FacturasForm');
     return $form;
   }
 }

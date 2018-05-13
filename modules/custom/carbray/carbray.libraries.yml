@@ -25,13 +25,6 @@ carbray.client_search:
   dependencies:
      - core/jquery
 
-factura_calculator:
-  version: 1.x
-  js:
-    js/factura_calculator.js: {}
-  dependencies:
-     - core/jquery
-
 tablesorter:
   version: 2.0.5
   js:

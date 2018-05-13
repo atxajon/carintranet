@@ -105,7 +105,10 @@ function carbray_form_node_form_alter(&$form, &$form_state, $form_id) {
 
     $form['field_factura_servicios']['widget']['add_more_button_servicio']['#value'] = t('Añadir otro servicio');
 
-    $form['title']['widget'][0]['value']['#default_value'] = t('Factura  para captacion id ' . $captacion_nid);
+
+    $username_for_factura_title = $cliente_data->get('field_nombre')->value;
+    $username_for_factura_title .= (isset($cliente_data->get('field_apellido')->value)) ? ' ' . $cliente_data->get('field_apellido')->value : '';
+    $form['title']['widget'][0]['value']['#default_value'] = t('Factura para ' . $username_for_factura_title . ' y captacion id ' . $captacion_nid);
     $form['title']['#attributes']['class'][] = 'hidden';
 
     // Set default for current captacion and css hide it.

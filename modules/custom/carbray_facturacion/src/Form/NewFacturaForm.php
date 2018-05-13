@@ -3,7 +3,7 @@
  * @file
  * Contains \Drupal\carbray_cliente\Form\NewNotaForm.
  */
-namespace Drupal\carbray_cliente\Form;
+namespace Drupal\carbray_facturacion\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
@@ -267,7 +267,7 @@ class NewFacturaForm extends FormBase {
     foreach ($secretarias as $secretaria) {
       $to = $secretaria;
       $mailManager = \Drupal::service('plugin.manager.mail');
-      $module = 'carbray';
+      $module = 'carbray_mailer';
       $langcode = \Drupal::currentUser()->getPreferredLangcode();
       $sent = $mailManager->mail($module, 'notify_secretaria_new_factura', $to, $langcode, $params);
       $mssg = ($sent) ? 'Email sent to users of role secretaria as a new factura has been created' : '';

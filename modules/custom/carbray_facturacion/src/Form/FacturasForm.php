@@ -3,7 +3,7 @@
  * @file
  * Contains \Drupal\carbray\Form\NewClientForm.
  */
-namespace Drupal\carbray_cliente\Form;
+namespace Drupal\carbray_facturacion\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
@@ -99,7 +99,7 @@ class FacturasForm extends FormBase {
       'nif' => t('NIF'),
       'iva' => t('IVA'),
       'precio' => t('Precio'),
-      'fecha' => t('Fecha creacion'),
+      'fecha' => t('Fecha creacion factura'),
       'fecha_captacion' => t('Fecha creacion captación'),
     );
 
