@@ -22,12 +22,15 @@ class NewRegistroForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-
+    $options = get_facturas_pagadas_sin_comision_mis_clientes(\Drupal::currentUser()->id());
     $form['factura'] = array(
       '#type' => 'select',
       '#title' => 'Para Factura:',
-      '#options' => get_facturas_pagadas_mis_clientes(\Drupal::currentUser()->id()),
+      '#options' => $options,
     );
+    if (!$options) {
+      $form['factura']['#default_value'] = t('No tienes ninguna factura pagada por registrar');
+    }
 
     $form['submit'] = array(
       '#type' => 'submit',

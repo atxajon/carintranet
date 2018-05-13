@@ -26,8 +26,43 @@ class Facturacion extends ControllerBase {
       '#has_plus' => TRUE,
     ];
 
+    $header = array(
+      'Fecha factura',
+      'Numero factura',
+      'Cliente',
+      'Captador',
+      'Importe factura (B.I.)',
+      'Porcentaje base imponible',
+      'Total reparto comision',
+      'Porcentaje comision',
+      'Fecha cobro factura ',
+      'Comentarios',
+    );
+
+    $my_facturas_registradas = get_my_facturas_registradas(\Drupal::currentUser()->id());
+    foreach ($my_facturas_registradas as $my_factura_registrada) {
+      $rows[] = array(
+        date('d-m-Y', $my_factura_registrada->factura_created),
+        'Numero factura',
+        $my_factura_registrada->field_nombre_value . ' ' . $my_factura_registrada->field_apellido_value,
+        $my_factura_registrada->field_captacion_captador_target_id,
+        $my_factura_registrada->field_factura_precio_value,
+        'porcentaje aqui',
+        'total repartyo comision',
+        '% comision',
+        'fecha cobro factura',
+        'Comentarios',
+      );
+    }
+    // @todo: acumulate and add totals as final row.
+
     $build['tabla_excel_facturacion'] = [
-      '#markup' => '<h2>Excel facturacion</h2>',
+      '#theme' => 'table',
+      '#header' => $header,
+      '#rows' => $rows,
+      '#cache' => [
+        'max-age' => 0,
+      ],
     ];
     $build['post'] = [
       '#markup' => '</div>',
