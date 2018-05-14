@@ -47,14 +47,14 @@ class Facturacion extends ControllerBase {
       $total_reparto_comision = $mi_comision * $perc_comision;
       $rows[] = array(
         date('d-m-Y', $my_factura_registrada->factura_created),
-        'Numero factura',
+        $my_factura_registrada->title,
         $my_factura_registrada->field_nombre_value . ' ' . $my_factura_registrada->field_apellido_value,
         $my_factura_registrada->field_captacion_captador_target_id,
-        $my_factura_registrada->field_factura_precio_value,
+        $my_factura_registrada->field_factura_precio_value . '€',
         $my_factura_registrada->comision * 100 . '%',
-        $mi_comision,
+        $mi_comision . '€',
         $perc_comision * 100 . '%',
-        $total_reparto_comision,
+        $total_reparto_comision . '€',
         'fecha cobro factura',
         'Comentarios',
       );

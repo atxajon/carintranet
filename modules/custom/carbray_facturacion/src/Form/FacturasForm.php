@@ -80,20 +80,20 @@ class FacturasForm extends FormBase {
 
       $iva = ($factura_node->get('field_factura_iva')->value == 1) ? 'Con IVA' : 'Sin IVA';
       $options[$factura_id] = array(
-        'cliente' => print_cliente_link($cliente_data, FALSE),
+        'cliente' => $factura_node->label(),
         'proforma' => ($factura_node->get('field_factura_proforma')->value) ? t('Proforma') : 'Factura',
         'captador' => print_cliente_captadores_responsables($captacion_node->get('field_captacion_captador')
             ->getValue()),
         'nif' => $factura_node->get('field_factura_nif')->value,
         'iva' => $iva,
-        'precio' => $factura_node->get('field_factura_precio')->value,
+        'precio' => $factura_node->get('field_factura_precio')->value . '€',
         'fecha' => date('d-m-Y H:i:s', $factura_node->created->value),
         'fecha_captacion' => date('d-m-Y H:i:s', $captacion_node->created->value),
       );
     }
 
     $header = array(
-      'cliente' => t('Cliente'),
+      'cliente' => t('Factura'),
       'proforma' => t('Proforma / Factura'),
       'captador' => t('Captador'),
       'nif' => t('NIF'),
