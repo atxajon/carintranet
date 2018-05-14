@@ -40,6 +40,9 @@ class Facturacion extends ControllerBase {
       'Comentarios',
     );
 
+    $acumulated_total_facturas = 0;
+    $acumulated_total_reparto_comision = 0;
+    $acumulated_total_comision = 0;
     $my_facturas_registradas = get_my_facturas_registradas(\Drupal::currentUser()->id());
     foreach ($my_facturas_registradas as $my_factura_registrada) {
       $mi_comision = $my_factura_registrada->field_factura_precio_value * $my_factura_registrada->comision;
@@ -58,8 +61,23 @@ class Facturacion extends ControllerBase {
         'fecha cobro factura',
         'Comentarios',
       );
+      $acumulated_total_facturas += $my_factura_registrada->field_factura_precio_value;
+      $acumulated_total_reparto_comision += $total_reparto_comision;
+      $acumulated_total_comision += $mi_comision;
     }
     // @todo: acumulate and add totals as final row.
+    $rows[] = [
+      Markup::create('<b>Total:</b>'),
+      '',
+      '',
+      '',
+      Markup::create('<b>' . number_format($acumulated_total_facturas,   2 , ',', '.') . '€</b>'),
+      '',
+      Markup::create('<b>' . number_format($acumulated_total_reparto_comision,  2 , ',', '.') . '€</b>'),
+      '',
+      Markup::create('<b>' . number_format($acumulated_total_comision, 2 , ',', '.') . '€</b>'),
+      '',
+    ];
 
     $build['tabla_excel_facturacion'] = [
       '#theme' => 'table',
