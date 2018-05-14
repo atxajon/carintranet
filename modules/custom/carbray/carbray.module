@@ -108,7 +108,9 @@ function carbray_form_node_form_alter(&$form, &$form_state, $form_id) {
 
     $username_for_factura_title = $cliente_data->get('field_nombre')->value;
     $username_for_factura_title .= (isset($cliente_data->get('field_apellido')->value)) ? ' ' . $cliente_data->get('field_apellido')->value : '';
-    $form['title']['widget'][0]['value']['#default_value'] = t('Factura para ' . $username_for_factura_title . ' y captacion id ' . $captacion_nid);
+    $count_of_factura = get_factura_number();
+    $factura_number = (int)$count_of_factura + 1;
+    $form['title']['widget'][0]['value']['#default_value'] = $username_for_factura_title . ' ' . $factura_number;
     $form['title']['#attributes']['class'][] = 'hidden';
 
     // Set default for current captacion and css hide it.
@@ -353,14 +355,6 @@ function captacion_save_estado(array &$form, FormStateInterface $form_state) {
   // Redirect to captacion node.
   $url = Url::fromRoute('entity.node.canonical', array('node' => $nid));
   $form_state->setRedirectUrl($url);
-}
-
-function carbray_entity_presave(EntityInterface $entity){
-  if ($entity->bundle() == 'factura') {
-    $nif = $entity->get('field_factura_nif')->value;
-    $captacion_id = $entity->get('field_factura')->getValue();
-    $entity->setTitle('Factura con nif ' . $nif . ' para captacion id ' . $captacion_id[0]['target_id']);
-  }
 }
 
 /**

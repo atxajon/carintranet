@@ -52,3 +52,12 @@ ORDER BY nid DESC";
   return $captacion_nid;
 }
 
+function get_factura_number() {
+  $db = \Drupal::database();
+  $sql = "SELECT COUNT(nid)
+FROM node_field_data nfd
+WHERE type = 'factura'";
+  $factura_number = $db->query($sql)->fetchField();
+  return $factura_number;
+
+}

@@ -83,6 +83,14 @@ class NewRegistroFormStepTwo extends FormBase {
       '#required' => TRUE,
     );
 
+    $form['notas'] = array(
+      '#type' => 'text_format',
+      // ‘textarea’ (if no ckeditor for html formatting needed)
+      '#title' => 'Descripcion',
+      '#format' => 'basic_html',
+      '#rows' => 2,
+    );
+
     $form['factura_nid'] = array(
       '#type' => 'hidden',
       '#value' => $factura_nid,
@@ -119,6 +127,7 @@ class NewRegistroFormStepTwo extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $factura_nid = $form_state->getValue('factura_nid');
     $base_imponible = $form_state->getValue('base_imponible');
+    $notas = $form_state->getValue('notas');
     $comision = $base_imponible / 100;
 
     // Update carbray_facturas table with base imponible.
