@@ -307,7 +307,7 @@ function store_carbray_facturas(array &$form, FormStateInterface $form_state) {
   $factura_nid = $form_state->getValue('nid');
   if ($factura_nid) {
     try {
-      \Drupal::database()->insert('carbray_facturas')
+      \Drupal::database()->insert('carbray_facturas_registro')
         ->fields([
           'factura_nid',
           'captacion_nid',

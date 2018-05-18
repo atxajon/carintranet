@@ -126,15 +126,29 @@ class NewRegistroFormStepTwo extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $factura_nid = $form_state->getValue('factura_nid');
+    $captacion_nid = $form_state->getValue('captacion_nid');
     $base_imponible = $form_state->getValue('base_imponible');
     $notas = $form_state->getValue('notas');
+    if (is_array($notas)) {
+      $notas = $notas['value'];
+    }
     $comision = $base_imponible / 100;
+    \Drupal::logger('$notas')->notice(print_r($notas, TRUE));
 
-    // Update carbray_facturas table with base imponible.
-    $success = \Drupal::database()->update('carbray_facturas')
-      ->fields(['comision' => $comision])
+
+    // Update carbray_facturas_registro table with base imponible.
+    $success = \Drupal::database()->update('carbray_facturas_registro')
+      ->fields([
+        'comision' => $comision,
+        'descripcion' => $notas,
+      ])
       ->condition('factura_nid', $factura_nid)
+      ->condition('author_uid', \Drupal::currentUser()->id())
+      ->condition('captacion_nid', $captacion_nid)
       ->execute();
+    if (!$success) {
+      $form_state->setRebuild();
+    }
 
     drupal_set_message('Base imponible añadida');
   }

@@ -59,7 +59,7 @@ class Facturacion extends ControllerBase {
         $perc_comision * 100 . '%',
         $total_reparto_comision . '€',
         'fecha cobro factura',
-        'Comentarios',
+        Markup::create($my_factura_registrada->descripcion),
       );
       $acumulated_total_facturas += $my_factura_registrada->field_factura_precio_value;
       $acumulated_total_reparto_comision += $total_reparto_comision;
@@ -76,6 +76,7 @@ class Facturacion extends ControllerBase {
       Markup::create('<b>' . number_format($acumulated_total_reparto_comision,  2 , ',', '.') . '€</b>'),
       '',
       Markup::create('<b>' . number_format($acumulated_total_comision, 2 , ',', '.') . '€</b>'),
+      '',
       '',
     ];
 
