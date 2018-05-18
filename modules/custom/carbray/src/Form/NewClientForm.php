@@ -61,7 +61,7 @@ class NewClientForm extends FormBase {
       '#size' => '20',
     );
     $form['email'] = array(
-      '#type' => 'textfield',
+      '#type' => 'email',
       '#title' => 'Email (Muy Importante)',
       '#size' => '20',
     );
@@ -122,6 +122,7 @@ class NewClientForm extends FormBase {
     );
 
     return $form;
+
   }
 
   /**

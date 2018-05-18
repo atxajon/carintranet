@@ -52,12 +52,14 @@ ORDER BY nid DESC";
   return $captacion_nid;
 }
 
-function get_factura_number() {
+/**
+ * Get last factura node title from the system (e.g Thomas Jones 038)
+ *
+ * @return mixed
+ */
+function get_last_factura() {
   $db = \Drupal::database();
-  $sql = "SELECT COUNT(nid)
-FROM node_field_data nfd
-WHERE type = 'factura'";
+  $sql = "SELECT title FROM node_field_data WHERE type = 'factura' ORDER BY nid DESC LIMIT 0,1";
   $factura_number = $db->query($sql)->fetchField();
   return $factura_number;
-
 }
