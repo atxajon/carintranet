@@ -36,7 +36,7 @@ function get_captacion_for_factura($factura_nid) {
 
 function get_my_facturas_registradas($factura_author_uid) {
   $db = \Drupal::database();
-  $sql = "SELECT DISTINCT nid, title, field_nombre_value, field_apellido_value, field_captacion_captador_target_id, field_factura_precio_value, comision, created as factura_created, title, descripcion 
+  $sql = "SELECT DISTINCT nid, title, field_nombre_value, field_apellido_value, field_captacion_captador_target_id, field_factura_precio_value, comision, created as factura_created, descripcion 
 FROM node__field_factura ff 
 INNER JOIN node_field_data nfd on nfd.nid = ff.entity_id 
 INNER JOIN node__field_captacion_captador cc on cc.entity_id = ff.field_factura_target_id

@@ -910,3 +910,7 @@ textarea[rows="3"] + .cke .cke_contents {
 .fc-header-toolbar .fc-center {
   text-transform: capitalize;
 }
+
+.comentarios-col {
+  width: 33%;
+}

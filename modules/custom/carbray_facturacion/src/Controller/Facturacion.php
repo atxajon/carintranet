@@ -26,56 +26,109 @@ class Facturacion extends ControllerBase {
       '#has_plus' => TRUE,
     ];
 
-    $header = array(
-      'Fecha factura',
-      'Numero factura',
-      'Cliente',
-      'Captador',
-      'Importe factura (B.I.)',
-      'Porcentaje base imponible',
-      'Total reparto comision',
-      'Porcentaje comision',
-      'Comision',
-      'Fecha cobro factura ',
-      'Comentarios',
-    );
+    $header = [
+      ['data' => 'Fecha factura','field' => 'fecha_factura'],
+      ['data' => 'Numero factura','field' => 'numero_factura'],
+      ['data' => 'Captador','field' => 'captador'],
+      ['data' => 'Importe factura (B.I.)','field' => 'importe_factura', 'class' => ['text-right']],
+      ['data' => 'Porcentaje base imponible','field' => 'perc_imponible', 'class' => ['text-center']],
+      ['data' => 'Total reparto comision','field' => 'total_reparto_comision', 'class' => ['text-right']],
+      ['data' => 'Porcentaje comision','field' => 'porcentaje_comision', 'class' => ['text-center']],
+      ['data' => 'Comision','field' => 'comision', 'class' => ['text-right']],
+      ['data' => 'Fecha cobro factura','field' => 'fecha_cobro'],
+      ['data' => 'Comentarios','field' => 'comentarios', 'class' => ['comentarios-col']],
+      ['data' => 'Editar','field' => 'editar'],
+    ];
 
     $acumulated_total_facturas = 0;
     $acumulated_total_reparto_comision = 0;
     $acumulated_total_comision = 0;
     $my_facturas_registradas = get_my_facturas_registradas(\Drupal::currentUser()->id());
+    $last_nid = 0;
     foreach ($my_facturas_registradas as $my_factura_registrada) {
+      // Skip duplicates for facturas that have multiple captadores.
+      if ($last_nid == $my_factura_registrada->nid) {
+        continue;
+      }
       $mi_comision = $my_factura_registrada->field_factura_precio_value * $my_factura_registrada->comision;
       $perc_comision = 0.05;
       $total_reparto_comision = $mi_comision * $perc_comision;
-      $rows[] = array(
-        date('d-m-Y', $my_factura_registrada->factura_created),
-        $my_factura_registrada->title,
-        $my_factura_registrada->field_nombre_value . ' ' . $my_factura_registrada->field_apellido_value,
-        $my_factura_registrada->field_captacion_captador_target_id,
-        $my_factura_registrada->field_factura_precio_value . '€',
-        $my_factura_registrada->comision * 100 . '%',
-        $mi_comision . '€',
-        $perc_comision * 100 . '%',
-        $total_reparto_comision . '€',
-        'fecha cobro factura',
-        Markup::create($my_factura_registrada->descripcion),
-      );
+
+      $form = \Drupal::formBuilder()
+        ->getForm('Drupal\carbray_facturacion\Form\EditRegistroForm', 6068, 4630);
+
+      $edit_button = [
+        '#theme' => 'button_modal',
+        '#unique_id' => 'add-hours-expediente-nid-' . 6068,
+        '#button_text' => 'Editar registro',
+        '#button_classes' => 'btn btn-primary',
+        '#modal_title' => t('Editar registro'),
+        '#modal_content' => $form,
+        '#has_plus' => FALSE,
+      ];
+
+      $rows[] = [
+        'data' => [
+          date('d-m-Y', $my_factura_registrada->factura_created),
+          $my_factura_registrada->title,
+          $my_factura_registrada->field_captacion_captador_target_id,
+          [
+            'data' => number_format($my_factura_registrada->field_factura_precio_value, 2, ',', '.') . '€',
+            'class' => ['text-right'],
+          ],
+          [
+            'data' => $my_factura_registrada->comision * 100 . '%',
+            'class' => ['text-center'],
+          ],
+          [
+            'data' => number_format($mi_comision, 2, ',', '.') . '€',
+            'class' => ['text-right'],
+          ],
+          [
+            'data' => $perc_comision * 100 . '%',
+            'class' => ['text-center'],
+          ],
+          [
+            'data' => number_format($total_reparto_comision, 2, ',', '.') . '€',
+            'class' => ['text-right'],
+          ],
+          'fecha cobro factura',
+          Markup::create($my_factura_registrada->descripcion),
+          render($edit_button),
+        ],
+        'class' => [
+          'row_class',
+        ],
+      ];
+
       $acumulated_total_facturas += $my_factura_registrada->field_factura_precio_value;
       $acumulated_total_reparto_comision += $total_reparto_comision;
       $acumulated_total_comision += $mi_comision;
+      $last_nid = $my_factura_registrada->nid;
     }
-    // @todo: acumulate and add totals as final row.
+    // Adds totals row.
     $rows[] = [
       Markup::create('<b>Total:</b>'),
       '',
       '',
+      [
+        'data' => Markup::create('<b>' . number_format($acumulated_total_facturas,   2 , ',', '.') . '€</b>'),
+        'class' => ['text-right'],
+      ],
       '',
-      Markup::create('<b>' . number_format($acumulated_total_facturas,   2 , ',', '.') . '€</b>'),
+      [
+        'data' => Markup::create('<b>' . number_format($acumulated_total_comision,  2 , ',', '.') . '€</b>'),
+
+        'class' => ['text-right'],
+      ],
       '',
-      Markup::create('<b>' . number_format($acumulated_total_reparto_comision,  2 , ',', '.') . '€</b>'),
+      [
+        'data' => Markup::create('<b>' . number_format($acumulated_total_reparto_comision, 2 , ',', '.') . '€</b>'),
+
+
+        'class' => ['text-right'],
+      ],
       '',
-      Markup::create('<b>' . number_format($acumulated_total_comision, 2 , ',', '.') . '€</b>'),
       '',
       '',
     ];
