@@ -79,35 +79,45 @@ class FacturasForm extends FormBase {
         ->load($captacion_uid[0]['target_id']);
 
       $iva = ($factura_node->get('field_factura_iva')->value == 1) ? 'Con IVA' : 'Sin IVA';
+
       $options[$factura_id] = array(
-        'cliente' => $factura_node->label(),
-        'proforma' => ($factura_node->get('field_factura_proforma')->value) ? t('Proforma') : 'Factura',
-        'captador' => print_cliente_captadores_responsables($captacion_node->get('field_captacion_captador')
-            ->getValue()),
-        'nif' => $factura_node->get('field_factura_nif')->value,
-        'iva' => $iva,
-        'precio' => number_format($factura_node->get('field_factura_precio')->value,   2 , ',', '.') . '€',
-        'fecha' => date('d-m-Y H:i:s', $factura_node->created->value),
-        'fecha_captacion' => date('d-m-Y H:i:s', $captacion_node->created->value),
+        $factura_node->label(),
+        ($factura_node->get('field_factura_proforma')->value) ? t('Proforma') : 'Factura',
+        print_cliente_captadores_responsables($captacion_node->get('field_captacion_captador')
+          ->getValue()),
+        [
+          'data' => $factura_node->get('field_factura_nif')->value,
+          'class' => ['text-right'],
+        ],
+        [
+          'data' => $iva,
+          'class' => ['text-center'],
+        ],
+        [
+          'data' => number_format($factura_node->get('field_factura_precio')->value, 2, ',', '.') . '€',
+          'class' => ['text-right'],
+        ],
+        date('d-m-Y H:i:s', $factura_node->created->value),
+        date('d-m-Y H:i:s', $captacion_node->created->value),
       );
     }
 
-    $header = array(
-      'cliente' => t('Factura'),
-      'proforma' => t('Proforma / Factura'),
-      'captador' => t('Captador'),
-      'nif' => t('NIF'),
-      'iva' => t('IVA'),
-      'precio' => t('Precio'),
-      'fecha' => t('Fecha creacion factura'),
-      'fecha_captacion' => t('Fecha creacion captación'),
-    );
+    $header = [
+      ['data' => 'Factura','field' => 'cliente'],
+      ['data' => 'Proforma / Factura','field' => 'proforma'],
+      ['data' => 'Captador','field' => 'captador'],
+      ['data' => 'NIF','field' => 'nif', 'class' => ['text-right']],
+      ['data' => 'IVA','field' => 'iva', 'class' => ['text-center']],
+      ['data' => 'Precio','field' => 'precio', 'class' => ['text-right']],
+      ['data' => 'Fecha creacion factura','field' => 'fecha'],
+      ['data' => 'Fecha creacion captación','field' => 'fecha_captacion'],
+    ];
 
     $form['table'] = array(
       '#type' => 'tableselect',
       '#header' => $header,
       '#options' => $options,
-      '#js_select' => FALSE, // Don't want the select all checbox at the header.
+      '#js_select' => FALSE, // Don't want the select all checkbox at the header.
       '#empty' => t('No se encontraron facturas sin pagar.'),
     );
 

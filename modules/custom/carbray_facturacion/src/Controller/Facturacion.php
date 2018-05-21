@@ -50,7 +50,7 @@ class Facturacion extends ControllerBase {
           ->getValue()),
         'nif' => $factura_node->get('field_factura_nif')->value,
         'iva' => $iva,
-        'precio' => $factura_node->get('field_factura_precio')->value,
+        'precio' => number_format($factura_node->get('field_factura_precio')->value, 2, ',', '.') . '€',
         'fecha' => date('d-m-Y H:i:s', $factura_node->created->value),
         'fecha_captacion' => date('d-m-Y H:i:s', $captacion_node->created->value),
       );
