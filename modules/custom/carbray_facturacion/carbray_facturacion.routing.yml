@@ -1,3 +1,18 @@
+carbray_facturacion.facturas_por_pagar:
+  path: '/facturas'
+  defaults:
+    _title: 'Facturas por pagar'
+    _controller: '\Drupal\carbray_facturacion\Controller\Facturacion::FacturasPorPagar'
+  requirements:
+    _permission: 'access content'
+carbray_facturacion.facturas_pagadas:
+  path: '/facturas/pagadas'
+  defaults:
+    _title: 'Facturas pagadas'
+    _controller: '\Drupal\carbray_facturacion\Controller\Facturacion::FacturasPagadas'
+  requirements:
+    _permission: 'access content'
+
 carbray_facturacion.excel_facturacion:
   path: '/excel-facturacion'
   defaults:

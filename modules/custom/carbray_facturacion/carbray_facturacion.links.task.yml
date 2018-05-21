@@ -1,0 +1,10 @@
+carbray_facturacion.facturas_por_pagar:
+  route_name: carbray_facturacion.facturas_por_pagar
+  title: 'Facturas'
+  base_route: carbray_facturacion.facturas_por_pagar
+
+carbray_facturacion.facturas_pagadas:
+  route_name: carbray_facturacion.facturas_pagadas
+  title: 'Facturas pagadas'
+  base_route: carbray_facturacion.facturas_por_pagar
+

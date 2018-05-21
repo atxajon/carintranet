@@ -561,7 +561,7 @@ function _carbray_redirecter() {
     $url = Url::fromUri('entity:node/2');
   }
   elseif (in_array('secretaria', $roles)) {
-    $url = Url::fromUri('entity:node/1748');
+    $url = Url::fromRoute('carbray_facturacion.facturas_por_pagar');
   }
   elseif (in_array('carbray_administrator', $roles)) {
     $url = Url::fromUri('entity:node/33');
