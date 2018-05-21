@@ -417,24 +417,9 @@ function carbray_node_presave(Drupal\Core\Entity\EntityInterface $node) {
 
       $node->title = $collected_title;
       break;
-
-    case 'factura':
-      // Replace the title of a factura withe the obtained node title from new factura form submit
-      // followed by the count increment of last factura in the system.
-      // Why again? this was done on form alter for submitted new facturas dynamic title assignmenet...
-      // We still do it again to prevent race conditions: if a form is stall for a period of time before submit,
-      // and another user submits another one in the meantime, count of last added factura in the system
-      // will be different.
-      // Doing this again prevents that from happening.
-      $last_factura_title = get_last_factura();
-      $last_factura_number = (int) filter_var($last_factura_title, FILTER_SANITIZE_NUMBER_INT);
-      $new_factura_number = (int)$last_factura_number + 1;
-      $factura_title = $node->title->value;
-      $factura_cliente_name = preg_replace("/[0-9,]/", "", $factura_title);
-      $node->title = $factura_cliente_name . ' ' . $new_factura_number;
-      break;
   }
 }
+
 
 /**
  * Implements hook_form_FORM_ID_alter().

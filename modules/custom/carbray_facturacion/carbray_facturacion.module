@@ -1,6 +1,25 @@
 <?php
 
 /**
+ * Implements hook_ENTITY_TYPE_insert.
+ */
+function carbray_facturacion_factura_insert(Drupal\Core\Entity\EntityInterface $entity) {
+  // Replace the title of a factura with the obtained node title from new factura form submit
+  // followed by the count increment of last factura in the system.
+  // Why again? this was done on form alter for submitted new facturas dynamic title assignmenet...
+  // We still do it again to prevent race conditions: if a form is stall for a period of time before submit,
+  // and another user submits another one in the meantime, count of last added factura in the system
+  // will be different.
+  // Doing this again prevents that from happening.
+  $last_factura_title = get_last_factura();
+  $last_factura_number = (int) filter_var($last_factura_title, FILTER_SANITIZE_NUMBER_INT);
+  $new_factura_number = (int)$last_factura_number + 1;
+  $factura_title = $entity->title->value;
+  $factura_cliente_name = preg_replace("/[0-9,]/", "", $factura_title);
+  $entity->title = $factura_cliente_name . ' ' . $new_factura_number;
+}
+
+/**
  * Returns all facturas for the clientes of a given captador.
  * @param $captador_uid
  */
@@ -36,7 +55,7 @@ function get_captacion_for_factura($factura_nid) {
 
 function get_my_facturas_registradas($factura_author_uid) {
   $db = \Drupal::database();
-  $sql = "SELECT DISTINCT nid, title, field_nombre_value, field_apellido_value, field_captacion_captador_target_id, field_factura_precio_value, comision, created as factura_created, descripcion 
+  $sql = "SELECT DISTINCT nid, title, field_nombre_value, field_apellido_value, field_captacion_captador_target_id, field_factura_precio_value, comision, created as factura_created, descripcion, field_factura_fecha_cobro_value as fecha_cobro 
 FROM node__field_factura ff 
 INNER JOIN node_field_data nfd on nfd.nid = ff.entity_id 
 INNER JOIN node__field_captacion_captador cc on cc.entity_id = ff.field_factura_target_id
@@ -44,6 +63,7 @@ INNER JOIN node__field_captacion_cliente capt_cli on capt_cli.entity_id = cc.ent
 INNER JOIN user__field_nombre nombre on nombre.entity_id = capt_cli.field_captacion_cliente_target_id
 INNER JOIN user__field_apellido apellido on apellido.entity_id = capt_cli.field_captacion_cliente_target_id
 INNER JOIN node__field_factura_precio precio on precio.entity_id = ff.entity_id
+INNER JOIN node__field_factura_fecha_cobro fc on nfd.nid = fc.entity_id
 LEFT JOIN carbray_facturas_registro cfr on cfr.factura_nid = ff.entity_id
 WHERE field_factura_target_id IN (SELECT entity_id FROM node__field_captacion_captador WHERE field_captacion_captador_target_id = :author_uid)  
 AND comision IS NOT NULL

@@ -142,6 +142,7 @@ class FacturasForm extends FormBase {
       // Update factura node field pagada to true.
       $factura_node = Node::load($unpaid_factura_id);
       $factura_node->set('field_factura_pagada', 1);
+      $factura_node->set('field_factura_fecha_cobro', time());
       $factura_node->save();
 
       // Notify abogados by email.

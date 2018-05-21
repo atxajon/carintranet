@@ -92,7 +92,7 @@ class Facturacion extends ControllerBase {
             'data' => number_format($total_reparto_comision, 2, ',', '.') . '€',
             'class' => ['text-right'],
           ],
-          'fecha cobro factura',
+          date('d-m-Y',$my_factura_registrada->fecha_cobro),
           Markup::create($my_factura_registrada->descripcion),
           render($edit_button),
         ],
