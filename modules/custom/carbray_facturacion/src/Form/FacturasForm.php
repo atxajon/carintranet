@@ -191,17 +191,16 @@ class FacturasForm extends FormBase {
   public function buscarFactura(array &$form, FormStateInterface $form_state) {
     $departamento_id = $form_state->getValue('departamento_id');
     $captador_id = $form_state->getValue('captador_id');
-
     $options = [];
     if ($departamento_id) {
-      $options['query'] = ['departamento' => $departamento_id];
+      $options['departamento'] = $departamento_id;
     }
     if ($captador_id) {
-      $options['query'][] = ['captador' => $captador_id];
+      $options['captador'] = $captador_id;
 
     }
 
-    $url = Url::fromUri('internal:/node/1748', $options);
+    $url = Url::fromRoute('<current>', [], ['query' => $options]);
     $form_state->setRedirectUrl($url);
   }
 }
