@@ -75,7 +75,7 @@ class NewRegistroFormStepTwo extends FormBase {
 
     $form['base_imponible'] = array(
       '#type' => 'number',
-      '#title' => 'Base imponible (en %)',
+      '#title' => 'Base imponible (en %, entre 1% y 100%)',
       '#default_value' => 0,
       '#min' => 0,
       '#max' => 100,
@@ -119,6 +119,27 @@ class NewRegistroFormStepTwo extends FormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
+    // Load existing factura registros for the current factura we are creating a new registro,
+    // so that we can validate that comision does not exceed 100%.
+    $factura_nid = $form_state->getValue('factura_nid');
+
+    $db = \Drupal::database();
+    $sql = "SELECT * FROM carbray_facturas_registro WHERE factura_nid = :factura_nid";
+    $registros = $db->query($sql, array(':factura_nid' => $factura_nid))->fetchAll();
+    // Loop through registros for this factura and accumulate comision.
+    $existing_comision = 0;
+    foreach ($registros as $registro) {
+      $existing_comision .= $registro->comision;
+    }
+
+    $existing_comision = $existing_comision * 100;
+
+    $base_imponible = $form_state->getValue('base_imponible');
+    $total_comision = $base_imponible + $existing_comision;
+    if ($total_comision > 100) {
+      $form_state->setErrorByName('base_imponible', t('Base imponible excede el 100%. Esta factura actualmente tiene un ' . $existing_comision . '% de comision.'));
+    }
+
   }
 
   /**
@@ -133,18 +154,23 @@ class NewRegistroFormStepTwo extends FormBase {
       $notas = $notas['value'];
     }
     $comision = $base_imponible / 100;
-    \Drupal::logger('$notas')->notice(print_r($notas, TRUE));
 
-
-    // Update carbray_facturas_registro table with base imponible.
-    $success = \Drupal::database()->update('carbray_facturas_registro')
+    // Insert into carbray_facturas_registro table with base imponible.
+    $success = \Drupal::database()->insert('carbray_facturas_registro')
       ->fields([
-        'comision' => $comision,
-        'descripcion' => $notas,
+        'factura_nid',
+        'captacion_nid',
+        'comision',
+        'descripcion',
+        'author_uid',
       ])
-      ->condition('factura_nid', $factura_nid)
-      ->condition('author_uid', \Drupal::currentUser()->id())
-      ->condition('captacion_nid', $captacion_nid)
+      ->values(array(
+        $factura_nid,
+        $captacion_nid,
+        $comision,
+        $notas,
+        \Drupal::currentUser()->id(),
+      ))
       ->execute();
     if (!$success) {
       $form_state->setRebuild();

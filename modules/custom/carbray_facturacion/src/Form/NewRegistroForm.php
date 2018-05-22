@@ -63,6 +63,6 @@ class NewRegistroForm extends FormBase {
 
     $form_state->setRedirect('carbray_facturacion.create_registro_form', ['factura_nid' => $factura_nid, 'captacion_nid' => $captacion_nid], $options);
 
-    drupal_set_message('Por favor procede a completar el registro', 'warning');
+    drupal_set_message('Por favor procede a completar el registro.', 'warning');
   }
 }

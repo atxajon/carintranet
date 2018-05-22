@@ -5,6 +5,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\user\Entity\User;
 use Drupal\node\Entity\Node;
+use Drupal\Core\Datetime\DrupalDateTime;
 
 
 /**
@@ -21,12 +22,9 @@ class EditRegistroForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, $factura_nid = 0, $captacion_nid = 0) {
+  public function buildForm(array $form, FormStateInterface $form_state, $registro_id = 0, $factura_nid = 0, $captacion_nid = 0) {
 
-// Get captacion nid from url arg.
-//    $captacion_nid = \Drupal::request()->query->get('captacion_nid');
     $captacion_node = Node::load($captacion_nid);
-    $captador_uid = $captacion_node->get('field_captacion_captador')->getValue();
     $factura_node = Node::load($factura_nid);
     $captacion_uid = $captacion_node->get('field_captacion_cliente')
       ->getValue();
@@ -34,19 +32,16 @@ class EditRegistroForm extends FormBase {
       ->getStorage('user')
       ->load($captacion_uid[0]['target_id']);
 
+    $db = \Drupal::database();
+    $sql = "SELECT * FROM carbray_facturas_registro WHERE factura_nid = :factura_nid AND author_uid = :author_uid";
+    $registro = $db->query($sql, array(':factura_nid' => $factura_nid, ':author_uid' => \Drupal::currentUser()->id()))->fetchObject();
+
+
     $form['factura'] = array(
       '#type' => 'textfield',
       '#title' => 'Factura',
       '#default_value' => $factura_node->title->value,
       '#disabled' => TRUE,
-    );
-
-    $form['cliente'] = array(
-      '#type' => 'textfield',
-      '#title' => 'Cliente',
-      '#default_value' => $cliente_data->get('field_nombre')->value . ' ' . $cliente_data->get('field_apellido')->value,
-      '#disabled' => TRUE,
-      '#prefix' => '<div class="clearfix">',
     );
 
     $form['importe'] = array(
@@ -56,15 +51,17 @@ class EditRegistroForm extends FormBase {
     );
 
     $form['fecha'] = array(
-      '#type' => 'textfield',
+      '#type' => 'date',
+//      '#type' => 'datetime',
       '#title' => 'Fecha de factura',
-      '#default_value' => date('d-m-Y', $factura_node->created->value),
+//      '#default_value' => date('d-m-Y', $factura_node->created->value),
+      '#default_value' => DrupalDateTime::createFromTimestamp($factura_node->created->value),
     );
 
     $form['base_imponible'] = array(
       '#type' => 'number',
       '#title' => 'Base imponible (en %)',
-      '#default_value' => 0,
+      '#default_value' => $registro->comision,
       '#min' => 0,
       '#max' => 100,
       '#step' => 0.01,
@@ -79,6 +76,10 @@ class EditRegistroForm extends FormBase {
       '#rows' => 2,
     );
 
+    $form['registro_id'] = array(
+      '#type' => 'hidden',
+      '#value' => $registro_id,
+    );
     $form['factura_nid'] = array(
       '#type' => 'hidden',
       '#value' => $factura_nid,
