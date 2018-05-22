@@ -42,6 +42,7 @@
             <div class="field--label">Responsable(s):</div>
             <div class="margin-bottom-20">
               {{ content.exp_responsables }}
+              {{ content.new_factura }}
             </div>
             {% if content.pack_horas|render|trim is not empty %}
               <div class="field"><div class="field--label">Pack de horas (en Horas:Minutos)</div><div class="field--item">{{ content.pack_horas }}</div></div>

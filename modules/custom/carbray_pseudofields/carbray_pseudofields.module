@@ -247,6 +247,12 @@ function carbray_pseudofields_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   );
+  $extra['node']['expediente']['display']['new_factura'] = array(
+    'label' => t('Crear factura'),
+    'description' => t('Boton crear factura.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  );
   $extra['node']['expediente']['display']['anadir_nota'] = array(
     'label' => t('Añadir nota'),
     'description' => t('Boton para crear una nueva nota.'),
@@ -1102,6 +1108,7 @@ function carbray_pseudofields_node_view(array &$build, EntityInterface $entity, 
   }
 
   if ($entity->bundle() == 'expediente') {
+    $expediente_nid = $entity->id();
     $db = \Drupal::database();
     $sql = "SELECT uid FROM carbray_user_captacion_expediente WHERE expediente_nid = :expediente_nid";
     $uid = $db->query($sql, array(':expediente_nid' => $entity->id()))
@@ -1130,6 +1137,16 @@ function carbray_pseudofields_node_view(array &$build, EntityInterface $entity, 
       $responsables = print_cliente_captadores_responsables($entity->get('field_expediente_responsable')->getValue());
       $build['exp_responsables'] = [
         '#markup' => $responsables,
+      ];
+    }
+
+    if ($display->getComponent('new_factura')) {
+      // Get the captacion_nid for this expediente.
+      $sql = "SELECT field_expediente_captacion_target_id FROM node__field_expediente_captacion WHERE entity_id = :entity_id";
+      $captacion_nid = $db->query($sql, array(':entity_id' => $entity->id()))
+        ->fetchField();
+      $build['new_factura'] = [
+        '#markup' => "<a class='btn btn-primary btn-sm margin-top-20' href='/node/add/factura?captacion_nid=$captacion_nid&destination=node/$expediente_nid'><span class='glyphicon glyphicon-plus-sign'></span>Crear nueva factura / proforma</a>",
       ];
     }
 
