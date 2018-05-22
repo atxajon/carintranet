@@ -131,7 +131,7 @@ class Facturacion extends ControllerBase {
       $total_reparto_comision = $mi_comision * $perc_comision;
 
       $form = \Drupal::formBuilder()
-        ->getForm('Drupal\carbray_facturacion\Form\EditRegistroForm', $my_factura_registrada->registro_id, 6068, 4630);
+        ->getForm('Drupal\carbray_facturacion\Form\EditRegistroForm', $my_factura_registrada->registro_id, $my_factura_registrada->factura_nid, $my_factura_registrada->captacion_nid);
 
       $edit_button = [
         '#theme' => 'button_modal',

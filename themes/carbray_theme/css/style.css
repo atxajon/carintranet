@@ -191,7 +191,8 @@ ul {
   border-bottom: 2px solid white;
 }
 .new-factura .form-inline .form-control,
-.new-registro-step-two .form-inline .form-control {
+.new-registro-step-two .form-inline .form-control,
+.edit-registro-form .form-inline .form-control {
   display: block;
 }
 
