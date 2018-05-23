@@ -52,7 +52,7 @@ class NewRegistroFormStepTwo extends FormBase {
     $form['importe'] = array(
       '#type' => 'textfield',
       '#title' => 'Importe',
-      '#default_value' => $factura_node->get('field_factura_precio')->value,
+      '#default_value' => number_format($factura_node->get('field_factura_precio')->value, 2, ',', '.') . '€',
       '#disabled' => TRUE,
     );
 

@@ -62,6 +62,7 @@ function carbray_form_node_form_alter(&$form, &$form_state, $form_id) {
 
     // Get captacion nid from url arg.
     $captacion_nid = \Drupal::request()->query->get('captacion_nid');
+    $expediente_nid = \Drupal::request()->query->get('expediente_nid');
     $captacion_node = Node::load($captacion_nid);
     $captacion_uid = $captacion_node->get('field_captacion_cliente')
       ->getValue();
@@ -94,6 +95,10 @@ function carbray_form_node_form_alter(&$form, &$form_state, $form_id) {
       '#type' => 'hidden',
       '#value' => $captacion_nid,
     );
+    $form['expediente_nid'] = array(
+      '#type' => 'hidden',
+      '#value' => $expediente_nid,
+    );
     $form['captador_uid'] = array(
       '#type' => 'hidden',
       '#value' => $uid = \Drupal::currentUser()->id(),
@@ -119,6 +124,7 @@ function carbray_form_node_form_alter(&$form, &$form_state, $form_id) {
     $form['field_factura']['widget'][0]['target_id']['#default_value'] = \Drupal\node\Entity\Node::load($captacion_nid);
     $form['field_factura']['#attributes']['class'][] = 'hidden';
     $form['field_factura_pagada']['#access'] = FALSE;
+    $form['field_factura_fecha_cobro']['#access'] = FALSE;
 
     unset($form['revision_information']);
     unset($form['revision_log']);
@@ -311,11 +317,13 @@ function store_carbray_facturas(array &$form, FormStateInterface $form_state) {
         ->fields([
           'factura_nid',
           'captacion_nid',
+          'expediente_nid',
           'author_uid',
         ])
         ->values(array(
           $factura_nid,
           $form_state->getValue('captacion_nid'),
+          $form_state->getValue('expediente_nid'),
           $form_state->getValue('captador_uid'),
         ))
         ->execute();

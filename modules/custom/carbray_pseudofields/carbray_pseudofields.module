@@ -1146,7 +1146,7 @@ function carbray_pseudofields_node_view(array &$build, EntityInterface $entity, 
       $captacion_nid = $db->query($sql, array(':entity_id' => $entity->id()))
         ->fetchField();
       $build['new_factura'] = [
-        '#markup' => "<a class='btn btn-primary btn-sm margin-top-20' href='/node/add/factura?captacion_nid=$captacion_nid&destination=node/$expediente_nid'><span class='glyphicon glyphicon-plus-sign'></span>Crear nueva factura / proforma</a>",
+        '#markup' => "<a class='btn btn-primary btn-sm margin-top-20' href='/node/add/factura?captacion_nid=$captacion_nid&expediente_nid=$expediente_nid&destination=node/$expediente_nid'><span class='glyphicon glyphicon-plus-sign'></span>Crear nueva factura / proforma</a>",
       ];
     }
 
