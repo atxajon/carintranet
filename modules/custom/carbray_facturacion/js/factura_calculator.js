@@ -43,8 +43,10 @@
           prov_fondos = 0;
         }
         total += prov_fondos;
+        total = total.toFixed(2);
+        // total += 'what';
 
-        $('#edit-field-factura-precio-0-value').val(total.toFixed(2));
+        $('#edit-field-factura-precio-0-value').val(total);
       }
 
       // Prevent from accidentaly typing 'enter' key on servicios adding,

@@ -218,6 +218,13 @@ ul {
   float: right;
 }
 
+input[type=number] {
+  -webkit-appearance: textfield;
+  -moz-appearance: textfield;
+  appearance: none;
+  margin: 0;
+}
+
 /* collapsed sidebar styles */
 @media screen and (max-width: 767px) {
   .row-offcanvas-left {
@@ -804,11 +811,7 @@ textarea[rows="3"] + .cke .cke_contents {
   }
   .node-factura-form .form-item-cliente,
   .node-factura-form .form-item-email,
-  .node-factura-form .form-item-telefono {
-    float: left;
-    width: 32.3%;
-    margin-right: 1%;
-  }
+  .node-factura-form .form-item-telefono,
   .node-factura-form .form-item-coste-fieldset-precio,
   .node-factura-form #edit-coste-fieldset-iva--wrapper,
   .node-factura-form .form-item-coste-fieldset-importe-total,
@@ -818,11 +821,41 @@ textarea[rows="3"] + .cke .cke_contents {
     width: 32.3%;
     margin-right: 1%;
   }
-
-  .node-factura-form .paragraphs-subform .form-group {
-    float: left;
-    width: 50%;
+  .field--name-field-factura-nif,
+  .field--name-field-factura-proforma {
+    margin-bottom: 50px;
   }
+  .field--name-field-factura-iva {
+    margin-top: 40px;
+  }
+  .form-item-field-factura-primera {
+    width: 32.3%;
+  }
+
+  .field--name-field-factura-in-house-client {
+    clear: both;
+  }
+
+  .node-factura-form .paragraphs-subform .form-wrapper {
+    float: left;
+    width: 29%;
+    margin-right: 1%;
+  }
+
+  .field--name-field-coste-servicio .control-label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  .field--name-field-coste-servicio .form-number {
+    width: 100%;
+  }
+  .form-item-field-factura-precio-0-value .form-control {
+    border: 0;
+    box-shadow: none;
+    font-weight: bold;
+    font-size: 18px;
+  }
+
   .node-factura-form .paragraph-type-title,
   .node-factura-form .field--name-field-factura-servicios .tabledrag-toggle-weight {
     display: none;
