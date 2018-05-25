@@ -21,6 +21,14 @@ carbray_facturacion.excel_facturacion:
   requirements:
     _permission: 'access content'
 
+carbray_facturacion.excel_facturacion_departamento:
+  path: '/excel-facturacion/departamento'
+  defaults:
+    _title: 'Excel facturación departamento'
+    _controller: '\Drupal\carbray_facturacion\Controller\Facturacion::ExcelDepartamento'
+  requirements:
+    _custom_access: '\Drupal\carbray_facturacion\Controller\Facturacion::ExcelDepartamentoAccess'
+
 carbray_facturacion.create_registro_form:
   path: '/crear-registro-factura/{factura_nid}/{captacion_nid}'
   defaults:

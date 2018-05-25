@@ -4,10 +4,10 @@ namespace Drupal\carbray_facturacion\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\carbray\CsvResponse;
-use Drupal\node\Entity\Node;
 use Drupal\Core\Render\Markup;
 use Drupal\user\Entity\User;
-
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Session\AccountInterface;
 
 class Facturacion extends ControllerBase {
 
@@ -142,6 +142,173 @@ class Facturacion extends ControllerBase {
     }
 
     $last_nid = 0;
+    $rows = [];
+    if ($facturas_registradas) {
+      foreach ($facturas_registradas as $factura_registrada) {
+        // Skip duplicates for facturas that have multiple captadores.
+        if ($last_nid == $factura_registrada->nid) {
+          continue;
+        }
+        $mi_comision = $factura_registrada->field_factura_precio_value * $factura_registrada->comision;
+        $perc_comision = 0.05;
+        $total_reparto_comision = $mi_comision * $perc_comision;
+
+        // Workers can edit their factura registros, carbray_admin can't.
+        if (!$is_admin) {
+          $form = \Drupal::formBuilder()
+            ->getForm('Drupal\carbray_facturacion\Form\EditRegistroForm', $factura_registrada->registro_id, $factura_registrada->factura_nid, $factura_registrada->captacion_nid);
+          $edit_button = [
+            '#theme' => 'button_modal',
+            '#unique_id' => 'add-hours-expediente-nid-' . 6068,
+            '#button_text' => 'Editar registro',
+            '#button_classes' => 'btn btn-primary',
+            '#modal_title' => t('Editar registro'),
+            '#modal_content' => $form,
+            '#has_plus' => FALSE,
+          ];
+        }
+
+        $captador_user = User::load($factura_registrada->field_captacion_captador_target_id);
+        $captador_name = $captador_user->get('field_nombre')->value . ' ' . $captador_user->get('field_apellido')->value;
+
+        $rows[] = [
+          'data' => [
+            date('d-m-Y', $factura_registrada->factura_created),
+            $factura_registrada->title,
+            $captador_name,
+            [
+              'data' => number_format($factura_registrada->field_factura_precio_value, 2, ',', '.') . '€',
+              'class' => ['text-right'],
+            ],
+            [
+              'data' => $factura_registrada->comision * 100 . '%',
+              'class' => ['text-center'],
+            ],
+            [
+              'data' => number_format($mi_comision, 2, ',', '.') . '€',
+              'class' => ['text-right'],
+            ],
+            [
+              'data' => $perc_comision * 100 . '%',
+              'class' => ['text-center'],
+            ],
+            [
+              'data' => number_format($total_reparto_comision, 2, ',', '.') . '€',
+              'class' => ['text-right'],
+            ],
+            ($factura_registrada->fecha_cobro) ? date('d-m-Y', $factura_registrada->fecha_cobro) : '',
+            Markup::create($factura_registrada->descripcion),
+            (!$is_admin) ? render($edit_button) : '',
+          ],
+          'class' => [
+            'row_class',
+          ],
+        ];
+
+        $acumulated_total_facturas += $factura_registrada->field_factura_precio_value;
+        $acumulated_total_reparto_comision += $total_reparto_comision;
+        $acumulated_total_comision += $mi_comision;
+        $last_nid = $factura_registrada->nid;
+      }
+      // Adds totals row.
+      $rows[] = [
+        Markup::create('<b>Total:</b>'),
+        '',
+        '',
+        [
+          'data' => Markup::create('<b>' . number_format($acumulated_total_facturas,   2 , ',', '.') . '€</b>'),
+          'class' => ['text-right'],
+        ],
+        '',
+        [
+          'data' => Markup::create('<b>' . number_format($acumulated_total_comision,  2 , ',', '.') . '€</b>'),
+
+          'class' => ['text-right'],
+        ],
+        '',
+        [
+          'data' => Markup::create('<b>' . number_format($acumulated_total_reparto_comision, 2 , ',', '.') . '€</b>'),
+
+
+          'class' => ['text-right'],
+        ],
+        '',
+        '',
+        '',
+      ];
+    }
+
+
+    $build['tabla_excel_facturacion'] = [
+      '#theme' => 'table',
+      '#header' => $header,
+      '#rows' => $rows,
+      '#cache' => [
+        'max-age' => 0,
+      ],
+    ];
+    $build['post'] = [
+      '#markup' => '</div>',
+    ];
+    return $build;
+  }
+
+  public function ExcelDepartamento() {
+    $build['pre'] = [
+      '#markup' => '<div class="admin-block">',
+    ];
+
+    $new_registro_form = \Drupal::formBuilder()
+      ->getForm('Drupal\carbray_facturacion\Form\NewRegistroForm');
+    $build['new_registro'] = [
+      '#theme' => 'button_modal',
+      '#unique_id' => 'anadir-nuevo-registro',
+      '#button_text' => 'Nuevo Registro',
+      '#button_classes' => 'btn btn-primary margin-bottom-20 margin-top-10',
+      '#modal_title' => t('Nuevo registro'),
+      '#modal_content' => $new_registro_form,
+      '#has_plus' => TRUE,
+    ];
+
+    $header = [
+      ['data' => 'Fecha factura','field' => 'fecha_factura'],
+      ['data' => 'Numero factura','field' => 'numero_factura'],
+      ['data' => 'Captador','field' => 'captador'],
+      ['data' => 'Importe factura (B.I.)','field' => 'importe_factura', 'class' => ['text-right']],
+      ['data' => 'Porcentaje base imponible','field' => 'perc_imponible', 'class' => ['text-center']],
+      ['data' => 'Total reparto comision','field' => 'total_reparto_comision', 'class' => ['text-right']],
+      ['data' => 'Porcentaje comision','field' => 'porcentaje_comision', 'class' => ['text-center']],
+      ['data' => 'Comision','field' => 'comision', 'class' => ['text-right']],
+      ['data' => 'Fecha cobro factura','field' => 'fecha_cobro'],
+      ['data' => 'Comentarios','field' => 'comentarios', 'class' => ['comentarios-col']],
+      ['data' => 'Editar','field' => 'editar'],
+    ];
+
+    $acumulated_total_facturas = 0;
+    $acumulated_total_reparto_comision = 0;
+    $acumulated_total_comision = 0;
+
+    // A user of role Carbray admin sees all facturas; a worker sees all his/her facturas.
+    $is_admin = FALSE;
+    $current_user = \Drupal::currentUser();
+    $current_user_roles = $current_user->getRoles();
+    if (in_array('worker', $current_user_roles)) {
+      $facturas_registradas = get_my_facturas_registradas(\Drupal::currentUser()->id());
+    }
+    elseif (in_array('jefe_departamento', $current_user_roles)) {
+      $facturas_registradas = get_my_facturas_registradas(\Drupal::currentUser()->id());
+    }
+    elseif (in_array('carbray_administrator', $current_user_roles)) {
+      $facturas_registradas = get_all_facturas_registradas();
+      $is_admin = TRUE;
+    }
+    elseif (in_array('administrator', $current_user_roles)) {
+      $facturas_registradas = get_all_facturas_registradas();
+      $is_admin = TRUE;
+    }
+
+    $last_nid = 0;
+    $rows = [];
     if ($facturas_registradas) {
       foreach ($facturas_registradas as $factura_registrada) {
         // Skip duplicates for facturas that have multiple captadores.
@@ -267,5 +434,25 @@ class Facturacion extends ControllerBase {
       '#markup' => '</div>',
     ];
     return $build;
+  }
+
+  /**
+   * Access check: only users of departamento inmigration or litigation can view facturacion conjunta.
+   * @param AccountInterface $account
+   * @return AccessResult
+   */
+  public function ExcelDepartamentoAccess(AccountInterface $account) {
+    $user = User::load($account->id());
+    $user_departamento = $user->get('field_departamento')->getValue();
+    $is_allowed = FALSE;
+    if ($user_departamento) {
+      foreach ($user_departamento as $departamento) {
+        if ($departamento['target_id'] == DEPARTAMENTO_INMIGRATION || $departamento['target_id'] == DEPARTAMENTO_LITIGATION) {
+          $is_allowed = TRUE;
+        }
+      }
+    }
+
+    return AccessResult::allowedIf($is_allowed);
   }
 }

@@ -8,3 +8,14 @@ carbray_facturacion.facturas_pagadas:
   title: 'Facturas pagadas'
   base_route: carbray_facturacion.facturas_por_pagar
 
+
+carbray_facturacion.excel_facturacion:
+  route_name: carbray_facturacion.excel_facturacion
+  title: 'Facturacion'
+  base_route: carbray_facturacion.excel_facturacion
+
+carbray_facturacion.excel_facturacion_departamento:
+  route_name: carbray_facturacion.excel_facturacion_departamento
+  title: 'Facturacion conjunta'
+  base_route: carbray_facturacion.excel_facturacion
+
