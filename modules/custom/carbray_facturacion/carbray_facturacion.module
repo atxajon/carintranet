@@ -63,7 +63,7 @@ function get_captacion_for_factura($factura_nid) {
 }
 
 /**
- * Gets facturas for captacaciones I am captador AND expedientes I am responsible.
+ * Gets facturas for captacaciones I am captador AND expedientes I am responsible that have a comision entered in {carbray_facturas_registro}.
  * @param $factura_author_uid
  * @return mixed
  */
@@ -78,6 +78,7 @@ INNER JOIN node__field_captacion_cliente capt_cli on capt_cli.entity_id = cc.ent
 INNER JOIN node__field_factura_precio precio on precio.entity_id = ff.entity_id
 LEFT JOIN node__field_factura_fecha_cobro fc on nfd.nid = fc.entity_id
 WHERE field_factura_target_id IN (SELECT entity_id FROM node__field_captacion_captador WHERE field_captacion_captador_target_id = :author_uid)  
+AND comision IS NOT NULL
 UNION
 SELECT  cfr.id as registro_id, nid, cfr.captacion_nid, cfr.factura_nid, cfr.expediente_nid, title, field_captacion_captador_target_id, field_factura_precio_value, comision, created as factura_created, descripcion, field_factura_fecha_cobro_value as fecha_cobro
 FROM carbray_facturas_registro cfr
@@ -89,13 +90,32 @@ LEFT JOIN node__field_factura_pagada fp on fp.entity_id = ff.entity_id
 LEFT JOIN node__field_factura_fecha_cobro fc on nfd.nid = fc.entity_id
 INNER JOIN node__field_expediente_captacion ec on ec.field_expediente_captacion_target_id = ff.field_factura_target_id
 WHERE ec.entity_id IN (SELECT entity_id FROM node__field_expediente_responsable WHERE field_expediente_responsable_target_id = :author_uid) 
+AND comision IS NOT NULL
 ORDER BY nid DESC";
   $captacion_nid = $db->query($sql, [':author_uid' => $factura_author_uid])->fetchAll();
   return $captacion_nid;
 }
 
+function get_my_departamento_facturas_registradas($departamento_tid) {
+  $db = \Drupal::database();
+  $sql = "SELECT cfr.id as registro_id, nid, cfr.captacion_nid, cfr.factura_nid, cfr.expediente_nid, title, field_captacion_captador_target_id, field_factura_precio_value, comision, created as factura_created, descripcion, field_factura_fecha_cobro_value as fecha_cobro 
+FROM carbray_facturas_registro cfr
+INNER JOIN node__field_factura ff on cfr.factura_nid = ff.entity_id
+INNER JOIN node_field_data nfd on nfd.nid = ff.entity_id 
+INNER JOIN node__field_captacion_captador cc on cc.entity_id = ff.field_factura_target_id
+INNER JOIN node__field_captacion_cliente capt_cli on capt_cli.entity_id = cc.entity_id
+INNER JOIN node__field_factura_precio precio on precio.entity_id = ff.entity_id
+LEFT JOIN node__field_factura_fecha_cobro fc on nfd.nid = fc.entity_id 
+INNER JOIN user__field_departamento fd on fd.entity_id = cc.field_captacion_captador_target_id
+WHERE field_departamento_target_id = :dept_tid
+AND comision IS NOT NULL
+ORDER BY nid DESC";
+  $facturas_data = $db->query($sql, [':dept_tid' => $departamento_tid])->fetchAll();
+  return $facturas_data;
+}
+
 /**
- * For a carbray admin, gets all facturas.
+ * For a carbray admin, gets all facturas that have a comision entered in {carbray_facturas_registro}.
  * @return mixed
  */
 function get_all_facturas_registradas() {
@@ -108,9 +128,10 @@ INNER JOIN node__field_captacion_captador cc on cc.entity_id = ff.field_factura_
 INNER JOIN node__field_captacion_cliente capt_cli on capt_cli.entity_id = cc.entity_id
 INNER JOIN node__field_factura_precio precio on precio.entity_id = ff.entity_id
 LEFT JOIN node__field_factura_fecha_cobro fc on nfd.nid = fc.entity_id 
+WHERE comision IS NOT NULL
 ORDER BY nid DESC";
-  $captacion_nid = $db->query($sql)->fetchAll();
-  return $captacion_nid;
+  $facturas_data = $db->query($sql)->fetchAll();
+  return $facturas_data;
 }
 
 

@@ -25,7 +25,7 @@ carbray_facturacion.excel_facturacion_departamento:
   path: '/excel-facturacion/departamento'
   defaults:
     _title: 'Excel facturación departamento'
-    _controller: '\Drupal\carbray_facturacion\Controller\Facturacion::ExcelDepartamento'
+    _controller: '\Drupal\carbray_facturacion\Controller\Facturacion::Excel'
   requirements:
     _custom_access: '\Drupal\carbray_facturacion\Controller\Facturacion::ExcelDepartamentoAccess'
 

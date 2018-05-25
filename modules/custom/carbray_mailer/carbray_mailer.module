@@ -102,6 +102,7 @@ function send_email_secretaria(array &$form, FormStateInterface $form_state){
   $iva = $form_state->getValue('field_factura_iva');
   $in_house_client = $form_state->getValue('field_factura_in_house_client');
   $primera_segunda = $form_state->getValue('field_factura_primera');
+  $primera_segunda = $primera_segunda[0]['value'];
 
   $servicios = $form_state->getValue('field_factura_servicios');
   $all_servicios = [];
