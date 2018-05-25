@@ -27,14 +27,14 @@ function carbray_mailer_mail($key, &$message, $params) {
   $message['headers']['Content-Type'] = 'multipart/mixed; text/html; charset=UTF-8; format=flowed;';
 
   switch ($key) {
-    case'notify_secretaria_new_factura':
+    case 'notify_secretaria_new_factura':
       $message['from'] = \Drupal::config('system.site')->get('mail');
       $message['subject'] = t('Factura creada');
       $message['body'][] = carbray_mailer_new_factura($params);
       // @todo: enable this when production ready.
 //      $message['headers']['Bcc'] = 'admin@carbray.es';
       break;
-    case'notify_captador_factura_paid':
+    case 'notify_captador_factura_paid':
       $message['from'] = \Drupal::config('system.site')->get('mail');
       $message['subject'] = t('Factura pagada');
       $message['body'][] = carbray_mailer_factura_paid($params);
@@ -51,15 +51,11 @@ function carbray_mailer_new_factura($params) {
   $is_in_house = ($params['in_house']) ? 'Si' : 'No';
   $in_house_client_string .= $is_in_house . '</li>';
 
-  $invoice_count =  '<li>';
-  $count = ($params['invoice_count'] == 1) ? 'First invoice' : 'Second invoice';
-  $invoice_count .= $count . '</li>';
-
   $output = '<h3>INVOICE REQUEST</h3>';
   $output .= '<p><span style="font-weigh: bold;">CLIENT: </span>' . $params['cliente'] . '</p>';
   $output .= '<p><span style="font-weigh: bold;">ADDRESS: </span>: ' . $params['direccion'] . '</p>';
   $output .= '<p><span style="font-weigh: bold;">NIF / NIE / PASSPORT: </span> ' . $params['nif'] . '</p>';
-  $output .= '<p><span style="font-weigh: bold;">FIRST OR SECOND PAYMENT: </span>' . $params['nif'] . '</p>';
+  $output .= '<p><span style="font-weigh: bold;">FIRST OR SECOND PAYMENT: </span>' . $params['primera_segunda'] . '</p>';
   $output .= '<p><span style="font-weigh: bold;">REFERENCE(S) + AMOUNT: </span></p>';
   $output .= '<ol>';
   foreach ($params['servicios'] as $key => $value) {
@@ -74,7 +70,6 @@ function carbray_mailer_new_factura($params) {
   $output .= '<p><span style="font-weigh: bold;">Type of client: </span></p><ul>';
   $output .= '<li>Date of reception of the contact/landing: ' . date('d-m-Y', $params['captacion_date']) . '</li>';
   $output .= $in_house_client_string;
-  $output .= $invoice_count;
   $output .= '</ul>';
 
   $proforma_factura_text = ($params['proforma']) ? 'Proforma' : 'Factura';
@@ -87,6 +82,12 @@ function carbray_mailer_factura_paid($params) {
   return $output;
 }
 
+/**
+ * Custom submit handler for add factura node form;
+ * Takes form values and sends them in an email to users of role secretaria.
+ * @param array $form
+ * @param FormStateInterface $form_state
+ */
 function send_email_secretaria(array &$form, FormStateInterface $form_state){
   $captador_uid = $form_state->getValue('captador_uid');
   $captador_user = User::load($captador_uid);
@@ -100,6 +101,7 @@ function send_email_secretaria(array &$form, FormStateInterface $form_state){
   $prov_fondo = $form_state->getValue('field_factura_provision_de_fondo');
   $iva = $form_state->getValue('field_factura_iva');
   $in_house_client = $form_state->getValue('field_factura_in_house_client');
+  $primera_segunda = $form_state->getValue('field_factura_primera');
 
   $servicios = $form_state->getValue('field_factura_servicios');
   $all_servicios = [];
@@ -112,6 +114,7 @@ function send_email_secretaria(array &$form, FormStateInterface $form_state){
   }
   $params = [
     'nif' => $nif[0]['value'],
+    'primera_segunda' => $primera_segunda,
     'captador' => $captador_user->get('field_nombre')->value . ' ' . $captador_user->get('field_apellido')->value,
     'cliente' => $form_state->getValue('cliente'),
     'email' => $form_state->getValue('email'),
