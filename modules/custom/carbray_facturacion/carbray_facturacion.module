@@ -94,6 +94,25 @@ ORDER BY nid DESC";
   return $captacion_nid;
 }
 
+/**
+ * For a carbray admin, gets all facturas.
+ * @return mixed
+ */
+function get_all_facturas_registradas() {
+  $db = \Drupal::database();
+  $sql = "SELECT  cfr.id as registro_id, nid, cfr.captacion_nid, cfr.factura_nid, cfr.expediente_nid, title, field_captacion_captador_target_id, field_factura_precio_value, comision, created as factura_created, descripcion, field_factura_fecha_cobro_value as fecha_cobro 
+FROM carbray_facturas_registro cfr
+INNER JOIN node__field_factura ff on cfr.factura_nid = ff.entity_id
+INNER JOIN node_field_data nfd on nfd.nid = ff.entity_id 
+INNER JOIN node__field_captacion_captador cc on cc.entity_id = ff.field_factura_target_id
+INNER JOIN node__field_captacion_cliente capt_cli on capt_cli.entity_id = cc.entity_id
+INNER JOIN node__field_factura_precio precio on precio.entity_id = ff.entity_id
+LEFT JOIN node__field_factura_fecha_cobro fc on nfd.nid = fc.entity_id 
+ORDER BY nid DESC";
+  $captacion_nid = $db->query($sql)->fetchAll();
+  return $captacion_nid;
+}
+
 
 /**
  * Get last factura node title from the system (e.g Thomas Jones 038)
