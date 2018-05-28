@@ -36,3 +36,11 @@ carbray_facturacion.create_registro_form:
     _controller: '\Drupal\carbray_facturacion\Controller\Facturacion::newRegistro'
   requirements:
     _permission: 'access content'
+
+carbray_facturacion.excel_csv:
+  path: '/download-facturas-csv'
+  defaults:
+    _title: 'Tabla facturacion'
+    _controller: '\Drupal\carbray\Controller\CsvDownloader::FacturaRegistrosCSV'
+  requirements:
+    _permission: 'access content'
