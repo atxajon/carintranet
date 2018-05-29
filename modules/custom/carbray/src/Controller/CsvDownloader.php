@@ -262,13 +262,4 @@ ORDER BY field_apellido_value ASC', [':tid' => $query_array['tid']])->fetchAll()
     $csvresponse->setFilename($filename);
     return $csvresponse;
   }
-
-  public function FacturaRegistrosCSV() {
-    $filename = 'tabla-excel.csv';
-    $all_data = get_excel_table(TRUE);
-    // Instantiate obj CsvResponse to leverage data to csv conversion.
-    $csvresponse = new CsvResponse($all_data);
-    $csvresponse->setFilename($filename);
-    return $csvresponse;
-  }
 }
