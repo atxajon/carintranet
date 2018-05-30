@@ -948,3 +948,10 @@ textarea[rows="3"] + .cke .cke_contents {
 .comentarios-col {
   width: 33%;
 }
+
+.nuevo-registro {
+  display: block;
+}
+.path-excel-facturacion .table-responsive {
+  clear: both;
+}
