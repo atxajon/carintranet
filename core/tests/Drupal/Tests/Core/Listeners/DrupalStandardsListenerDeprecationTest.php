@@ -10,7 +10,7 @@ use Drupal\Tests\UnitTestCase;
  * DrupalStandardsListener has a dependency on composer/composer, so we can't
  * test it directly. However, we can create a test which is annotated as
  * covering a deprecated class. This way we can know whether the standards
- * listener process ignores deprecation errors.
+ * listener process handles deprecation errors properly.
  *
  * Note that this test is annotated as covering
  * \Drupal\deprecation_test\Deprecation\FixtureDeprecatedClass::testFunction(),
@@ -22,7 +22,7 @@ use Drupal\Tests\UnitTestCase;
  *
  * @group Listeners
  *
- * @coversDefaultClass \Drupal\deprecation_test\Deprecation\DrupalStandardsListenerDeprecatedClass
+ * @coversDefaultClass \Drupal\deprecation_test\Deprecation\FixtureDeprecatedClass
  */
 class DrupalStandardsListenerDeprecationTest extends UnitTestCase {
 

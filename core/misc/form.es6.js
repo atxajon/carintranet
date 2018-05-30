@@ -236,7 +236,7 @@
       const userInfo = ['name', 'mail', 'homepage'];
       const $forms = $('[data-user-info-from-browser]').once('user-info-from-browser');
       if ($forms.length) {
-        userInfo.forEach((info) => {
+        userInfo.map((info) => {
           const $element = $forms.find(`[name=${info}]`);
           const browserData = localStorage.getItem(`Drupal.visitor.${info}`);
           const emptyOrDefault = ($element.val() === '' || ($element.attr('data-drupal-default-value') === $element.val()));
@@ -246,7 +246,7 @@
         });
       }
       $forms.on('submit', () => {
-        userInfo.forEach((info) => {
+        userInfo.map((info) => {
           const $element = $forms.find(`[name=${info}]`);
           if ($element.length) {
             localStorage.setItem(`Drupal.visitor.${info}`, $element.val());
@@ -297,4 +297,5 @@
    * is already in the URL.
    */
   $(document).on('click.form-fragment', 'a[href*="#"]', debouncedHandleFragmentLinkClickOrHashChange);
+
 }(jQuery, Drupal, Drupal.debounce));

@@ -1,19 +1,25 @@
 {
-  "name": "drupal/backup_migrate",
+  "name": "backupmigrate/drupal",
   "description": "Backup and Migrate Drupal Module",
-  "type": "drupal-module",
-  "license": "GPL-2.0+",
-  "homepage": "https://www.drupal.org/project/backup_migrate",
-  "minimum-stability": "dev",
+  "autoload": {
+    "psr-4": {
+      "BackupMigrate\\Drupal\\": "src"
+    }
+  },
   "authors": [
     {
-      "name": "Ronan Dowling",
-      "homepage": "https://www.drupal.org/u/ronan",
-      "role": "Maintainer"
+      "name": "Ronan Dowling"
     }
   ],
-  "support": {
-    "issues": "https://www.drupal.org/project/issues/backup_migrate",
-    "source": "http://cgit.drupalcode.org/backup_migrate"
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/backupmigrate/backup_migrate_core"
+    }
+  ],
+  "require": {
+    "php": ">=5.4.0",
+    "backupmigrate/core": "dev-master",
+    "psr/log": "dev-master"
   }
 }

@@ -14,8 +14,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class WorkflowTransitionEditForm.
- *
- * @internal
  */
 class WorkflowTransitionEditForm extends EntityForm {
 
@@ -80,9 +78,10 @@ class WorkflowTransitionEditForm extends EntityForm {
 
     $form['label'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Transition label'),
+      '#title' => $this->t('Label'),
       '#maxlength' => 255,
       '#default_value' => $transition->label(),
+      '#description' => $this->t('Label for the transition.'),
       '#required' => TRUE,
     ];
 

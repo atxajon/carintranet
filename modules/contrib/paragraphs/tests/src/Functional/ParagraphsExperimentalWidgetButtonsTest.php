@@ -61,9 +61,8 @@ class ParagraphsExperimentalWidgetButtonsTest extends BrowserTestBase {
     $this->drupalGet('admin/structure/types/manage/paragraphed_test/form-display');
     $option = $this->assertSession()->optionExists('fields[field_paragraphs][type]', 'paragraphs');
     $this->assertTrue($option->isSelected());
-    // Check that the autocollapse is not displayed if the edit mode is open.
-    $this->assertSession()->pageTextNotContains('Autocollapse: None');
-    $this->assertSession()->pageTextContains('Edit mode: Open');
+    // Check that the autocollapse is disabled by default.
+    $this->assertSession()->pageTextContains('Autocollapse: None');
 
     // Create a new node with 2 paragraphs.
     $this->drupalGet('node/add/paragraphed_test');
@@ -101,27 +100,27 @@ class ParagraphsExperimentalWidgetButtonsTest extends BrowserTestBase {
     $this->checkParagraphInMode('field_paragraphs_0', 'edit');
     $this->checkParagraphInMode('field_paragraphs_1', 'edit');
 
-    // "Collapse all" affects all paragraphs.
+    // "Collapse all" enables autocollapse.
     $this->getSession()->getPage()->findButton('field_paragraphs_collapse_all')->press();
     $this->checkParagraphInMode('field_paragraphs_0', 'closed');
     $this->checkParagraphInMode('field_paragraphs_1', 'closed');
 
-    // Open the first paragraph and then the second. Opening the second does not
-    // close the first.
+    // Open the first paragraph and then the second. Opening the second closes
+    // the first.
     $this->getSession()->getPage()->findButton('field_paragraphs_0_edit')->press();
     $this->checkParagraphInMode('field_paragraphs_0', 'edit');
     $this->checkParagraphInMode('field_paragraphs_1', 'closed');
 
     $this->getSession()->getPage()->findButton('field_paragraphs_1_edit')->press();
-    $this->checkParagraphInMode('field_paragraphs_0', 'edit');
+    $this->checkParagraphInMode('field_paragraphs_0', 'closed');
     $this->checkParagraphInMode('field_paragraphs_1', 'edit');
 
-    // "Edit all" affects all paragraphs.
+    // "Edit all" disables autocollapse.
     $this->getSession()->getPage()->findButton('field_paragraphs_edit_all')->press();
     $this->checkParagraphInMode('field_paragraphs_0', 'edit');
     $this->checkParagraphInMode('field_paragraphs_1', 'edit');
 
-    // Closing and opening a paragraphs does not affect the other one.
+    // Closing and opening a paragraphs does not affect the other one anymore.
     $this->getSession()->getPage()->findButton('field_paragraphs_0_collapse')->press();
     $this->checkParagraphInMode('field_paragraphs_0', 'closed');
     $this->checkParagraphInMode('field_paragraphs_1', 'edit');

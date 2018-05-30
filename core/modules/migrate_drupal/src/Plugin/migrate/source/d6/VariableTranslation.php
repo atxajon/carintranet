@@ -11,8 +11,7 @@ use Drupal\migrate_drupal\Plugin\migrate\source\DrupalSqlBase;
  * Drupal i18n_variable source from database.
  *
  * @MigrateSource(
- *   id = "variable_translation",
- *   source_module = "system",
+ *   id = "variable_translation"
  * )
  */
 class VariableTranslation extends DrupalSqlBase {
@@ -69,7 +68,7 @@ class VariableTranslation extends DrupalSqlBase {
   /**
    * {@inheritdoc}
    */
-  public function count($refresh = FALSE) {
+  public function count() {
     return $this->initializeIterator()->count();
   }
 

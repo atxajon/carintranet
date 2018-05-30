@@ -8,8 +8,6 @@ use Drupal\Core\Url;
 
 /**
  * Builds the form to delete Workflow entities.
- *
- * @internal
  */
 class WorkflowDeleteForm extends EntityConfirmFormBase {
 

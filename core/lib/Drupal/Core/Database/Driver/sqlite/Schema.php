@@ -19,8 +19,6 @@ class Schema extends DatabaseSchema {
 
   /**
    * Override DatabaseSchema::$defaultSchema
-   *
-   * @var string
    */
   protected $defaultSchema = 'main';
 
@@ -413,7 +411,7 @@ class Schema extends DatabaseSchema {
 
     // Now add the fields.
     foreach ($mapping as $field_alias => $field_source) {
-      // Just ignore this field (ie. use its default value).
+      // Just ignore this field (ie. use it's default value).
       if (!isset($field_source)) {
         continue;
       }
@@ -450,7 +448,7 @@ class Schema extends DatabaseSchema {
    *   Name of the table.
    *
    * @return
-   *   An array representing the schema.
+   *   An array representing the schema, from drupal_get_schema().
    *
    * @throws \Exception
    *   If a column of the table could not be parsed.

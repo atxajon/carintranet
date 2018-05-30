@@ -12,6 +12,7 @@
     _createButtons() {
       const opts = this.options;
       let primaryIndex;
+      let $buttons;
       let index;
       const il = opts.buttons.length;
       for (index = 0; index < il; index++) {
@@ -22,7 +23,7 @@
         }
       }
       this._super();
-      const $buttons = this.uiButtonSet.children().addClass(opts.buttonClass);
+      $buttons = this.uiButtonSet.children().addClass(opts.buttonClass);
       if (typeof primaryIndex !== 'undefined') {
         $buttons.eq(index).addClass(opts.buttonPrimaryClass);
       }

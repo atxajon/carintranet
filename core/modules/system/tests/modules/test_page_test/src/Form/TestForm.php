@@ -7,8 +7,6 @@ use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Defines a test form for testing assertions.
- *
- * @internal
  */
 class TestForm extends FormBase {
 

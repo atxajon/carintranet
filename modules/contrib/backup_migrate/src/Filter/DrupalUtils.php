@@ -1,7 +1,11 @@
 <?php
+/**
+ * @file
+ * Contains BackupMigrate\Drupal\Filter\DrupalUtils
+ */
+
 
 namespace BackupMigrate\Drupal\Filter;
-
 use BackupMigrate\Core\Exception\BackupMigrateException;
 use BackupMigrate\Core\File\BackupFileReadableInterface;
 use BackupMigrate\Core\Plugin\PluginBase;
@@ -9,9 +13,9 @@ use BackupMigrate\Core\Config\Config;
 use BackupMigrate\Core\Translation\TranslatableTrait;
 use Drupal\Core\Database\Database;
 
+
 /**
- * Class DrupalUtils.
- *
+ * Class DrupalUtils
  * @package BackupMigrate\Drupal\Filter
  */
 class DrupalUtils extends PluginBase {
@@ -24,10 +28,11 @@ class DrupalUtils extends PluginBase {
   /**
    * {@inheritdoc}
    */
-  public function configSchema($params = []) {
-    $schema = [];
+  public function configSchema($params = array()) {
+    $schema = array();
 
-    // Backup configuration.
+    // Backup configuration
+
     if ($params['operation'] == 'backup' || $params['operation'] == 'restore') {
       $schema['groups']['advanced'] = [
         'title' => 'Advanced Settings',
@@ -99,7 +104,7 @@ class DrupalUtils extends PluginBase {
    */
   public function beforeRestore(BackupFileReadableInterface $file) {
     if ($file->getMeta('filesize') > file_upload_max_size()) {
-      throw new BackupMigrateException('The input file exceeds the servers upload_max_filesize or post_max_size limit.', ['!id' => $file->getMeta('id')]);
+      throw new BackupMigrateException('The input file exceeds the servers upload_max_filesize or post_max_size limit.', array('!id' =>  $file->getMeta('id')));
     }
 
     return $file;

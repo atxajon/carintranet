@@ -101,6 +101,19 @@ interface ModerationInformationInterface {
   public function getAffectedRevisionTranslation(ContentEntityInterface $entity);
 
   /**
+   * Determines if pending revisions are allowed.
+   *
+   * @internal
+   *
+   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
+   *   The content entity.
+   *
+   * @return bool
+   *   If pending revisions are allowed.
+   */
+  public function isPendingRevisionAllowed(ContentEntityInterface $entity);
+
+  /**
    * Determines if an entity is a latest revision.
    *
    * @param \Drupal\Core\Entity\ContentEntityInterface $entity

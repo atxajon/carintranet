@@ -8,11 +8,8 @@
 namespace Drupal\Tests\Core\Entity\Sql;
 
 use Drupal\Core\Cache\CacheBackendInterface;
-use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityManager;
 use Drupal\Core\Entity\EntityStorageInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryFactoryInterface;
 use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
 use Drupal\Core\Language\Language;
@@ -52,20 +49,6 @@ class SqlContentEntityStorageTest extends UnitTestCase {
    * @var \Drupal\Core\Entity\EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject
    */
   protected $entityManager;
-
-  /**
-   * The mocked entity type manager used in this test.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface|\PHPUnit_Framework_MockObject_MockObject
-   */
-  protected $entityTypeManager;
-
-  /**
-   * The mocked entity field manager used in this test.
-   *
-   * @var \Drupal\Core\Entity\EntityFieldManagerInterface|\PHPUnit_Framework_MockObject_MockObject
-   */
-  protected $entityFieldManager;
 
   /**
    * The entity type ID.
@@ -121,12 +104,7 @@ class SqlContentEntityStorageTest extends UnitTestCase {
     $this->container = new ContainerBuilder();
     \Drupal::setContainer($this->container);
 
-    $this->entityManager = new EntityManager();
-    // Inject the container into entity.manager so it can defer to
-    // entity_type.manager and other services.
-    $this->entityManager->setContainer($this->container);
-    $this->entityTypeManager = $this->getMock(EntityTypeManagerInterface::class);
-    $this->entityFieldManager = $this->getMock(EntityFieldManagerInterface::class);
+    $this->entityManager = $this->getMock('Drupal\Core\Entity\EntityManagerInterface');
     $this->moduleHandler = $this->getMock('Drupal\Core\Extension\ModuleHandlerInterface');
     $this->cache = $this->getMock('Drupal\Core\Cache\CacheBackendInterface');
     $this->languageManager = $this->getMock('Drupal\Core\Language\LanguageManagerInterface');
@@ -136,10 +114,6 @@ class SqlContentEntityStorageTest extends UnitTestCase {
     $this->connection = $this->getMockBuilder('Drupal\Core\Database\Connection')
       ->disableOriginalConstructor()
       ->getMock();
-
-    $this->container->set('entity.manager', $this->entityManager);
-    $this->container->set('entity_type.manager', $this->entityTypeManager);
-    $this->container->set('entity_field.manager', $this->entityFieldManager);
   }
 
   /**
@@ -1012,6 +986,7 @@ class SqlContentEntityStorageTest extends UnitTestCase {
       ->will($this->returnValue($language));
 
     $this->container->set('language_manager', $language_manager);
+    $this->container->set('entity.manager', $this->entityManager);
     $this->container->set('module_handler', $this->moduleHandler);
 
     $entity = $this->getMockBuilder('Drupal\Core\Entity\ContentEntityBase')
@@ -1031,14 +1006,14 @@ class SqlContentEntityStorageTest extends UnitTestCase {
 
     // ContentEntityStorageBase iterates over the entity which calls this method
     // internally in ContentEntityBase::getProperties().
-    $this->entityFieldManager->expects($this->once())
+    $this->entityManager->expects($this->once())
       ->method('getFieldDefinitions')
       ->will($this->returnValue([]));
 
     $this->entityType->expects($this->atLeastOnce())
       ->method('isRevisionable')
       ->will($this->returnValue(FALSE));
-    $this->entityTypeManager->expects($this->atLeastOnce())
+    $this->entityManager->expects($this->atLeastOnce())
       ->method('getDefinition')
       ->with($this->entityType->id())
       ->will($this->returnValue($this->entityType));
@@ -1102,15 +1077,15 @@ class SqlContentEntityStorageTest extends UnitTestCase {
       ->disableOriginalConstructor()
       ->getMock();
 
-    $this->entityTypeManager->expects($this->any())
+    $this->entityManager->expects($this->any())
       ->method('getDefinition')
       ->will($this->returnValue($this->entityType));
 
-    $this->entityFieldManager->expects($this->any())
+    $this->entityManager->expects($this->any())
       ->method('getFieldStorageDefinitions')
       ->will($this->returnValue($this->fieldDefinitions));
 
-    $this->entityFieldManager->expects($this->any())
+    $this->entityManager->expects($this->any())
       ->method('getBaseFieldDefinitions')
       ->will($this->returnValue($this->fieldDefinitions));
 
@@ -1284,15 +1259,15 @@ class SqlContentEntityStorageTest extends UnitTestCase {
       ->disableOriginalConstructor()
       ->getMock();
 
-    $this->entityTypeManager->expects($this->any())
+    $this->entityManager->expects($this->any())
       ->method('getDefinition')
       ->will($this->returnValue($this->entityType));
 
-    $this->entityFieldManager->expects($this->any())
+    $this->entityManager->expects($this->any())
       ->method('getFieldStorageDefinitions')
       ->will($this->returnValue($this->fieldDefinitions));
 
-    $this->entityFieldManager->expects($this->any())
+    $this->entityManager->expects($this->any())
       ->method('getBaseFieldDefinitions')
       ->will($this->returnValue($this->fieldDefinitions));
 

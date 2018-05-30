@@ -194,7 +194,6 @@ class AreaEntityTest extends ViewsKernelTestBase {
     $this->assertEqual([
       'config' => ['block.block.test_block'],
       'content' => ['entity_test:entity_test:aa0c61cb-b7bb-4795-972a-493dabcf529c'],
-      'module' => ['views_test_data'],
     ], $dependencies);
   }
 

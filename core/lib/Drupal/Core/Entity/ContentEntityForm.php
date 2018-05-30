@@ -127,15 +127,6 @@ class ContentEntityForm extends EntityForm implements ContentEntityFormInterface
       $this->addRevisionableFormFields($form);
     }
 
-    $form['footer'] = [
-      '#type' => 'container',
-      '#weight' => 99,
-      '#attributes' => [
-        'class' => ['entity-content-form-footer']
-      ],
-      '#optional' => TRUE,
-    ];
-
     return $form;
   }
 

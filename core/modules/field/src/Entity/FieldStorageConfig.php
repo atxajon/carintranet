@@ -398,8 +398,7 @@ class FieldStorageConfig extends ConfigEntityBase implements FieldStorageConfigI
    * {@inheritdoc}
    */
   public static function preDelete(EntityStorageInterface $storage, array $field_storages) {
-    /** @var \Drupal\Core\Field\DeletedFieldsRepositoryInterface $deleted_fields_repository */
-    $deleted_fields_repository = \Drupal::service('entity_field.deleted_fields_repository');
+    $state = \Drupal::state();
 
     // Set the static flag so that we don't delete field storages whilst
     // deleting fields.
@@ -408,19 +407,23 @@ class FieldStorageConfig extends ConfigEntityBase implements FieldStorageConfigI
     // Delete or fix any configuration that is dependent, for example, fields.
     parent::preDelete($storage, $field_storages);
 
-    // Keep the field storage definitions in the deleted fields repository so we
-    // can use them later during field_purge_batch().
+    // Keep the field definitions in the state storage so we can use them later
+    // during field_purge_batch().
+    $deleted_storages = $state->get('field.storage.deleted') ?: [];
     /** @var \Drupal\field\FieldStorageConfigInterface $field_storage */
     foreach ($field_storages as $field_storage) {
       // Only mark a field for purging if there is data. Otherwise, just remove
       // it.
       $target_entity_storage = \Drupal::entityTypeManager()->getStorage($field_storage->getTargetEntityTypeId());
       if (!$field_storage->deleted && $target_entity_storage instanceof FieldableEntityStorageInterface && $target_entity_storage->countFieldData($field_storage, TRUE)) {
-        $storage_definition = clone $field_storage;
-        $storage_definition->deleted = TRUE;
-        $deleted_fields_repository->addFieldStorageDefinition($storage_definition);
+        $config = $field_storage->toArray();
+        $config['deleted'] = TRUE;
+        $config['bundles'] = $field_storage->getBundles();
+        $deleted_storages[$field_storage->uuid()] = $config;
       }
     }
+
+    $state->set('field.storage.deleted', $deleted_storages);
   }
 
   /**

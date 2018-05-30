@@ -131,7 +131,7 @@ class DisplayPageTest extends ViewsKernelTestBase {
    */
   public function testDependencies() {
     $view = Views::getView('test_page_display');
-    $this->assertIdentical(['module' => ['views_test_data']], $view->getDependencies());
+    $this->assertIdentical([], $view->getDependencies());
 
     $view = Views::getView('test_page_display_route');
     $expected = [
@@ -145,9 +145,6 @@ class DisplayPageTest extends ViewsKernelTestBase {
       'config' => [
         'system.menu.admin',
         'system.menu.tools',
-      ],
-      'module' => [
-        'views_test_data',
       ],
     ];
     $this->assertIdentical($expected, $view->getDependencies());

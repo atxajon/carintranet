@@ -14,10 +14,10 @@
    *   The text area DOM element, if it was found.
    */
   function findFieldForFormatSelector($formatSelector) {
-    const fieldId = $formatSelector.attr('data-editor-for');
+    const field_id = $formatSelector.attr('data-editor-for');
     // This selector will only find text areas in the top-level document. We do
     // not support attaching editors on text areas within iframes.
-    return $(`#${fieldId}`).get(0);
+    return $(`#${field_id}`).get(0);
   }
 
   /**
@@ -80,7 +80,7 @@
       const message = Drupal.t('Changing the text format to %text_format will permanently remove content that is not allowed in that text format.<br><br>Save your changes before switching the text format to avoid losing data.', {
         '%text_format': $select.find('option:selected').text(),
       });
-      const confirmationDialog = Drupal.dialog(`<div>${message}</div>`, {
+      var confirmationDialog = Drupal.dialog(`<div>${message}</div>`, {
         title: Drupal.t('Change text format?'),
         dialogClass: 'editor-change-text-format-modal',
         resizable: false,

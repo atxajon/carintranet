@@ -14,8 +14,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Configure file system settings for this site.
- *
- * @internal
  */
 class FileSystemForm extends ConfigFormBase {
 

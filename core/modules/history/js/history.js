@@ -8,8 +8,7 @@
 (function ($, Drupal, drupalSettings, storage) {
   var currentUserID = parseInt(drupalSettings.user.uid, 10);
 
-  var secondsIn30Days = 2592000;
-  var thirtyDaysAgo = Math.round(new Date().getTime() / 1000) - secondsIn30Days;
+  var thirtyDaysAgo = Math.round(new Date().getTime() / 1000) - 30 * 24 * 60 * 60;
 
   var embeddedLastReadTimestamps = false;
   if (drupalSettings.history && drupalSettings.history.lastReadTimestamps) {
@@ -29,9 +28,11 @@
         data: { 'node_ids[]': nodeIDs },
         dataType: 'json',
         success: function success(results) {
-          Object.keys(results || {}).forEach(function (nodeID) {
-            storage.setItem('Drupal.history.' + currentUserID + '.' + nodeID, results[nodeID]);
-          });
+          for (var nodeID in results) {
+            if (results.hasOwnProperty(nodeID)) {
+              storage.setItem('Drupal.history.' + currentUserID + '.' + nodeID, results[nodeID]);
+            }
+          }
           callback();
         }
       });

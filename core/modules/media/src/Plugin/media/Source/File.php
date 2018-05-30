@@ -23,28 +23,10 @@ use Drupal\media\MediaSourceBase;
 class File extends MediaSourceBase {
 
   /**
-   * Key for "MIME type" metadata attribute.
-   *
-   * @var string
-   */
-  const METADATA_ATTRIBUTE_MIME = 'mimetype';
-
-  /**
-   * Key for "File size" metadata attribute.
-   *
-   * @var string
-   */
-  const METADATA_ATTRIBUTE_SIZE = 'filesize';
-
-
-  /**
    * {@inheritdoc}
    */
   public function getMetadataAttributes() {
-    return [
-      static::METADATA_ATTRIBUTE_MIME => $this->t('MIME type'),
-      static::METADATA_ATTRIBUTE_SIZE => $this->t('File size'),
-    ];
+    return [];
   }
 
   /**
@@ -58,12 +40,6 @@ class File extends MediaSourceBase {
       return parent::getMetadata($media, $attribute_name);
     }
     switch ($attribute_name) {
-      case 'mimetype':
-        return $file->getMimeType();
-
-      case 'filesize':
-        return $file->getSize();
-
       case 'default_name':
         return $file->getFilename();
 

@@ -189,9 +189,9 @@
           this.set('isActive', true);
           break;
 
-        case 'committing': {
+        case 'committing':
           // The user indicated they want to save the entity.
-          const fields = this.get('fields');
+          var fields = this.get('fields');
           // For fields that are in an active state, transition them to
           // candidate.
           fields.chain()
@@ -207,10 +207,9 @@
               fieldModel.set('state', 'saving');
             });
           break;
-        }
 
-        case 'deactivating': {
-          const changedFields = this.get('fields')
+        case 'deactivating':
+          var changedFields = this.get('fields')
             .filter(fieldModel => _.intersection([fieldModel.get('state')], ['changed', 'invalid']).length);
           // If the entity contains unconfirmed or unsaved changes, return the
           // entity to an opened state and ask the user if they would like to
@@ -251,7 +250,6 @@
             });
           }
           break;
-        }
 
         case 'closing':
           // Set all fields to the 'inactive' state.
@@ -366,7 +364,7 @@
           }
           break;
 
-        case 'committing': {
+        case 'committing':
           // If the field save returned a validation error, set the state of the
           // entity back to 'opened'.
           if (fieldState === 'invalid') {
@@ -382,7 +380,7 @@
 
           // Attempt to save the entity. If the entity's fields are not yet all
           // in a ready state, the save will not be processed.
-          const options = {
+          var options = {
             'accept-field-states': Drupal.quickedit.app.readyFieldStates,
           };
           if (entityModel.set('isCommitting', true, options)) {
@@ -406,7 +404,6 @@
             });
           }
           break;
-        }
 
         case 'deactivating':
           // When setting the entity to 'closing', require that all fieldModels

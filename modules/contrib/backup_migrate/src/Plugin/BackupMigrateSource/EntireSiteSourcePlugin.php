@@ -1,10 +1,15 @@
 <?php
+/**
+ * @file
+ * Contains Drupal\backup_migrate\Plugin\BackupMigrateSource\DefaultDBSourcePlugin
+ */
+
 
 namespace Drupal\backup_migrate\Plugin\BackupMigrateSource;
 
+
 use BackupMigrate\Core\Config\Config;
-use BackupMigrate\Drupal\Source\DrupalMySQLiSource;
-use BackupMigrate\Core\Main\BackupMigrateInterface;
+use BackupMigrate\Core\Source\MySQLiSource;
 use BackupMigrate\Drupal\EntityPlugins\SourcePluginBase;
 use BackupMigrate\Drupal\Source\DrupalSiteArchiveSource;
 
@@ -20,8 +25,6 @@ use BackupMigrate\Drupal\Source\DrupalSiteArchiveSource;
  */
 class EntireSiteSourcePlugin extends SourcePluginBase {
 
-  protected $db_source;
-
   /**
    * Get the Backup and Migrate plugin object.
    *
@@ -34,21 +37,11 @@ class EntireSiteSourcePlugin extends SourcePluginBase {
     if ($info['driver'] == 'mysql') {
       $conf = $this->getConfig();
       $conf->set('directory', DRUPAL_ROOT);
-      $this->db_source = new DrupalMySQLiSource(new Config($info));
-      return new DrupalSiteArchiveSource($conf, $this->db_source);
+      $db = new MySQLiSource(new Config($info));
+      return new DrupalSiteArchiveSource($conf, $db);
     }
 
-    return NULL;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function alterBackupMigrate(BackupMigrateInterface $bam, $key, $options = []) {
-    if ($source = $this->getObject()) {
-      $bam->sources()->add($key, $source);
-      $bam->sources()->add('default_db', $this->db_source);
-    }
+    return null;
   }
 
 }

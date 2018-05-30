@@ -2,19 +2,12 @@
 
 namespace Drupal\FunctionalJavascriptTests;
 
-use Zumba\Mink\Driver\PhantomJSDriver;
-
 /**
  * Runs a browser test using PhantomJS.
  *
  * Base class for testing browser interaction implemented in JavaScript.
  */
 abstract class LegacyJavascriptTestBase extends JavascriptTestBase {
-
-  /**
-   * {@inheritdoc}
-   */
-  protected $minkDefaultDriverClass = PhantomJSDriver::class;
 
   /**
    * {@inheritdoc}

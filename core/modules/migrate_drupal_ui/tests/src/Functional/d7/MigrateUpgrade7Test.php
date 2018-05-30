@@ -2,7 +2,7 @@
 
 namespace Drupal\Tests\migrate_drupal_ui\Functional\d7;
 
-use Drupal\Tests\migrate_drupal_ui\Functional\MigrateUpgradeExecuteTestBase;
+use Drupal\Tests\migrate_drupal_ui\Functional\MigrateUpgradeTestBase;
 use Drupal\user\Entity\User;
 
 /**
@@ -12,25 +12,12 @@ use Drupal\user\Entity\User;
  *
  * @group migrate_drupal_ui
  */
-class MigrateUpgrade7Test extends MigrateUpgradeExecuteTestBase {
+class MigrateUpgrade7Test extends MigrateUpgradeTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
-  public static $modules = [
-    'file',
-    'language',
-    'content_translation',
-    'migrate_drupal_ui',
-    'telephone',
-    'aggregator',
-    'book',
-    'forum',
-    'statistics',
-    'migration_provider_test',
-  ];
+  public static $modules = ['file'];
 
   /**
    * {@inheritdoc}
@@ -52,7 +39,7 @@ class MigrateUpgrade7Test extends MigrateUpgradeExecuteTestBase {
    */
   protected function getEntityCounts() {
     return [
-      'aggregator_item' => 11,
+      'aggregator_item' => 10,
       'aggregator_feed' => 1,
       'block' => 25,
       'block_content' => 1,
@@ -65,8 +52,8 @@ class MigrateUpgrade7Test extends MigrateUpgradeExecuteTestBase {
       'configurable_language' => 4,
       'contact_form' => 3,
       'editor' => 2,
-      'field_config' => 63,
-      'field_storage_config' => 46,
+      'field_config' => 61,
+      'field_storage_config' => 44,
       'file' => 3,
       'filter_format' => 7,
       'image_style' => 6,
@@ -85,7 +72,7 @@ class MigrateUpgrade7Test extends MigrateUpgradeExecuteTestBase {
       'tour' => 4,
       'user' => 4,
       'user_role' => 3,
-      'menu_link_content' => 8,
+      'menu_link_content' => 7,
       'view' => 16,
       'date_format' => 11,
       'entity_form_display' => 17,
@@ -97,94 +84,10 @@ class MigrateUpgrade7Test extends MigrateUpgradeExecuteTestBase {
   }
 
   /**
-   * {@inheritdoc}
-   */
-  protected function getEntityCountsIncremental() {
-    $counts = $this->getEntityCounts();
-    $counts['block_content'] = 2;
-    $counts['comment'] = 2;
-    $counts['file'] = 4;
-    $counts['menu_link_content'] = 9;
-    $counts['node'] = 6;
-    $counts['taxonomy_term'] = 19;
-    $counts['user'] = 5;
-    return $counts;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function getAvailablePaths() {
-    return [
-      'aggregator',
-      'block',
-      'comment',
-      'contact',
-      'date',
-      'dblog',
-      'email',
-      'entityreference',
-      'field',
-      'field_sql_storage',
-      'file',
-      'filter',
-      'forum',
-      'image',
-      'language',
-      'link',
-      'list',
-      'locale',
-      'menu',
-      'node',
-      'number',
-      'options',
-      'path',
-      'phone',
-      'search',
-      'shortcut',
-      'statistics',
-      'system',
-      'taxonomy',
-      'text',
-      'user',
-      // Include modules that do not have an upgrade path and are enabled in the
-      // source database, defined in the $noUpgradePath property
-      // in MigrateUpgradeForm.
-      'blog',
-      'contextual',
-      'date_api',
-      'entity',
-      'field_ui',
-      'help',
-      'php',
-      'simpletest',
-      'toolbar',
-      'translation',
-      'trigger',
-    ];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function getMissingPaths() {
-    return [
-      'book',
-      'color',
-      'rdf',
-      // These modules are in the missing path list because they are installed
-      // on the source site but they are not installed on the destination site.
-      'syslog',
-      'tracker',
-      'update',
-    ];
-  }
-
-  /**
    * Executes all steps of migrations upgrade.
    */
-  public function testMigrateUpgradeExecute() {
-    parent::testMigrateUpgradeExecute();
+  public function testMigrateUpgrade() {
+    parent::testMigrateUpgrade();
 
     // Ensure migrated users can log in.
     $user = User::load(2);

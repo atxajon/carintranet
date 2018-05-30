@@ -65,7 +65,7 @@ class OptimizedPhpArrayDumper extends Dumper {
     $definition['aliases'] = $this->getAliases();
     $definition['parameters'] = $this->getParameters();
     $definition['services'] = $this->getServiceDefinitions();
-    $definition['frozen'] = $this->container->isCompiled();
+    $definition['frozen'] = $this->container->isFrozen();
     $definition['machine_format'] = $this->supportsMachineFormat();
     return $definition;
   }
@@ -103,8 +103,8 @@ class OptimizedPhpArrayDumper extends Dumper {
     }
 
     $parameters = $this->container->getParameterBag()->all();
-    $is_compiled = $this->container->isCompiled();
-    return $this->prepareParameters($parameters, $is_compiled);
+    $is_frozen = $this->container->isFrozen();
+    return $this->prepareParameters($parameters, $is_frozen);
   }
 
   /**
@@ -309,10 +309,10 @@ class OptimizedPhpArrayDumper extends Dumper {
         }
       }
       else {
-        $code[$key] = $this->dumpValue($value);
-        if (is_object($code[$key])) {
+        if (is_object($value)) {
           $resolve = TRUE;
         }
+        $code[$key] = $this->dumpValue($value);
       }
     }
 
@@ -402,9 +402,6 @@ class OptimizedPhpArrayDumper extends Dumper {
     }
     elseif ($value instanceof Parameter) {
       return $this->getParameterCall((string) $value);
-    }
-    elseif (is_string($value) && preg_match('/^\%(.*)\%$/', $value, $matches)) {
-      return $this->getParameterCall($matches[1]);
     }
     elseif ($value instanceof Expression) {
       throw new RuntimeException('Unable to use expressions as the Symfony ExpressionLanguage component is not installed.');

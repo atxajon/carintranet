@@ -6,11 +6,6 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-/**
- * Form to test input forgery.
- *
- * @internal
- */
 class FormTestInputForgeryForm extends FormBase {
 
   /**

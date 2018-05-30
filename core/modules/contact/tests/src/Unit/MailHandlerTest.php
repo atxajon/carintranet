@@ -367,7 +367,7 @@ class MailHandlerTest extends UnitTestCase {
     $recipient->expects($this->once())
       ->method('getEmail')
       ->willReturn('user2@drupal.org');
-    $recipient->expects($this->any())
+    $recipient->expects($this->once())
       ->method('getDisplayName')
       ->willReturn('user2');
     $recipient->expects($this->once())

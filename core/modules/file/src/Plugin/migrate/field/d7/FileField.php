@@ -8,9 +8,7 @@ use Drupal\migrate\Plugin\MigrationInterface;
 /**
  * @MigrateField(
  *   id = "file",
- *   core = {7},
- *   source_module = "file",
- *   destination_module = "file"
+ *   core = {7}
  * )
  */
 class FileField extends D6FileField {
@@ -20,7 +18,7 @@ class FileField extends D6FileField {
    */
   public function processFieldValues(MigrationInterface $migration, $field_name, $data) {
     $process = [
-      'plugin' => 'sub_process',
+      'plugin' => 'iterator',
       'source' => $field_name,
       'process' => [
         'target_id' => 'fid',

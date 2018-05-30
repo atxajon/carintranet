@@ -12,15 +12,13 @@
    *
    * @namespace Drupal.states
    */
-  const states = {
+  const states = Drupal.states = {
 
     /**
      * An array of functions that should be postponed.
      */
     postponed: [],
   };
-
-  Drupal.states = states;
 
   /**
    * Attaches the states.
@@ -33,16 +31,20 @@
   Drupal.behaviors.states = {
     attach(context, settings) {
       const $states = $(context).find('[data-drupal-states]');
+      let config;
+      let state;
       const il = $states.length;
       for (let i = 0; i < il; i++) {
-        const config = JSON.parse($states[i].getAttribute('data-drupal-states'));
-        Object.keys(config || {}).forEach((state) => {
-          new states.Dependent({
-            element: $($states[i]),
-            state: states.State.sanitize(state),
-            constraints: config[state],
-          });
-        });
+        config = JSON.parse($states[i].getAttribute('data-drupal-states'));
+        for (state in config) {
+          if (config.hasOwnProperty(state)) {
+            new states.Dependent({
+              element: $($states[i]),
+              state: states.State.sanitize(state),
+              constraints: config[state],
+            });
+          }
+        }
       }
 
       // Execute all postponed functions now.
@@ -72,9 +74,11 @@
     $.extend(this, { values: {}, oldValue: null }, args);
 
     this.dependees = this.getDependees();
-    Object.keys(this.dependees || {}).forEach((selector) => {
-      this.initializeDependee(selector, this.dependees[selector]);
-    });
+    for (const selector in this.dependees) {
+      if (this.dependees.hasOwnProperty(selector)) {
+        this.initializeDependee(selector, this.dependees[selector]);
+      }
+    }
   };
 
   /**
@@ -130,7 +134,6 @@
       // Cache for the states of this dependee.
       this.values[selector] = {};
 
-      // eslint-disable-next-line no-restricted-syntax
       for (const i in dependeeStates) {
         if (dependeeStates.hasOwnProperty(i)) {
           state = dependeeStates[i];
@@ -262,7 +265,6 @@
       // bogus, we don't want to end up with an infinite loop.
       else if ($.isPlainObject(constraints)) {
         // This constraint is an object (AND).
-        // eslint-disable-next-line no-restricted-syntax
         for (const n in constraints) {
           if (constraints.hasOwnProperty(n)) {
             result = ternary(result, this.checkConstraints(constraints[n], selector, n));
@@ -387,9 +389,11 @@
         trigger.call(window, this.element);
       }
       else {
-        Object.keys(trigger || {}).forEach((event) => {
-          this.defaultTrigger(event, trigger[event]);
-        });
+        for (const event in trigger) {
+          if (trigger.hasOwnProperty(event)) {
+            this.defaultTrigger(event, trigger[event]);
+          }
+        }
       }
 
       // Mark this trigger as initialized for this element.
@@ -504,8 +508,7 @@
     /**
      * Original unresolved name.
      */
-    this.pristine = state;
-    this.name = state;
+    this.pristine = this.name = state;
 
     // Normalize the state name.
     let process = true;
@@ -600,10 +603,8 @@
     if (e.trigger) {
       $(e.target)
         .prop('disabled', e.value)
-        .closest('.js-form-item, .js-form-submit, .js-form-wrapper')
-        .toggleClass('form-disabled', e.value)
-        .find('select, input, textarea')
-        .prop('disabled', e.value);
+        .closest('.js-form-item, .js-form-submit, .js-form-wrapper').toggleClass('form-disabled', e.value)
+        .find('select, input, textarea').prop('disabled', e.value);
 
       // Note: WebKit nightlies don't reflect that change correctly.
       // See https://bugs.webkit.org/show_bug.cgi?id=23789
@@ -621,11 +622,7 @@
         }
       }
       else {
-        $(e.target)
-          .removeAttr('required aria-required')
-          .closest('.js-form-item, .js-form-wrapper')
-          .find('label.js-form-required')
-          .removeClass('js-form-required form-required');
+        $(e.target).removeAttr('required aria-required').closest('.js-form-item, .js-form-wrapper').find('label.js-form-required').removeClass('js-form-required form-required');
       }
     }
   });

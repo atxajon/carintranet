@@ -51,7 +51,7 @@ class TaxonomyTermReferenceCckTest extends UnitTestCase {
     $this->plugin->processFieldValues($this->migration, 'somefieldname', []);
 
     $expected = [
-      'plugin' => 'sub_process',
+      'plugin' => 'iterator',
       'source' => 'somefieldname',
       'process' => [
         'target_id' => 'tid',

@@ -155,17 +155,6 @@ class Migration extends PluginBase implements MigrationInterface, RequirementsIn
   protected $migration_tags = [];
 
   /**
-   * Whether the migration is auditable.
-   *
-   * If set to TRUE, the migration's IDs will be audited. This means that, if
-   * the highest destination ID is greater than the highest source ID, a warning
-   * will be displayed that entities might be overwritten.
-   *
-   * @var bool
-   */
-  protected $audit = FALSE;
-
-  /**
    * These migrations, if run, must be executed before this migration.
    *
    * These are different from the configuration dependencies. Migration
@@ -632,7 +621,7 @@ class Migration extends PluginBase implements MigrationInterface, RequirementsIn
         if ($plugin_configuration['plugin'] == 'migration') {
           $return = array_merge($return, (array) $plugin_configuration['migration']);
         }
-        if ($plugin_configuration['plugin'] == 'sub_process') {
+        if ($plugin_configuration['plugin'] == 'iterator') {
           $return = array_merge($return, $this->findMigrationDependencies($plugin_configuration['process']));
         }
       }
@@ -686,13 +675,6 @@ class Migration extends PluginBase implements MigrationInterface, RequirementsIn
    */
   public function getMigrationTags() {
     return $this->migration_tags;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function isAuditable() {
-    return (bool) $this->audit;
   }
 
 }

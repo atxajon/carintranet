@@ -21,15 +21,13 @@ class NodeTranslationUITest extends ContentTranslationUITestBase {
    */
   protected $defaultCacheContexts = [
     'languages:language_interface',
+    'session',
     'theme',
     'route',
     'timezone',
     'url.path.parent',
     'url.query_args:_wrapper_format',
-    'user.roles',
-    // These two cache contexts are added by BigPipe.
-    'cookies:big_pipe_nojs',
-    'session.exists',
+    'user'
   ];
 
   /**

@@ -15,11 +15,7 @@
   Drupal.behaviors.tableSelect = {
     attach(context, settings) {
       // Select the inner-most table in case of nested tables.
-      $(context)
-        .find('th.select-all')
-        .closest('table')
-        .once('table-select')
-        .each(Drupal.tableSelect);
+      $(context).find('th.select-all').closest('table').once('table-select').each(Drupal.tableSelect);
     },
   };
 
@@ -133,11 +129,12 @@
 
     // Traverse through the sibling nodes.
     for (let i = from[mode]; i; i = i[mode]) {
-      const $i = $(i);
+      var $i;
       // Make sure that we're only dealing with elements.
       if (i.nodeType !== 1) {
         continue;
       }
+      $i = $(i);
       // Either add or remove the selected class based on the state of the
       // target checkbox.
       $i.toggleClass('selected', state);

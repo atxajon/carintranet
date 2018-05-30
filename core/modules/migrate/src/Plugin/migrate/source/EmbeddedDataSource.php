@@ -38,8 +38,7 @@ use Drupal\migrate\Plugin\MigrationInterface;
  * @see \Drupal\migrate\Plugin\MigrateSourceInterface
  *
  * @MigrateSource(
- *   id = "embedded_data",
- *   source_module = "migrate"
+ *   id = "embedded_data"
  * )
  */
 class EmbeddedDataSource extends SourcePluginBase {
@@ -109,7 +108,7 @@ class EmbeddedDataSource extends SourcePluginBase {
   /**
    * {@inheritdoc}
    */
-  public function count($refresh = FALSE) {
+  public function count() {
     return count($this->dataRows);
   }
 

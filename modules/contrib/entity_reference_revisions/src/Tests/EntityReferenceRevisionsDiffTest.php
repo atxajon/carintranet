@@ -15,8 +15,6 @@ use Drupal\simpletest\WebTestBase;
 class EntityReferenceRevisionsDiffTest extends WebTestBase {
 
   use FieldUiTestTrait;
-  use EntityReferenceRevisionsCoreVersionUiTestTrait;
-
   /**
    * Modules to enable.
    *
@@ -78,7 +76,7 @@ class EntityReferenceRevisionsDiffTest extends WebTestBase {
       'title[0][value]' => $title_node_1,
       'body[0][value]' => 'body_node_1',
     ];
-    $this->drupalPostNodeForm('node/add/article', $edit, t('Save and publish'));
+    $this->drupalPostForm('node/add/article', $edit, t('Save and publish'));
 
     // Create second referenced node.
     $title_node_2 = 'referenced_node_2';
@@ -86,7 +84,7 @@ class EntityReferenceRevisionsDiffTest extends WebTestBase {
       'title[0][value]' => $title_node_2,
       'body[0][value]' => 'body_node_2',
     ];
-    $this->drupalPostNodeForm('node/add/article', $edit, t('Save and publish'));
+    $this->drupalPostForm('node/add/article', $edit, t('Save and publish'));
 
     // Create referencing node.
     $title = 'referencing_node';
@@ -95,7 +93,7 @@ class EntityReferenceRevisionsDiffTest extends WebTestBase {
       'title[0][value]' => $title,
       'field_err_field[0][target_id]' => $title_node_1 . ' (' . $node->id() . ')',
     ];
-    $this->drupalPostNodeForm('node/add/article', $edit, t('Save and publish'));
+    $this->drupalPostForm('node/add/article', $edit, t('Save and publish'));
 
     // Check the plugin is set.
     $this->drupalGet('admin/config/content/diff/fields');
@@ -108,7 +106,7 @@ class EntityReferenceRevisionsDiffTest extends WebTestBase {
       'field_err_field[0][target_id]' => $title_node_2 . ' (' . $referenced_node_new->id() . ')',
       'revision' => TRUE,
     ];
-    $this->drupalPostNodeForm('node/' . $node->id() . '/edit', $edit, t('Save and keep published'));
+    $this->drupalPostForm('node/' . $node->id() . '/edit', $edit, t('Save and keep published'));
 
     // Compare the revisions of the referencing node.
     $this->drupalPostForm('node/' . $node->id() . '/revisions', [], t('Compare selected revisions'));

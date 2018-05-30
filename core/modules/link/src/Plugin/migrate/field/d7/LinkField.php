@@ -11,9 +11,7 @@ use Drupal\migrate\Plugin\MigrationInterface;
  *   core = {7},
  *   type_map = {
  *     "link_field" = "link"
- *   },
- *   source_module = "link",
- *   destination_module = "link"
+ *   }
  * )
  *
  * This plugin provides the exact same functionality as the Drupal 6 "link"
@@ -21,15 +19,6 @@ use Drupal\migrate\Plugin\MigrationInterface;
  * field type map.
  */
 class LinkField extends D6LinkField {
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getFieldFormatterMap() {
-    return [
-      'link_default' => 'link',
-    ];
-  }
 
   /**
    * {@inheritdoc}

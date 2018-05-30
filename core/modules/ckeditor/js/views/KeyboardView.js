@@ -128,8 +128,7 @@
             if (index > 0) {
               $group.insertBefore($siblings.eq(index - 1));
             } else {
-                var $rowChildElement = $container.closest('.ckeditor-row').prev().find('.ckeditor-toolbar-groups').children().eq(-1);
-                $group.insertBefore($rowChildElement);
+                $group.insertBefore($container.closest('.ckeditor-row').prev().find('.ckeditor-toolbar-groups').children().eq(-1));
               }
           } else if (_.indexOf([39, 63235], event.keyCode) > -1) {
               if (!$siblings.eq(index + 1).hasClass('placeholder')) {

@@ -24,11 +24,7 @@ class EntityTypeConstraintsTest extends EntityKernelTestBase {
     // Test reading the annotation. There should be two constraints, the defined
     // constraint and the automatically added EntityChanged constraint.
     $entity_type = $this->entityManager->getDefinition('entity_test_constraints');
-    $default_constraints = [
-      'NotNull' => [],
-      'EntityChanged' => NULL,
-      'EntityUntranslatableFields' => NULL,
-    ];
+    $default_constraints = ['NotNull' => [], 'EntityChanged' => NULL];
     $this->assertEqual($default_constraints, $entity_type->getConstraints());
 
     // Enable our test module and test extending constraints.

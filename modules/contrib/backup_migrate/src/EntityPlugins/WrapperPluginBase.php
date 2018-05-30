@@ -1,4 +1,9 @@
 <?php
+/**
+ * @file
+ * Contains BackupMigrate\Drupal\EntityPlugins\WrapperPluginBase
+ */
+
 
 namespace BackupMigrate\Drupal\EntityPlugins;
 
@@ -6,8 +11,9 @@ use BackupMigrate\Core\Config\Config;
 use BackupMigrate\Core\Main\BackupMigrateInterface;
 use Drupal\Component\Plugin\PluginBase;
 
+
 /**
- * Class WrapperPluginBase.
+ * Class WrapperPluginBase
  *
  * A base class for a drupal source or destination wrapper plugin.
  *
@@ -59,14 +65,14 @@ abstract class WrapperPluginBase extends PluginBase implements WrapperPluginInte
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return [];
+    return array();
   }
 
   /**
    * {@inheritdoc}
    */
   public function calculateDependencies() {
-    return [];
+    return array();
   }
 
   /**
@@ -77,5 +83,4 @@ abstract class WrapperPluginBase extends PluginBase implements WrapperPluginInte
   public function getConfig() {
     return new Config($this->getConfiguration());
   }
-
 }

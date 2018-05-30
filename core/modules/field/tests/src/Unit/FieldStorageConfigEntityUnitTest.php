@@ -8,8 +8,6 @@
 namespace Drupal\Tests\field\Unit;
 
 use Drupal\Core\DependencyInjection\ContainerBuilder;
-use Drupal\Core\Entity\EntityManager;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\FieldException;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Field\FieldTypePluginManagerInterface;
@@ -24,11 +22,11 @@ use Drupal\Tests\UnitTestCase;
 class FieldStorageConfigEntityUnitTest extends UnitTestCase {
 
   /**
-   * The entity type manager used for testing.
+   * The entity manager used for testing.
    *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface|\PHPUnit_Framework_MockObject_MockObject
+   * @var \Drupal\Core\Entity\EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject
    */
-  protected $entityTypeManager;
+  protected $entityManager;
 
   /**
    * The ID of the type of the entity under test.
@@ -55,19 +53,14 @@ class FieldStorageConfigEntityUnitTest extends UnitTestCase {
    * {@inheritdoc}
    */
   protected function setUp() {
-    $entity_manager = new EntityManager();
-    $this->entityTypeManager = $this->getMock(EntityTypeManagerInterface::class);
+    $this->entityManager = $this->getMock('\Drupal\Core\Entity\EntityManagerInterface');
     $this->uuid = $this->getMock('\Drupal\Component\Uuid\UuidInterface');
     $this->fieldTypeManager = $this->getMock(FieldTypePluginManagerInterface::class);
 
     $container = new ContainerBuilder();
-    $container->set('entity.manager', $entity_manager);
-    $container->set('entity_type.manager', $this->entityTypeManager);
+    $container->set('entity.manager', $this->entityManager);
     $container->set('uuid', $this->uuid);
     $container->set('plugin.manager.field.field_type', $this->fieldTypeManager);
-    // Inject the container into entity.manager so it can defer to
-    // entity_type.manager.
-    $entity_manager->setContainer($container);
     \Drupal::setContainer($container);
   }
 
@@ -92,7 +85,7 @@ class FieldStorageConfigEntityUnitTest extends UnitTestCase {
     // ConfigEntityBase::addDependency() to get the provider of the field config
     // entity type and once in FieldStorageConfig::calculateDependencies() to
     // get the provider of the entity type that field is attached to.
-    $this->entityTypeManager->expects($this->any())
+    $this->entityManager->expects($this->any())
       ->method('getDefinition')
       ->willReturnMap([
         ['field_storage_config', TRUE, $fieldStorageConfigentityType],

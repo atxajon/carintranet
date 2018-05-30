@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\config\Functional;
 
-use Drupal\Core\Routing\RedirectDestinationTrait;
 use Drupal\config_test\Entity\ConfigTest;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Tests\BrowserTestBase;
@@ -13,8 +12,6 @@ use Drupal\Tests\BrowserTestBase;
  * @group config
  */
 class ConfigEntityListTest extends BrowserTestBase {
-
-  use RedirectDestinationTrait;
 
   /**
    * Modules to enable.
@@ -57,17 +54,17 @@ class ConfigEntityListTest extends BrowserTestBase {
       'edit' => [
         'title' => t('Edit'),
         'weight' => 10,
-        'url' => $entity->toUrl()->setOption('query', $this->getRedirectDestination()->getAsArray()),
+        'url' => $entity->urlInfo(),
       ],
       'disable' => [
         'title' => t('Disable'),
         'weight' => 40,
-        'url' => $entity->toUrl('disable')->setOption('query', $this->getRedirectDestination()->getAsArray()),
+        'url' => $entity->urlInfo('disable'),
       ],
       'delete' => [
         'title' => t('Delete'),
         'weight' => 100,
-        'url' => $entity->toUrl('delete-form')->setOption('query', $this->getRedirectDestination()->getAsArray()),
+        'url' => $entity->urlInfo('delete-form'),
       ],
     ];
 
@@ -132,12 +129,12 @@ class ConfigEntityListTest extends BrowserTestBase {
       'edit' => [
         'title' => t('Edit'),
         'weight' => 10,
-        'url' => $entity->toUrl()->setOption('query', $this->getRedirectDestination()->getAsArray()),
+        'url' => $entity->urlInfo(),
       ],
       'delete' => [
         'title' => t('Delete'),
         'weight' => 100,
-        'url' => $entity->toUrl('delete-form')->setOption('query', $this->getRedirectDestination()->getAsArray()),
+        'url' => $entity->urlInfo('delete-form'),
       ],
     ];
 

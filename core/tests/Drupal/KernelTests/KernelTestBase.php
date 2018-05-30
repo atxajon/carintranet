@@ -20,7 +20,6 @@ use Drupal\Core\Test\TestDatabase;
 use Drupal\simpletest\AssertContentTrait;
 use Drupal\Tests\AssertHelperTrait;
 use Drupal\Tests\ConfigTestTrait;
-use Drupal\Tests\PhpunitCompatibilityTrait;
 use Drupal\Tests\RandomGeneratorTrait;
 use Drupal\Tests\TestRequirementsTrait;
 use Drupal\simpletest\TestServiceProvider;
@@ -77,7 +76,6 @@ abstract class KernelTestBase extends TestCase implements ServiceProviderInterfa
   use RandomGeneratorTrait;
   use ConfigTestTrait;
   use TestRequirementsTrait;
-  use PhpunitCompatibilityTrait;
 
   /**
    * {@inheritdoc}
@@ -251,7 +249,7 @@ abstract class KernelTestBase extends TestCase implements ServiceProviderInterfa
    * Should not be called by tests. Only visible for DrupalKernel integration
    * tests.
    *
-   * @see \Drupal\KernelTests\Core\DrupalKernel\DrupalKernelTest
+   * @see \Drupal\system\Tests\DrupalKernel\DrupalKernelTest
    * @internal
    */
   protected function bootEnvironment() {
@@ -326,10 +324,10 @@ abstract class KernelTestBase extends TestCase implements ServiceProviderInterfa
   private function bootKernel() {
     $this->setSetting('container_yamls', []);
     // Allow for test-specific overrides.
-    $settings_services_file = $this->root . '/sites/default/testing.services.yml';
+    $settings_services_file = $this->root . '/sites/default' . '/testing.services.yml';
     if (file_exists($settings_services_file)) {
       // Copy the testing-specific service overrides in place.
-      $testing_services_file = $this->siteDirectory . '/services.yml';
+      $testing_services_file = $this->root . '/' . $this->siteDirectory . '/services.yml';
       copy($settings_services_file, $testing_services_file);
       $this->setSetting('container_yamls', [$testing_services_file]);
     }
@@ -829,7 +827,7 @@ abstract class KernelTestBase extends TestCase implements ServiceProviderInterfa
 
     foreach ($modules as $module) {
       if ($module_handler->moduleExists($module)) {
-        continue;
+        throw new \LogicException("$module module is already enabled.");
       }
       $module_handler->addModule($module, $module_list[$module]->getPath());
       // Maintain the list of enabled modules in configuration.

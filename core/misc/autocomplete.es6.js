@@ -136,7 +136,7 @@
     }
 
     // Get the desired term and construct the autocomplete URL for it.
-    const term = autocomplete.extractLastTerm(request.term);
+    var term = autocomplete.extractLastTerm(request.term);
 
     // Check if the term is already cached.
     if (autocomplete.cache[elementId].hasOwnProperty(term)) {

@@ -38,7 +38,7 @@
         });
 
         if (filterSettingsTab) {
-          filterSettingsTab.details.drupalSetSummary(function () {
+          filterSettingsTab.details.drupalSetSummary(function (tabContext) {
             return $checkbox.is(':checked') ? Drupal.t('Enabled') : Drupal.t('Disabled');
           });
         }

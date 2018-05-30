@@ -10,9 +10,11 @@
   Drupal.behaviors.ViewsAjaxView.attach = function () {
     if (drupalSettings && drupalSettings.views && drupalSettings.views.ajaxViews) {
       var ajaxViews = drupalSettings.views.ajaxViews;
-      Object.keys(ajaxViews || {}).forEach(function (i) {
-        Drupal.views.instances[i] = new Drupal.views.ajaxView(ajaxViews[i]);
-      });
+      for (var i in ajaxViews) {
+        if (ajaxViews.hasOwnProperty(i)) {
+          Drupal.views.instances[i] = new Drupal.views.ajaxView(ajaxViews[i]);
+        }
+      }
     }
   };
 
@@ -24,22 +26,22 @@
     var selector = '.js-view-dom-id-' + settings.view_dom_id;
     this.$view = $(selector);
 
-    var ajaxPath = drupalSettings.views.ajax_path;
+    var ajax_path = drupalSettings.views.ajax_path;
 
-    if (ajaxPath.constructor.toString().indexOf('Array') !== -1) {
-      ajaxPath = ajaxPath[0];
+    if (ajax_path.constructor.toString().indexOf('Array') !== -1) {
+      ajax_path = ajax_path[0];
     }
 
     var queryString = window.location.search || '';
     if (queryString !== '') {
       queryString = queryString.slice(1).replace(/q=[^&]+&?|&?render=[^&]+/, '');
       if (queryString !== '') {
-        queryString = (/\?/.test(ajaxPath) ? '&' : '?') + queryString;
+        queryString = (/\?/.test(ajax_path) ? '&' : '?') + queryString;
       }
     }
 
     this.element_settings = {
-      url: ajaxPath + queryString,
+      url: ajax_path + queryString,
       submit: settings,
       setClick: true,
       event: 'click',
@@ -54,12 +56,12 @@
 
     this.$view.filter($.proxy(this.filterNestedViews, this)).once('ajax-pager').each($.proxy(this.attachPagerAjax, this));
 
-    var selfSettings = $.extend({}, this.element_settings, {
+    var self_settings = $.extend({}, this.element_settings, {
       event: 'RefreshView',
       base: this.selector,
       element: this.$view.get(0)
     });
-    this.refreshViewAjax = Drupal.ajax(selfSettings);
+    this.refreshViewAjax = Drupal.ajax(self_settings);
   };
 
   Drupal.views.ajaxView.prototype.attachExposedFormAjax = function () {
@@ -67,11 +69,11 @@
     this.exposedFormAjax = [];
 
     $('input[type=submit], input[type=image]', this.$exposed_form).not('[data-drupal-selector=edit-reset]').each(function (index) {
-      var selfSettings = $.extend({}, that.element_settings, {
+      var self_settings = $.extend({}, that.element_settings, {
         base: $(this).attr('id'),
         element: this
       });
-      that.exposedFormAjax[index] = Drupal.ajax(selfSettings);
+      that.exposedFormAjax[index] = Drupal.ajax(self_settings);
     });
   };
 
@@ -90,12 +92,12 @@
 
     $.extend(viewData, this.settings, Drupal.Views.parseQueryString(href), Drupal.Views.parseViewArgs(href, this.settings.view_base_path));
 
-    var selfSettings = $.extend({}, this.element_settings, {
+    var self_settings = $.extend({}, this.element_settings, {
       submit: viewData,
       base: false,
       element: link
     });
-    this.pagerAjax = Drupal.ajax(selfSettings);
+    this.pagerAjax = Drupal.ajax(self_settings);
   };
 
   Drupal.AjaxCommands.prototype.viewsScrollTop = function (ajax, response) {

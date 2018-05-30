@@ -28,41 +28,64 @@
   Drupal.behaviors.AJAX = {
     attach(context, settings) {
       function loadAjaxBehavior(base) {
-        const elementSettings = settings.ajax[base];
-        if (typeof elementSettings.selector === 'undefined') {
-          elementSettings.selector = `#${base}`;
+        const element_settings = settings.ajax[base];
+        if (typeof element_settings.selector === 'undefined') {
+          element_settings.selector = `#${base}`;
         }
-        $(elementSettings.selector).once('drupal-ajax').each(function () {
-          elementSettings.element = this;
-          elementSettings.base = base;
-          Drupal.ajax(elementSettings);
+        $(element_settings.selector).once('drupal-ajax').each(function () {
+          element_settings.element = this;
+          element_settings.base = base;
+          Drupal.ajax(element_settings);
         });
       }
 
       // Load all Ajax behaviors specified in the settings.
-      Object.keys(settings.ajax || {}).forEach(base => loadAjaxBehavior(base));
+      for (const base in settings.ajax) {
+        if (settings.ajax.hasOwnProperty(base)) {
+          loadAjaxBehavior(base);
+        }
+      }
 
-      Drupal.ajax.bindAjaxLinks(document.body);
+      // Bind Ajax behaviors to all items showing the class.
+      $('.use-ajax').once('ajax').each(function () {
+        const element_settings = {};
+        // Clicked links look better with the throbber than the progress bar.
+        element_settings.progress = { type: 'throbber' };
+
+        // For anchor tags, these will go to the target of the anchor rather
+        // than the usual location.
+        const href = $(this).attr('href');
+        if (href) {
+          element_settings.url = href;
+          element_settings.event = 'click';
+        }
+        element_settings.dialogType = $(this).data('dialog-type');
+        element_settings.dialogRenderer = $(this).data('dialog-renderer');
+        element_settings.dialog = $(this).data('dialog-options');
+        element_settings.base = $(this).attr('id');
+        element_settings.element = this;
+        Drupal.ajax(element_settings);
+      });
 
       // This class means to submit the form to the action using Ajax.
       $('.use-ajax-submit').once('ajax').each(function () {
-        const elementSettings = {};
+        const element_settings = {};
 
         // Ajax submits specified in this manner automatically submit to the
         // normal form action.
-        elementSettings.url = $(this.form).attr('action');
+        element_settings.url = $(this.form).attr('action');
         // Form submit button clicks need to tell the form what was clicked so
         // it gets passed in the POST request.
-        elementSettings.setClick = true;
+        element_settings.setClick = true;
         // Form buttons use the 'click' event rather than mousedown.
-        elementSettings.event = 'click';
+        element_settings.event = 'click';
         // Clicked form buttons look better with the throbber than the progress
         // bar.
-        elementSettings.progress = { type: 'throbber' };
-        elementSettings.base = $(this).attr('id');
-        elementSettings.element = this;
+        element_settings.progress = { type: 'throbber' };
+        element_settings.base = $(this).attr('id');
+        element_settings.element = this;
 
-        Drupal.ajax(elementSettings);
+        Drupal.ajax(element_settings);
       });
     },
 
@@ -94,7 +117,9 @@
   Drupal.AjaxError = function (xmlhttp, uri, customMessage) {
     let statusCode;
     let statusText;
+    let pathText;
     let responseText;
+    let readyStateText;
     if (xmlhttp.status) {
       statusCode = `\n${Drupal.t('An AJAX HTTP error occurred.')}\n${Drupal.t('HTTP Result Code: !status', { '!status': xmlhttp.status })}`;
     }
@@ -102,7 +127,7 @@
       statusCode = `\n${Drupal.t('An AJAX HTTP request terminated abnormally.')}`;
     }
     statusCode += `\n${Drupal.t('Debugging information follows.')}`;
-    const pathText = `\n${Drupal.t('Path: !uri', { '!uri': uri })}`;
+    pathText = `\n${Drupal.t('Path: !uri', { '!uri': uri })}`;
     statusText = '';
     // In some cases, when statusCode === 0, xmlhttp.statusText may not be
     // defined. Unfortunately, testing for it with typeof, etc, doesn't seem to
@@ -130,7 +155,7 @@
     responseText = responseText.replace(/[\n]+\s+/g, '\n');
 
     // We don't need readyState except for status == 0.
-    const readyStateText = xmlhttp.status === 0 ? (`\n${Drupal.t('ReadyState: !readyState', { '!readyState': xmlhttp.readyState })}`) : '';
+    readyStateText = xmlhttp.status === 0 ? (`\n${Drupal.t('ReadyState: !readyState', { '!readyState': xmlhttp.readyState })}`) : '';
 
     customMessage = customMessage ? (`\n${Drupal.t('CustomMessage: !customMessage', { '!customMessage': customMessage })}`) : '';
 
@@ -246,42 +271,9 @@
   };
 
   /**
-   * Bind Ajax functionality to links that use the 'use-ajax' class.
-   *
-   * @param {HTMLElement} element
-   *   Element to enable Ajax functionality for.
-   */
-  Drupal.ajax.bindAjaxLinks = (element) => {
-    // Bind Ajax behaviors to all items showing the class.
-    $(element).find('.use-ajax').once('ajax').each((i, ajaxLink) => {
-      const $linkElement = $(ajaxLink);
-
-      const elementSettings = {
-        // Clicked links look better with the throbber than the progress bar.
-        progress: { type: 'throbber' },
-        dialogType: $linkElement.data('dialog-type'),
-        dialog: $linkElement.data('dialog-options'),
-        dialogRenderer: $linkElement.data('dialog-renderer'),
-        base: $linkElement.attr('id'),
-        element: ajaxLink,
-      };
-      const href = $linkElement.attr('href');
-      /**
-       * For anchor tags, these will go to the target of the anchor rather
-       * than the usual location.
-       */
-      if (href) {
-        elementSettings.url = href;
-        elementSettings.event = 'click';
-      }
-      Drupal.ajax(elementSettings);
-    });
-  };
-
-  /**
    * Settings for an Ajax object.
    *
-   * @typedef {object} Drupal.Ajax~elementSettings
+   * @typedef {object} Drupal.Ajax~element_settings
    *
    * @prop {string} url
    *   Target of the Ajax request.
@@ -335,10 +327,10 @@
    * @param {HTMLElement} [element]
    *   Element parameter of {@link Drupal.Ajax} constructor, element on which
    *   event listeners will be bound.
-   * @param {Drupal.Ajax~elementSettings} elementSettings
+   * @param {Drupal.Ajax~element_settings} element_settings
    *   Settings for this Ajax object.
    */
-  Drupal.Ajax = function (base, element, elementSettings) {
+  Drupal.Ajax = function (base, element, element_settings) {
     const defaults = {
       event: element ? 'mousedown' : null,
       keypress: true,
@@ -355,7 +347,7 @@
       },
     };
 
-    $.extend(this, defaults, elementSettings);
+    $.extend(this, defaults, element_settings);
 
     /**
      * @type {Drupal.AjaxCommands}
@@ -384,17 +376,9 @@
     this.element = element;
 
     /**
-     * @deprecated in Drupal 8.5.0 and will be removed before Drupal 9.0.0.
-     * Use elementSettings.
-     *
-     * @type {Drupal.Ajax~elementSettings}
+     * @type {Drupal.Ajax~element_settings}
      */
-    this.element_settings = elementSettings;
-
-    /**
-     * @type {Drupal.Ajax~elementSettings}
-     */
-    this.elementSettings = elementSettings;
+    this.element_settings = element_settings;
 
     // If there isn't a form, jQuery.ajax() will be used instead, allowing us to
     // bind Ajax to links as well.
@@ -475,12 +459,12 @@
     ajax.options = {
       url: ajax.url,
       data: ajax.submit,
-      beforeSerialize(elementSettings, options) {
-        return ajax.beforeSerialize(elementSettings, options);
+      beforeSerialize(element_settings, options) {
+        return ajax.beforeSerialize(element_settings, options);
       },
-      beforeSubmit(formValues, elementSettings, options) {
+      beforeSubmit(form_values, element_settings, options) {
         ajax.ajaxing = true;
-        return ajax.beforeSubmit(formValues, elementSettings, options);
+        return ajax.beforeSubmit(form_values, element_settings, options);
       },
       beforeSend(xmlhttprequest, options) {
         ajax.ajaxing = true;
@@ -522,8 +506,8 @@
       type: 'POST',
     };
 
-    if (elementSettings.dialog) {
-      ajax.options.data.dialogOptions = elementSettings.dialog;
+    if (element_settings.dialog) {
+      ajax.options.data.dialogOptions = element_settings.dialog;
     }
 
     // Ensure that we have a valid URL by adding ? when no query parameter is
@@ -535,15 +519,15 @@
       ajax.options.url += '&';
     }
     // If this element has a dialog type use if for the wrapper if not use 'ajax'.
-    let wrapper = `drupal_${(elementSettings.dialogType || 'ajax')}`;
-    if (elementSettings.dialogRenderer) {
-      wrapper += `.${elementSettings.dialogRenderer}`;
+    let wrapper = `drupal_${(element_settings.dialogType || 'ajax')}`;
+    if (element_settings.dialogRenderer) {
+      wrapper += `.${element_settings.dialogRenderer}`;
     }
     ajax.options.url += `${Drupal.ajax.WRAPPER_FORMAT}=${wrapper}`;
 
 
     // Bind the ajaxSubmit function to the element event.
-    $(ajax.element).on(elementSettings.event, function (event) {
+    $(ajax.element).on(element_settings.event, function (event) {
       if (!drupalSettings.ajaxTrustedUrl[ajax.url] && !Drupal.url.isLocal(ajax.url)) {
         throw new Error(Drupal.t('The callback URL is not local and not trusted: !url', { '!url': ajax.url }));
       }
@@ -553,7 +537,7 @@
     // If necessary, enable keyboard submission so that Ajax behaviors
     // can be triggered through keyboard input as well as e.g. a mousedown
     // action.
-    if (elementSettings.keypress) {
+    if (element_settings.keypress) {
       $(ajax.element).on('keypress', function (event) {
         return ajax.keypressResponse(this, event);
       });
@@ -562,8 +546,8 @@
     // If necessary, prevent the browser default action of an additional event.
     // For example, prevent the browser default action of a click, even if the
     // Ajax behavior binds to mousedown.
-    if (elementSettings.prevent) {
-      $(ajax.element).on(elementSettings.prevent, false);
+    if (element_settings.prevent) {
+      $(ajax.element).on(element_settings.prevent, false);
     }
   };
 
@@ -649,7 +633,7 @@
       element.type !== 'textarea' && element.type !== 'tel' && element.type !== 'number')) {
       event.preventDefault();
       event.stopPropagation();
-      $(element).trigger(ajax.elementSettings.event);
+      $(element).trigger(ajax.element_settings.event);
     }
   };
 
@@ -712,7 +696,7 @@
    * before field data is collected.
    *
    * @param {object} [element]
-   *   Ajax object's `elementSettings`.
+   *   Ajax object's `element_settings`.
    * @param {object} options
    *   jQuery.ajax options.
    */
@@ -744,14 +728,14 @@
   /**
    * Modify form values prior to form submission.
    *
-   * @param {Array.<object>} formValues
+   * @param {Array.<object>} form_values
    *   Processed form values.
    * @param {jQuery} element
    *   The form node as a jQuery object.
    * @param {object} options
    *   jQuery.ajax options.
    */
-  Drupal.Ajax.prototype.beforeSubmit = function (formValues, element, options) {
+  Drupal.Ajax.prototype.beforeSubmit = function (form_values, element, options) {
     // This function is left empty to make it simple to override for modules
     // that wish to add functionality here.
   };
@@ -873,14 +857,14 @@
     // Track if any command is altering the focus so we can avoid changing the
     // focus set by the Ajax command.
     let focusChanged = false;
-    Object.keys(response || {}).forEach((i) => {
-      if (response[i].command && this.commands[response[i].command]) {
+    for (const i in response) {
+      if (response.hasOwnProperty(i) && response[i].command && this.commands[response[i].command]) {
         this.commands[response[i].command](this, response[i], status);
         if (response[i].command === 'invoke' && response[i].method === 'focus') {
           focusChanged = true;
         }
       }
-    });
+    }
 
     // If the focus hasn't be changed by the ajax commands, try to refocus the
     // triggering element or one of its parents if that element does not exist
@@ -917,9 +901,9 @@
    * @param {object} response
    *   Drupal Ajax response.
    * @param {string} [response.effect]
-   *   Override the default value of {@link Drupal.Ajax#elementSettings}.
+   *   Override the default value of {@link Drupal.Ajax#element_settings}.
    * @param {string|number} [response.speed]
-   *   Override the default value of {@link Drupal.Ajax#elementSettings}.
+   *   Override the default value of {@link Drupal.Ajax#element_settings}.
    *
    * @return {object}
    *   Returns an object with `showEffect`, `hideEffect` and `showSpeed`
@@ -1041,11 +1025,11 @@
       // $(response.data) as new HTML rather than a CSS selector. Also, if
       // response.data contains top-level text nodes, they get lost with either
       // $(response.data) or $('<div></div>').replaceWith(response.data).
-      const $newContentWrapped = $('<div></div>').html(response.data);
-      let $newContent = $newContentWrapped.contents();
+      const $new_content_wrapped = $('<div></div>').html(response.data);
+      let $new_content = $new_content_wrapped.contents();
 
       // For legacy reasons, the effects processing code assumes that
-      // $newContent consists of a single top-level element. Also, it has not
+      // $new_content consists of a single top-level element. Also, it has not
       // been sufficiently tested whether attachBehaviors() can be successfully
       // called with a context object that includes top-level text nodes.
       // However, to give developers full control of the HTML appearing in the
@@ -1055,8 +1039,8 @@
       // of a single top-level element, and only use the container <div> created
       // above when it doesn't. For more information, please see
       // https://www.drupal.org/node/736066.
-      if ($newContent.length !== 1 || $newContent.get(0).nodeType !== 1) {
-        $newContent = $newContentWrapped;
+      if ($new_content.length !== 1 || $new_content.get(0).nodeType !== 1) {
+        $new_content = $new_content_wrapped;
       }
 
       // If removing content from the wrapper, detach behaviors first.
@@ -1071,31 +1055,31 @@
       }
 
       // Add the new content to the page.
-      $wrapper[method]($newContent);
+      $wrapper[method]($new_content);
 
       // Immediately hide the new content if we're using any effects.
       if (effect.showEffect !== 'show') {
-        $newContent.hide();
+        $new_content.hide();
       }
 
       // Determine which effect to use and what content will receive the
       // effect, then show the new content.
-      if ($newContent.find('.ajax-new-content').length > 0) {
-        $newContent.find('.ajax-new-content').hide();
-        $newContent.show();
-        $newContent.find('.ajax-new-content')[effect.showEffect](effect.showSpeed);
+      if ($new_content.find('.ajax-new-content').length > 0) {
+        $new_content.find('.ajax-new-content').hide();
+        $new_content.show();
+        $new_content.find('.ajax-new-content')[effect.showEffect](effect.showSpeed);
       }
       else if (effect.showEffect !== 'show') {
-        $newContent[effect.showEffect](effect.showSpeed);
+        $new_content[effect.showEffect](effect.showSpeed);
       }
 
       // Attach all JavaScript behaviors to the new content, if it was
       // successfully added to the page, this if statement allows
       // `#ajax['wrapper']` to be optional.
-      if ($newContent.parents('html').length > 0) {
+      if ($new_content.parents('html').length > 0) {
         // Apply any settings from the returned JSON if available.
         settings = response.settings || ajax.settings || drupalSettings;
-        Drupal.attachBehaviors($newContent.get(0), settings);
+        Drupal.attachBehaviors($new_content.get(0), settings);
       }
     },
 
@@ -1299,14 +1283,10 @@
       // :even and :odd are reversed because jQuery counts from 0 and
       // we count from 1, so we're out of sync.
       // Match immediate children of the parent element to allow nesting.
-      $(response.selector)
-        .find('> tbody > tr:visible, > tr:visible')
+      $(response.selector).find('> tbody > tr:visible, > tr:visible')
         .removeClass('odd even')
-        .filter(':even')
-        .addClass('odd')
-        .end()
-        .filter(':odd')
-        .addClass('even');
+        .filter(':even').addClass('odd').end()
+        .filter(':odd').addClass('even');
     },
 
     /**

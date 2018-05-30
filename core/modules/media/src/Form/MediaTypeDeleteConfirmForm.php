@@ -9,8 +9,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a form for media type deletion.
- *
- * @internal
  */
 class MediaTypeDeleteConfirmForm extends EntityDeleteForm {
 

@@ -10,8 +10,7 @@
 
   // Any comment that is older than 30 days is automatically considered read,
   // so for these we don't need to perform a request at all!
-  const secondsIn30Days = 2592000;
-  const thirtyDaysAgo = Math.round(new Date().getTime() / 1000) - secondsIn30Days;
+  const thirtyDaysAgo = Math.round(new Date().getTime() / 1000) - 30 * 24 * 60 * 60;
 
   // Use the data embedded in the page, if available.
   let embeddedLastReadTimestamps = false;
@@ -45,9 +44,11 @@
         data: { 'node_ids[]': nodeIDs },
         dataType: 'json',
         success(results) {
-          Object.keys(results || {}).forEach((nodeID) => {
-            storage.setItem(`Drupal.history.${currentUserID}.${nodeID}`, results[nodeID]);
-          });
+          for (const nodeID in results) {
+            if (results.hasOwnProperty(nodeID)) {
+              storage.setItem(`Drupal.history.${currentUserID}.${nodeID}`, results[nodeID]);
+            }
+          }
           callback();
         },
       });

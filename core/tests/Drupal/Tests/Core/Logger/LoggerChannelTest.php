@@ -102,12 +102,12 @@ class LoggerChannelTest extends UnitTestCase {
    */
   public function providerTestLog() {
     $account_mock = $this->getMock('Drupal\Core\Session\AccountInterface');
-    $account_mock->expects($this->any())
+    $account_mock->expects($this->exactly(2))
       ->method('id')
       ->will($this->returnValue(1));
 
-    $request_mock = $this->getMock('Symfony\Component\HttpFoundation\Request', ['getClientIp']);
-    $request_mock->expects($this->any())
+    $request_mock = $this->getMock('Symfony\Component\HttpFoundation\Request');
+    $request_mock->expects($this->exactly(2))
       ->method('getClientIp')
       ->will($this->returnValue('127.0.0.1'));
     $request_mock->headers = $this->getMock('Symfony\Component\HttpFoundation\ParameterBag');

@@ -6,14 +6,12 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
-use Drupal\Core\TempStore\PrivateTempStoreFactory;
+use Drupal\user\PrivateTempStoreFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Provides a confirmation form to delete multiple media items at once.
- *
- * @internal
  */
 class MediaDeleteMultipleConfirmForm extends ConfirmFormBase {
 
@@ -27,7 +25,7 @@ class MediaDeleteMultipleConfirmForm extends ConfirmFormBase {
   /**
    * The tempstore factory.
    *
-   * @var \Drupal\Core\TempStore\PrivateTempStoreFactory
+   * @var \Drupal\user\PrivateTempStoreFactory
    */
   protected $tempStoreFactory;
 
@@ -41,7 +39,7 @@ class MediaDeleteMultipleConfirmForm extends ConfirmFormBase {
   /**
    * Constructs a MediaDeleteMultipleConfirmForm form object.
    *
-   * @param \Drupal\Core\TempStore\PrivateTempStoreFactory $temp_store_factory
+   * @param \Drupal\user\PrivateTempStoreFactory $temp_store_factory
    *   The tempstore factory.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $manager
    *   The entity type manager.
@@ -56,7 +54,7 @@ class MediaDeleteMultipleConfirmForm extends ConfirmFormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('tempstore.private'),
+      $container->get('user.private_tempstore'),
       $container->get('entity_type.manager')
     );
   }

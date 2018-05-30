@@ -45,17 +45,15 @@ abstract class MediaResourceTestBase extends EntityResourceTestBase {
         break;
 
       case 'POST':
-        $this->grantPermissionsToTestedRole(['create camelids media']);
+        $this->grantPermissionsToTestedRole(['create media']);
         break;
 
       case 'PATCH':
-        $this->grantPermissionsToTestedRole(['edit any camelids media']);
-        // @todo Remove this in https://www.drupal.org/node/2824851.
-        $this->grantPermissionsToTestedRole(['access content']);
+        $this->grantPermissionsToTestedRole(['update any media']);
         break;
 
       case 'DELETE':
-        $this->grantPermissionsToTestedRole(['delete any camelids media']);
+        $this->grantPermissionsToTestedRole(['delete any media']);
         break;
     }
   }
@@ -94,7 +92,7 @@ abstract class MediaResourceTestBase extends EntityResourceTestBase {
     // Create a "Llama" media item.
     $media = Media::create([
       'bundle' => 'camelids',
-      'field_media_file' => [
+      'field_media_file_1' => [
         'target_id' => $file->id(),
       ],
     ]);
@@ -149,7 +147,7 @@ abstract class MediaResourceTestBase extends EntityResourceTestBase {
           'value' => 'Llama',
         ],
       ],
-      'field_media_file' => [
+      'field_media_file_1' => [
         [
           'description' => NULL,
           'display' => NULL,
@@ -261,15 +259,6 @@ abstract class MediaResourceTestBase extends EntityResourceTestBase {
    */
   public function testPost() {
     $this->markTestSkipped('POSTing File Media items is not supported until https://www.drupal.org/node/1927648 is solved.');
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function getExpectedUnauthorizedAccessCacheability() {
-    // @see \Drupal\media\MediaAccessControlHandler::checkAccess()
-    return parent::getExpectedUnauthorizedAccessCacheability()
-      ->addCacheTags(['media:1']);
   }
 
 }

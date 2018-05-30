@@ -2,10 +2,8 @@
 
 namespace Drupal\Tests\serialization\Kernel;
 
-use Drupal\Component\Serialization\Json;
 use Drupal\Component\Utility\SafeMarkup;
 use Drupal\entity_test\Entity\EntityTestMulRev;
-use Drupal\filter\Entity\FilterFormat;
 use Drupal\Tests\rest\Functional\BcTimestampNormalizerUnixTestTrait;
 
 /**
@@ -65,27 +63,6 @@ class EntitySerializationTest extends NormalizerTestBase {
     // User create needs sequence table.
     $this->installSchema('system', ['sequences']);
 
-    FilterFormat::create([
-      'format' => 'my_text_format',
-      'name' => 'My Text Format',
-      'filters' => [
-        'filter_html' => [
-          'module' => 'filter',
-          'status' => TRUE,
-          'weight' => 10,
-          'settings' => [
-            'allowed_html' => '<p>',
-          ],
-        ],
-        'filter_autop' => [
-          'module' => 'filter',
-          'status' => TRUE,
-          'weight' => 10,
-          'settings' => [],
-        ],
-      ],
-    ])->save();
-
     // Create a test user to use as the entity owner.
     $this->user = \Drupal::entityManager()->getStorage('user')->create([
       'name' => 'serialization_test_user',
@@ -95,13 +72,12 @@ class EntitySerializationTest extends NormalizerTestBase {
     $this->user->save();
 
     // Create a test entity to serialize.
-    $test_text_value = $this->randomMachineName();
     $this->values = [
       'name' => $this->randomMachineName(),
       'user_id' => $this->user->id(),
       'field_test_text' => [
-        'value' => $test_text_value,
-        'format' => 'my_text_format',
+        'value' => $this->randomMachineName(),
+        'format' => 'full_html',
       ],
     ];
     $this->entity = EntityTestMulRev::create($this->values);
@@ -154,12 +130,10 @@ class EntitySerializationTest extends NormalizerTestBase {
         ['value' => TRUE],
       ],
       'non_rev_field' => [],
-      'non_mul_field' => [],
       'field_test_text' => [
         [
           'value' => $this->values['field_test_text']['value'],
           'format' => $this->values['field_test_text']['format'],
-          'processed' => "<p>{$this->values['field_test_text']['value']}</p>",
         ],
       ],
     ];
@@ -200,7 +174,7 @@ class EntitySerializationTest extends NormalizerTestBase {
     // JsonEncoder. The output of ComplexDataNormalizer::normalize() is tested
     // elsewhere, so we can just assume that it works properly here.
     $normalized = $this->serializer->normalize($this->entity, 'json');
-    $expected = Json::encode($normalized);
+    $expected = json_encode($normalized);
     // Test 'json'.
     $actual = $this->serializer->serialize($this->entity, 'json');
     $this->assertIdentical($actual, $expected, 'Entity serializes to JSON when "json" is requested.');
@@ -227,9 +201,8 @@ class EntitySerializationTest extends NormalizerTestBase {
       'revision_id' => '<revision_id><value>' . $this->entity->getRevisionId() . '</value></revision_id>',
       'default_langcode' => '<default_langcode><value>1</value></default_langcode>',
       'revision_translation_affected' => '<revision_translation_affected><value>1</value></revision_translation_affected>',
-      'non_mul_field' => '<non_mul_field/>',
       'non_rev_field' => '<non_rev_field/>',
-      'field_test_text' => '<field_test_text><value>' . $this->values['field_test_text']['value'] . '</value><format>' . $this->values['field_test_text']['format'] . '</format><processed><![CDATA[<p>' . $this->values['field_test_text']['value'] . '</p>]]></processed></field_test_text>',
+      'field_test_text' => '<field_test_text><value>' . $this->values['field_test_text']['value'] . '</value><format>' . $this->values['field_test_text']['format'] . '</format></field_test_text>',
     ];
     // Sort it in the same order as normalised.
     $expected = array_merge($normalized, $expected);

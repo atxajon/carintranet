@@ -89,15 +89,6 @@ abstract class Entity implements EntityInterface {
   }
 
   /**
-   * Gets the entity type bundle info service.
-   *
-   * @return \Drupal\Core\Entity\EntityTypeBundleInfoInterface
-   */
-  protected function entityTypeBundleInfo() {
-    return \Drupal::service('entity_type.bundle.info');
-  }
-
-  /**
    * Gets the language manager.
    *
    * @return \Drupal\Core\Language\LanguageManagerInterface
@@ -207,7 +198,7 @@ abstract class Entity implements EntityInterface {
       $bundle = $this->bundle();
       // A bundle-specific callback takes precedence over the generic one for
       // the entity type.
-      $bundles = $this->entityTypeBundleInfo()->getBundleInfo($this->getEntityTypeId());
+      $bundles = $this->entityManager()->getBundleInfo($this->getEntityTypeId());
       if (isset($bundles[$bundle]['uri_callback'])) {
         $uri_callback = $bundles[$bundle]['uri_callback'];
       }
@@ -353,11 +344,11 @@ abstract class Entity implements EntityInterface {
    */
   public function access($operation, AccountInterface $account = NULL, $return_as_object = FALSE) {
     if ($operation == 'create') {
-      return $this->entityTypeManager()
+      return $this->entityManager()
         ->getAccessControlHandler($this->entityTypeId)
         ->createAccess($this->bundle(), $account, [], $return_as_object);
     }
-    return $this->entityTypeManager()
+    return $this->entityManager()
       ->getAccessControlHandler($this->entityTypeId)
       ->access($this, $operation, $account, $return_as_object);
   }
@@ -383,8 +374,7 @@ abstract class Entity implements EntityInterface {
    * {@inheritdoc}
    */
   public function save() {
-    $storage = $this->entityTypeManager()->getStorage($this->entityTypeId);
-    return $storage->save($this);
+    return $this->entityManager()->getStorage($this->entityTypeId)->save($this);
   }
 
   /**
@@ -392,7 +382,7 @@ abstract class Entity implements EntityInterface {
    */
   public function delete() {
     if (!$this->isNew()) {
-      $this->entityTypeManager()->getStorage($this->entityTypeId)->delete([$this->id() => $this]);
+      $this->entityManager()->getStorage($this->entityTypeId)->delete([$this->id() => $this]);
     }
   }
 
@@ -417,7 +407,7 @@ abstract class Entity implements EntityInterface {
    * {@inheritdoc}
    */
   public function getEntityType() {
-    return $this->entityTypeManager()->getDefinition($this->getEntityTypeId());
+    return $this->entityManager()->getDefinition($this->getEntityTypeId());
   }
 
   /**
@@ -518,30 +508,24 @@ abstract class Entity implements EntityInterface {
    * {@inheritdoc}
    */
   public static function load($id) {
-    $entity_type_repository = \Drupal::service('entity_type.repository');
-    $entity_type_manager = \Drupal::entityTypeManager();
-    $storage = $entity_type_manager->getStorage($entity_type_repository->getEntityTypeFromClass(get_called_class()));
-    return $storage->load($id);
+    $entity_manager = \Drupal::entityManager();
+    return $entity_manager->getStorage($entity_manager->getEntityTypeFromClass(get_called_class()))->load($id);
   }
 
   /**
    * {@inheritdoc}
    */
   public static function loadMultiple(array $ids = NULL) {
-    $entity_type_repository = \Drupal::service('entity_type.repository');
-    $entity_type_manager = \Drupal::entityTypeManager();
-    $storage = $entity_type_manager->getStorage($entity_type_repository->getEntityTypeFromClass(get_called_class()));
-    return $storage->loadMultiple($ids);
+    $entity_manager = \Drupal::entityManager();
+    return $entity_manager->getStorage($entity_manager->getEntityTypeFromClass(get_called_class()))->loadMultiple($ids);
   }
 
   /**
    * {@inheritdoc}
    */
   public static function create(array $values = []) {
-    $entity_type_repository = \Drupal::service('entity_type.repository');
-    $entity_type_manager = \Drupal::entityTypeManager();
-    $storage = $entity_type_manager->getStorage($entity_type_repository->getEntityTypeFromClass(get_called_class()));
-    return $storage->create($values);
+    $entity_manager = \Drupal::entityManager();
+    return $entity_manager->getStorage($entity_manager->getEntityTypeFromClass(get_called_class()))->create($values);
   }
 
   /**

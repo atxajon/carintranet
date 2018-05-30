@@ -422,20 +422,9 @@ class ImageAdminStylesTest extends ImageFieldTestBase {
     // Edit the scale effect that was just added.
     $this->clickLink(t('Edit'));
     $this->drupalPostForm(NULL, ['data[width]' => '24', 'data[height]' => '19'], t('Update effect'));
-
-    // Add another scale effect and make sure both exist. Click through from
-    // the overview to make sure that it is possible to add new effect then.
-    $this->drupalGet('admin/config/media/image-styles');
-    $rows = $this->xpath('//table/tbody/tr');
-    $i = 0;
-    foreach ($rows as $row) {
-      if (((string) $row->td[0]) === 'Test style scale edit scale') {
-        $this->clickLink('Edit', $i);
-        break;
-      }
-      $i++;
-    }
     $this->drupalPostForm(NULL, ['new' => 'image_scale'], t('Add'));
+
+    // Add another scale effect and make sure both exist.
     $this->drupalPostForm(NULL, ['data[width]' => '12', 'data[height]' => '19'], t('Add effect'));
     $this->assertText(t('Scale 24×19'));
     $this->assertText(t('Scale 12×19'));

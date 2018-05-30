@@ -8,8 +8,6 @@ use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Form builder: Builds a form that has image button with an ajax callback.
- *
- * @internal
  */
 class AjaxFormsTestImageButtonForm extends FormBase {
 

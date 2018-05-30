@@ -7,7 +7,6 @@ use Drupal\Core\Plugin\PluginWithFormsTrait;
 use Drupal\workflows\State;
 use Drupal\workflows\StateInterface;
 use Drupal\workflows\Transition;
-use Drupal\workflows\TransitionInterface;
 use Drupal\workflows\WorkflowInterface;
 use Drupal\workflows\WorkflowTypeInterface;
 
@@ -178,11 +177,7 @@ abstract class WorkflowTypeBase extends PluginBase implements WorkflowTypeInterf
    */
   public function setStateWeight($state_id, $weight) {
     if (!$this->hasState($state_id)) {
-      throw new \InvalidArgumentException("The state '$state_id' does not exist in workflow.");
-    }
-    if (!is_numeric($weight)) {
-      $label = $this->getState($state_id)->label();
-      throw new \InvalidArgumentException("The weight '$weight' must be numeric for state '$label'.");
+      throw new \InvalidArgumentException("The state '$state_id' does not exist in workflow.'");
     }
     $this->configuration['states'][$state_id]['weight'] = $weight;
     return $this;
@@ -333,7 +328,7 @@ abstract class WorkflowTypeBase extends PluginBase implements WorkflowTypeInterf
   /**
    * {@inheritdoc}
    */
-  public function getTransitionsForState($state_id, $direction = TransitionInterface::DIRECTION_FROM) {
+  public function getTransitionsForState($state_id, $direction = 'from') {
     $transition_ids = array_keys(array_filter($this->configuration['transitions'], function ($transition) use ($state_id, $direction) {
       return in_array($state_id, (array) $transition[$direction], TRUE);
     }));
@@ -394,11 +389,7 @@ abstract class WorkflowTypeBase extends PluginBase implements WorkflowTypeInterf
    */
   public function setTransitionWeight($transition_id, $weight) {
     if (!$this->hasTransition($transition_id)) {
-      throw new \InvalidArgumentException("The transition '$transition_id' does not exist in workflow.");
-    }
-    if (!is_numeric($weight)) {
-      $label = $this->getTransition($transition_id)->label();
-      throw new \InvalidArgumentException("The weight '$weight' must be numeric for transition '$label'.");
+      throw new \InvalidArgumentException("The transition '$transition_id' does not exist in workflow.'");
     }
     $this->configuration['transitions'][$transition_id]['weight'] = $weight;
     return $this;

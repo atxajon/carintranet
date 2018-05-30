@@ -16,15 +16,15 @@
         }
       }
 
-      Object.keys(settings.tableDrag || {}).forEach(function (base) {
-        initTableDrag($(context).find('#' + base).once('tabledrag'), base);
-      });
+      for (var base in settings.tableDrag) {
+        if (settings.tableDrag.hasOwnProperty(base)) {
+          initTableDrag($(context).find('#' + base).once('tabledrag'), base);
+        }
+      }
     }
   };
 
   Drupal.tableDrag = function (table, tableSettings) {
-    var _this = this;
-
     var self = this;
     var $table = $(table);
 
@@ -59,16 +59,20 @@
     this.windowHeight = 0;
 
     this.indentEnabled = false;
-    Object.keys(tableSettings || {}).forEach(function (group) {
-      Object.keys(tableSettings[group] || {}).forEach(function (n) {
-        if (tableSettings[group][n].relationship === 'parent') {
-          _this.indentEnabled = true;
+    for (var group in tableSettings) {
+      if (tableSettings.hasOwnProperty(group)) {
+        for (var n in tableSettings[group]) {
+          if (tableSettings[group].hasOwnProperty(n)) {
+            if (tableSettings[group][n].relationship === 'parent') {
+              this.indentEnabled = true;
+            }
+            if (tableSettings[group][n].limit > 0) {
+              this.maxDepth = tableSettings[group][n].limit;
+            }
+          }
         }
-        if (tableSettings[group][n].limit > 0) {
-          _this.maxDepth = tableSettings[group][n].limit;
-        }
-      });
-    });
+      }
+    }
     if (this.indentEnabled) {
       this.indentCount = 1;
 
@@ -114,29 +118,29 @@
   };
 
   Drupal.tableDrag.prototype.initColumns = function () {
-    var _this2 = this;
-
     var $table = this.$table;
     var hidden = void 0;
     var cell = void 0;
     var columnIndex = void 0;
-    Object.keys(this.tableSettings || {}).forEach(function (group) {
-      for (var d in _this2.tableSettings[group]) {
-        if (_this2.tableSettings[group].hasOwnProperty(d)) {
-          var field = $table.find('.' + _this2.tableSettings[group][d].target).eq(0);
-          if (field.length && _this2.tableSettings[group][d].hidden) {
-            hidden = _this2.tableSettings[group][d].hidden;
-            cell = field.closest('td');
-            break;
+    for (var group in this.tableSettings) {
+      if (this.tableSettings.hasOwnProperty(group)) {
+        for (var d in this.tableSettings[group]) {
+          if (this.tableSettings[group].hasOwnProperty(d)) {
+            var field = $table.find('.' + this.tableSettings[group][d].target).eq(0);
+            if (field.length && this.tableSettings[group][d].hidden) {
+              hidden = this.tableSettings[group][d].hidden;
+              cell = field.closest('td');
+              break;
+            }
           }
         }
-      }
 
-      if (hidden && cell[0]) {
-        columnIndex = cell.parent().find('> td').index(cell.get(0)) + 1;
-        $table.find('> thead > tr, > tbody > tr, > tr').each(_this2.addColspanClass(columnIndex));
+        if (hidden && cell[0]) {
+          columnIndex = cell.parent().find('> td').index(cell.get(0)) + 1;
+          $table.find('> thead > tr, > tbody > tr, > tr').each(this.addColspanClass(columnIndex));
+        }
       }
-    });
+    }
     this.displayColumns(showWeight);
   };
 
@@ -213,13 +217,11 @@
   Drupal.tableDrag.prototype.rowSettings = function (group, row) {
     var field = $(row).find('.' + group);
     var tableSettingsGroup = this.tableSettings[group];
-
     for (var delta in tableSettingsGroup) {
       if (tableSettingsGroup.hasOwnProperty(delta)) {
         var targetClass = tableSettingsGroup[delta].target;
         if (field.is('.' + targetClass)) {
           var rowSettings = {};
-
           for (var n in tableSettingsGroup[delta]) {
             if (tableSettingsGroup[delta].hasOwnProperty(n)) {
               rowSettings[n] = tableSettingsGroup[delta][n];
@@ -287,41 +289,39 @@
 
         case 38:
         case 63232:
-          {
-            var $previousRow = $(self.rowObject.element).prev('tr:first-of-type');
-            var previousRow = $previousRow.get(0);
-            while (previousRow && $previousRow.is(':hidden')) {
-              $previousRow = $(previousRow).prev('tr:first-of-type');
-              previousRow = $previousRow.get(0);
-            }
-            if (previousRow) {
-              self.safeBlur = false;
-              self.rowObject.direction = 'up';
-              keyChange = true;
-
-              if ($(item).is('.tabledrag-root')) {
-                groupHeight = 0;
-                while (previousRow && $previousRow.find('.js-indentation').length) {
-                  $previousRow = $(previousRow).prev('tr:first-of-type');
-                  previousRow = $previousRow.get(0);
-                  groupHeight += $previousRow.is(':hidden') ? 0 : previousRow.offsetHeight;
-                }
-                if (previousRow) {
-                  self.rowObject.swap('before', previousRow);
-
-                  window.scrollBy(0, -groupHeight);
-                }
-              } else if (self.table.tBodies[0].rows[0] !== previousRow || $previousRow.is('.draggable')) {
-                self.rowObject.swap('before', previousRow);
-                self.rowObject.interval = null;
-                self.rowObject.indent(0);
-                window.scrollBy(0, -parseInt(item.offsetHeight, 10));
-              }
-
-              handle.trigger('focus');
-            }
-            break;
+          var $previousRow = $(self.rowObject.element).prev('tr:first-of-type');
+          var previousRow = $previousRow.get(0);
+          while (previousRow && $previousRow.is(':hidden')) {
+            $previousRow = $(previousRow).prev('tr:first-of-type');
+            previousRow = $previousRow.get(0);
           }
+          if (previousRow) {
+            self.safeBlur = false;
+            self.rowObject.direction = 'up';
+            keyChange = true;
+
+            if ($(item).is('.tabledrag-root')) {
+              groupHeight = 0;
+              while (previousRow && $previousRow.find('.js-indentation').length) {
+                $previousRow = $(previousRow).prev('tr:first-of-type');
+                previousRow = $previousRow.get(0);
+                groupHeight += $previousRow.is(':hidden') ? 0 : previousRow.offsetHeight;
+              }
+              if (previousRow) {
+                self.rowObject.swap('before', previousRow);
+
+                window.scrollBy(0, -groupHeight);
+              }
+            } else if (self.table.tBodies[0].rows[0] !== previousRow || $previousRow.is('.draggable')) {
+              self.rowObject.swap('before', previousRow);
+              self.rowObject.interval = null;
+              self.rowObject.indent(0);
+              window.scrollBy(0, -parseInt(item.offsetHeight, 10));
+            }
+
+            handle.trigger('focus');
+          }
+          break;
 
         case 39:
         case 63235:
@@ -331,41 +331,39 @@
 
         case 40:
         case 63233:
-          {
-            var $nextRow = $(self.rowObject.group).eq(-1).next('tr:first-of-type');
-            var nextRow = $nextRow.get(0);
-            while (nextRow && $nextRow.is(':hidden')) {
-              $nextRow = $(nextRow).next('tr:first-of-type');
-              nextRow = $nextRow.get(0);
-            }
-            if (nextRow) {
-              self.safeBlur = false;
-              self.rowObject.direction = 'down';
-              keyChange = true;
-
-              if ($(item).is('.tabledrag-root')) {
-                groupHeight = 0;
-                var nextGroup = new self.row(nextRow, 'keyboard', self.indentEnabled, self.maxDepth, false);
-                if (nextGroup) {
-                  $(nextGroup.group).each(function () {
-                    groupHeight += $(this).is(':hidden') ? 0 : this.offsetHeight;
-                  });
-                  var nextGroupRow = $(nextGroup.group).eq(-1).get(0);
-                  self.rowObject.swap('after', nextGroupRow);
-
-                  window.scrollBy(0, parseInt(groupHeight, 10));
-                }
-              } else {
-                self.rowObject.swap('after', nextRow);
-                self.rowObject.interval = null;
-                self.rowObject.indent(0);
-                window.scrollBy(0, parseInt(item.offsetHeight, 10));
-              }
-
-              handle.trigger('focus');
-            }
-            break;
+          var $nextRow = $(self.rowObject.group).eq(-1).next('tr:first-of-type');
+          var nextRow = $nextRow.get(0);
+          while (nextRow && $nextRow.is(':hidden')) {
+            $nextRow = $(nextRow).next('tr:first-of-type');
+            nextRow = $nextRow.get(0);
           }
+          if (nextRow) {
+            self.safeBlur = false;
+            self.rowObject.direction = 'down';
+            keyChange = true;
+
+            if ($(item).is('.tabledrag-root')) {
+              groupHeight = 0;
+              var nextGroup = new self.row(nextRow, 'keyboard', self.indentEnabled, self.maxDepth, false);
+              if (nextGroup) {
+                $(nextGroup.group).each(function () {
+                  groupHeight += $(this).is(':hidden') ? 0 : this.offsetHeight;
+                });
+                var nextGroupRow = $(nextGroup.group).eq(-1).get(0);
+                self.rowObject.swap('after', nextGroupRow);
+
+                window.scrollBy(0, parseInt(groupHeight, 10));
+              }
+            } else {
+              self.rowObject.swap('after', nextRow);
+              self.rowObject.interval = null;
+              self.rowObject.indent(0);
+              window.scrollBy(0, parseInt(item.offsetHeight, 10));
+            }
+
+            handle.trigger('focus');
+          }
+          break;
       }
 
       if (self.rowObject && self.rowObject.changed === true) {
@@ -480,14 +478,18 @@
       if (self.rowObject.changed === true) {
         self.updateFields(droppedRow);
 
-        Object.keys(self.tableSettings || {}).forEach(function (group) {
-          var rowSettings = self.rowSettings(group, droppedRow);
-          if (rowSettings.relationship === 'group') {
-            Object.keys(self.rowObject.children || {}).forEach(function (n) {
-              self.updateField(self.rowObject.children[n], group);
-            });
+        for (var group in self.tableSettings) {
+          if (self.tableSettings.hasOwnProperty(group)) {
+            var rowSettings = self.rowSettings(group, droppedRow);
+            if (rowSettings.relationship === 'group') {
+              for (var n in self.rowObject.children) {
+                if (self.rowObject.children.hasOwnProperty(n)) {
+                  self.updateField(self.rowObject.children[n], group);
+                }
+              }
+            }
           }
-        });
+        }
 
         self.rowObject.markChanged();
         if (self.changed === false) {
@@ -537,7 +539,7 @@
       var row = rows[n];
       var $row = $(row);
       var rowY = $row.offset().top;
-      var rowHeight = void 0;
+      var rowHeight;
 
       if (row.offsetHeight === 0) {
         rowHeight = parseInt(row.firstChild.offsetHeight, 10) / 2;
@@ -552,9 +554,11 @@
               return null;
             }
           }
-        } else if (row === this.rowObject.element) {
+        } else {
+          if (row === this.rowObject.element) {
             return null;
           }
+        }
 
         if (!this.rowObject.isValidSwap(row)) {
           return null;
@@ -571,11 +575,11 @@
   };
 
   Drupal.tableDrag.prototype.updateFields = function (changedRow) {
-    var _this3 = this;
-
-    Object.keys(this.tableSettings || {}).forEach(function (group) {
-      _this3.updateField(changedRow, group);
-    });
+    for (var group in this.tableSettings) {
+      if (this.tableSettings.hasOwnProperty(group)) {
+        this.updateField(changedRow, group);
+      }
+    }
   };
 
   Drupal.tableDrag.prototype.updateField = function (changedRow, group) {
@@ -654,31 +658,29 @@
           break;
 
         case 'order':
-          {
-            var siblings = this.rowObject.findSiblings(rowSettings);
-            if ($(targetElement).is('select')) {
-              var values = [];
-              $(targetElement).find('option').each(function () {
-                values.push(this.value);
-              });
-              var maxVal = values[values.length - 1];
+          var siblings = this.rowObject.findSiblings(rowSettings);
+          if ($(targetElement).is('select')) {
+            var values = [];
+            $(targetElement).find('option').each(function () {
+              values.push(this.value);
+            });
+            var maxVal = values[values.length - 1];
 
-              $(siblings).find(targetClass).each(function () {
-                if (values.length > 0) {
-                  this.value = values.shift();
-                } else {
-                  this.value = maxVal;
-                }
-              });
-            } else {
-              var weight = parseInt($(siblings[0]).find(targetClass).val(), 10) || 0;
-              $(siblings).find(targetClass).each(function () {
-                this.value = weight;
-                weight++;
-              });
-            }
-            break;
+            $(siblings).find(targetClass).each(function () {
+              if (values.length > 0) {
+                this.value = values.shift();
+              } else {
+                this.value = maxVal;
+              }
+            });
+          } else {
+            var weight = parseInt($(siblings[0]).find(targetClass).val(), 10) || 0;
+            $(siblings).find(targetClass).each(function () {
+              this.value = weight;
+              weight++;
+            });
           }
+          break;
       }
     }
   };
@@ -695,15 +697,13 @@
     var de = document.documentElement;
     var b = document.body;
 
-    var windowHeight = window.innerHeight || (de.clientHeight && de.clientWidth !== 0 ? de.clientHeight : b.offsetHeight);
-    this.windowHeight = windowHeight;
+    var windowHeight = this.windowHeight = window.innerHeight || (de.clientHeight && de.clientWidth !== 0 ? de.clientHeight : b.offsetHeight);
     var scrollY = void 0;
     if (document.all) {
-      scrollY = !de.scrollTop ? b.scrollTop : de.scrollTop;
+      scrollY = this.scrollY = !de.scrollTop ? b.scrollTop : de.scrollTop;
     } else {
-      scrollY = window.pageYOffset ? window.pageYOffset : window.scrollY;
+      scrollY = this.scrollY = window.pageYOffset ? window.pageYOffset : window.scrollY;
     }
-    this.scrollY = scrollY;
     var trigger = this.scrollSettings.trigger;
     var delta = 0;
 
@@ -844,9 +844,10 @@
 
   Drupal.tableDrag.prototype.row.prototype.validIndentInterval = function (prevRow, nextRow) {
     var $prevRow = $(prevRow);
+    var minIndent = void 0;
     var maxIndent = void 0;
 
-    var minIndent = nextRow ? $(nextRow).find('.js-indentation').length : 0;
+    minIndent = nextRow ? $(nextRow).find('.js-indentation').length : 0;
 
     if (!prevRow || $prevRow.is(':not(.draggable)') || $(this.element).is('.tabledrag-root')) {
       maxIndent = 0;
@@ -926,11 +927,11 @@
   };
 
   Drupal.tableDrag.prototype.row.prototype.removeIndentClasses = function () {
-    var _this4 = this;
-
-    Object.keys(this.children || {}).forEach(function (n) {
-      $(_this4.children[n]).find('.js-indentation').removeClass('tree-child').removeClass('tree-child-first').removeClass('tree-child-last').removeClass('tree-child-horizontal');
-    });
+    for (var n in this.children) {
+      if (this.children.hasOwnProperty(n)) {
+        $(this.children[n]).find('.js-indentation').removeClass('tree-child').removeClass('tree-child-first').removeClass('tree-child-last').removeClass('tree-child-horizontal');
+      }
+    }
   };
 
   Drupal.tableDrag.prototype.row.prototype.markChanged = function () {

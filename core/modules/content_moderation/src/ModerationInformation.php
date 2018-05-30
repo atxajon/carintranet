@@ -84,15 +84,14 @@ class ModerationInformation implements ModerationInformationInterface {
    */
   public function getLatestRevisionId($entity_type_id, $entity_id) {
     if ($storage = $this->entityTypeManager->getStorage($entity_type_id)) {
-      $result = $storage->getQuery()
-        ->latestRevision()
+      $revision_ids = $storage->getQuery()
+        ->allRevisions()
         ->condition($this->entityTypeManager->getDefinition($entity_type_id)->getKey('id'), $entity_id)
-        // No access check is performed here since this is an API function and
-        // should return the same ID regardless of the current user.
-        ->accessCheck(FALSE)
+        ->sort($this->entityTypeManager->getDefinition($entity_type_id)->getKey('revision'), 'DESC')
+        ->range(0, 1)
         ->execute();
-      if ($result) {
-        return key($result);
+      if ($revision_ids) {
+        return array_keys($revision_ids)[0];
       }
     }
   }
@@ -102,15 +101,13 @@ class ModerationInformation implements ModerationInformationInterface {
    */
   public function getDefaultRevisionId($entity_type_id, $entity_id) {
     if ($storage = $this->entityTypeManager->getStorage($entity_type_id)) {
-      $result = $storage->getQuery()
-        ->currentRevision()
+      $revision_ids = $storage->getQuery()
         ->condition($this->entityTypeManager->getDefinition($entity_type_id)->getKey('id'), $entity_id)
-        // No access check is performed here since this is an API function and
-        // should return the same ID regardless of the current user.
-        ->accessCheck(FALSE)
+        ->sort($this->entityTypeManager->getDefinition($entity_type_id)->getKey('revision'), 'DESC')
+        ->range(0, 1)
         ->execute();
-      if ($result) {
-        return key($result);
+      if ($revision_ids) {
+        return array_keys($revision_ids)[0];
       }
     }
   }
@@ -130,6 +127,13 @@ class ModerationInformation implements ModerationInformationInterface {
   /**
    * {@inheritdoc}
    */
+  public function isPendingRevisionAllowed(ContentEntityInterface $entity) {
+    return !(!$entity->isRevisionTranslationAffected() && count($entity->getTranslationLanguages()) > 1 && $this->hasPendingRevision($entity));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function isLatestRevision(ContentEntityInterface $entity) {
     return $entity->getRevisionId() == $this->getLatestRevisionId($entity->getEntityTypeId(), $entity->id());
   }
@@ -138,20 +142,8 @@ class ModerationInformation implements ModerationInformationInterface {
    * {@inheritdoc}
    */
   public function hasPendingRevision(ContentEntityInterface $entity) {
-    $result = FALSE;
-    if ($this->isModeratedEntity($entity)) {
-      /** @var \Drupal\Core\Entity\ContentEntityStorageInterface $storage */
-      $storage = $this->entityTypeManager->getStorage($entity->getEntityTypeId());
-      $latest_revision_id = $storage->getLatestTranslationAffectedRevisionId($entity->id(), $entity->language()->getId());
-      $default_revision_id = $entity->isDefaultRevision() && !$entity->isNewRevision() && ($revision_id = $entity->getRevisionId()) ?
-        $revision_id : $this->getDefaultRevisionId($entity->getEntityTypeId(), $entity->id());
-      if ($latest_revision_id != $default_revision_id) {
-        /** @var \Drupal\Core\Entity\ContentEntityInterface $latest_revision */
-        $latest_revision = $storage->loadRevision($latest_revision_id);
-        $result = !$latest_revision->wasDefaultRevision();
-      }
-    }
-    return $result;
+    return $this->isModeratedEntity($entity)
+      && !($this->getLatestRevisionId($entity->getEntityTypeId(), $entity->id()) == $this->getDefaultRevisionId($entity->getEntityTypeId(), $entity->id()));
   }
 
   /**
@@ -177,15 +169,9 @@ class ModerationInformation implements ModerationInformationInterface {
       // Loop through each language that has a translation.
       foreach ($default_revision->getTranslationLanguages() as $language) {
         // Load the translated revision.
-        $translation = $default_revision->getTranslation($language->getId());
-        // If the moderation state is empty, it was not stored yet so no point
-        // in doing further work.
-        $moderation_state = $translation->moderation_state->value;
-        if (!$moderation_state) {
-          continue;
-        }
+        $language_revision = $default_revision->getTranslation($language->getId());
         // Return TRUE if a translation with a published state is found.
-        if ($workflow->getTypePlugin()->getState($moderation_state)->isPublishedState()) {
+        if ($workflow->getTypePlugin()->getState($language_revision->moderation_state->value)->isPublishedState()) {
           return TRUE;
         }
       }

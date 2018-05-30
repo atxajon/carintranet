@@ -52,3 +52,4 @@ backup_migrate.source:
   route_name: entity.backup_migrate_source.collection
   base_route: backup_migrate.quick_backup
   parent_id: backup_migrate.settings
+

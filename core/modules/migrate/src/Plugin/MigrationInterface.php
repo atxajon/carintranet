@@ -322,11 +322,4 @@ interface MigrationInterface extends PluginInspectionInterface, DerivativeInspec
    */
   public function getMigrationTags();
 
-  /**
-   * Indicates if the migration is auditable.
-   *
-   * @return bool
-   */
-  public function isAuditable();
-
 }

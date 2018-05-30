@@ -34,6 +34,9 @@
   color: inherit;
   text-transform: none;
 }
+html:not(.details) .system-status-report__status-title {
+  padding-left: 0;
+}
 .system-status-report__status-title .details-title {
   padding-left: 3em; /* LTR */
 }
@@ -129,7 +132,7 @@
   [dir="rtl"] .system-status-report__status-title {
     float: right;
   }
-  html.js .system-status-report__status-title::-webkit-details-marker {
+  .system-status-report__status-title::-webkit-details-marker {
     display: none;
   }
   .collapse-processed > .system-status-report__status-title:before {

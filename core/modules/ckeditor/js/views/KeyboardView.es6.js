@@ -98,14 +98,7 @@
                 }
                 // Wrap between rows.
                 else {
-                  $container
-                    .closest('.ckeditor-row')
-                    .prev()
-                    .find('.ckeditor-toolbar-group')
-                    .not('.placeholder')
-                    .find('.ckeditor-toolbar-group-buttons')
-                    .eq(-1)
-                    .append($button);
+                  $container.closest('.ckeditor-row').prev().find('.ckeditor-toolbar-group').not('.placeholder').find('.ckeditor-toolbar-group-buttons').eq(-1).append($button);
                 }
               }
             }
@@ -134,13 +127,7 @@
                   .off()
                   .remove();
                 // Focus on the first button in the active toolbar.
-                $activeButtons
-                  .find('.ckeditor-toolbar-group-buttons')
-                  .eq(0)
-                  .children()
-                  .eq(0)
-                  .children()
-                  .trigger('focus');
+                $activeButtons.find('.ckeditor-toolbar-group-buttons').eq(0).children().eq(0).children().trigger('focus');
               }
               // Otherwise, move it.
               else {
@@ -242,13 +229,7 @@
             // Wrap between rows. Insert the group before the placeholder group
             // at the end of the previous row.
             else {
-              const $rowChildElement = $container
-                .closest('.ckeditor-row')
-                .prev()
-                .find('.ckeditor-toolbar-groups')
-                .children()
-                .eq(-1);
-              $group.insertBefore($rowChildElement);
+              $group.insertBefore($container.closest('.ckeditor-row').prev().find('.ckeditor-toolbar-groups').children().eq(-1));
             }
           }
           // Move right between sibling groups.
@@ -266,11 +247,7 @@
         // Move groups between rows.
         else if (_.indexOf(upDownKeys, event.keyCode) > -1) {
           dir = (_.indexOf([38, 63232], event.keyCode) > -1) ? 'prev' : 'next';
-          $group
-            .closest('.ckeditor-row')[dir]()
-            .find('.ckeditor-toolbar-groups')
-            .eq(0)
-            .prepend($group);
+          $group.closest('.ckeditor-row')[dir]().find('.ckeditor-toolbar-groups').eq(0).prepend($group);
         }
 
         Drupal.ckeditor.registerGroupMove(this, $group);

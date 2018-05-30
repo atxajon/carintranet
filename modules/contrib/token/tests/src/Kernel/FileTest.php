@@ -14,7 +14,7 @@ class FileTest extends KernelTestBase {
    *
    * @var array
    */
-  public static $modules = ['file'];
+  public static $modules = array('file');
 
   /**
    * {@inheritdoc}
@@ -26,30 +26,30 @@ class FileTest extends KernelTestBase {
 
   function testFileTokens() {
     // Create a test file object.
-    $file = entity_create('file', [
+    $file = entity_create('file', array(
       'fid' => 1,
       'filename' => 'test.png',
       'filesize' => 100,
       'uri' => 'public://images/test.png',
       'filemime' => 'image/png',
-    ]);
+    ));
 
-    $tokens = [
+    $tokens = array(
       'basename' => 'test.png',
       'extension' => 'png',
       'size-raw' => 100,
-    ];
-    $this->assertTokens('file', ['file' => $file], $tokens);
+    );
+    $this->assertTokens('file', array('file' => $file), $tokens);
 
     // Test a file with no extension and a fake name.
     $file->filename = 'Test PNG image';
     $file->uri = 'public://images/test';
 
-    $tokens = [
+    $tokens = array(
       'basename' => 'test',
       'extension' => '',
       'size-raw' => 100,
-    ];
-    $this->assertTokens('file', ['file' => $file], $tokens);
+    );
+    $this->assertTokens('file', array('file' => $file), $tokens);
   }
 }

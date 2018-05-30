@@ -11,8 +11,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a user password reset form.
- *
- * @internal
  */
 class UserPasswordForm extends FormBase {
 

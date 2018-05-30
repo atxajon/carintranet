@@ -15,7 +15,7 @@ use Drupal\migrate_drupal\Plugin\migrate\source\DrupalSqlBase;
  *
  * @MigrateSource(
  *   id = "d7_field",
- *   source_module = "field_sql_storage"
+ *   source_module = "field"
  * )
  */
 class Field extends DrupalSqlBase {

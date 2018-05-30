@@ -100,7 +100,7 @@ class MediaThumbnailFormatter extends ImageFormatter {
 
     $link_types = [
       'content' => $this->t('Content'),
-      'media' => $this->t('Media item'),
+      'media' => $this->t('Media entity'),
     ];
     $element['image_link']['#options'] = $link_types;
 

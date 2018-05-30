@@ -245,7 +245,6 @@ class View extends ConfigEntityBase implements ViewEntityInterface {
     $display_duplicate = $displays[$old_display_id];
     unset($display_duplicate['display_title']);
     unset($display_duplicate['display_plugin']);
-    unset($display_duplicate['new_id']);
 
     $displays[$new_display_id] = NestedArray::mergeDeep($displays[$new_display_id], $display_duplicate);
     $displays[$new_display_id]['id'] = $new_display_id;
@@ -388,7 +387,7 @@ class View extends ConfigEntityBase implements ViewEntityInterface {
     views_invalidate_cache();
     $this->invalidateCaches();
 
-    // Rebuild the router if this is a new view, or its status changed.
+    // Rebuild the router if this is a new view, or it's status changed.
     if (!isset($this->original) || ($this->status() != $this->original->status())) {
       \Drupal::service('router.builder')->setRebuildNeeded();
     }
@@ -457,7 +456,7 @@ class View extends ConfigEntityBase implements ViewEntityInterface {
   public static function postDelete(EntityStorageInterface $storage, array $entities) {
     parent::postDelete($storage, $entities);
 
-    $tempstore = \Drupal::service('tempstore.shared')->get('views');
+    $tempstore = \Drupal::service('user.shared_tempstore')->get('views');
     foreach ($entities as $entity) {
       $tempstore->delete($entity->id());
     }

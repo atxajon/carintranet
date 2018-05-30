@@ -11,8 +11,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Configure update settings for this site.
- *
- * @internal
  */
 class UpdateManagerUpdate extends FormBase {
 

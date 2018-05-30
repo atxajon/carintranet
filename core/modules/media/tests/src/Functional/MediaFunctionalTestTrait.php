@@ -13,14 +13,18 @@ trait MediaFunctionalTestTrait {
    * @var array
    */
   protected static $adminUserPermissions = [
-    // Media module permissions.
-    'access media overview',
+    // Media entity permissions.
     'administer media',
     'administer media fields',
     'administer media form display',
     'administer media display',
     'administer media types',
     'view media',
+    'create media',
+    'update media',
+    'update any media',
+    'delete media',
+    'delete any media',
     // Other permissions.
     'administer views',
     'access content overview',
@@ -28,7 +32,6 @@ trait MediaFunctionalTestTrait {
     'administer content types',
     'administer node fields',
     'administer node form display',
-    'administer node display',
     'bypass node access',
   ];
 

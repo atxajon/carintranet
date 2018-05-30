@@ -2,7 +2,6 @@
 
 namespace Drupal\user\Tests;
 
-use Drupal\Core\Url;
 use Drupal\rest\Tests\RESTTestBase;
 use Drupal\user\Entity\Role;
 use Drupal\user\RoleInterface;
@@ -167,7 +166,7 @@ class RestRegisterUserTest extends RESTTestBase {
    */
   protected function registerRequest($name, $include_password = TRUE) {
     $serialized = $this->createSerializedUser($name, $include_password);
-    $this->httpRequest(Url::fromRoute('rest.user_registration.POST', ['_format' => 'hal_json']), 'POST', $serialized, 'application/hal+json');
+    $this->httpRequest('/user/register', 'POST', $serialized, 'application/hal+json');
   }
 
 }

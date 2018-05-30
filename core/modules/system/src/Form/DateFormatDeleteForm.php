@@ -8,8 +8,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Builds a form to delete a date format.
- *
- * @internal
  */
 class DateFormatDeleteForm extends EntityDeleteForm {
 

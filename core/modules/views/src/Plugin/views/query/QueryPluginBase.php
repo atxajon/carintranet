@@ -206,17 +206,11 @@ abstract class QueryPluginBase extends PluginBase implements CacheableDependency
    *
    * @param string $field
    *   The query field that will be used in the expression.
-   * @param bool $string_date
-   *   For certain databases, date format functions vary depending on string or
-   *   numeric storage.
-   * @param bool $calculate_offset
-   *   If set to TRUE, the timezone offset will be included in the returned
-   *   field.
    *
    * @return string
    *   An expression representing a timestamp with time zone.
    */
-  public function getDateField($field, $string_date = FALSE, $calculate_offset = TRUE) {
+  public function getDateField($field) {
     return $field;
   }
 
@@ -350,36 +344,6 @@ abstract class QueryPluginBase extends PluginBase implements CacheableDependency
    */
   public function getCacheTags() {
     return [];
-  }
-
-  /**
-   * Applies a timezone offset to the given field.
-   *
-   * @param string &$field
-   *   The date field, in string format.
-   * @param int $offset
-   *   The timezone offset to apply to the field.
-   */
-  public function setFieldTimezoneOffset(&$field, $offset) {
-    // No-op. Timezone offsets are implementation-specific and should implement
-    // this method as needed.
-  }
-
-  /**
-   * Get the timezone offset in seconds.
-   *
-   * @return int
-   *   The offset, in seconds, for the timezone being used.
-   */
-  public function getTimezoneOffset() {
-    $timezone = $this->setupTimezone();
-    $offset = 0;
-    if ($timezone) {
-      $dtz = new \DateTimeZone($timezone);
-      $dt = new \DateTime('now', $dtz);
-      $offset = $dtz->getOffset($dt);
-    }
-    return $offset;
   }
 
 }

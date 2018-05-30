@@ -333,18 +333,10 @@ interface FieldStorageDefinitionInterface extends CacheableDependencyInterface {
   public function isBaseField();
 
   /**
-   * Returns a unique identifier for the field storage.
+   * Returns a unique identifier for the field.
    *
    * @return string
    */
   public function getUniqueStorageIdentifier();
-
-  /**
-   * Returns whether the field is deleted or not.
-   *
-   * @return bool
-   *   TRUE if the field is deleted, FALSE otherwise.
-   */
-  public function isDeleted();
 
 }

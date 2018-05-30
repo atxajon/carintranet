@@ -13,9 +13,7 @@ use Drupal\migrate\Plugin\MigrationInterface;
  *   core = {7},
  *   type_map = {
  *     "link_field" = "link"
- *   },
- *   source_module = "link",
- *   destination_module = "link"
+ *   }
  * )
  *
  * This plugin provides the exact same functionality as the Drupal 6 "link"

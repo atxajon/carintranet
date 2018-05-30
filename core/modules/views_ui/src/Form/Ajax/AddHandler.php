@@ -9,8 +9,6 @@ use Drupal\views\Views;
 
 /**
  * Provides a form for adding an item in the Views UI.
- *
- * @internal
  */
 class AddHandler extends ViewsFormBase {
 

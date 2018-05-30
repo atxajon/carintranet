@@ -372,6 +372,7 @@
       event.preventDefault();
     },
     duplicateGroupsOperator: function duplicateGroupsOperator() {
+      var dropdowns = void 0;
       var newRow = void 0;
       var titleRow = void 0;
 
@@ -384,7 +385,7 @@
       this.operator.find('label').add('div.description').addClass('visually-hidden');
       this.operator.find('select').addClass('form-select');
 
-      var dropdowns = this.operator;
+      dropdowns = this.operator;
 
       titleRow = $('tr#views-group-title-2');
       newRow = $('<tr class="filter-group-operator-row"><td colspan="5"></td></tr>');
@@ -586,10 +587,10 @@
       $(context).find('[data-drupal-selector="edit-override-dropdown"]').once('views-ui-override-button-text').each(function () {
         var $context = $(context);
         var $submit = $context.find('[id^=edit-submit]');
-        var oldValue = $submit.val();
+        var old_value = $submit.val();
 
         $submit.once('views-ui-override-button-text').on('mouseup', function () {
-          $(this).val(oldValue);
+          $(this).val(old_value);
           return true;
         });
 

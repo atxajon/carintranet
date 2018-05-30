@@ -16,9 +16,7 @@ use Drupal\migrate_drupal\Plugin\migrate\field\FieldPluginBase;
  *     "datestamp" =  "timestamp",
  *     "datetime" =  "datetime",
  *   },
- *   core = {6},
- *   source_module = "date",
- *   destination_module = "datetime"
+ *   core = {6}
  * )
  *
  * @deprecated in Drupal 8.4.x, to be removed before Drupal 9.0.x. Use
@@ -67,7 +65,7 @@ class DateField extends FieldPluginBase {
     ];
 
     $process = [
-      'plugin' => 'sub_process',
+      'plugin' => 'iterator',
       'source' => $field_name,
       'process' => $process,
     ];

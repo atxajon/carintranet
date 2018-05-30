@@ -331,7 +331,7 @@ class ViewExecutable {
   protected $request;
 
   /**
-   * Does this view already have loaded its handlers.
+   * Does this view already have loaded it's handlers.
    *
    * @todo Group with other static properties.
    *
@@ -618,6 +618,7 @@ class ViewExecutable {
     }
 
     $this->offset = $offset;
+
 
     // If the pager is already initialized, pass it through to the pager.
     if (!empty($this->pager)) {

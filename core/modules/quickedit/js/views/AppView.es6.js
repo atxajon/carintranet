@@ -231,9 +231,11 @@
             if (context && context.reason === 'mouseleave') {
               accept = false;
             }
-            // Check whether the transition has been confirmed?
-            else if (context && context.confirmed) {
-              accept = true;
+            else {
+              // Check whether the transition has been confirmed?
+              if (context && context.confirmed) {
+                accept = true;
+              }
             }
           }
         }

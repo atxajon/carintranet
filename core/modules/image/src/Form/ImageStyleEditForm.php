@@ -12,8 +12,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Controller for image style edit form.
- *
- * @internal
  */
 class ImageStyleEditForm extends ImageStyleFormBase {
 

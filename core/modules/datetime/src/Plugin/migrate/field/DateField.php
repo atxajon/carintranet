@@ -14,21 +14,10 @@ use Drupal\migrate_drupal\Plugin\migrate\field\FieldPluginBase;
  *     "datestamp" =  "timestamp",
  *     "datetime" =  "datetime",
  *   },
- *   core = {6,7},
- *   source_module = "date",
- *   destination_module = "datetime"
+ *   core = {6,7}
  * )
  */
 class DateField extends FieldPluginBase {
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getFieldFormatterMap() {
-    return [
-      'date_default' => 'datetime_default',
-    ];
-  }
 
   /**
    * {@inheritdoc}
@@ -71,7 +60,7 @@ class DateField extends FieldPluginBase {
     ];
 
     $process = [
-      'plugin' => 'sub_process',
+      'plugin' => 'iterator',
       'source' => $field_name,
       'process' => $process,
     ];

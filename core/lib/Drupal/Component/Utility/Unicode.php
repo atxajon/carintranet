@@ -548,7 +548,7 @@ EOD;
       // Find the last word boundary, if there is one within $min_wordsafe_length
       // to $max_length characters. preg_match() is always greedy, so it will
       // find the longest string possible.
-      $found = preg_match('/^(.{' . $min_wordsafe_length . ',' . $max_length . '})[' . Unicode::PREG_CLASS_WORD_BOUNDARY . ']/us', $string, $matches);
+      $found = preg_match('/^(.{' . $min_wordsafe_length . ',' . $max_length . '})[' . Unicode::PREG_CLASS_WORD_BOUNDARY . ']/u', $string, $matches);
       if ($found) {
         $string = $matches[1];
       }
@@ -603,13 +603,11 @@ EOD;
    *
    * @param string $string
    *   The header to encode.
-   * @param bool $shorten
-   *   If TRUE, only return the first chunk of a multi-chunk encoded string.
    *
    * @return string
    *   The mime-encoded header.
    */
-  public static function mimeHeaderEncode($string, $shorten = FALSE) {
+  public static function mimeHeaderEncode($string) {
     if (preg_match('/[^\x20-\x7E]/', $string)) {
       // floor((75 - strlen("=?UTF-8?B??=")) * 0.75);
       $chunk_size = 47;
@@ -618,9 +616,6 @@ EOD;
       while ($len > 0) {
         $chunk = static::truncateBytes($string, $chunk_size);
         $output .= ' =?UTF-8?B?' . base64_encode($chunk) . "?=\n";
-        if ($shorten) {
-          break;
-        }
         $c = strlen($chunk);
         $string = substr($string, $c);
         $len -= $c;

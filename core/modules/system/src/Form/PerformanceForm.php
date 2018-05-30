@@ -11,8 +11,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Configure performance settings for this site.
- *
- * @internal
  */
 class PerformanceForm extends ConfigFormBase {
 

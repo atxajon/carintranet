@@ -9,7 +9,6 @@ namespace Drupal\Tests\migrate\Kernel;
 
 use Drupal\Core\Database\Query\ConditionInterface;
 use Drupal\Core\Database\Query\SelectInterface;
-use Drupal\Core\Database\StatementInterface;
 use Drupal\migrate\Exception\RequirementsException;
 use Drupal\Core\Database\Database;
 use Drupal\migrate\Plugin\migrate\source\SqlBase;
@@ -47,8 +46,8 @@ class SqlBaseTest extends MigrateTestBase {
 
     // Verify that falling back to the default 'migrate' connection (defined in
     // the base class) works.
-    $this->assertSame('default', $sql_base->getDatabase()->getTarget());
-    $this->assertSame('migrate', $sql_base->getDatabase()->getKey());
+    $this->assertSame($sql_base->getDatabase()->getTarget(), 'default');
+    $this->assertSame($sql_base->getDatabase()->getKey(), 'migrate');
 
     // Verify the fallback state key overrides the 'migrate' connection.
     $target = 'test_fallback_target';
@@ -150,10 +149,10 @@ class SqlBaseTest extends MigrateTestBase {
       $source->getHighWaterStorage()->set($this->migration->id(), $high_water);
     }
 
-    $statement = $this->createMock(StatementInterface::class);
-    $statement->expects($this->atLeastOnce())->method('setFetchMode')->with(\PDO::FETCH_ASSOC);
-    $query = $this->createMock(SelectInterface::class);
-    $query->method('execute')->willReturn($statement);
+    $query_result = new \ArrayIterator($query_result);
+
+    $query = $this->getMock(SelectInterface::class);
+    $query->method('execute')->willReturn($query_result);
     $query->expects($this->atLeastOnce())->method('orderBy')->with('order', 'ASC');
 
     $condition_group = $this->getMock(ConditionInterface::class);

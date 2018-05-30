@@ -18,8 +18,6 @@ use Symfony\Component\Serializer\Serializer;
  */
 class TimestampItemNormalizerTest extends UnitTestCase {
 
-  use InternalTypedDataTestTrait;
-
   /**
    * @var \Drupal\serialization\Normalizer\TimestampItemNormalizer
    */
@@ -79,18 +77,8 @@ class TimestampItemNormalizerTest extends UnitTestCase {
     $timestamp_item->getIterator()
       ->willReturn(new \ArrayIterator(['value' => 1478422920]));
 
-    $value_property = $this->getTypedDataProperty(FALSE);
-    $timestamp_item->getProperties(TRUE)
-      ->willReturn(['value' => $value_property])
-      ->shouldBeCalled();
-
-    $serializer_prophecy = $this->prophesize(Serializer::class);
-
-    $serializer_prophecy->normalize($value_property, NULL, [])
-      ->willReturn(1478422920)
-      ->shouldBeCalled();
-
-    $this->normalizer->setSerializer($serializer_prophecy->reveal());
+    $serializer = new Serializer();
+    $this->normalizer->setSerializer($serializer);
 
     $normalized = $this->normalizer->normalize($timestamp_item->reveal());
     $this->assertSame($expected, $normalized);

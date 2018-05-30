@@ -218,8 +218,15 @@
         // different view mode).
         .where({ logicalFieldID: currentField.get('logicalFieldID') })
         .forEach((field) => {
-          // Ignore the current field and other fields with the same view mode.
-          if (field !== currentField && field.get('fieldID') !== currentField.get('fieldID')) {
+          // Ignore the current field.
+          if (field === currentField) {
+
+          }
+          // Also ignore other fields with the same view mode.
+          else if (field.get('fieldID') === currentField.get('fieldID')) {
+
+          }
+          else {
             otherViewModes.push(field.getViewMode());
           }
         });

@@ -4,7 +4,6 @@ namespace Drupal\rest\Plugin;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Plugin\PluginBase;
-use Drupal\Core\Routing\BcRoute;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Route;
@@ -115,24 +114,29 @@ abstract class ResourceBase extends PluginBase implements ContainerFactoryPlugin
 
     $methods = $this->availableMethods();
     foreach ($methods as $method) {
-      $path = $method === 'POST'
-        ? $create_path
-        : $canonical_path;
-      $route = $this->getBaseRoute($path, $method);
+      $route = $this->getBaseRoute($canonical_path, $method);
 
-      // Note that '_format' and '_content_type_format' route requirements are
-      // added in ResourceRoutes::getRoutesForResourceConfig().
-      $collection->add("$route_name.$method", $route);
+      switch ($method) {
+        case 'POST':
+          $route->setPath($create_path);
+          $collection->add("$route_name.$method", $route);
+          break;
 
-      // BC: the REST module originally created per-format GET routes, instead
-      // of a single route. To minimize the surface of this BC layer, this uses
-      // route definitions that are as empty as possible, plus an outbound route
-      // processor.
-      // @see \Drupal\rest\RouteProcessor\RestResourceGetRouteProcessorBC
-      if ($method === 'GET' || $method === 'HEAD') {
-        foreach ($this->serializerFormats as $format_name) {
-          $collection->add("$route_name.$method.$format_name", (new BcRoute())->setRequirement('_format', $format_name));
-        }
+        case 'GET':
+        case 'HEAD':
+          // Restrict GET and HEAD requests to the media type specified in the
+          // HTTP Accept headers.
+          foreach ($this->serializerFormats as $format_name) {
+            // Expose one route per available format.
+            $format_route = clone $route;
+            $format_route->addRequirements(['_format' => $format_name]);
+            $collection->add("$route_name.$method.$format_name", $format_route);
+          }
+          break;
+
+        default:
+          $collection->add("$route_name.$method", $route);
+          break;
       }
     }
 

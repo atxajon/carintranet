@@ -7,4 +7,3 @@ toolbar.tree:
     js/admin_toolbar.js: {}
   dependencies:
     - core/jquery
-    - core/drupal
