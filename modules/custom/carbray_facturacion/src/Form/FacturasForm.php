@@ -82,13 +82,19 @@ class FacturasForm extends FormBase {
 
       $options[$factura_id] = array(
         $factura_node->label(),
-        ($factura_node->get('field_factura_proforma')->value) ? t('Proforma') : 'Factura',
+        [
+          'data' => ($factura_node->get('field_factura_proforma')->value) ? t('Proforma') : 'Factura',
+          'class' => ['text-center'],
+        ],
         [
           'data' => $factura_node->get('field_factura_primera')->value,
           'class' => ['text-center'],
         ],
-        print_cliente_captadores_responsables($captacion_node->get('field_captacion_captador')
-          ->getValue()),
+        [
+          'data' => print_cliente_captadores_responsables($captacion_node->get('field_captacion_captador')
+            ->getValue()),
+          'class' => ['text-center'],
+        ],
         [
           'data' => $factura_node->get('field_factura_nif')->value,
           'class' => ['text-right'],
@@ -108,9 +114,9 @@ class FacturasForm extends FormBase {
 
     $header = [
       ['data' => 'Factura','field' => 'cliente'],
-      ['data' => 'Proforma / Factura','field' => 'proforma'],
+      ['data' => 'Proforma / Factura','field' => 'proforma', 'class' => ['text-center']],
       ['data' => 'Primera / Segunda','field' => 'primera', 'class' => ['text-center']],
-      ['data' => 'Captador','field' => 'captador'],
+      ['data' => 'Captador','field' => 'captador', 'class' => ['text-center']],
       ['data' => 'NIF','field' => 'nif', 'class' => ['text-right']],
       ['data' => 'IVA','field' => 'iva', 'class' => ['text-center']],
       ['data' => 'Precio','field' => 'precio', 'class' => ['text-right']],
