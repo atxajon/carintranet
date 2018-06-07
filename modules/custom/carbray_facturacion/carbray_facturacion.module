@@ -168,16 +168,16 @@ function get_excel_table($is_csv = FALSE) {
       '#has_plus' => TRUE,
     ];
     $header = [
-      ['data' => 'Fecha factura', 'field' => 'fecha_factura'],
-      ['data' => 'Numero factura', 'field' => 'numero_factura'],
-      ['data' => 'Captador', 'field' => 'captador'],
+      ['data' => 'Fecha fact.', 'field' => 'fecha_factura'],
+      ['data' => 'Nº fact.', 'field' => 'numero_factura'],
+      ['data' => 'Abogado', 'field' => 'captador'],
       [
-        'data' => 'Importe factura (B.I.)',
+        'data' => 'Imp. Fact. (B.I.)',
         'field' => 'importe_factura',
         'class' => ['text-right']
       ],
       [
-        'data' => 'Porcentaje base imponible',
+        'data' => '% Base Imponible',
         'field' => 'perc_imponible',
         'class' => ['text-center']
       ],
@@ -187,12 +187,12 @@ function get_excel_table($is_csv = FALSE) {
         'class' => ['text-right']
       ],
       [
-        'data' => 'Porcentaje comision',
+        'data' => '% Comisión',
         'field' => 'porcentaje_comision',
         'class' => ['text-center']
       ],
       ['data' => 'Comision', 'field' => 'comision', 'class' => ['text-right']],
-      ['data' => 'Fecha cobro factura', 'field' => 'fecha_cobro'],
+      ['data' => 'Fecha cobro', 'field' => 'fecha_cobro'],
       [
         'data' => 'Comentarios',
         'field' => 'comentarios',
@@ -278,7 +278,7 @@ function get_excel_table($is_csv = FALSE) {
 
       $rows[] = [
         'data' => [
-          date('d-m-Y', $factura_registrada->factura_created),
+          date('d/m/y', $factura_registrada->factura_created),
           $factura_registrada->title,
           $captador_name,
           [
@@ -301,7 +301,7 @@ function get_excel_table($is_csv = FALSE) {
             'data' => number_format($total_reparto_comision, 2, ',', '.') . '€',
             'class' => ['text-right'],
           ],
-          ($factura_registrada->fecha_cobro) ? date('d-m-Y', $factura_registrada->fecha_cobro) : '',
+          ($factura_registrada->fecha_cobro) ? date('d/m/y', $factura_registrada->fecha_cobro) : '',
           Markup::create($factura_registrada->descripcion),
           (!$is_admin) ? render($edit_button) : '',
         ],
@@ -311,7 +311,7 @@ function get_excel_table($is_csv = FALSE) {
       ];
 
       $rows_csv[] = [
-        date('d-m-Y', $factura_registrada->factura_created),
+        date('d/m/y', $factura_registrada->factura_created),
         $factura_registrada->title,
         $captador_name,
         number_format($factura_registrada->field_factura_precio_value, 2, ',', '.') . '€',
