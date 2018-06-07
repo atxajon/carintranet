@@ -955,3 +955,8 @@ textarea[rows="3"] + .cke .cke_contents {
 .path-excel-facturacion .table-responsive {
   clear: both;
 }
+
+.table.tablesorter > thead > tr > th {
+  vertical-align: middle;
+  padding: 20px;
+}

@@ -200,6 +200,21 @@ function get_excel_table($is_csv = FALSE) {
       ],
       ['data' => 'Editar', 'field' => 'editar'],
     ];
+
+//    $header = array(
+//      'Fecha fact.',
+//      'Nº fact.',
+//      'Abogado',
+//      'Imp. Fact. (B.I.)',
+//      '% Base Imponible',
+//      'Total reparto comision',
+//      '% Comisión',
+//      'Comision',
+//      'Comentarios',
+//      'Editar',
+//    );
+
+
   }
   // Determine whether this is carbray_facturacion.excel_facturacion or facturacion conjunta.
   $is_admin = FALSE;
@@ -388,12 +403,15 @@ function get_excel_table($is_csv = FALSE) {
     '#markup' => get_csv_link('carbray_facturacion.excel_csv', []),
   ];
 
+  $build['#attached']['library'][] = 'carbray/tablesorter';
+  $build['#attached']['library'][] = 'carbray/carbray_table_sorter';
+
   $build['tabla_excel_facturacion'] = [
     '#theme' => 'table',
     '#header' => $header,
     '#rows' => $rows,
     '#attributes' => [
-      'class' => ['tabla-excel'],
+      'class' => ['tabla-excel', 'tablesorter'],
     ],
     '#cache' => [
       'max-age' => 0,
