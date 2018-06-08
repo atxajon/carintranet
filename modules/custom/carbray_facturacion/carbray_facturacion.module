@@ -94,7 +94,7 @@ LEFT JOIN node__field_factura_fecha_cobro fc on nfd.nid = fc.entity_id
 INNER JOIN node__field_expediente_captacion ec on ec.field_expediente_captacion_target_id = ff.field_factura_target_id
 WHERE ec.entity_id IN (SELECT entity_id FROM node__field_expediente_responsable WHERE field_expediente_responsable_target_id = :author_uid) 
 AND comision IS NOT NULL
-ORDER BY nid DESC";
+ORDER BY nid ASC";
   $captacion_nid = $db->query($sql, [':author_uid' => $factura_author_uid])->fetchAll();
   return $captacion_nid;
 }
@@ -132,7 +132,7 @@ INNER JOIN node__field_captacion_cliente capt_cli on capt_cli.entity_id = cc.ent
 INNER JOIN node__field_factura_precio precio on precio.entity_id = ff.entity_id
 LEFT JOIN node__field_factura_fecha_cobro fc on nfd.nid = fc.entity_id 
 WHERE comision IS NOT NULL
-ORDER BY nid DESC";
+ORDER BY nid ASC";
   $facturas_data = $db->query($sql)->fetchAll();
   return $facturas_data;
 }
