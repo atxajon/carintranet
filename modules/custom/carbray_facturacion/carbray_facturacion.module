@@ -344,7 +344,7 @@ function get_excel_table($is_csv = FALSE) {
       $last_nid = $factura_registrada->nid;
     }
     // Adds totals row.
-    $rows[] = [
+    $footer_row[] = [
       Markup::create('<b>Total:</b>'),
       '',
       '',
@@ -410,6 +410,7 @@ function get_excel_table($is_csv = FALSE) {
     '#theme' => 'table',
     '#header' => $header,
     '#rows' => $rows,
+    '#footer' => $footer_row,
     '#attributes' => [
       'class' => ['tabla-excel', 'tablesorter'],
     ],
