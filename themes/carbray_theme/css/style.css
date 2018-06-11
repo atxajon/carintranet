@@ -945,7 +945,7 @@ textarea[rows="3"] + .cke .cke_contents {
   text-transform: capitalize;
 }
 
-.comentarios-col {
+.comentarios-col, .form-item-last-months {
   width: 33%;
 }
 
