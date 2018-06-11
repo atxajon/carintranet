@@ -130,8 +130,16 @@ AND comision IS NOT NULL";
   return $captacion_nid;
 }
 
-function get_my_departamento_facturas_registradas($departamento_tid) {
+function get_my_departamento_facturas_registradas($departamento_tid, $dates = []) {
+  // If no dates passed in default to current ongoing month dates.
+  if (!$dates) {
+    $first_day_of_month = date('F jS Y h:i:s A', strtotime('first day of ' . date('Y-m-01' )));
+    $first_day_of_month_time = strtotime($first_day_of_month. " UTC");
+  }
+
   $db = \Drupal::database();
+  $params = [];
+
   $sql = "SELECT cfr.id as registro_id, nid, cfr.captacion_nid, cfr.factura_nid, cfr.expediente_nid, title, field_captacion_captador_target_id, field_factura_precio_value, comision, created as factura_created, descripcion, field_factura_fecha_cobro_value as fecha_cobro 
 FROM carbray_facturas_registro cfr
 INNER JOIN node__field_factura ff on cfr.factura_nid = ff.entity_id
@@ -142,9 +150,19 @@ INNER JOIN node__field_factura_precio precio on precio.entity_id = ff.entity_id
 LEFT JOIN node__field_factura_fecha_cobro fc on nfd.nid = fc.entity_id 
 INNER JOIN user__field_departamento fd on fd.entity_id = cc.field_captacion_captador_target_id
 WHERE field_departamento_target_id = :dept_tid
-AND comision IS NOT NULL
-ORDER BY nid DESC";
-  $facturas_data = $db->query($sql, [':dept_tid' => $departamento_tid])->fetchAll();
+AND comision IS NOT NULL";
+  if ($dates) {
+    $sql .= " AND created BETWEEN :date_from AND :date_to";
+    $params = [':dept_tid' => $departamento_tid, ':date_from' => $dates['date_from'], ':date_to' => $dates['date_to']];
+  }
+  else {
+    $sql .= " AND created > :date_from";
+    $params = [':dept_tid' => $departamento_tid, ':date_from' => $first_day_of_month_time];
+  }
+
+  $sql .= " ORDER BY nid ASC";
+
+  $facturas_data = $db->query($sql, $params)->fetchAll();
   return $facturas_data;
 }
 
