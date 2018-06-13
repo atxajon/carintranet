@@ -84,7 +84,7 @@ function carbray_mailer_factura_paid($params) {
 
 /**
  * Custom submit handler for add factura node form;
- * Takes form values and sends them in an email to users of role secretaria.
+ * Takes form values and sends them in an email to users of role secretaria, as well as current user submitting the form.
  * @param array $form
  * @param FormStateInterface $form_state
  */
@@ -132,6 +132,10 @@ function send_email_secretaria(array &$form, FormStateInterface $form_state){
   ];
 
   $secretarias = get_carbray_workers(TRUE, 'secretaria');
+
+  // Add CC'in email to current worker that submit the factura form.
+  $current_worker = \Drupal::database()->query("SELECT uid, mail FROM users_field_data ufd INNER JOIN user__roles ur on ur.entity_id = ufd.uid WHERE uid = :uid", [':uid' => \Drupal::currentUser()->id()])->fetchObject();
+  $secretarias[] = $current_worker->mail;
   foreach ($secretarias as $secretaria) {
     $to = $secretaria;
     $mailManager = \Drupal::service('plugin.manager.mail');
