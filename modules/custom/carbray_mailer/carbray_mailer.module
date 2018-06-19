@@ -125,7 +125,7 @@ function send_email_secretaria(array &$form, FormStateInterface $form_state){
     'direccion' => $direccion[0]['value'],
     'provision_fondos' => $prov_fondo[0]['value'],
     'servicios' => $all_servicios,
-    'iva' => $iva['value'],
+    'iva' => $iva,
     'in_house' => $in_house_client['value'],
     'captacion_date' => $captacion_date,
     'invoice_count' => 'count of invoice',

@@ -828,7 +828,8 @@ textarea[rows="3"] + .cke .cke_contents {
   .field--name-field-factura-iva {
     margin-top: 40px;
   }
-  .form-item-field-factura-primera {
+  .form-item-field-factura-primera,
+  .form-item-field-factura-iva {
     width: 32.3%;
   }
 

@@ -107,7 +107,13 @@ function carbray_form_node_form_alter(&$form, &$form_state, $form_id) {
       '#type' => 'hidden',
       '#value' => $captacion_node->created->value,
     );
-
+    $form['field_factura_iva']['widget']['#type'] = 'select';
+    $form['field_factura_iva']['widget']['#empty_option'] = ' - Selecciona - ';
+    unset($form['field_factura_iva']['widget']['#default_value']);
+    $form['field_factura_iva']['widget']['#options'] = [
+      1 => 'IVA no Incluido',
+      0 => 'Exento de IVA',
+    ];
     $form['field_factura_servicios']['widget']['add_more_button_servicio']['#value'] = t('Añadir otro servicio');
 
 

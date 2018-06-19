@@ -7,7 +7,7 @@
       });
 
       // Fire calculation on iva radio button select change.
-      $('#edit-field-factura-iva-value', context).once('factura_calculator').on('change', function () {
+      $('#edit-field-factura-iva', context).once('factura_calculator').on('change', function () {
         do_calculation();
       });
 
@@ -30,7 +30,8 @@
           servicios_total += this_servicio;
         });
 
-        if ($('#edit-field-factura-iva-value').is(':checked')) {
+        if ($('#edit-field-factura-iva').val() == 1) {
+          // 'IVA No incluido selected; let's add it.
           total = servicios_total + servicios_total * 0.21;
         }
         else {
@@ -56,6 +57,7 @@
           event.preventDefault();
         }
       });
+
 
 
       /**
