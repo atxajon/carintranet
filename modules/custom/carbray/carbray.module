@@ -75,21 +75,27 @@ function carbray_form_node_form_alter(&$form, &$form_state, $form_id) {
       '#title' => 'Cliente',
       '#default_value' => $cliente_data->get('field_nombre')->value . ' ' . $cliente_data->get('field_apellido')->value,
       '#disabled' => TRUE,
-      '#prefix' => '<div class="clearfix">',
+      '#prefix' => '<h3>Datos del cliente</h3>',
+      '#attributes' => ['class' => ['col-sm-3', 'un-form-control']],
     );
     $form['email'] = array(
       '#type' => 'textfield',
       '#title' => 'Email',
       '#default_value' => $cliente_data->getEmail(),
       '#disabled' => TRUE,
+      '#attributes' => ['class' => ['col-sm-3', 'un-form-control']],
     );
     $form['telefono'] = array(
       '#type' => 'textfield',
       '#title' => 'Telefono',
       '#default_value' => $cliente_data->get('field_telefono')->value,
       '#disabled' => TRUE,
-      '#suffix' => '</div>',
+      '#attributes' => ['class' => ['col-sm-3', 'un-form-control']],
     );
+    $form['field_factura_direccion']['widget'][0]['value']['#attributes']['class'][] = 'col-sm-3';
+    $form['field_factura_direccion']['widget'][0]['value']['#attributes']['class'][] = 'un-form-control';
+    $form['field_factura_nif']['widget'][0]['value']['#attributes']['class'][] = 'col-sm-3';
+    $form['field_factura_nif']['widget'][0]['value']['#attributes']['class'][] = 'un-form-control';
 
     $form['captacion_nid'] = array(
       '#type' => 'hidden',
@@ -114,8 +120,12 @@ function carbray_form_node_form_alter(&$form, &$form_state, $form_id) {
       1 => 'IVA no Incluido',
       0 => 'Exento de IVA',
     ];
-    $form['field_factura_servicios']['widget']['add_more_button_servicio']['#value'] = t('Añadir otro servicio');
+    $form['field_factura_iva']['widget'][0]['value']['#attributes']['class'][] = 'col-sm-3';
+    $form['field_factura_iva']['widget'][0]['value']['#attributes']['class'][] = 'un-form-control';
+    $form['field_factura_provision_de_fondo']['widget'][0]['value']['#attributes']['class'][] = 'un-form-control';
+    $form['field_factura_provision_de_fondo']['widget'][0]['value']['#attributes']['class'][] = 'col-sm-3';
 
+    $form['field_factura_servicios']['widget']['add_more_button_servicio']['#value'] = t('Añadir otro servicio');
 
     $username_for_factura_title = $cliente_data->get('field_nombre')->value;
     $username_for_factura_title .= (isset($cliente_data->get('field_apellido')->value)) ? ' ' . $cliente_data->get('field_apellido')->value : '';

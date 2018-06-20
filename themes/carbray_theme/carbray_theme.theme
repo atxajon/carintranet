@@ -71,6 +71,69 @@ function carbray_theme_preprocess_form_element_label(&$variables) {
   if ($form_id == 'user_login_form' && ($id == 'edit-name' OR $id == 'edit-pass')) {
     $variables['title_display'] = 'invisible';
   }
+  if ($form_id == 'node_factura_form') {
+    // Labels to bootstrapify.
+    $labels_colsm3 = [
+      'edit-cliente',
+      'edit-email',
+      'edit-telefono',
+      'edit-field-factura-nif-0-value',
+      'edit-field-factura-direccion-0-value',
+      'edit-field-factura-provision-de-fondo-0-value',
+      'edit-field-factura-iva',
+    ];
+    if (in_array($id, $labels_colsm3)) {
+      $variables['attributes']->addClass('col-sm-3');
+      $variables['attributes']->addClass('text-right');
+      $variables['attributes']->addClass('inline-label');
+    }
+  }
+}
+
+/**
+ * Implements template_preprocess_form_element().
+ *
+ * @param $variables
+ */
+function carbray_theme_preprocess_form_element(&$variables) {
+  $form_id = isset($variables['element']['#form_id']) ? $variables['element']['#form_id'] : '';
+  if ($form_id == 'node_factura_form') {
+    // Node factura form  textfields lose the form-control class.
+    $id = isset($variables['element']['#id']) ? $variables['element']['#id'] : '';
+    // Form element wrappers to bootstrapify.
+    $form_elements = [
+      'edit-cliente',
+      'edit-email',
+      'edit-telefono',
+      'edit-field-factura-nif-0-value',
+      'edit-field-factura-direccion-0-value',
+      'edit-field-factura-provision-de-fondo-0-value',
+      'edit-field-factura-iva',
+    ];
+    if (in_array($id, $form_elements)) {
+      $variables['attributes']['class'][] = 'row';
+    }
+  }
+}
+
+/**
+ * Implements template_preprocess_select().
+ *
+ * @param $variables
+ */
+function carbray_theme_preprocess_select(&$variables) {
+  $form_id = isset($variables['element']['#form_id']) ? $variables['element']['#form_id'] : '';
+  if ($form_id == 'node_factura_form') {
+    // Node factura form  textfields lose the form-control class.
+    $id = isset($variables['element']['#id']) ? $variables['element']['#id'] : '';
+    // Form element wrappers to bootstrapify.
+    $form_elements = [
+      'edit-field-factura-iva',
+    ];
+    if (in_array($id, $form_elements)) {
+      $variables['element'][0]['value']['attributes']['class'][] = 'col-sm-3';
+    }
+  }
 }
 
 /**

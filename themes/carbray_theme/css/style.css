@@ -218,6 +218,14 @@ ul {
   float: right;
 }
 
+.inline-label {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+.un-form-control {
+  width: auto;
+}
+
 input[type=number] {
   -webkit-appearance: textfield;
   -moz-appearance: textfield;
@@ -809,32 +817,35 @@ textarea[rows="3"] + .cke .cke_contents {
     position: relative;
     top: 26px;
   }
-  .node-factura-form .form-item-cliente,
-  .node-factura-form .form-item-email,
-  .node-factura-form .form-item-telefono,
-  .node-factura-form .form-item-coste-fieldset-precio,
-  .node-factura-form #edit-coste-fieldset-iva--wrapper,
-  .node-factura-form .form-item-coste-fieldset-importe-total,
-  .node-factura-form .form-item-field-factura-direccion-0-value,
-  .node-factura-form .field--name-field-factura-nif {
-    float: left;
-    width: 32.3%;
-    margin-right: 1%;
-  }
-  .field--name-field-factura-nif,
+  /*.node-factura-form .form-item-cliente,*/
+  /*.node-factura-form .form-item-email,*/
+  /*.node-factura-form .form-item-telefono,*/
+  /*.node-factura-form .form-item-coste-fieldset-precio,*/
+  /*.node-factura-form #edit-coste-fieldset-iva--wrapper,*/
+  /*.node-factura-form .form-item-coste-fieldset-importe-total,*/
+  /*.node-factura-form .form-item-field-factura-direccion-0-value,*/
+  /*.node-factura-form .field--name-field-factura-nif {*/
+    /*float: left;*/
+    /*width: 32.3%;*/
+    /*margin-right: 1%;*/
+  /*}*/
   .field--name-field-factura-proforma {
     margin-bottom: 50px;
   }
   .field--name-field-factura-iva {
     margin-top: 40px;
   }
-  .form-item-field-factura-primera,
-  .form-item-field-factura-iva {
+  .form-item-field-factura-primera {
     width: 32.3%;
   }
 
   .field--name-field-factura-in-house-client {
     clear: both;
+  }
+
+  .form-item-field-factura-iva .select-wrapper {
+    float: left;
+    width: 33%;
   }
 
   .node-factura-form .paragraphs-subform .form-wrapper {
@@ -869,18 +880,11 @@ textarea[rows="3"] + .cke .cke_contents {
     margin-right: 50px;
   }
 
-  .node-factura-form .form-item-field-factura-provision-de-fondo-0-value .control-label,
-  .node-factura-form .form-item-field-factura-precio-0-value .control-label {
-    width: 15%;
-  }
-
   .new-factura legend {
     display: none;
     border: none;
   }
-  .new-factura .form-item-provision-fondos {
-    clear: both;
-  }
+
   #edit-coste-fieldset .panel-title,
   #edit-names-fieldset .panel-title {
     color: black;
