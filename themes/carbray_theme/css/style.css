@@ -835,17 +835,18 @@ textarea[rows="3"] + .cke .cke_contents {
   .field--name-field-factura-iva {
     margin-top: 40px;
   }
-  .form-item-field-factura-primera {
-    width: 32.3%;
-  }
 
   .field--name-field-factura-in-house-client {
     clear: both;
   }
 
-  .form-item-field-factura-iva .select-wrapper {
+  .form-item-field-factura-iva .select-wrapper,
+  .form-item-field-factura-primera .select-wrapper,
+  .form-item-field-factura-in-house-client .select-wrapper,
+  .form-item-field-factura-proforma .select-wrapper,
+  .form-item-field-factura-provision-de-fondo-0-value .form-control {
     float: left;
-    width: 33%;
+    width: 32.3%;
   }
 
   .node-factura-form .paragraphs-subform .form-wrapper {

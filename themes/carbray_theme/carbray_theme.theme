@@ -81,6 +81,10 @@ function carbray_theme_preprocess_form_element_label(&$variables) {
       'edit-field-factura-direccion-0-value',
       'edit-field-factura-provision-de-fondo-0-value',
       'edit-field-factura-iva',
+      'edit-field-factura-primera',
+      'edit-field-factura-precio-0-value',
+      'edit-field-factura-in-house-client',
+      'edit-field-factura-proforma',
     ];
     if (in_array($id, $labels_colsm3)) {
       $variables['attributes']->addClass('col-sm-3');
@@ -109,6 +113,10 @@ function carbray_theme_preprocess_form_element(&$variables) {
       'edit-field-factura-direccion-0-value',
       'edit-field-factura-provision-de-fondo-0-value',
       'edit-field-factura-iva',
+      'edit-field-factura-primera',
+      'edit-field-factura-precio-0-value',
+      'edit-field-factura-in-house-client',
+      'edit-field-factura-proforma',
     ];
     if (in_array($id, $form_elements)) {
       $variables['attributes']['class'][] = 'row';
