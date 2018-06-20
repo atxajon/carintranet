@@ -308,6 +308,30 @@ function carbray_theme_theme_suggestions_field_alter(&$suggestions, $vars, $hook
 /**
  * Implements hook_theme_suggestions_HOOK_alter().
  */
+function carbray_theme_theme_suggestions_input_alter(&$suggestions, $vars, $hook) {
+  $element = $vars['element'];
+  // Node factura form's elements lose the .form-control class and add new ones on dedicated template.
+  if (isset($element['#form_id']) && $element['#form_id'] == 'node_factura_form') {
+    if ($element['#type'] == 'textfield' || $element['#type'] == 'number') {
+      $inputs_to_theme = [
+        'edit-cliente',
+        'edit-email',
+        'edit-telefono',
+        'edit-field-factura-nif-0-value',
+        'edit-field-factura-direccion-0-value',
+        'edit-field-factura-provision-de-fondo-0-value',
+        'edit-field-factura-precio-0-value',
+      ];
+      if (in_array($element['#id'], $inputs_to_theme)) {
+        $suggestions[] = 'input__unform_control';
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ */
 function carbray_theme_theme_suggestions_page_alter(array &$suggestions, array $variables) {
   // Add content type suggestions.
   if ($node = \Drupal::request()->attributes->get('node')) {

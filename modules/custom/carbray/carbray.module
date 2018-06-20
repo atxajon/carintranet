@@ -76,26 +76,19 @@ function carbray_form_node_form_alter(&$form, &$form_state, $form_id) {
       '#default_value' => $cliente_data->get('field_nombre')->value . ' ' . $cliente_data->get('field_apellido')->value,
       '#disabled' => TRUE,
       '#prefix' => '<h3>Datos del cliente</h3>',
-      '#attributes' => ['class' => ['col-sm-3', 'un-form-control']],
     );
     $form['email'] = array(
       '#type' => 'textfield',
       '#title' => 'Email',
       '#default_value' => $cliente_data->getEmail(),
       '#disabled' => TRUE,
-      '#attributes' => ['class' => ['col-sm-3', 'un-form-control']],
     );
     $form['telefono'] = array(
       '#type' => 'textfield',
       '#title' => 'Telefono',
       '#default_value' => $cliente_data->get('field_telefono')->value,
       '#disabled' => TRUE,
-      '#attributes' => ['class' => ['col-sm-3', 'un-form-control']],
     );
-    $form['field_factura_direccion']['widget'][0]['value']['#attributes']['class'][] = 'col-sm-3';
-    $form['field_factura_direccion']['widget'][0]['value']['#attributes']['class'][] = 'un-form-control';
-    $form['field_factura_nif']['widget'][0]['value']['#attributes']['class'][] = 'col-sm-3';
-    $form['field_factura_nif']['widget'][0]['value']['#attributes']['class'][] = 'un-form-control';
 
     $form['captacion_nid'] = array(
       '#type' => 'hidden',
@@ -113,7 +106,7 @@ function carbray_form_node_form_alter(&$form, &$form_state, $form_id) {
       '#type' => 'hidden',
       '#value' => $captacion_node->created->value,
     );
-    $form['field_factura_primera']['#prefix'] = '<h3 class="margin-top-35">Datos de la factura</h3>';
+    $form['field_factura_primera']['#prefix'] = '<h3 class="margin-top-50 margin-bottom-35">Datos de la factura</h3>';
 
     $form['field_factura_iva']['widget']['#type'] = 'select';
     $form['field_factura_iva']['widget']['#empty_option'] = ' - Selecciona - ';
@@ -123,7 +116,6 @@ function carbray_form_node_form_alter(&$form, &$form_state, $form_id) {
       0 => 'Exento de IVA',
     ];
     $form['field_factura_iva']['widget'][0]['value']['#attributes']['class'][] = 'col-sm-3';
-    $form['field_factura_iva']['widget'][0]['value']['#attributes']['class'][] = 'un-form-control';
 
     $form['field_factura_in_house_client']['widget']['#type'] = 'select';
     $form['field_factura_in_house_client']['widget']['#empty_option'] = ' - Selecciona - ';
@@ -132,27 +124,15 @@ function carbray_form_node_form_alter(&$form, &$form_state, $form_id) {
       1 => 'In House Client',
       0 => 'No',
     ];
-    $form['field_factura_in_house_client']['widget'][0]['value']['#attributes']['class'][] = 'col-sm-3';
-    $form['field_factura_in_house_client']['widget'][0]['value']['#attributes']['class'][] = 'un-form-control';
     $form['field_factura_in_house_client']['widget'][0]['value']['#attributes']['class'][] = 'margin-bottom-70';
 
     $form['field_factura_proforma']['widget']['#type'] = 'select';
     $form['field_factura_proforma']['widget']['#empty_option'] = ' - Selecciona - ';
     unset($form['field_factura_proforma']['widget']['#default_value']);
     $form['field_factura_proforma']['widget']['#options'] = [
-      1 => 'Es Proforma',
-      0 => 'No',
+      1 => 'Proforma',
+      0 => 'Factura',
     ];
-    $form['field_factura_proforma']['widget'][0]['value']['#attributes']['class'][] = 'col-sm-3';
-    $form['field_factura_proforma']['widget'][0]['value']['#attributes']['class'][] = 'un-form-control';
-
-
-    $form['field_factura_provision_de_fondo']['widget'][0]['value']['#attributes']['class'][] = 'un-form-control';
-    $form['field_factura_provision_de_fondo']['widget'][0]['value']['#attributes']['class'][] = 'col-sm-3';
-    $form['field_factura_primera']['widget'][0]['value']['#attributes']['class'][] = 'col-sm-3';
-    $form['field_factura_primera']['widget'][0]['value']['#attributes']['class'][] = 'un-form-control';
-    $form['field_factura_precio']['widget'][0]['value']['#attributes']['class'][] = 'col-sm-3';
-    $form['field_factura_precio']['widget'][0]['value']['#attributes']['class'][] = 'un-form-control';
 
     $form['field_factura_servicios']['widget']['add_more_button_servicio']['#value'] = t('Añadir otro servicio');
 
