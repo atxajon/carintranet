@@ -115,20 +115,15 @@ function carbray_form_node_form_alter(&$form, &$form_state, $form_id) {
       1 => 'IVA no Incluido',
       0 => 'Exento de IVA',
     ];
-    $form['field_factura_iva']['widget'][0]['value']['#attributes']['class'][] = 'col-sm-3';
 
     $form['field_factura_in_house_client']['widget']['#type'] = 'select';
-    $form['field_factura_in_house_client']['widget']['#empty_option'] = ' - Selecciona - ';
-    unset($form['field_factura_in_house_client']['widget']['#default_value']);
     $form['field_factura_in_house_client']['widget']['#options'] = [
       1 => 'In House Client',
       0 => 'No',
     ];
-    $form['field_factura_in_house_client']['widget'][0]['value']['#attributes']['class'][] = 'margin-bottom-70';
 
+    $form['field_factura_in_house_client']['widget'][0]['value']['#attributes']['class'][] = 'margin-bottom-70';
     $form['field_factura_proforma']['widget']['#type'] = 'select';
-    $form['field_factura_proforma']['widget']['#empty_option'] = ' - Selecciona - ';
-    unset($form['field_factura_proforma']['widget']['#default_value']);
     $form['field_factura_proforma']['widget']['#options'] = [
       1 => 'Proforma',
       0 => 'Factura',
@@ -158,6 +153,8 @@ function carbray_form_node_form_alter(&$form, &$form_state, $form_id) {
     // the form prompts you to confirm removal of first servicio added!
     // Let's leave it then commented out...
     // $form['actions']['submit']['#value'] = t('Crear factura / proforma');
+
+    $form['actions']['submit']['#attributes']['class'][] = 'col-sm-offset-3';
 
     foreach (array_keys($form['actions']) as $action) {
       if ($action != 'preview' && isset($form['actions'][$action]['#type']) && $form['actions'][$action]['#type'] === 'submit') {
