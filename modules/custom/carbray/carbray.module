@@ -118,15 +118,15 @@ function carbray_form_node_form_alter(&$form, &$form_state, $form_id) {
 
     $form['field_factura_in_house_client']['widget']['#type'] = 'select';
     $form['field_factura_in_house_client']['widget']['#options'] = [
-      1 => 'In House Client',
       0 => 'No',
+      1 => 'Si',
     ];
 
     $form['field_factura_in_house_client']['widget'][0]['value']['#attributes']['class'][] = 'margin-bottom-70';
     $form['field_factura_proforma']['widget']['#type'] = 'select';
     $form['field_factura_proforma']['widget']['#options'] = [
-      1 => 'Proforma',
       0 => 'Factura',
+      1 => 'Proforma',
     ];
 
     $form['field_factura_servicios']['widget']['add_more_button_servicio']['#value'] = t('Añadir otro servicio');

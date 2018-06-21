@@ -89,6 +89,11 @@ function get_cliente_nombre($uid) {
   return $user->get('field_nombre')->value . ' ' . $user->get('field_apellido')->value;
 }
 
+function get_cliente_uid($email) {
+  $uid = Drupal::database()->query("SELECT uid FROM users_field_data WHERE mail = :mail", [':mail' => $email])->fetchField();
+  return $uid;
+}
+
 /**
  * Gets clientes uids where a given worker has them as Captador node's captador OR Expediente node's responsable.
  */
