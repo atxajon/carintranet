@@ -858,12 +858,9 @@ textarea[rows="3"] + .cke .cke_contents {
     /*width: 32.3%;*/
     /*margin-right: 1%;*/
   /*}*/
-  .field--name-field-factura-iva {
-    margin-top: 40px;
-  }
 
-  .field--name-field-factura-in-house-client {
-    clear: both;
+  .form-item-field-factura-provision-de-fondo-0-value {
+    margin-top: 40px;
   }
 
   .node-factura-form .paragraphs-subform .form-wrapper {
@@ -879,7 +876,9 @@ textarea[rows="3"] + .cke .cke_contents {
   .field--name-field-coste-servicio .form-number {
     width: 100%;
   }
-  .form-item-field-factura-precio-0-value .carbray-form-control {
+  .form-item-field-factura-precio-0-value .carbray-form-control,
+  .form-item-iva .carbray-form-control,
+  .form-item-precio-sin-iva .carbray-form-control {
     border: 0;
     box-shadow: none;
     font-weight: bold;

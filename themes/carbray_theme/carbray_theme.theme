@@ -85,6 +85,8 @@ function carbray_theme_preprocess_form_element_label(&$variables) {
       'edit-field-factura-precio-0-value',
       'edit-field-factura-in-house-client',
       'edit-field-factura-proforma',
+      'edit-iva',
+      'edit-precio-sin-iva',
     ];
     if (in_array($id, $labels_colsm3)) {
       $variables['attributes']->addClass('col-sm-3');
@@ -117,6 +119,8 @@ function carbray_theme_preprocess_form_element(&$variables) {
       'edit-field-factura-precio-0-value',
       'edit-field-factura-in-house-client',
       'edit-field-factura-proforma',
+      'edit-iva',
+      'edit-precio-sin-iva',
     ];
     if (in_array($id, $form_elements)) {
       $variables['attributes']['class'][] = 'row';
@@ -321,6 +325,8 @@ function carbray_theme_theme_suggestions_input_alter(&$suggestions, $vars, $hook
         'edit-field-factura-direccion-0-value',
         'edit-field-factura-provision-de-fondo-0-value',
         'edit-field-factura-precio-0-value',
+        'edit-iva',
+        'edit-precio-sin-iva',
       ];
       if (in_array($element['#id'], $inputs_to_theme)) {
         $suggestions[] = 'input__unform_control';

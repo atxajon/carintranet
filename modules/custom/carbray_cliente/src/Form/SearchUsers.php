@@ -106,8 +106,6 @@ class SearchUsers extends FormBase {
     // Most lileky reason: copy pasted an email into textfield and hit enter;
     // Let's clean the string value, do a lookup on the system and return the uid for that email.
     $probably_email = trim($string);
-    \Drupal::logger('$probably_email')->notice(print_r($probably_email, TRUE));
-
     if (!filter_var($probably_email, FILTER_VALIDATE_EMAIL)) {
       // No match for the email in the system. Throw error.
       $form_state->setErrorByName('uid', $this->t('Selecciona un cliente de la lista.'));

@@ -20,6 +20,9 @@
         var servicios_total = 0;
         var prov_fondos = 0;
         var total = 0;
+        var iva = 0;
+        var prov_fondos_iva = 0;
+        var total_sin_iva = 0;
 
         $('.field--name-field-factura-servicios .form-number').each(function( index ) {
           var this_servicio = parseFloat($(this).val());
@@ -30,24 +33,27 @@
           servicios_total += this_servicio;
         });
 
-        if ($('#edit-field-factura-iva').val() == 1) {
-          // 'IVA No incluido selected; let's add it.
-          total = servicios_total + servicios_total * 0.21;
-        }
-        else {
-          total = servicios_total;
-        }
-
         prov_fondos = parseFloat($('#edit-field-factura-provision-de-fondo-0-value').val());
         // If var is undefined (NaN).
         if (prov_fondos !== prov_fondos) {
           prov_fondos = 0;
         }
-        total += prov_fondos;
-        total = total.toFixed(2);
-        // total += 'what';
+
+        total_sin_iva = servicios_total + prov_fondos;
+
+        if ($('#edit-field-factura-iva').val() == 1) {
+          // 'Incluir IVA selected; let's add it.
+          iva = servicios_total * 0.21;
+          prov_fondos_iva = prov_fondos * 0.21;
+          iva += prov_fondos_iva;
+        }
+
+        iva = iva.toFixed(2);
+        total = parseFloat(total_sin_iva) + parseFloat(iva);
 
         $('#edit-field-factura-precio-0-value').val(total);
+        $('#edit-precio-sin-iva').val(total_sin_iva);
+        $('#edit-iva').val(iva);
       }
 
       // Prevent from accidentaly typing 'enter' key on servicios adding,
@@ -57,7 +63,6 @@
           event.preventDefault();
         }
       });
-
 
 
       /**

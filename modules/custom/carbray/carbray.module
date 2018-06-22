@@ -112,7 +112,7 @@ function carbray_form_node_form_alter(&$form, &$form_state, $form_id) {
     $form['field_factura_iva']['widget']['#empty_option'] = ' - Selecciona - ';
     unset($form['field_factura_iva']['widget']['#default_value']);
     $form['field_factura_iva']['widget']['#options'] = [
-      1 => 'IVA no Incluido',
+      1 => 'Incluir IVA',
       0 => 'Exento de IVA',
     ];
 
@@ -145,6 +145,24 @@ function carbray_form_node_form_alter(&$form, &$form_state, $form_id) {
     $form['field_factura']['#attributes']['class'][] = 'hidden';
     $form['field_factura_pagada']['#access'] = FALSE;
     $form['field_factura_fecha_cobro']['#access'] = FALSE;
+
+//    $form['field_factura_provision_de_fondo']['#weight'] = 12;
+//    $form['field_factura_iva']['#weight'] = 1;
+//    $form['field_factura_iva']['widget'][0]['#weight'] = 40;
+
+    $form['iva'] = [
+      '#type' => 'textfield',
+      '#title' => 'IVA:',
+      '#weight' => 16,
+    ];
+    $form['precio_sin_iva'] = [
+      '#type' => 'textfield',
+      '#title' => 'Precio sin IVA:',
+      '#weight' => 16,
+    ];
+
+//    $form['field_factura_precio']['#weight'] = 80;
+//    $form['field_factura_precio']['widget'][0]['#weight'] = 80;
 
     unset($form['revision_information']);
     unset($form['revision_log']);
