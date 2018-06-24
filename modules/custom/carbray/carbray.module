@@ -154,12 +154,15 @@ function carbray_form_node_form_alter(&$form, &$form_state, $form_id) {
       '#type' => 'textfield',
       '#title' => 'IVA:',
       '#weight' => 16,
+      '#disabled' => TRUE,
     ];
     $form['precio_sin_iva'] = [
       '#type' => 'textfield',
       '#title' => 'Precio sin IVA:',
       '#weight' => 16,
+      '#disabled' => TRUE,
     ];
+    
 
 //    $form['field_factura_precio']['#weight'] = 80;
 //    $form['field_factura_precio']['widget'][0]['#weight'] = 80;

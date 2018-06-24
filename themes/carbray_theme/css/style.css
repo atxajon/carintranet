@@ -883,6 +883,8 @@ textarea[rows="3"] + .cke .cke_contents {
     box-shadow: none;
     font-weight: bold;
     font-size: 18px;
+    cursor: not-allowed;
+    background: white;
   }
 
   .node-factura-form .paragraph-type-title,

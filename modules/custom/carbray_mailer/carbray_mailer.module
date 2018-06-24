@@ -113,6 +113,7 @@ function send_email_secretaria(array &$form, FormStateInterface $form_state){
       ];
     }
   }
+
   $params = [
     'nif' => $nif[0]['value'],
     'primera_segunda' => $primera_segunda,
@@ -121,12 +122,12 @@ function send_email_secretaria(array &$form, FormStateInterface $form_state){
     'email' => $form_state->getValue('email'),
     'telefono' => $form_state->getValue('telefono'),
     'total' => $precio[0]['value'],
-    'proforma' => $proforma['value'],
+    'proforma' => $proforma[0]['value'],
     'direccion' => $direccion[0]['value'],
     'provision_fondos' => $prov_fondo[0]['value'],
     'servicios' => $all_servicios,
     'iva' => $iva,
-    'in_house' => $in_house_client['value'],
+    'in_house' => $in_house_client[0]['value'],
     'captacion_date' => $captacion_date,
     'invoice_count' => 'count of invoice',
   ];
