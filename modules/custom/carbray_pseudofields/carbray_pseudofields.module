@@ -758,7 +758,7 @@ function carbray_pseudofields_node_view(array &$build, EntityInterface $entity, 
           $author = User::load($change->author);
 
           $rows[] = array(
-            $new_term->label(),
+            ($new_term) ? $new_term->label() : '',
             $author->get('field_nombre')->value . ' ' . $author->get('field_apellido')->value,
             date('d-m-Y H:i:s', $change->created),
           );
@@ -845,23 +845,24 @@ function carbray_pseudofields_node_view(array &$build, EntityInterface $entity, 
       $estados_tids_that_show_factura = array(52);
       $estados_tids_that_show_expediente = array(52, 53, 54, 55);
 
-      if (in_array($estado_term->id(), $estados_tids_that_show_propuesta)) {
-        // Client is on estado captacion '1'; deal with propuestas.
-        // Show button to download propuesta plantilla.
-        $form = \Drupal::formBuilder()
-          ->getForm('Drupal\carbray_cliente\Form\PropuestaPlantillaRef');
-        $build['take_action'] = $form;
-      }
-      elseif (in_array($estado_term->id(), $estados_tids_that_show_factura)) {
-        // Client is on estado captacion '2'; deal with facturas.
-        // Show button to create a factura.
+      if ($estado_term) {
+        if (in_array($estado_term->id(), $estados_tids_that_show_propuesta)) {
+          // Client is on estado captacion '1'; deal with propuestas.
+          // Show button to download propuesta plantilla.
+          $form = \Drupal::formBuilder()
+            ->getForm('Drupal\carbray_cliente\Form\PropuestaPlantillaRef');
+          $build['take_action'] = $form;
+        }
+        elseif (in_array($estado_term->id(), $estados_tids_that_show_factura)) {
+          // Client is on estado captacion '2'; deal with facturas.
+          // Show button to create a factura.
 
-        /**
-         * Old code to render in a modal the custom form NewFacturaForm.
-         * Abandoned the idea because of complexity in creating
-         * ajaxed (on demand) servicio key/value pairs.
-         */
-        //$form = \Drupal::formBuilder()
+          /**
+           * Old code to render in a modal the custom form NewFacturaForm.
+           * Abandoned the idea because of complexity in creating
+           * ajaxed (on demand) servicio key/value pairs.
+           */
+          //$form = \Drupal::formBuilder()
 //          ->getForm('Drupal\carbray_cliente\Form\NewFacturaForm', $nid);
 //        $build['take_action']['factura'] = [
 //          '#theme' => 'button_modal',
@@ -873,47 +874,48 @@ function carbray_pseudofields_node_view(array &$build, EntityInterface $entity, 
 //          '#has_plus' => TRUE,
 //        ];
 
-        /**
-         * Creates link to add new factura node form.
-         * Favoured this approach of redirecting the user to a new
-         * page with the form, rather than summoning a modal with
-         * the form, as it is less complex.
-         * Links to add a new factura are going to sit on captacion
-         * node pages.
-         */
-        // Add captacion nid as query string parameter.
-        $current_path = \Drupal::service('path.current')->getPath();
-        $path_args = explode('/', $current_path);
-        $nid = 0;
-        foreach ($path_args as $path_arg) {
-          if (is_numeric($path_arg)) {
-            $nid = $path_arg;
+          /**
+           * Creates link to add new factura node form.
+           * Favoured this approach of redirecting the user to a new
+           * page with the form, rather than summoning a modal with
+           * the form, as it is less complex.
+           * Links to add a new factura are going to sit on captacion
+           * node pages.
+           */
+          // Add captacion nid as query string parameter.
+          $current_path = \Drupal::service('path.current')->getPath();
+          $path_args = explode('/', $current_path);
+          $nid = 0;
+          foreach ($path_args as $path_arg) {
+            if (is_numeric($path_arg)) {
+              $nid = $path_arg;
+            }
           }
+          $build['take_action']['factura'] = [
+            '#markup' => "<a class='btn btn-primary btn-sm margin-top-20' href='/node/add/factura?captacion_nid=$nid&destination=captacion/$nid'><span class='glyphicon glyphicon-plus-sign'></span>Nueva factura / proforma</a>",
+          ];
         }
-        $build['take_action']['factura'] = [
-          '#markup' => "<a class='btn btn-primary btn-sm margin-top-20' href='/node/add/factura?captacion_nid=$nid&destination=captacion/$nid'><span class='glyphicon glyphicon-plus-sign'></span>Nueva factura / proforma</a>",
-        ];
-      }
-      elseif (in_array($estado_term->id(), $estados_tids_that_show_expediente)) {
-        // Client is on estado captacion '3'; deal with expedientes.
-        // Show button to create a expediente.
+        elseif (in_array($estado_term->id(), $estados_tids_that_show_expediente)) {
+          // Client is on estado captacion '3'; deal with expedientes.
+          // Show button to create a expediente.
 
-        $db = \Drupal::database();
-        $sql = "SELECT uid FROM carbray_user_captacion_expediente WHERE captacion_nid = :nid";
-        $uid = $db->query($sql, array(':nid' => $captacion_node->id()))
-          ->fetchCol();
+          $db = \Drupal::database();
+          $sql = "SELECT uid FROM carbray_user_captacion_expediente WHERE captacion_nid = :nid";
+          $uid = $db->query($sql, array(':nid' => $captacion_node->id()))
+            ->fetchCol();
 
-        $new_exp_form = \Drupal::formBuilder()
-          ->getForm('Drupal\carbray\Form\NewExpedienteForm', $captacion_node->id(), reset($uid));
-        $build['take_action']['expediente'] = [
-          '#theme' => 'button_modal',
-          '#unique_id' => 'new-expediente-captacion_nid-' . $captacion_node->id(),
-          '#button_text' => 'Nuevo expediente',
-          '#button_classes' => 'btn btn-primary btn-sm margin-top-10',
-          '#modal_title' => t('Nuevo expediente'),
-          '#modal_content' => $new_exp_form,
-          '#has_plus' => TRUE,
-        ];
+          $new_exp_form = \Drupal::formBuilder()
+            ->getForm('Drupal\carbray\Form\NewExpedienteForm', $captacion_node->id(), reset($uid));
+          $build['take_action']['expediente'] = [
+            '#theme' => 'button_modal',
+            '#unique_id' => 'new-expediente-captacion_nid-' . $captacion_node->id(),
+            '#button_text' => 'Nuevo expediente',
+            '#button_classes' => 'btn btn-primary btn-sm margin-top-10',
+            '#modal_title' => t('Nuevo expediente'),
+            '#modal_content' => $new_exp_form,
+            '#has_plus' => TRUE,
+          ];
+        }
       }
     }
 

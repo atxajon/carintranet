@@ -31,14 +31,17 @@ class ArchiveCaptacion extends FormBase {
     $estado_term = $captacion->get('field_captacion_estado_captacion')->entity;
     $button_classes = ['btn-danger', 'btn', 'pull-right'];
 
-    if ($estado_term->id() == CAPTACION_ARCHIVADA) {
-      $button_text = t('Desarchivar');
-      $estado = 'archivada';
+
+    $button_text = t('Archivar');
+    $estado = 'desarchivada';
+
+    if ($estado_term) {
+      if ($estado_term->id() == CAPTACION_ARCHIVADA) {
+        $button_text = t('Desarchivar');
+        $estado = 'archivada';
+      }
     }
-    else {
-      $button_text = t('Archivar');
-      $estado = 'desarchivada';
-    }
+
     $form['captacion_nid'] = array(
       '#type' => 'hidden',
       '#value' => $nid,
