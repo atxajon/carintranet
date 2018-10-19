@@ -162,7 +162,7 @@ function carbray_form_node_form_alter(&$form, &$form_state, $form_id) {
       '#weight' => 16,
       '#disabled' => TRUE,
     ];
-    
+
 
 //    $form['field_factura_precio']['#weight'] = 80;
 //    $form['field_factura_precio']['widget'][0]['#weight'] = 80;
@@ -1168,9 +1168,12 @@ function clientes_expedientes_content($clientes) {
 
     $captacion_data = \Drupal::entityTypeManager()->getStorage('node')->load($cliente->captacion_nid);
     $estado_captacion = $captacion_data->get('field_captacion_estado_captacion')->entity;
-    if ($estado_captacion->id() == CAPTACION_ARCHIVADA) {
-      continue;
+    if ($estado_captacion) {
+      if ($estado_captacion->id() == CAPTACION_ARCHIVADA) {
+        continue;
+      }
     }
+
 
     $expedientes = get_expedientes_for_captacion($cliente->captacion_nid);
     if (!$expedientes) {
