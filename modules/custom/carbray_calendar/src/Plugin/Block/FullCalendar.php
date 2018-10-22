@@ -114,6 +114,14 @@ class FullCalendar extends BlockBase {
       $actuacion_created = $actuacion->created;
       $actuacion_started = $actuacion_created - $actuacion_seconds;
 
+      if (isset($colours[$actuacion->author])) {
+        $colour = (substr($colours[$actuacion->author], 0, 1) === '#') ? $colours[$actuacion->author] : '#' . $colours[$actuacion->author];
+      }
+      else {
+        // Default gray colour for content that has an orphaned author (removed in the system) but still needs to be shown.
+        $colour = '#969696';
+      }
+
       $data[] = [
         'title' => $actuacion->title,
         'start' => date("c", $actuacion_started), // converting tiemstamp to ISO 8601 https://stackoverflow.com/questions/5322285/how-do-i-convert-datetime-to-iso-8601-in-php/5322309
@@ -123,7 +131,7 @@ class FullCalendar extends BlockBase {
         )->toString(),
         'dept_id' => $actuacion->departamento_tid,
         'dept' => $actuacion->departamento,
-        'color' => (substr($colours[$actuacion->author], 0, 1) === '#') ? $colours[$actuacion->author] : '#' . $colours[$actuacion->author],
+        'color' => $colour,
         'author' => $actuacion->nombre . ' ' . $actuacion->apellido,
         'author_uid' => $actuacion->author,
         'type' => 'Actuación',
