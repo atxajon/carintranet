@@ -205,6 +205,16 @@ function carbray_theme_preprocess_page_title(&$variables) {
 }
 
 function carbray_theme_preprocess_block(&$variables) {
+  $element = $variables['elements'];
+  if ($element['#id'] == 'jefedepartamentomenu') {
+    // If current user is also a carbray admin (i.e A.Pesqueira) hide jefe departamento menu block:
+    // it shows the same content as carbray_admin menu block.
+    $user = User::load(\Drupal::currentUser()->id());
+    $user_roles = $user->getRoles();
+    if (in_array('carbray_administrator', $user_roles)) {
+      unset($variables['content']);
+    }
+  }
 }
 
 /**
