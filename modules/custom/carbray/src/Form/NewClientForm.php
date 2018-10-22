@@ -222,6 +222,7 @@ class NewClientForm extends FormBase {
     $captacion->set('title', $title);
     $captacion->set('field_captacion_cliente', $uid);
     $captacion->set('field_captacion_captador', $selected_captador);
+    $captacion->set('field_captacion_estado_captacion', ESTADO_CAPTACION_DEFECTO);
     if ($cliente_cuota) {
       $captacion->set('field_captacion_cliente_cuenta', $cliente_cuota);
     }
