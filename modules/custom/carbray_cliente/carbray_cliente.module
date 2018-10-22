@@ -102,12 +102,12 @@ function get_my_clients($worker_uid, $estado = 'captacion') {
 
   if ($estado == 'captacion') {
     // Show users with no expedientes created yet as long as their captacion is not on status 'archivada' (tid 184).
-    $sql = "SELECT field_captacion_cliente_target_id as uid, cc.entity_id as captacion_nid FROM node__field_captacion_cliente cc INNER JOIN node__field_captacion_estado_captacion e on cc.entity_id = e.entity_id
+    $sql = "SELECT field_captacion_cliente_target_id as uid, cc.entity_id as captacion_nid FROM node__field_captacion_cliente cc LEFT JOIN node__field_captacion_estado_captacion e on cc.entity_id = e.entity_id
 WHERE cc.entity_id IN (
 	SELECT c.entity_id from node__field_captacion_captador c WHERE 	field_captacion_captador_target_id = :uid) 
 AND cc.entity_id NOT IN (
 	SELECT ec.field_expediente_captacion_target_id FROM node__field_expediente_captacion ec) 
-AND field_captacion_estado_captacion_target_id != 184	
+AND (field_captacion_estado_captacion_target_id != 184	OR field_captacion_estado_captacion_target_id IS NULL)
 ORDER BY uid DESC";
   }
   else {

@@ -19,7 +19,8 @@ use Drupal\Core\Render\Markup;
 
 
 define('CAPTACION_ARCHIVADA', 184);
-define('ESTADO_CAPTACION_DEFECTO', 44); // 'En contacto'.
+//define('ESTADO_CAPTACION_DEFECTO', 44); // 'En contacto'.
+define('ESTADO_CAPTACION_DEFECTO', 281); // 'En contacto'.
 define('DEPARTAMENTO_CORPORATE', 185);
 define('DEPARTAMENTO_FRANCES', 186);
 define('DEPARTAMENTO_INMIGRATION', 187);
