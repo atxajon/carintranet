@@ -451,28 +451,30 @@ function carbray_pseudofields_user_view(array &$build, EntityInterface $entity, 
         }
 
         $row_class = 'captacion-row';
-        if ($term_entity->id() == CAPTACION_ARCHIVADA) {
-          $build['new_expediente'] = '';
-          $row_class = 'captacion-archivada-row';
-        }
-        else {
-          // @todo: should nuevo expediente button not be hidden for workers, except when:
-          //  1- worker is captador of cliente,
-          //  2- user is jefe_departamento of a cliente whose captador is on their same departamento,
-          //  3- user is carbray_administrador
-          //  ???
+        if ($term_entity) {
+          if ($term_entity->id() == CAPTACION_ARCHIVADA) {
+            $build['new_expediente'] = '';
+            $row_class = 'captacion-archivada-row';
+          }
+          else {
+            // @todo: should nuevo expediente button not be hidden for workers, except when:
+            //  1- worker is captador of cliente,
+            //  2- user is jefe_departamento of a cliente whose captador is on their same departamento,
+            //  3- user is carbray_administrador
+            //  ???
 
-          $form = \Drupal::formBuilder()
-            ->getForm('Drupal\carbray\Form\NewExpedienteForm', $captacion->captacion_nid, $uid);
-          $build['new_expediente'] = [
-            '#theme' => 'button_modal',
-            '#unique_id' => 'new-expediente-captacion_nid-' . $captacion->captacion_nid,
-            '#button_text' => 'Nuevo expediente',
-            '#button_classes' => 'btn btn-primary btn-sm',
-            '#modal_title' => t('Nuevo expediente'),
-            '#modal_content' => $form,
-            '#has_plus' => TRUE,
-          ];
+            $form = \Drupal::formBuilder()
+              ->getForm('Drupal\carbray\Form\NewExpedienteForm', $captacion->captacion_nid, $uid);
+            $build['new_expediente'] = [
+              '#theme' => 'button_modal',
+              '#unique_id' => 'new-expediente-captacion_nid-' . $captacion->captacion_nid,
+              '#button_text' => 'Nuevo expediente',
+              '#button_classes' => 'btn btn-primary btn-sm',
+              '#modal_title' => t('Nuevo expediente'),
+              '#modal_content' => $form,
+              '#has_plus' => TRUE,
+            ];
+          }
         }
 
         $rows[] = array(
