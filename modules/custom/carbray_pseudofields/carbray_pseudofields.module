@@ -843,19 +843,11 @@ function carbray_pseudofields_node_view(array &$build, EntityInterface $entity, 
       // Is the estado de captacion on estado '1'?
 
       $estado_term = $captacion_node->get('field_captacion_estado_captacion')->entity;
-      $estados_tids_that_show_propuesta = array(43, 44, 45, 46, 193);
       $estados_tids_that_show_factura = array(52);
-      $estados_tids_that_show_expediente = array(52, 53, 54, 55);
+      $estados_tids_that_show_expediente = array(52, 53);
 
       if ($estado_term) {
-        if (in_array($estado_term->id(), $estados_tids_that_show_propuesta)) {
-          // Client is on estado captacion '1'; deal with propuestas.
-          // Show button to download propuesta plantilla.
-          $form = \Drupal::formBuilder()
-            ->getForm('Drupal\carbray_cliente\Form\PropuestaPlantillaRef');
-          $build['take_action'] = $form;
-        }
-        elseif (in_array($estado_term->id(), $estados_tids_that_show_factura)) {
+        if (in_array($estado_term->id(), $estados_tids_that_show_factura)) {
           // Client is on estado captacion '2'; deal with facturas.
           // Show button to create a factura.
 
