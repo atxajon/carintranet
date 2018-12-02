@@ -1,0 +1,80 @@
+{#
+/**
+ * @file
+ * Carbray theme implementation for home 4 blocks with figures.
+ *
+ *
+ * Available variables:
+ * - leads_recibidos_count: An array of HTML attributes intended to be added to the
+     progress bar container of this template.
+ * - leads_captacion_count: Total of worker's contactos en captacion.
+ * - leads_produccion_count: Total of worker's contactos en produccion.
+ * - facturacion_total: Total facturado by worker.
+ *
+ * @ingroup templates
+ */
+#}
+<div class="row">
+  <div class="col-sm-3">
+    <div class="block">
+      <div class="row">
+        <div class="col-sm-7">
+          <h4>Leads Recibidos</h4>
+          <figure
+            class="text-primary gi-3x">{{ leads_recibidos_count }}</figure>
+        </div>
+        <div class="col-sm-5">
+          <span class="glyphicon glyphicon-user gi-2x text-primary top-50"
+                aria-hidden="true"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-3">
+    <div class="block">
+      <div class="row">
+        <div class="col-sm-7">
+          <h4>Leads Captación</h4>
+          <figure
+            class="text-primary gi-3x">{{ leads_captacion_count }}</figure>
+        </div>
+        <div class="col-sm-5">
+          <span class="glyphicon glyphicon-user gi-2x text-primary top-50"
+                aria-hidden="true"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-3">
+    <div class="block">
+      <div class="row">
+        <div class="col-sm-7">
+          <h4>Leads Producción</h4>
+          <figure
+            class="text-primary gi-3x">{{ leads_produccion_count }}</figure>
+        </div>
+        <div class="col-sm-5">
+          <span class="glyphicon glyphicon-user gi-2x text-primary top-50"
+                aria-hidden="true"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-3">
+    <div class="block">
+      <div class="row">
+        <div class="col-sm-7">
+          <h4>Facturación</h4>
+          <figure
+            class="text-primary gi-1point5x">{{ facturacion_total|number_format(2, ',', '.') }}
+            €
+          </figure>
+        </div>
+        <div class="col-sm-5">
+          <span class="glyphicon glyphicon-user gi-2x text-primary top-50"
+                aria-hidden="true"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

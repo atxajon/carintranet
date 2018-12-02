@@ -44,6 +44,14 @@ function carbray_theme($existing, $type, $theme, $path) {
         'label' => NULL
       ],
     ],
+    'figures_highlight' => [
+      'variables' => [
+        'leads_recibidos_count' => NULL,
+        'leads_captacion_count' => NULL,
+        'leads_produccion_count' => NULL,
+        'facturacion_total' => NULL,
+      ],
+    ],
   ];
 }
 
@@ -595,6 +603,19 @@ function carbray_preprocess_page(&$variables) {
     $response = new RedirectResponse($url, 302);
     $response->send();
   }
+
+  if (isset($variables['node'])) {
+    // Home page processing.
+    // @todo: test as well for nid of admin home, jefe departamento home.
+    if ($variables['node']->id() == 2) { // Abogado home nid.
+      // Load the block that contains the form.
+//      $form = \Drupal::formBuilder()
+//        ->getForm('Drupal\carbray\Form\HomeDataForm', \Drupal::currentUser()->id());
+//      $variables['output'] = $form;
+
+    }
+  }
+
 }
 
 function _carbray_redirecter() {

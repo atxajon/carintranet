@@ -36,4 +36,10 @@ carbray.worker_home:
   requirements:
     _permission: 'view worker as admin'
 
-
+carbray.home:
+  path: '/home'
+  defaults:
+    _title: 'Home de trabajador'
+    _controller: '\Drupal\carbray\Controller\HomeController::WorkerHome'
+  requirements:
+    _permission: 'access content'
