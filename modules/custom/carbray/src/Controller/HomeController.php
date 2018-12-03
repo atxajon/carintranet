@@ -22,8 +22,17 @@ class HomeController extends ControllerBase {
       '#markup' => '</div>',
     ];
 
+    // Obtain query string date values.
+    $path = parse_url(\Drupal::request()->getRequestUri());
+    $query_array = [];
+    if (isset($path['query'])) {
+      parse_str($path['query'], $query_array);
+    }
+
+
     // @todo: add queries to calculate figures.
-    // @todo: parse query string from url to query by dates.
+
+
 
     $build['figures'] = array(
       '#theme' => 'figures_highlight',
