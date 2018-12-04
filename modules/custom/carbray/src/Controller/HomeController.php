@@ -30,15 +30,15 @@ class HomeController extends ControllerBase {
     }
 
 
-    // @todo: add queries to calculate figures.
-
-
+    $logged_in_uid = \Drupal::currentUser()->id();
+    $leads_captacion = get_my_clients_count($logged_in_uid, $query_array);
+    $leads_produccion = get_my_clients_count($logged_in_uid, $query_array, 'produccion');
 
     $build['figures'] = array(
       '#theme' => 'figures_highlight',
-      '#leads_recibidos_count' => 17,
-      '#leads_captacion_count' => 18,
-      '#leads_produccion_count' => 19,
+      '#leads_recibidos_count' => $leads_captacion,
+      '#leads_captacion_count' => $leads_captacion,
+      '#leads_produccion_count' => $leads_produccion,
       '#facturacion_total' => 10002,
     );
 

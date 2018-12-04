@@ -123,6 +123,41 @@ ORDER BY uid DESC";
 }
 
 /**
+ * Gets COUNT of clientes uids where a given worker has them as Captador node's captador OR Expediente node's responsable.
+ */
+function get_my_clients_count($worker_uid, $dates = [], $estado = 'captacion') {
+  $db = \Drupal::database();
+  if ($estado == 'captacion') {
+    // Show users with no expedientes created yet as long as their captacion is not on status 'archivada' (tid 184).
+    $sql = "SELECT COUNT(field_captacion_cliente_target_id) as total_clientes FROM node__field_captacion_cliente cc LEFT JOIN node__field_captacion_estado_captacion e on cc.entity_id = e.entity_id INNER JOIN node_field_data on cc.entity_id = node_field_data.nid 
+WHERE cc.entity_id IN (
+	SELECT c.entity_id from node__field_captacion_captador c WHERE 	field_captacion_captador_target_id = :uid) 
+AND cc.entity_id NOT IN (
+	SELECT ec.field_expediente_captacion_target_id FROM node__field_expediente_captacion ec) 
+AND (field_captacion_estado_captacion_target_id != 184	OR field_captacion_estado_captacion_target_id IS NULL)";
+  }
+  else {
+    // Client (his captacion) has an expediente.
+    $sql = "Select COUNT(field_captacion_cliente_target_id) as total_count FROM node__field_captacion_cliente cc INNER JOIN node_field_data on cc.entity_id = node_field_data.nid
+	WHERE cc.entity_id IN (SELECT field_expediente_captacion_target_id as captacion_nid FROM node__field_expediente_captacion ec
+		WHERE ec.entity_id IN (SELECT entity_id as expediente_nid FROM node__field_expediente_responsable er WHERE er.field_expediente_responsable_target_id = :uid))";
+  }
+
+  if ($dates) {
+    if (isset($dates['date_from'])) {
+      $sql .= " AND created > " . $dates['date_from'];
+    }
+    if (isset($dates['date_to'])) {
+      $sql .= " AND created < " . $dates['date_to'];
+    }
+  }
+
+  $clientes_uids = $db->query($sql, array(':uid' => $worker_uid))
+    ->fetchField();
+  return $clientes_uids;
+}
+
+/**
  * Given a captacion nid finds a propuesta.
  * @param $captacion_nid
  *

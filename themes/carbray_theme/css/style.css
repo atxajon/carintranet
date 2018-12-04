@@ -1028,3 +1028,11 @@ textarea[rows="3"] + .cke .cke_contents {
 .gi-5x {
   font-size: 5em;
 }
+
+input[type="date"].form-control, input[type="time"].form-control, input[type="datetime-local"].form-control, input[type="month"].form-control {
+  line-height: 1.42857143;
+}
+
+.home-data-form .control-label {
+  width: 60px;
+}
