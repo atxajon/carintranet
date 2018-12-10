@@ -60,7 +60,21 @@ class NewCita extends FormBase {
       '#required' => TRUE,
       '#attributes' => array('class' => array('margin-bottom-20')),
     );
-    $form['fecha_final'] = array(
+
+    $form['needs_end_date'] = [
+      '#type' => 'checkbox',
+      '#title' => 'Añadir fecha final?',
+      '#attributes' => array('class' => array('margin-bottom-35')),
+    ];
+    $form['fecha_final_container'] = [
+      '#type' => 'container',
+      '#states' => [
+        'invisible' => [
+          'input[name="needs_end_date"]' => ['checked' => FALSE],
+        ],
+      ],
+    ];
+    $form['fecha_final_container']['fecha_final'] = array(
       '#type' => 'datetime',
       '#title' => 'Fecha/hora final',
       '#size' => '20',
@@ -70,16 +84,15 @@ class NewCita extends FormBase {
 
     $entityManager = \Drupal::service('entity_field.manager');
     $fields = $entityManager->getFieldStorageDefinitions('node', 'cita');
-    //Get User Title dropdown options
     $categoria_options = options_allowed_values($fields['field_cita_categoria']);
-
-
     $form['categoria_cita'] = array(
       '#type' => 'select',
       '#title' => 'Categoria',
       '#empty_option' => ' - Selecciona categoria - ',
       '#options' => $categoria_options,
     );
+
+
     $form['body'] = array(
       '#type' => 'text_format',
       '#title' => 'Notas de la cita',
@@ -110,6 +123,7 @@ class NewCita extends FormBase {
     $title = $form_state->getValue('title');
     $fecha_inicio = $form_state->getValue('fecha_inicio');
     $formatted_fecha_inicio = $fecha_inicio->format('Y-m-d\TH:i:s');
+    $needs_end_date = $form_state->getValue('needs_end_date');
     $fecha_fin = $form_state->getValue('fecha_final');
     $formatted_fecha_fin = $fecha_fin->format('Y-m-d\TH:i:s');
     $body = $form_state->getValue('body');
@@ -130,9 +144,11 @@ class NewCita extends FormBase {
     $cita->set('field_cita_invitado', $selected_invitado);
     $cita->set('field_cita_categoria', $categoria);
     $cita->set('field_cita_hora', $formatted_fecha_inicio);
-    $cita->set('field_cita_hora_fin', $formatted_fecha_fin);
+    if ($needs_end_date) {
+      $cita->set('field_cita_hora_fin', $formatted_fecha_fin);
+    }
+
     $cita->set('body', $body);
-//    $cita->body->value = $body;
     $cita->enforceIsNew();
     $cita->save();
     drupal_set_message('Cita creada');

@@ -150,6 +150,7 @@ class FullCalendar extends BlockBase {
       $data[] = [
         'title' => $cita->title,
         'start' => $cita->hora,
+        'end' => $cita->hora_fin,
         'created' => date('d-m-Y H:m:s', $cita->created),
         'url' => Url::fromRoute('entity.node.canonical', ['node' => $cita->nid]
         )->toString(),
