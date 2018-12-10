@@ -54,11 +54,31 @@ class NewCita extends FormBase {
     );
     $form['fecha_inicio'] = array(
       '#type' => 'datetime',
-      '#title' => 'Fecha/hora',
+      '#title' => 'Fecha/hora inicio',
       '#size' => '20',
       '#default_value' => DrupalDateTime::createFromTimestamp(time()),
       '#required' => TRUE,
       '#attributes' => array('class' => array('margin-bottom-20')),
+    );
+    $form['fecha_final'] = array(
+      '#type' => 'datetime',
+      '#title' => 'Fecha/hora final',
+      '#size' => '20',
+      '#default_value' => DrupalDateTime::createFromTimestamp(time()),
+      '#attributes' => array('class' => array('margin-bottom-20')),
+    );
+
+    $entityManager = \Drupal::service('entity_field.manager');
+    $fields = $entityManager->getFieldStorageDefinitions('node', 'cita');
+    //Get User Title dropdown options
+    $categoria_options = options_allowed_values($fields['field_cita_categoria']);
+
+
+    $form['categoria_cita'] = array(
+      '#type' => 'select',
+      '#title' => 'Categoria',
+      '#empty_option' => ' - Selecciona categoria - ',
+      '#options' => $categoria_options,
     );
     $form['body'] = array(
       '#type' => 'text_format',
@@ -90,7 +110,10 @@ class NewCita extends FormBase {
     $title = $form_state->getValue('title');
     $fecha_inicio = $form_state->getValue('fecha_inicio');
     $formatted_fecha_inicio = $fecha_inicio->format('Y-m-d\TH:i:s');
+    $fecha_fin = $form_state->getValue('fecha_final');
+    $formatted_fecha_fin = $fecha_fin->format('Y-m-d\TH:i:s');
     $body = $form_state->getValue('body');
+    $categoria = $form_state->getValue('categoria_cita');
     $invitado = $form_state->getValue('invitado');
     // $invitado strangely adds uid 0 for every non selected invitado checkbox;
     // let's clean those up.
@@ -105,7 +128,9 @@ class NewCita extends FormBase {
     $cita = Node::create(['type' => 'cita']);
     $cita->set('title', $title);
     $cita->set('field_cita_invitado', $selected_invitado);
+    $cita->set('field_cita_categoria', $categoria);
     $cita->set('field_cita_hora', $formatted_fecha_inicio);
+    $cita->set('field_cita_hora_fin', $formatted_fecha_fin);
     $cita->set('body', $body);
 //    $cita->body->value = $body;
     $cita->enforceIsNew();

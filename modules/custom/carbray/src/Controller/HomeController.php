@@ -104,7 +104,7 @@ class HomeController extends ControllerBase {
 
     // @todo: feed the following calendar with data from citas of category ausencias/vacaciones.
     $build['actuaciones_calendar'] = [
-      '#markup' => '<div class="row"><div class="col-sm-6"><div class="block"><div id="actuaciones_calendar"></div></div></div>',
+      '#markup' => '<div class="row"><div class="col-sm-6"><div class="block"><h1 class="text-center">Actuaciones</h1><div id="actuaciones_calendar"></div></div></div>',
       '#attached' => array(
         'library' => array(
           'carbray_calendar/fullcalendar',
@@ -116,7 +116,7 @@ class HomeController extends ControllerBase {
     ];
 
     $build['ausencias_calendar'] = [
-      '#markup' => '<div class="col-sm-6"><div class="block"><div id="ausencias_calendar"></div></div></div></div>',
+      '#markup' => '<div class="col-sm-6"><div class="block"><h1 class="text-center">Ausencias / Vacaciones</h1><div id="ausencias_calendar"></div></div></div></div>',
       '#attached' => array(
         'library' => array(
           'carbray_calendar/fullcalendar',
