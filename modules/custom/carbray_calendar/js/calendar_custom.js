@@ -1,4 +1,5 @@
 var data = drupalSettings.data;
+var citas_data = drupalSettings.citas_data;
 (function ($, Drupal, drupalSettings) {
   Drupal.behaviors.custom = {
     attach: function (context, settings) {
@@ -97,12 +98,12 @@ var data = drupalSettings.data;
         editable: false,
         eventLimit: true, // allow "more" link when too many events
         navLinks: true, // can click day/week names to navigate views
-        events: data,
+        events: citas_data,
         eventRender: function eventRender( event, element, view ) {
           // Prepare the bootstrap tooltip.
           $(element).attr('data-html', true); // Allows HTML on tooltip.
           $(element).tooltip({title: '<h3>' + event.title + '</h3><br />' +
-            '<h4>Creado: ' + event.created + '<br /><br />' + 'Autor: ' + event.author + '<br /><br />' + 'Departamento: ' + event.dept + '<br /><br />' + 'Tipo de evento: ' + event.type + '<br /><br />' +
+            '<h4>Creado: ' + event.created + '<br /><br />' + 'Autor: ' + event.author + '<br /><br />' + 'Departamento: ' + event.dept + '<br /><br />' + 'Categoria de evento: ' + event.category + '<br /><br />' +
             '</h4>', 'placement': 'top'});
 
           // Filter by department tid.

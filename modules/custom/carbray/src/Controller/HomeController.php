@@ -115,19 +115,58 @@ class HomeController extends ControllerBase {
       ),
     ];
 
+    $citas = get_calendar_citas($logged_in_uid);
+    $current_iteration_nid = 0;
+    $citas_data = [];
+    foreach ($citas as $cita) {
+
+      /**
+       * The citas sql query returns duplicated data, because a user can be in multiple departments;
+       * If they do they return an actuacion row for each department they're in.
+       * This could be fixed before mysql 5.7 with 'group by = nid', but now they're enforcing ONLY_FULL_GROUP_BY
+       * and each column needs to be thrown into group by clause. Couldn't get it to work,
+       * so an (ugly) workaround is to check if the current iteration nid is already part of the result set,
+       * and if it is -> skip to next row iteration.
+       */
+      if ($current_iteration_nid == $cita->nid) {
+        continue;
+      }
+
+      if (isset($colours[$cita->author])) {
+        $colour = (substr($colours[$cita->author], 0, 1) === '#') ? $colours[$cita->author] : '#' . $colours[$cita->author];
+      }
+      else {
+        // Default gray colour for content that has an orphaned author (removed in the system) but still needs to be shown.
+        $colour = '#969696';
+      }
+
+      $citas_data[] = [
+        'title' => $cita->title,
+        'start' => $cita->hora,
+        'end' => $cita->hora_fin,
+        'created' => date('d-m-Y H:m:s', $cita->created),
+        'url' => Url::fromRoute('entity.node.canonical', ['node' => $cita->nid]
+        )->toString(),
+        'dept_id' => $cita->departamento_tid,
+        'dept' => $cita->departamento,
+//        'color' => (substr($colours[$actuacion->author], 0, 1) === '#') ? $colours[$actuacion->author] : '#' . $colours[$actuacion->author],
+        'author' => $cita->nombre . ' ' . $cita->apellido,
+        'author_uid' => $cita->author,
+        'category' => isset($cita->categoria) ? $cita->categoria : t('Sin categoria'),
+      ];
+    }
+
     $build['ausencias_calendar'] = [
       '#markup' => '<div class="col-sm-6"><div class="block"><h1 class="text-center">Ausencias / Vacaciones</h1><div id="ausencias_calendar"></div></div></div></div>',
-      '#attached' => array(
-        'library' => array(
+      '#attached' => [
+        'library' => [
           'carbray_calendar/fullcalendar',
-        ),
-        'drupalSettings' => array(
-          'data' => $data,
-        ),
-      ),
+        ],
+        'drupalSettings' => [
+          'citas_data' => $citas_data,
+        ],
+      ],
     ];
-
-
 
     return $build;
   }

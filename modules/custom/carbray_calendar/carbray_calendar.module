@@ -33,9 +33,10 @@ WHERE type = 'actuacion'";
 }
 
 function get_calendar_citas($worker_uid = 0, $department_tid = 0) {
-  $sql = "SELECT field_cita_hora_value as hora, field_cita_hora_fin_value as hora_fin,  nid, field_cita_invitado_target_id as invitado_uid, created, title, field_departamento_target_id as departamento_tid, uid as author, field_nombre_value as nombre, field_apellido_value as apellido, name as departamento
+  $sql = "SELECT field_cita_hora_value as hora, field_cita_categoria_value as categoria, field_cita_hora_fin_value as hora_fin,  nid, field_cita_invitado_target_id as invitado_uid, created, title, field_departamento_target_id as departamento_tid, uid as author, field_nombre_value as nombre, field_apellido_value as apellido, name as departamento
 FROM node_field_data nfd
 LEFT JOIN node__field_cita_hora ch on nfd.nid = ch.entity_id
+LEFT JOIN node__field_cita_categoria cat on nfd.nid = cat.entity_id
 LEFT JOIN node__field_cita_hora_fin chf on nfd.nid = chf.entity_id
 LEFT JOIN node__field_cita_invitado ci on nfd.nid = ci.entity_id
 LEFT JOIN user__field_departamento d on nfd.uid = d.entity_id
