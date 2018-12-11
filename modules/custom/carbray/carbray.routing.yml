@@ -39,7 +39,7 @@ carbray.worker_home:
 carbray.home:
   path: '/home'
   defaults:
-    _title: 'Home de trabajador'
+    _title: 'Home'
     _controller: '\Drupal\carbray\Controller\HomeController::WorkerHome'
   requirements:
     _permission: 'access content'
