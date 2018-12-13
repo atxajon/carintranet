@@ -1455,15 +1455,31 @@ function get_home_content($uid) {
       )->toString(),
       'dept_id' => $cita->departamento_tid,
       'dept' => $cita->departamento,
-//        'color' => (substr($colours[$actuacion->author], 0, 1) === '#') ? $colours[$actuacion->author] : '#' . $colours[$actuacion->author],
+      'color' => ($cita->categoria == 'vacaciones') ? '#137e9e' : '#FF0000',
       'author' => $cita->nombre . ' ' . $cita->apellido,
       'author_uid' => $cita->author,
       'category' => isset($cita->categoria) ? $cita->categoria : t('Sin categoria'),
     ];
   }
 
+  $build['ausencias_container_open'] = [
+    '#markup' => '<div class="col-sm-6"><div class="block"><h1 class="text-center">Ausencias / Vacaciones</h1>',
+  ];
+  $form = \Drupal::formBuilder()
+    ->getForm('Drupal\carbray_calendar\Form\NewCita');
+  $build['anadir_cita'] = [
+    '#theme' => 'button_modal',
+    '#unique_id' => 'anadir-cita',
+    '#button_text' => 'Crear cita',
+    '#button_classes' => 'btn btn-primary margin-bottom-20 margin-top-10',
+    '#modal_title' => t('Nueva cita'),
+    '#modal_content' => $form,
+    '#has_plus' => TRUE,
+  ];
+
+
   $build['ausencias_calendar'] = [
-    '#markup' => '<div class="col-sm-6"><div class="block"><h1 class="text-center">Ausencias / Vacaciones</h1><div id="ausencias_calendar"></div></div></div></div>',
+    '#markup' => '<div id="ausencias_calendar"></div></div></div></div>',
     '#attached' => [
       'library' => [
         'carbray_calendar/fullcalendar',
