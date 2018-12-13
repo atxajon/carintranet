@@ -1248,6 +1248,19 @@ function get_departamento_workers($tid) {
   return $dept_workers;
 }
 
+function get_departamento_workers_with_names($dept_id) {
+  $my_workers = \Drupal::database()->query('SELECT n.entity_id as uid, field_nombre_value as name, field_apellido_value as surname 
+FROM user__field_nombre n 
+INNER JOIN users_field_data ufd on ufd.uid = n.entity_id
+INNER JOIN user__field_apellido a on n.entity_id = a.entity_id 
+INNER JOIN user__roles ur on n.entity_id = ur.entity_id 
+INNER JOIN user__field_departamento d on ufd.uid = d.entity_id
+WHERE ufd.status = 1
+AND field_departamento_target_id = :tid
+ORDER BY field_apellido_value ASC', [':tid' => $dept_id])->fetchAll();
+  return $my_workers;
+}
+
 /**
  * Sorts array items ignoring accented text strings.
  * http://www.andrescampanario.es/es/blog/ordenar_array_alfabeticamente_teniendo_en_cuenta_acentos_en_php
@@ -1407,8 +1420,6 @@ function get_home_content($uid) {
     ];
     $current_iteration_nid = $actuacion->nid;
   }
-
-  // @todo: feed the following calendar with data from citas of category ausencias/vacaciones.
   $build['actuaciones_calendar'] = [
     '#markup' => '<div class="row"><div class="col-sm-6"><div class="block"><h1 class="text-center">Actuaciones</h1><div id="actuaciones_calendar"></div></div></div>',
     '#attached' => array(
@@ -1421,74 +1432,121 @@ function get_home_content($uid) {
     ),
   ];
 
-  $citas = get_calendar_citas($uid);
-  $current_iteration_nid = 0;
-  $citas_data = [];
-  foreach ($citas as $cita) {
+  // User with role jefe_departamento views table with repartos;
+  // User with rol abogado views calendar with vacaciones/ausencias.
+  // @todo: user with rol secretaria??
+  $current_user_roles = \Drupal::currentUser()->getRoles();
+  if (in_array('jefe_departamento', $current_user_roles)) {
+    $user = User::load($uid);
+    $my_deptm = $user->get('field_departamento')->getValue();
+    $my_deptm = $my_deptm[0]['target_id'];
+    $departamento_term = Term::load($my_deptm);
+    $my_workers = get_departamento_workers_with_names($my_deptm);
 
-    /**
-     * The citas sql query returns duplicated data, because a user can be in multiple departments;
-     * If they do they return an actuacion row for each department they're in.
-     * This could be fixed before mysql 5.7 with 'group by = nid', but now they're enforcing ONLY_FULL_GROUP_BY
-     * and each column needs to be thrown into group by clause. Couldn't get it to work,
-     * so an (ugly) workaround is to check if the current iteration nid is already part of the result set,
-     * and if it is -> skip to next row iteration.
-     */
-    if ($current_iteration_nid == $cita->nid) {
-      continue;
+    foreach ($my_workers as $my_worker) {
+      // Make worker name surname into a link.
+      $url = Url::fromRoute('carbray.worker_home', ['uid' => $my_worker->uid]);
+      $worker_name = Link::fromTextAndUrl($my_worker->name . ' ' . $my_worker->surname, $url);
+
+      $count_captaciones_activas = get_count_captaciones_activas($my_worker->uid);
+
+      $rows[] = array(
+        $worker_name,
+        $count_captaciones_activas,
+      );
     }
 
-    if (isset($colours[$cita->author])) {
-      $colour = (substr($colours[$cita->author], 0, 1) === '#') ? $colours[$cita->author] : '#' . $colours[$cita->author];
-    }
-    else {
-      // Default gray colour for content that has an orphaned author (removed in the system) but still needs to be shown.
-      $colour = '#969696';
+    $header = array(
+      'Nombre:',
+      'Captaciones en curso',
+    );
+
+    $build['deptm_name'] = [
+      '#markup' => '<div class="col-sm-6"><div class="block"><h3>' . $departamento_term->label() . '</h3>',
+    ];
+    $build['table'] = [
+      '#theme' => 'table',
+      '#header' => $header,
+      '#rows' => $rows,
+      '#cache' => [
+        'max-age' => 0,
+      ],
+    ];
+    $build['outtro'] = [
+      '#markup' => '</div></div></div>',
+    ];
+  }
+  else {
+    $citas = get_calendar_citas($uid);
+    $current_iteration_nid = 0;
+    $citas_data = [];
+    foreach ($citas as $cita) {
+
+      /**
+       * The citas sql query returns duplicated data, because a user can be in multiple departments;
+       * If they do they return an actuacion row for each department they're in.
+       * This could be fixed before mysql 5.7 with 'group by = nid', but now they're enforcing ONLY_FULL_GROUP_BY
+       * and each column needs to be thrown into group by clause. Couldn't get it to work,
+       * so an (ugly) workaround is to check if the current iteration nid is already part of the result set,
+       * and if it is -> skip to next row iteration.
+       */
+      if ($current_iteration_nid == $cita->nid) {
+        continue;
+      }
+
+      if (isset($colours[$cita->author])) {
+        $colour = (substr($colours[$cita->author], 0, 1) === '#') ? $colours[$cita->author] : '#' . $colours[$cita->author];
+      }
+      else {
+        // Default gray colour for content that has an orphaned author (removed in the system) but still needs to be shown.
+        $colour = '#969696';
+      }
+
+      $citas_data[] = [
+        'title' => $cita->title,
+        'start' => $cita->hora,
+        'end' => $cita->hora_fin,
+        'created' => date('d-m-Y H:m:s', $cita->created),
+        'url' => Url::fromRoute('entity.node.canonical', ['node' => $cita->nid]
+        )->toString(),
+        'dept_id' => $cita->departamento_tid,
+        'dept' => $cita->departamento,
+        'color' => ($cita->categoria == 'vacaciones') ? '#137e9e' : '#FF0000',
+        'author' => $cita->nombre . ' ' . $cita->apellido,
+        'author_uid' => $cita->author,
+        'category' => isset($cita->categoria) ? $cita->categoria : t('Sin categoria'),
+      ];
     }
 
-    $citas_data[] = [
-      'title' => $cita->title,
-      'start' => $cita->hora,
-      'end' => $cita->hora_fin,
-      'created' => date('d-m-Y H:m:s', $cita->created),
-      'url' => Url::fromRoute('entity.node.canonical', ['node' => $cita->nid]
-      )->toString(),
-      'dept_id' => $cita->departamento_tid,
-      'dept' => $cita->departamento,
-      'color' => ($cita->categoria == 'vacaciones') ? '#137e9e' : '#FF0000',
-      'author' => $cita->nombre . ' ' . $cita->apellido,
-      'author_uid' => $cita->author,
-      'category' => isset($cita->categoria) ? $cita->categoria : t('Sin categoria'),
+    $build['ausencias_container_open'] = [
+      '#markup' => '<div class="col-sm-6"><div class="block"><h1 class="text-center">Ausencias / Vacaciones</h1>',
+    ];
+    $form = \Drupal::formBuilder()
+      ->getForm('Drupal\carbray_calendar\Form\NewCita');
+    $build['anadir_cita'] = [
+      '#theme' => 'button_modal',
+      '#unique_id' => 'anadir-cita',
+      '#button_text' => 'Crear cita',
+      '#button_classes' => 'btn btn-primary margin-bottom-20 margin-top-10',
+      '#modal_title' => t('Nueva cita'),
+      '#modal_content' => $form,
+      '#has_plus' => TRUE,
+    ];
+
+
+    $build['ausencias_calendar'] = [
+      '#markup' => '<div id="ausencias_calendar"></div></div></div></div>',
+      '#attached' => [
+        'library' => [
+          'carbray_calendar/fullcalendar',
+        ],
+        'drupalSettings' => [
+          'citas_data' => $citas_data,
+        ],
+      ],
     ];
   }
 
-  $build['ausencias_container_open'] = [
-    '#markup' => '<div class="col-sm-6"><div class="block"><h1 class="text-center">Ausencias / Vacaciones</h1>',
-  ];
-  $form = \Drupal::formBuilder()
-    ->getForm('Drupal\carbray_calendar\Form\NewCita');
-  $build['anadir_cita'] = [
-    '#theme' => 'button_modal',
-    '#unique_id' => 'anadir-cita',
-    '#button_text' => 'Crear cita',
-    '#button_classes' => 'btn btn-primary margin-bottom-20 margin-top-10',
-    '#modal_title' => t('Nueva cita'),
-    '#modal_content' => $form,
-    '#has_plus' => TRUE,
-  ];
-
-
-  $build['ausencias_calendar'] = [
-    '#markup' => '<div id="ausencias_calendar"></div></div></div></div>',
-    '#attached' => [
-      'library' => [
-        'carbray_calendar/fullcalendar',
-      ],
-      'drupalSettings' => [
-        'citas_data' => $citas_data,
-      ],
-    ],
-  ];
 
   return $build;
 }

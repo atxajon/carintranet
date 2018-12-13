@@ -29,15 +29,7 @@ class MiDepartamento extends BlockBase {
     $my_deptm = $user->get('field_departamento')->getValue();
     $my_deptm = $my_deptm[0]['target_id'];
     $departamento_term = Term::load($my_deptm);
-    $my_workers = \Drupal::database()->query('SELECT n.entity_id as uid, field_nombre_value as name, field_apellido_value as surname 
-FROM user__field_nombre n 
-INNER JOIN users_field_data ufd on ufd.uid = n.entity_id
-INNER JOIN user__field_apellido a on n.entity_id = a.entity_id 
-INNER JOIN user__roles ur on n.entity_id = ur.entity_id 
-INNER JOIN user__field_departamento d on ufd.uid = d.entity_id
-WHERE ufd.status = 1
-AND field_departamento_target_id = :tid
-ORDER BY field_apellido_value ASC', [':tid' => $my_deptm])->fetchAll();
+    $my_workers = get_departamento_workers_with_names($my_deptm);
 
     foreach ($my_workers as $my_worker) {
       // Make worker name surname into a link.
