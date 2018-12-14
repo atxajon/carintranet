@@ -1298,6 +1298,16 @@ function get_vocabulary_term_options($vocabulary) {
   return $options;
 }
 
+function get_count_procedencias($uid) {
+  $count = \Drupal::database()->query("SELECT field_procedencia_value, COUNT(*) as count
+FROM user__field_procedencia ufp
+INNER JOIN node__field_captacion_captador cc on cc.entity_id = ufp.entity_id
+WHERE field_captacion_captador_target_id = :uid
+GROUP BY field_procedencia_value
+ORDER BY field_procedencia_value ASC", [':uid' => $uid])->fetchAllKeyed();
+  return $count;
+}
+
 /**
  * Builds a link to the CSV downloader.
  *
@@ -1435,8 +1445,9 @@ function get_home_content($uid) {
   // User with role jefe_departamento views table with repartos;
   // User with rol abogado views calendar with vacaciones/ausencias.
   // @todo: user with rol secretaria??
-  $current_user_roles = \Drupal::currentUser()->getRoles();
-  if (in_array('jefe_departamento', $current_user_roles)) {
+  $user = User::load($uid);
+  $user_roles = $user->getRoles();
+  if (in_array('jefe_departamento', $user_roles)) {
     $user = User::load($uid);
     $my_deptm = $user->get('field_departamento')->getValue();
     $my_deptm = $my_deptm[0]['target_id'];
@@ -1448,21 +1459,59 @@ function get_home_content($uid) {
       $url = Url::fromRoute('carbray.worker_home', ['uid' => $my_worker->uid]);
       $worker_name = Link::fromTextAndUrl($my_worker->name . ' ' . $my_worker->surname, $url);
 
-      $count_captaciones_activas = get_count_captaciones_activas($my_worker->uid);
+      // Get procedencia of users that current iteration's user is captador of.
+      $count = get_count_procedencias($my_worker->uid);
+      if ($count) {
+//        $rows[] = [
+//          'data' => [
+//            $worker_name,
+//            isset($count['landing']) ? ['data' => $count['landing'], 'class' => ['text-center']] : ['data' => 0, 'class' => ['text-center']],
+//            isset($count['seo']) ? ['data' => $count['seo'], 'class' => ['text-center']] : ['data' => 0, 'class' => ['text-center']],
+//            isset($count['llamada']) ? ['data' => $count['llamada'], 'class' => ['text-center']] : ['data' => 0, 'class' => ['text-center']],
+//            isset($count['whatsapp']) ? ['data' => $count['whatsapp'], 'class' => ['text-center']] : ['data' => 0, 'class' => ['text-center']],
+//            isset($count['tidio']) ? ['data' => $count['tidio'], 'class' => ['text-center']] : ['data' => 0, 'class' => ['text-center']],
+//            isset($count['otro']) ? ['data' => $count['otro'], 'class' => ['text-center']] : ['data' => 0, 'class' => ['text-center']],
+//          ],
+//        ];
 
-      $rows[] = array(
-        $worker_name,
-        $count_captaciones_activas,
-      );
+        $rows[] = [
+          $worker_name,
+          isset($count['landing']) ? $count['landing'] : 0,
+          isset($count['seo']) ? $count['seo'] : 0,
+          isset($count['llamada']) ? $count['llamada'] : 0,
+          isset($count['whatsapp']) ? $count['whatsapp'] : 0,
+          isset($count['tidio']) ? $count['tidio'] : 0,
+          isset($count['otro']) ? $count['otro'] : 0,
+        ];
+      }
+      else {
+        $rows[] = [
+          $worker_name,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+        ];
+      }
+
+
     }
+
+    $entityManager = \Drupal::service('entity_field.manager');
+    $fields = $entityManager->getFieldStorageDefinitions('user', 'user');
+    $procedencia_options = options_allowed_values($fields['field_procedencia']);
 
     $header = array(
       'Nombre:',
-      'Captaciones en curso',
     );
+    foreach ($procedencia_options as $procedencia_option_key => $procedencia_option_value) {
+      array_push($header, $procedencia_option_value);
+    }
 
     $build['deptm_name'] = [
-      '#markup' => '<div class="col-sm-6"><div class="block"><h3>' . $departamento_term->label() . '</h3>',
+      '#markup' => '<div class="col-sm-6"><div class="block"><h3>Reparto Leads ' . $departamento_term->label() . '</h3>',
     ];
     $build['table'] = [
       '#theme' => 'table',
