@@ -1298,13 +1298,17 @@ function get_vocabulary_term_options($vocabulary) {
   return $options;
 }
 
-function get_count_procedencias($uid) {
-  $count = \Drupal::database()->query("SELECT field_procedencia_value, COUNT(*) as count
-FROM user__field_procedencia ufp
-INNER JOIN node__field_captacion_captador cc on cc.entity_id = ufp.entity_id
-WHERE field_captacion_captador_target_id = :uid
-GROUP BY field_procedencia_value
-ORDER BY field_procedencia_value ASC", [':uid' => $uid])->fetchAllKeyed();
+function get_count_procedencias($captador_uid) {
+  $sql = "SELECT field_procedencia_value, COUNT(*) as count
+FROM user__field_procedencia fp 
+Left JOIN node__field_captacion_cliente cc on fp.entity_id = cc.field_captacion_cliente_target_id
+LEFT JOIN node_field_data nfd on nfd.nid = cc.entity_id
+LEFT JOIN node__field_captacion_captador capcap on capcap.entity_id = nfd.nid
+WHERE capcap.field_captacion_captador_target_id = :captador_uid
+GROUP BY field_procedencia_value";
+
+  $count = \Drupal::database()->query($sql, [':captador_uid' => $captador_uid])->fetchAllKeyed();
+
   return $count;
 }
 
@@ -1461,6 +1465,8 @@ function get_home_content($uid) {
 
       // Get procedencia of users that current iteration's user is captador of.
       $count = get_count_procedencias($my_worker->uid);
+      ksm($my_worker->uid);
+      ksm($count);
       if ($count) {
 //        $rows[] = [
 //          'data' => [
