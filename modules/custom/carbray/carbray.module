@@ -1365,12 +1365,13 @@ function get_home_content($uid) {
   }
 
 
-  $leads_captacion = get_my_clients_count($uid, $query_array);
-  $leads_produccion = get_my_clients_count($uid, $query_array, 'produccion');
+  $leads_recibidos = get_my_leads_count($uid, $query_array);
+  $leads_captacion = get_my_leads_count($uid, $query_array, 'captacion', FALSE);
+  $leads_produccion = get_my_leads_count($uid, $query_array, 'produccion');
 
   $build['figures'] = array(
     '#theme' => 'figures_highlight',
-    '#leads_recibidos_count' => $leads_captacion,
+    '#leads_recibidos_count' => $leads_recibidos,
     '#leads_captacion_count' => $leads_captacion,
     '#leads_produccion_count' => $leads_produccion,
     '#facturacion_total' => 10002,
@@ -1465,8 +1466,6 @@ function get_home_content($uid) {
 
       // Get procedencia of users that current iteration's user is captador of.
       $count = get_count_procedencias($my_worker->uid);
-      ksm($my_worker->uid);
-      ksm($count);
       if ($count) {
 //        $rows[] = [
 //          'data' => [
