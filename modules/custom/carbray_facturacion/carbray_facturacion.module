@@ -508,15 +508,25 @@ function get_excel_table($is_csv = FALSE) {
   return $build;
 }
 
-function get_my_facturacion_cifra($worker_uid) {
+function get_my_facturacion_cifra($worker_uid, $dates = []) {
   $db = \Drupal::database();
   $sql = "SELECT field_factura_precio_value
 FROM node__field_factura ff 
 LEFT JOIN node__field_factura_pagada fp on fp.entity_id = ff.entity_id 
 INNER JOIN node_field_data nfd on nfd.nid = ff.entity_id
 INNER JOIN node__field_factura_precio ffp on ffp.entity_id = nfd.nid
-WHERE field_factura_target_id IN (SELECT entity_id FROM node__field_captacion_captador WHERE field_captacion_captador_target_id = :worker_uid)
-UNION
+WHERE field_factura_target_id IN (SELECT entity_id FROM node__field_captacion_captador WHERE field_captacion_captador_target_id = :worker_uid)";
+
+  if ($dates) {
+    if (isset($dates['date_from'])) {
+      $sql .= " AND created > " . $dates['date_from'];
+    }
+    if (isset($dates['date_to'])) {
+      $sql .= " AND created < " . $dates['date_to'];
+    }
+  }
+
+  $sql .= " UNION
 SELECT field_factura_precio_value 
 FROM node__field_factura ff 
 LEFT JOIN node__field_factura_pagada fp on fp.entity_id = ff.entity_id 
@@ -524,6 +534,16 @@ INNER JOIN node_field_data nfd on nfd.nid = ff.entity_id
 INNER JOIN node__field_factura_precio ffp on ffp.entity_id = nfd.nid
 INNER JOIN node__field_expediente_captacion ec on ec.field_expediente_captacion_target_id = ff.field_factura_target_id
 WHERE ec.entity_id IN (SELECT entity_id FROM node__field_expediente_responsable WHERE field_expediente_responsable_target_id = :worker_uid)";
+
+  if ($dates) {
+    if (isset($dates['date_from'])) {
+      $sql .= " AND created > " . $dates['date_from'];
+    }
+    if (isset($dates['date_to'])) {
+      $sql .= " AND created < " . $dates['date_to'];
+    }
+  }
+
   $my_facturas_precio = $db->query($sql, [':worker_uid' => $worker_uid])->fetchCol();
   return array_sum($my_facturas_precio);
 }

@@ -31,7 +31,7 @@ carbray.csv:
 carbray.worker_home:
   path: '/user/{uid}/home'
   defaults:
-    _title: 'Home de trabajador'
+    _title: 'Home'
     _controller: '\Drupal\carbray\Controller\AdminViewer::WorkerHome'
   requirements:
     _permission: 'view worker as admin'
