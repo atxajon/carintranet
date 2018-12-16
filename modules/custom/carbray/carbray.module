@@ -1368,13 +1368,14 @@ function get_home_content($uid) {
   $leads_recibidos = get_my_leads_count($uid, $query_array);
   $leads_captacion = get_my_leads_count($uid, $query_array, 'captacion', FALSE);
   $leads_produccion = get_my_leads_count($uid, $query_array, 'produccion');
+  $facturacion_total = get_my_facturacion_cifra($uid);
 
   $build['figures'] = array(
     '#theme' => 'figures_highlight',
     '#leads_recibidos_count' => $leads_recibidos,
     '#leads_captacion_count' => $leads_captacion,
     '#leads_produccion_count' => $leads_produccion,
-    '#facturacion_total' => 10002,
+    '#facturacion_total' => $facturacion_total,
   );
 
   $current_user_roles = \Drupal::currentUser()->getRoles();
