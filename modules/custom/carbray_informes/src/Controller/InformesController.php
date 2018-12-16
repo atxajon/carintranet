@@ -34,7 +34,12 @@ INNER JOIN user__roles ur on n.entity_id = ur.entity_id
 WHERE ufd.status = 1
 ORDER BY field_apellido_value ASC')->fetchAll();
 
+    $iterated_uid = 0;
     foreach ($workers as $worker) {
+      // To avoid duplicates on the list compare against last iterated uid.
+      if ($iterated_uid == $worker->uid) {
+        continue;
+      }
       // Make worker name surname into a link.
       $url = Url::fromRoute('carbray.worker_home', ['uid' => $worker->uid]);
       $worker_name = Link::fromTextAndUrl($worker->name . ' ' . $worker->surname, $url);
@@ -55,6 +60,8 @@ ORDER BY field_apellido_value ASC')->fetchAll();
         $count_facturas_emitidas,
         $count_facturas_pagadas,
       );
+
+      $iterated_uid = $worker->uid;
     }
 
     $header = array(
@@ -185,7 +192,12 @@ WHERE ufd.status = 1
 AND field_departamento_target_id = :tid
 ORDER BY field_apellido_value ASC', [':tid' => $tid])->fetchAll();
       $rows = [];
+      $iterated_uid = 0;
       foreach ($workers as $worker) {
+        // To avoid duplicates on the list compare against last iterated uid.
+        if ($iterated_uid == $worker->uid) {
+          continue;
+        }
         // Make worker name surname into a link.
         $url = Url::fromRoute('carbray.worker_home', ['uid' => $worker->uid]);
         $worker_name = Link::fromTextAndUrl($worker->name . ' ' . $worker->surname, $url);
@@ -206,6 +218,7 @@ ORDER BY field_apellido_value ASC', [':tid' => $tid])->fetchAll();
           $count_facturas_emitidas,
           $count_facturas_pagadas,
         );
+        $iterated_uid = $worker->uid;
       }
 
       $header = array(
