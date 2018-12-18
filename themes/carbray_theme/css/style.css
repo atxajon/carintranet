@@ -261,6 +261,31 @@ input[type=number] {
   appearance: none;
   margin: 0;
 }
+.home-figure {
+  height: 130px;
+}
+
+.top-50 {
+  top: 50px;
+}
+.gi-1point5x {
+  font-size: 1.25em;
+}
+.gi-2x {
+  font-size: 1.5em;
+}
+
+.gi-3x {
+  font-size: 2em;
+}
+
+.gi-4x {
+  font-size: 3em;
+}
+
+.gi-5x {
+  font-size: 3.5em;
+}
 
 /* collapsed sidebar styles */
 @media screen and (max-width: 767px) {
@@ -354,7 +379,6 @@ input[type=number] {
   }
 
   #sidebar .menu li.active a {
-
     color: #FFFFFF !important;
     font-weight: 700;
   }
@@ -433,6 +457,24 @@ input[type=number] {
 
   #edit-nota-container {
     clear: both;
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .gi-2x {
+    font-size: 2em;
+  }
+
+  .gi-3x {
+    font-size: 3em;
+  }
+
+  .gi-4x {
+    font-size: 4em;
+  }
+
+  .gi-5x {
+    font-size: 5em;
   }
 }
 
@@ -1005,28 +1047,6 @@ textarea[rows="3"] + .cke .cke_contents {
 .table.tablesorter > thead > tr > th {
   vertical-align: middle;
   padding: 20px;
-}
-
-.top-50 {
-  top: 50px;
-}
-.gi-1point5x {
-  font-size: 1.5em;
-}
-.gi-2x {
-  font-size: 2em;
-}
-
-.gi-3x {
-  font-size: 3em;
-}
-
-.gi-4x {
-  font-size: 4em;
-}
-
-.gi-5x {
-  font-size: 5em;
 }
 
 input[type="date"].form-control, input[type="time"].form-control, input[type="datetime-local"].form-control, input[type="month"].form-control {
