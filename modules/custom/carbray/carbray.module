@@ -1298,17 +1298,29 @@ function get_vocabulary_term_options($vocabulary) {
   return $options;
 }
 
-function get_count_procedencias($captador_uid) {
+function get_count_procedencias($captador_uid, $dates = []) {
   $sql = "SELECT field_procedencia_value, COUNT(*) as count
 FROM user__field_procedencia fp 
 Left JOIN node__field_captacion_cliente cc on fp.entity_id = cc.field_captacion_cliente_target_id
 LEFT JOIN node_field_data nfd on nfd.nid = cc.entity_id
 LEFT JOIN node__field_captacion_captador capcap on capcap.entity_id = nfd.nid
-WHERE capcap.field_captacion_captador_target_id = :captador_uid
-GROUP BY field_procedencia_value";
+WHERE capcap.field_captacion_captador_target_id = :captador_uid";
 
+  if ($dates) {
+    if (isset($dates['date_from'])) {
+      $sql .= " AND created > " . $dates['date_from'];
+    }
+    if (isset($dates['date_to'])) {
+      $sql .= " AND created < " . $dates['date_to'];
+    }
+  }
+  else {
+    // No dates filtering: defaul to show results for current month.
+    $beginning_of_current_month = strtotime(date('Y-m-01 00:00:00'));
+    $sql .= " AND created > " . $beginning_of_current_month;
+  }
+  $sql .= " GROUP BY field_procedencia_value";
   $count = \Drupal::database()->query($sql, [':captador_uid' => $captador_uid])->fetchAllKeyed();
-
   return $count;
 }
 
@@ -1363,7 +1375,6 @@ function get_home_content($uid) {
   if (isset($path['query'])) {
     parse_str($path['query'], $query_array);
   }
-
 
   $leads_recibidos = get_my_leads_count($uid, $query_array);
   $leads_captacion = get_my_leads_count($uid, $query_array, 'captacion', FALSE);
@@ -1466,7 +1477,7 @@ function get_home_content($uid) {
       $worker_name = Link::fromTextAndUrl($my_worker->name . ' ' . $my_worker->surname, $url);
 
       // Get procedencia of users that current iteration's user is captador of.
-      $count = get_count_procedencias($my_worker->uid);
+      $count = get_count_procedencias($my_worker->uid, $query_array);
       if ($count) {
 //        $rows[] = [
 //          'data' => [
@@ -1516,8 +1527,13 @@ function get_home_content($uid) {
       array_push($header, $procedencia_option_value);
     }
 
+    $fecha = ' para las fechas filtradas';
+    if (!$query_array) {
+      $fecha = ' en el mes actual';
+    }
+
     $build['deptm_name'] = [
-      '#markup' => '<div class="col-sm-6"><div class="block"><h3>Reparto Leads ' . $departamento_term->label() . '</h3>',
+      '#markup' => '<div class="col-sm-6"><div class="block"><h3>Reparto Leads ' . $departamento_term->label() . $fecha . '</h3>',
     ];
     $build['table'] = [
       '#theme' => 'table',
