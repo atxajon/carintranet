@@ -78,6 +78,11 @@ class HomeDataForm extends FormBase {
       '#description' => t('Elige la fecha de comienzo'),
     );
 
+    if (isset($query_array)) {
+      if (isset($query_array['date_to'])) {
+        $query_array['date_to'] -= 86400;
+      }
+    }
     $form['calendar_to'] = array(
       '#type' => 'date',
       '#title' => 'Hasta: ',
@@ -133,6 +138,8 @@ class HomeDataForm extends FormBase {
     }
     if ($calendar_to) {
       $timestamp = strtotime($calendar_to);
+      // Increment 24 hrs to include data within the day until.
+      $timestamp += 86400;
       // Store in query string params timestamp.
       $options['date_to'] = $timestamp;
     }

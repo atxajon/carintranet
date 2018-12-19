@@ -90,7 +90,8 @@ var citas_data = drupalSettings.citas_data;
           center: 'title',
           right: 'agendaDay,listDay,agendaWeek,month,listMonth'
         },
-        defaultView: 'agendaWeek',
+        // defaultView: 'agendaWeek',
+        defaultView: 'month',
         minTime: "07:00:00",
         maxTime: "22:00:00",
         height: 850,
