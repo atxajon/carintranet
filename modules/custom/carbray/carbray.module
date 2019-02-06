@@ -628,19 +628,19 @@ function _carbray_redirecter() {
     // if by any chance admin creating an abogado forgets to tick the role checkbox
     // it falls to this scenario and we need to have a $url otherwise it errors!
     // @todo: when opening up for clients access this will need to be updated!
-    $url = Url::fromUri('entity:node/2');
+    $url = Url::fromRoute('carbray.home');
   }
   elseif (in_array('worker', $roles)) {
-    $url = Url::fromUri('entity:node/2');
+    $url = Url::fromRoute('carbray.home');
   }
   elseif (in_array('secretaria', $roles)) {
     $url = Url::fromRoute('carbray_facturacion.facturas_por_pagar');
   }
   elseif (in_array('carbray_administrator', $roles)) {
-    $url = Url::fromUri('entity:node/33');
+    $url = Url::fromRoute('carbray.home');
   }
   else {
-    $url = Url::fromUri('entity:node/3');
+    $url = Url::fromRoute('carbray.home');
   }
   return $url;
 }
